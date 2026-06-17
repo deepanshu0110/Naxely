@@ -59,13 +59,26 @@ _DOWNGRADE_EVENTS = frozenset({
 })
 
 
-def verify_dodo_webhook(payload: bytes, signature: str, secret: str) -> bool:
+def verify_dodo_webhook(
+    payload: bytes,
+    signature: str,
+    secret: str,
+    webhook_id: str,
+    webhook_timestamp: str,
+) -> bool:
+    signed_content = f"{webhook_id}.{webhook_timestamp}.{payload.decode()}"
     expected = hmac.new(
         secret.encode(),
-        payload,
+        signed_content.encode(),
         hashlib.sha256,
     ).hexdigest()
-    return hmac.compare_digest(expected, signature)
+    for sig_part in signature.split(" "):
+        sig_value = sig_part
+        if sig_value.startswith("v1="):
+            sig_value = sig_value[3:]
+        if hmac.compare_digest(expected, sig_value):
+            return True
+    return False
 
 
 class CheckoutRequest(BaseModel):
@@ -185,8 +198,10 @@ async def dodo_webhook(
 ) -> Dict[str, Any]:
     body = await request.body()
 
-    signature = request.headers.get("X-Dodo-Signature", "")
-    if not verify_dodo_webhook(body, signature, settings.DODO_WEBHOOK_SECRET):
+    signature = request.headers.get("webhook-signature", "")
+    webhook_id = request.headers.get("webhook-id", "")
+    webhook_timestamp = request.headers.get("webhook-timestamp", "")
+    if not verify_dodo_webhook(body, signature, settings.DODO_WEBHOOK_SECRET, webhook_id, webhook_timestamp):
         raise HTTPException(status_code=400, detail="Invalid webhook signature")
 
     try:

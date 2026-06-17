@@ -126,20 +126,27 @@ class TestWebhookVerification:
         import hmac as _hmac
         import hashlib
         secret = "test-secret"
+        wh_id = "wh_test_001"
+        wh_ts = "1700000000"
         payload = b'{"id": "evt_123", "type": "subscription.created"}'
+        signed_content = f"{wh_id}.{wh_ts}.{payload.decode()}"
         expected = _hmac.new(
-            secret.encode(), payload, hashlib.sha256).hexdigest()
-        assert verify_dodo_webhook(payload, expected, secret) is True
+            secret.encode(), signed_content.encode(), hashlib.sha256).hexdigest()
+        assert verify_dodo_webhook(payload, expected, secret, wh_id, wh_ts) is True
 
     def test_invalid_signature(self):
         secret = "test-secret"
+        wh_id = "wh_test_002"
+        wh_ts = "1700000000"
         payload = b'{"id": "evt_123"}'
-        assert verify_dodo_webhook(payload, "invalid-signature", secret) is False
+        assert verify_dodo_webhook(payload, "invalid-signature", secret, wh_id, wh_ts) is False
 
     def test_empty_signature(self):
         secret = "test-secret"
+        wh_id = "wh_test_003"
+        wh_ts = "1700000000"
         payload = b'{"id": "evt_123"}'
-        assert verify_dodo_webhook(payload, "", secret) is False
+        assert verify_dodo_webhook(payload, "", secret, wh_id, wh_ts) is False
 
 
 class TestPlansData:
