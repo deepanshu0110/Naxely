@@ -15,7 +15,7 @@ import Modal from '@/components/ui/Modal'
 import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import ApiKeyForm from '@/components/settings/ApiKeyForm'
 import { Upload, Palette, AlertTriangle } from 'lucide-react'
-import type { ProfileResponse, BrandingResponse, CancelSubscriptionResponse, DeleteResponse, CheckoutResponse } from '@/types/api'
+import type { ProfileResponse, BrandingResponse, CancelSubscriptionResponse, CheckoutResponse } from '@/types/api'
 
 const profileSchema = z.object({
   full_name: z

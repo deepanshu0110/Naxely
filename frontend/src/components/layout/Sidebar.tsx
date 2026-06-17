@@ -7,9 +7,19 @@ import {
   Settings,
   Lock,
   ArrowRight,
+  type LucideIcon,
 } from 'lucide-react'
 
-const navItems = [
+interface NavItem {
+  label: string
+  icon: LucideIcon
+  href: string
+  tiers: string[]
+  lockedFor?: string[]
+  hideForOthers?: boolean
+}
+
+const navItems: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', tiers: ['free', 'pro', 'agency'] },
   { label: 'New Report', icon: FilePlus, href: '/report/new', tiers: ['free', 'pro', 'agency'] },
   { label: 'Templates', icon: LayoutTemplate, href: '#', tiers: ['pro', 'agency'], lockedFor: ['free'] },
