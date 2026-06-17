@@ -499,7 +499,7 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     # SECTION 7 — Anomaly Flags
     # ────────────────────────────────────────────────────────────
-    anomalies = ai_content.get('anomalies', [])
+    anomalies = ai_content.get('anomalies') or []
     if anomalies:
         story.append(_SectionHeader('Anomaly Flags', brand_color, content_width))
         story.append(Spacer(1, 10))

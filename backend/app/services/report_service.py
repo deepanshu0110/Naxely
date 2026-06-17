@@ -90,7 +90,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
 
         await update_status(report_id, 'processing', step='charts')
 
-        brand_color = config.get("brand", {}).get("color", "#6366F1")
+        brand_color = (config.get("brand") or {}).get("color") or "#6366F1"
         user_data_row = await get_user(user_id)
         if user_data_row and user_data_row.get("brand_color"):
             brand_color = user_data_row["brand_color"]
@@ -192,7 +192,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
                     "pdf_url": storage_path,
                     "ai_summary": ai_content.get("summary"),
                     "ai_insights": json.dumps(ai_content.get("insights") or []),
-                    "ai_anomalies": json.dumps(ai_content.get("anomalies", [])),
+                    "ai_anomalies": json.dumps(ai_content.get("anomalies") or []),
                     "gen_time": elapsed,
                     "row_count": len(df),
                     "col_count": len(df.columns),
