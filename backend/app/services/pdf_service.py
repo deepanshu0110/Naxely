@@ -242,6 +242,7 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         series = pd.to_numeric(df[col], errors='coerce').dropna()
         if len(series) == 0:
             continue
+        total = series.sum()
         latest = series.iloc[-1]
         trend = insight_trends.get(col, 'flat')
         if trend == 'flat' and len(series) >= 2:
@@ -251,8 +252,8 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
             elif first != 0 and latest < first * 0.95:
                 trend = 'decreasing'
         kpis.append({
-            'name': col.replace('_', ' ').title(),
-            'value': _format_number(latest),
+            'name': 'Total ' + col.replace('_', ' ').title(),
+            'value': _format_number(total),
             'trend': trend,
         })
     return kpis[:5]

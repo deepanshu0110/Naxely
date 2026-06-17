@@ -88,12 +88,7 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
         ax.set_ylabel(display_name)
 
     elif chart_type == 'bar':
-        cat_col = column_name
-        numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
-        val_col = numeric_cols[0] if numeric_cols else None
-        if val_col and _is_categorical_column(df[column_name]):
-            cat_col = column_name
-        elif _is_categorical_column(df[column_name]):
+        if _is_categorical_column(df[column_name]):
             counts = df[column_name].value_counts()
             ax.bar(counts.index.astype(str), counts.values, color=brand_color)
             ax.set_xlabel(display_name)
@@ -102,15 +97,10 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
             fig.savefig(str(output_path), dpi=150)
             plt.close(fig)
             return str(output_path)
-        if val_col:
-            ax.bar(df[cat_col].astype(str), df[val_col], color=brand_color)
-            ax.set_xlabel(display_name)
-            ax.set_ylabel(val_col.replace('_', ' ').title())
-        else:
-            counts = df[column_name].value_counts()
-            ax.bar(counts.index.astype(str), counts.values, color=brand_color)
-            ax.set_xlabel(display_name)
-            ax.set_ylabel('Count')
+        values = df[column_name].dropna()
+        ax.bar(range(len(values)), values, color=brand_color)
+        ax.set_xlabel('Row')
+        ax.set_ylabel(display_name)
 
     elif chart_type == 'histogram':
         ax.hist(df[column_name].dropna(), bins=20, color=brand_color, edgecolor='white')
@@ -126,15 +116,16 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
         ax.set_aspect('equal')
 
     elif chart_type == 'scatter':
-        numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
-        if len(numeric_cols) >= 2:
-            x_col = numeric_cols[0]
-            y_col = numeric_cols[1]
-            if column_name == x_col and len(numeric_cols) > 2:
-                y_col = numeric_cols[2]
-            ax.scatter(df[x_col], df[y_col], color=brand_color, alpha=0.6, s=40)
-            ax.set_xlabel(x_col.replace('_', ' ').title())
-            ax.set_ylabel(y_col.replace('_', ' ').title())
+        other_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c]) and c != column_name]
+        if other_cols:
+            x_col = other_cols[0]
+            y_col = column_name
+        else:
+            x_col = column_name
+            y_col = column_name
+        ax.scatter(df[x_col], df[y_col], color=brand_color, alpha=0.6, s=40)
+        ax.set_xlabel(x_col.replace('_', ' ').title())
+        ax.set_ylabel(y_col.replace('_', ' ').title())
 
     elif chart_type == 'multi_line':
         date_col = None
@@ -144,13 +135,9 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
                 break
         if date_col:
             plot_df = df.sort_values(date_col)
-            numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
-            for i, nc in enumerate(numeric_cols):
-                color = CHART_COLORS[i % len(CHART_COLORS)]
-                ax.plot(plot_df[date_col], plot_df[nc], color=color, linewidth=2, label=nc.replace('_', ' ').title())
+            ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2)
             ax.set_xlabel(date_col.replace('_', ' ').title())
-            ax.set_ylabel('Value')
-            ax.legend()
+            ax.set_ylabel(display_name)
 
     fig.tight_layout()
     fig.savefig(str(output_path), dpi=150)
