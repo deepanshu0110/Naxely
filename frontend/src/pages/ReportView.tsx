@@ -175,7 +175,7 @@ export default function ReportView() {
 
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <FileText className="h-4 w-4 text-gray-400" />
-                {report.row_count.toLocaleString()} rows
+                {typeof report.row_count === 'number' ? report.row_count.toLocaleString() : '—'} rows
               </div>
 
               {isPro && report.ai_summary && (
