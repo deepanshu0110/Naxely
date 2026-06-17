@@ -193,9 +193,9 @@ async def dodo_webhook(
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
 
-    event_id = payload.get("id")
+    event_id = request.headers.get("webhook-id", "")
     if not event_id:
-        raise HTTPException(status_code=400, detail="Missing event id")
+        raise HTTPException(status_code=400, detail="Missing webhook-id header")
 
     existing = await db.execute(
         text("SELECT id FROM payment_events WHERE dodo_event_id = :eid"),

@@ -111,7 +111,6 @@ class TestRealHmacSignatureChain:
         now_ts = datetime.now(timezone.utc)
         wh_ts = str(int(now_ts.timestamp()))
         payload = {
-            "id": "evt_real_hmac_001",
             "type": "subscription.active",
             "customer_id": "user-hmac-test",
             "product_id": "pro_prod_id",
@@ -165,7 +164,6 @@ class TestRealHmacSignatureChain:
         now_ts = datetime.now(timezone.utc)
         wh_ts = str(int(now_ts.timestamp()))
         payload = {
-            "id": "evt_bad_sig_001",
             "type": "subscription.active",
         }
         body_str = json.dumps(payload)
@@ -209,7 +207,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_cancel_001",
             "type": "subscription.cancelled",
             "customer_id": "user-123",
         }
@@ -229,7 +226,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_fail_001",
             "type": "subscription.failed",
             "customer_id": "user-123",
         }
@@ -248,7 +244,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_onhold_001",
             "type": "subscription.on_hold",
             "customer_id": "user-123",
         }
@@ -271,7 +266,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_refund_001",
             "type": "refund.succeeded",
             "customer_id": "user-123",
         }
@@ -290,7 +284,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_dispute_001",
             "type": "dispute.opened",
             "customer_id": "user-123",
         }
@@ -309,7 +302,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_active_001",
             "type": "subscription.active",
             "customer_id": "user-123",
             "product_id": "pro_prod_id",
@@ -333,7 +325,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_planchange_001",
             "type": "subscription.plan_changed",
             "customer_id": "user-123",
             "product_id": "agency_prod_id",
@@ -355,7 +346,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_dup_001",
             "type": "payment.succeeded",
             "customer_id": "user-123",
         }
@@ -376,7 +366,6 @@ class TestWebhookEventCoverage:
         from sqlalchemy.exc import IntegrityError
 
         payload = {
-            "id": "evt_integrity_001",
             "type": "payment.succeeded",
             "customer_id": "user-123",
         }
@@ -405,7 +394,6 @@ class TestWebhookEventCoverage:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_unhandled_001",
             "type": "payment.processing",
             "customer_id": "user-123",
         }
@@ -425,7 +413,6 @@ class TestEmailFailureIsolation:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_emailfail_001",
             "type": "payment.failed",
             "customer_id": "user-123",
         }
@@ -462,7 +449,6 @@ class TestEmailFailureIsolation:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_emailfail_001",
             "type": "payment.failed",
             "customer_id": "user-123",
         }
@@ -482,7 +468,6 @@ class TestEmailFailureIsolation:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_nokey_001",
             "type": "payment.failed",
             "customer_id": "user-123",
         }
@@ -521,7 +506,6 @@ class TestWebhookUserResolution:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_meta_001",
             "type": "subscription.created",
             "customer_id": "cus_dodo_unknown",
             "data": {
@@ -547,7 +531,6 @@ class TestWebhookUserResolution:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_meta_002",
             "type": "subscription.created",
             "customer_id": "cus_dodo_unknown",
             "metadata": {"user_id": "user-resolved-top"},
@@ -570,7 +553,6 @@ class TestWebhookUserResolution:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_fallback_001",
             "type": "subscription.created",
             "customer_id": "cus_known_001",
             "data": {"product_id": "pro_prod_id"},
@@ -597,7 +579,6 @@ class TestWebhookUserResolution:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_nouser_001",
             "type": "subscription.created",
             "customer_id": "cus_completely_unknown",
             "data": {"product_id": "pro_prod_id"},
@@ -640,7 +621,6 @@ class TestWebhookUserResolution:
                 self.committed = True
 
         payload = {
-            "id": "evt_capture_001",
             "type": "subscription.created",
             "customer_id": "cus_to_capture",
             "metadata": {"user_id": "user-capture-test"},
@@ -664,7 +644,6 @@ class TestWebhookUserResolution:
         from app.api.routes.payments import dodo_webhook
 
         payload = {
-            "id": "evt_dunning_001",
             "type": "dunning.recovered",
             "metadata": {"user_id": "user-dunning-recovered"},
             "data": {"product_id": "agency_prod_id"},
