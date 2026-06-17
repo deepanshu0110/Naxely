@@ -223,7 +223,7 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         metric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
     metric_cols = metric_cols[:5]
 
-    insights = ai_content.get('insights', [])
+    insights = ai_content.get('insights') or []
     insight_trends = {}
     for ins in insights:
         kpi = ins.get('kpi', '')
@@ -486,7 +486,7 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     # SECTION 6 — AI Insight Cards
     # ────────────────────────────────────────────────────────────
-    insights = ai_content.get('insights', [])
+    insights = ai_content.get('insights') or []
     if 'insights' in config.get('sections', []) and insights:
         story.append(_SectionHeader('AI Insights', brand_color, content_width))
         story.append(Spacer(1, 10))
@@ -563,7 +563,7 @@ def build_sync(
     story.append(_SectionHeader('Recommendations', brand_color, content_width))
     story.append(Spacer(1, 10))
 
-    all_insights = ai_content.get('insights', [])
+    all_insights = ai_content.get('insights') or []
     actions = [ins.get('action', '') for ins in all_insights if ins.get('action')]
 
     if actions:

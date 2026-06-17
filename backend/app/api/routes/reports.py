@@ -391,7 +391,7 @@ async def get_report_status(
         "data": (20, "Parsing data...", ["parsing"], ["charts", "ai_insights", "pdf_build"] if has_ai else ["charts", "pdf_build"]),
         "charts": (45, "Generating charts...", ["parsing", "charts"], ["ai_insights", "pdf_build"] if has_ai else ["pdf_build"]),
         "ai": (65, "Generating AI insights...", ["parsing", "charts", "ai_insights"], ["pdf_build"]),
-        "pdf": (85, "Building PDF...", ["parsing", "charts", "ai_insights", "pdf_build"] if has_ai else ["parsing", "charts", "pdf_build"]),
+        "pdf": (85, "Building PDF...", ["parsing", "charts", "ai_insights", "pdf_build"] if has_ai else ["parsing", "charts", "pdf_build"], []),
     }
 
     progress_percent = 10

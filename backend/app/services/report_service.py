@@ -191,7 +191,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
                 {
                     "pdf_url": storage_path,
                     "ai_summary": ai_content.get("summary"),
-                    "ai_insights": json.dumps(ai_content.get("insights", [])),
+                    "ai_insights": json.dumps(ai_content.get("insights") or []),
                     "ai_anomalies": json.dumps(ai_content.get("anomalies", [])),
                     "gen_time": elapsed,
                     "row_count": len(df),
