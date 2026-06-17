@@ -163,6 +163,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
             pdf_bytes = f.read()
         await _run_sync(
             _get_supabase().storage.from_("reports").upload, storage_path, pdf_bytes,
+            {"content-type": "application/pdf"},
         )
 
         async with AsyncSessionLocal() as db:
