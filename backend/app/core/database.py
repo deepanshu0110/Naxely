@@ -1,12 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from app.core.config import settings
-import os
 from typing import AsyncGenerator
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/databrief"
-)
+DATABASE_URL = settings.DATABASE_URL
 
 engine = create_async_engine(
     DATABASE_URL,
