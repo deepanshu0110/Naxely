@@ -177,7 +177,7 @@ async def create_checkout_session(
     return {"checkout_url": data["checkout_url"]}
 
 
-@router.post("/payments/webhook")
+@router.post("/webhook")
 @limiter.limit("20/minute")
 async def dodo_webhook(
     request: Request,
