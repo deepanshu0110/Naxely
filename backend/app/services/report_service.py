@@ -217,7 +217,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
             logger.error("Failed to update report status to failed for %s", report_id)
 
         sentry_sdk.capture_exception(e)
-        logger.error("Report pipeline failed for %s: %s", report_id, error_msg)
+        logger.error("Report pipeline failed for %s", report_id, exc_info=True)
 
     finally:
         try:
