@@ -1,0 +1,368 @@
+import hmac
+import hashlib
+import json
+import logging
+from datetime import datetime
+from typing import Dict, Any, Literal
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
+from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+import httpx
+
+from app.api.deps import get_current_user
+from app.core.database import get_db
+from app.core.config import settings
+from app.models.user import User
+from app.core.limiter import limiter
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter()
+
+
+PLANS_DATA = [
+    {
+        "id": "free",
+        "name": "Free",
+        "price_monthly": 0,
+        "features": ["3 reports/month", "CSV upload", "Basic charts", "PDF with watermark"],
+    },
+    {
+        "id": "pro",
+        "name": "Pro",
+        "price_monthly": 29,
+        "dodo_product_id": settings.DODO_PRO_PRODUCT_ID,
+        "features": ["Unlimited reports", "AI insights", "Custom branding", "Google Sheets", "No watermark"],
+    },
+    {
+        "id": "agency",
+        "name": "Agency",
+        "price_monthly": 79,
+        "dodo_product_id": settings.DODO_AGENCY_PRODUCT_ID,
+        "features": ["Everything in Pro", "White-label", "Dedicated support"],
+    },
+]
+
+
+_DOWNGRADE_EVENTS = frozenset({
+    "subscription.cancelled",
+    "subscription.failed",
+    "subscription.expired",
+    "refund.succeeded",
+    "dispute.opened",
+    "dispute.lost",
+    "dispute.accepted",
+    "dispute.expired",
+})
+
+
+def verify_dodo_webhook(payload: bytes, signature: str, secret: str) -> bool:
+    expected = hmac.new(
+        secret.encode(),
+        payload,
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
+
+class CheckoutRequest(BaseModel):
+    plan: Literal["pro", "agency"]
+
+
+@router.get("/payments/plans")
+async def get_plans() -> Dict[str, Any]:
+    return {
+        "success": True,
+        "data": {
+            "plans": PLANS_DATA,
+        },
+    }
+
+
+@router.post("/payments/checkout")
+@limiter.limit("10/minute")
+async def create_checkout_session(
+    request: Request,
+    body: CheckoutRequest,
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, str]:
+    if body.plan == "pro":
+        product_id = settings.DODO_PRO_PRODUCT_ID
+        new_tier = "pro"
+    elif body.plan == "agency":
+        product_id = settings.DODO_AGENCY_PRODUCT_ID
+        new_tier = "agency"
+    else:
+        raise HTTPException(status_code=400, detail="Invalid plan")
+
+    if not product_id:
+        raise HTTPException(status_code=500, detail="Product not configured")
+
+    # Existing subscriber — change plan in-place instead of creating a new checkout
+    if current_user.dodo_subscription_id:
+        # Subscription on hold (tier='free' but sub_id survived the hold) — route to Customer Portal
+        if current_user.tier == "free":
+            if not current_user.dodo_customer_id:
+                raise HTTPException(status_code=400, detail="Cannot manage subscription — missing customer reference")
+            try:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.post(
+                        "https://api.dodopayments.com/customers/customer_portal",
+                        headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
+                        json={
+                            "customer_id": current_user.dodo_customer_id,
+                            "return_url": "https://databrief.io/settings?tab=billing",
+                        },
+                        timeout=30,
+                    )
+                    resp.raise_for_status()
+                    data = resp.json()
+            except httpx.HTTPStatusError as e:
+                logger.error("Dodo customer portal API error: %s", e.response.text)
+                raise HTTPException(status_code=502, detail="Failed to create customer portal session")
+            except httpx.RequestError as e:
+                logger.error("Dodo customer portal network error: %s", e)
+                raise HTTPException(status_code=502, detail="Failed to reach payment provider")
+            return {"checkout_url": data["url"]}
+
+        if current_user.tier == new_tier:
+            raise HTTPException(status_code=400, detail="Already subscribed to this plan")
+
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(
+                    f"https://api.dodopayments.com/subscriptions/{current_user.dodo_subscription_id}/change_plan",
+                    headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
+                    json={"product_id": product_id},
+                    timeout=30,
+                )
+                resp.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            logger.error("Dodo change plan API error: %s", e.response.text)
+            raise HTTPException(status_code=502, detail="Failed to change plan")
+        except httpx.RequestError as e:
+            logger.error("Dodo change plan network error: %s", e)
+            raise HTTPException(status_code=502, detail="Failed to reach payment provider")
+
+        return {"checkout_url": ""}
+
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api.dodopayments.com/checkout_sessions",
+                headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
+                json={
+                    "product_cart": [{"product_id": product_id, "quantity": 1}],
+                    "customer": {
+                        "email": current_user.email,
+                        "name": current_user.full_name,
+                    },
+                    "metadata": {"user_id": str(current_user.id)},
+                    "return_url": "https://databrief.io/settings?tab=billing&checkout=complete",
+                },
+                timeout=30,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        logger.error("Dodo checkout API error: %s", e.response.text)
+        raise HTTPException(status_code=502, detail="Failed to create checkout session")
+    except httpx.RequestError as e:
+        logger.error("Dodo checkout network error: %s", e)
+        raise HTTPException(status_code=502, detail="Failed to reach payment provider")
+
+    return {"checkout_url": data["checkout_url"]}
+
+
+@router.post("/payments/webhook")
+@limiter.limit("20/minute")
+async def dodo_webhook(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    body = await request.body()
+
+    signature = request.headers.get("X-Dodo-Signature", "")
+    if not verify_dodo_webhook(body, signature, settings.DODO_WEBHOOK_SECRET):
+        raise HTTPException(status_code=400, detail="Invalid webhook signature")
+
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+
+    event_id = payload.get("id")
+    if not event_id:
+        raise HTTPException(status_code=400, detail="Missing event id")
+
+    existing = await db.execute(
+        text("SELECT id FROM payment_events WHERE dodo_event_id = :eid"),
+        {"eid": str(event_id)},
+    )
+    if existing.mappings().first():
+        return {"success": True, "data": {"status": "already_processed"}}
+
+    event_type = payload.get("type", payload.get("event_type", ""))
+
+    # Primary: metadata.user_id from our own checkout creation (may be under data or top-level)
+    user_id = (
+        payload.get("data", {}).get("metadata", {}).get("user_id")
+        or payload.get("metadata", {}).get("user_id")
+    )
+    # Fallback: lookup by dodo_customer_id for dashboard-originated events
+    if not user_id:
+        dodo_customer_id = payload.get("customer_id")
+        if dodo_customer_id:
+            result = await db.execute(
+                text("SELECT id FROM users WHERE dodo_customer_id = :dci"),
+                {"dci": dodo_customer_id},
+            )
+            row = result.mappings().first()
+            if row:
+                user_id = str(row["id"])
+    subscription_id = payload.get("subscription_id", payload.get("data", {}).get("subscription_id"))
+    expires_at = payload.get("expires_at") or payload.get("data", {}).get("expires_at") or payload.get("current_period_end")
+
+    product_id = payload.get("product_id") or payload.get("data", {}).get("product_id", "")
+    if product_id == settings.DODO_PRO_PRODUCT_ID:
+        new_tier = "pro"
+    elif product_id == settings.DODO_AGENCY_PRODUCT_ID:
+        new_tier = "agency"
+    else:
+        new_tier = payload.get("metadata", {}).get("tier", "pro")
+
+    try:
+        await db.execute(
+            text("""
+                INSERT INTO payment_events (id, user_id, event_type, dodo_event_id, payload, processed, created_at)
+                VALUES (gen_random_uuid(), :user_id, :event_type, :dodo_event_id, :payload, TRUE, NOW())
+            """),
+            {
+                "user_id": user_id,
+                "event_type": event_type,
+                "dodo_event_id": str(event_id),
+                "payload": json.dumps(payload),
+            },
+        )
+    except IntegrityError:
+        await db.rollback()
+        logger.warning("Duplicate dodo_event_id %s — returning already_processed", event_id)
+        return {"success": True, "data": {"status": "already_processed"}}
+
+    if event_type in ("subscription.created", "subscription.renewed", "subscription.active", "subscription.plan_changed", "dunning.recovered"):
+        if not user_id:
+            await db.commit()
+            return {"success": True, "data": {"status": "processed"}}
+
+        updates = ["tier = :tier", "updated_at = NOW()"]
+        params: Dict[str, Any] = {"uid": user_id, "tier": new_tier}
+
+        if expires_at:
+            updates.append("tier_expires_at = :expires_at")
+            params["expires_at"] = expires_at
+        if subscription_id:
+            updates.append("dodo_subscription_id = :sub_id")
+            params["sub_id"] = str(subscription_id)
+
+        await db.execute(
+            text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"),
+            params,
+        )
+
+        # Capture Dodo's customer_id for future fallback lookups
+        dodo_customer_id = payload.get("customer_id")
+        if dodo_customer_id:
+            await db.execute(
+                text("UPDATE users SET dodo_customer_id = :dci, updated_at = NOW() WHERE id = :uid AND dodo_customer_id IS NULL"),
+                {"dci": dodo_customer_id, "uid": user_id},
+            )
+
+    elif event_type == "subscription.on_hold":
+        if user_id:
+            await db.execute(
+                text("UPDATE users SET tier = 'free', tier_expires_at = NULL, updated_at = NOW() WHERE id = :uid"),
+                {"uid": user_id},
+            )
+
+    elif event_type in _DOWNGRADE_EVENTS:
+        if user_id:
+            await db.execute(
+                text("UPDATE users SET tier = 'free', tier_expires_at = NULL, dodo_subscription_id = NULL, updated_at = NOW() WHERE id = :uid"),
+                {"uid": user_id},
+            )
+
+    elif event_type == "payment.failed":
+        if user_id:
+            result = await db.execute(
+                text("SELECT email FROM users WHERE id = :uid"),
+                {"uid": user_id},
+            )
+            row = result.mappings().first()
+            if row and settings.RESEND_API_KEY:
+                try:
+                    import resend
+                    resend.api_key = settings.RESEND_API_KEY
+                    resend.Emails.send({
+                        "from": settings.FROM_EMAIL,
+                        "to": row["email"],
+                        "subject": "Payment failed — Databrief",
+                        "html": (
+                            "<p>Your most recent payment for Databrief failed.</p>"
+                            "<p>Please update your billing information at "
+                            "<a href='https://databrief.io/settings/billing'>"
+                            "https://databrief.io/settings/billing</a> "
+                            "to avoid any disruption to your subscription.</p>"
+                        ),
+                    })
+                    logger.info("Payment failure email sent to %s", row["email"])
+                except Exception as e:
+                    logger.error("Failed to send payment failure email: %s", e)
+
+    await db.commit()
+    return {"success": True, "data": {"status": "processed"}}
+
+
+@router.post("/payments/cancel")
+async def cancel_subscription(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    if not current_user.dodo_subscription_id:
+        raise HTTPException(
+            status_code=400,
+            detail="No active subscription found",
+        )
+
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.delete(
+                f"https://api.dodopayments.com/subscriptions/{current_user.dodo_subscription_id}",
+                headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to cancel subscription with Dodo: {str(e)}",
+        )
+
+    result = await db.execute(
+        text("SELECT tier_expires_at FROM users WHERE id = :uid"),
+        {"uid": str(current_user.id)},
+    )
+    row = result.mappings().first()
+    access_until = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.utcnow()
+
+    access_until_str = access_until.isoformat() + "Z"
+    month_name = access_until.strftime("%B %-d, %Y") if hasattr(access_until, "strftime") else str(access_until)
+
+    return {
+        "success": True,
+        "data": {
+            "cancelled": True,
+            "access_until": access_until_str,
+            "message": f"Your {current_user.tier.capitalize()} access continues until {month_name}",
+        },
+    }

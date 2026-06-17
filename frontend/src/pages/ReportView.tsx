@@ -1,0 +1,250 @@
+import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { format } from 'date-fns'
+import { Download, Share2, Trash2, Clock, FileText, AlertTriangle, X } from 'lucide-react'
+import toast from 'react-hot-toast'
+import Sidebar from '@/components/layout/Sidebar'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Spinner from '@/components/ui/Spinner'
+import InsightCard from '@/components/report/InsightCard'
+import UpgradePrompt from '@/components/ui/UpgradePrompt'
+import Modal from '@/components/ui/Modal'
+import api from '@/lib/axios'
+import { useAuthStore } from '@/store/authStore'
+import type { Report } from '@/types/report'
+
+export default function ReportView() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const user = useAuthStore((s) => s.user)
+  const isPro = user?.tier === 'pro' || user?.tier === 'agency'
+
+  const [report, setReport] = useState<Report | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    if (!id) return
+    setLoading(true)
+    api
+      .get(`/reports/${id}`)
+      .then((res) => setReport(res.data))
+      .catch(() => setError('Failed to load report'))
+      .finally(() => setLoading(false))
+  }, [id])
+
+  const handleDelete = async () => {
+    if (!id) return
+    setDeleting(true)
+    try {
+      await api.delete(`/reports/${id}`)
+      navigate('/dashboard')
+    } catch {
+      toast.error('Failed to delete report')
+    } finally {
+      setDeleting(false)
+      setConfirmDelete(false)
+    }
+  }
+
+  const handleShare = async () => {
+    if (!id) return
+    try {
+      const { data } = await api.post(`/reports/${id}/share`, { expires_days: 30, password: null })
+      await navigator.clipboard.writeText(data.share_url)
+      setReport((prev) => prev ? { ...prev, share_token: data.share_token } : null)
+      toast.success('Share link copied!')
+    } catch {
+      toast.error('Failed to create share link')
+    }
+  }
+
+  const handleRevokeShare = async () => {
+    if (!id) return
+    try {
+      await api.delete(`/reports/${id}/share`)
+      setReport((prev) => prev ? { ...prev, share_token: null } : null)
+      toast.success('Share link revoked')
+    } catch {
+      toast.error('Failed to revoke share link')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <Spinner size="lg" />
+      </div>
+    )
+  }
+
+  if (error || !report) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-white">
+        <p className="text-gray-500">{error ?? 'Report not found'}</p>
+        <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+          Back to Dashboard
+        </Button>
+      </div>
+    )
+  }
+
+  const statusVariant = (status: Report['status']) => {
+    switch (status) {
+      case 'completed':
+        return 'success' as const
+      case 'processing':
+        return 'warning' as const
+      case 'failed':
+        return 'error' as const
+    }
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar />
+      <main className="flex flex-1 flex-col overflow-hidden">
+        <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-bold text-gray-900">{report.title}</h1>
+            <Badge variant={statusVariant(report.status)} text={report.status} />
+          </div>
+          <div className="flex items-center gap-2">
+            {report.pdf_url && (
+              <a href={report.pdf_url} download>
+                <Button variant="primary" size="sm">
+                  <Download className="mr-1.5 h-4 w-4" /> Download PDF
+                </Button>
+              </a>
+            )}
+            {isPro && report.share_token ? (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={handleShare}>
+                  <Share2 className="mr-1.5 h-4 w-4" /> Share
+                </Button>
+                <Button variant="danger" size="sm" onClick={handleRevokeShare}>
+                  <X className="mr-1.5 h-4 w-4" /> Revoke
+                </Button>
+              </div>
+            ) : isPro && (
+              <Button variant="ghost" size="sm" onClick={handleShare}>
+                <Share2 className="mr-1.5 h-4 w-4" /> Share
+              </Button>
+            )}
+            <Button variant="danger" size="sm" onClick={() => setConfirmDelete(true)}>
+              <Trash2 className="mr-1.5 h-4 w-4" /> Delete
+            </Button>
+          </div>
+        </header>
+
+        <div className="flex flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto bg-gray-100 p-4">
+            {report.pdf_url ? (
+              <iframe
+                src={report.pdf_url}
+                title="Report PDF"
+                className="h-full w-full rounded-lg border border-gray-200 bg-white"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <p className="text-gray-500">PDF preview not available</p>
+              </div>
+            )}
+          </div>
+
+          <div className="w-96 overflow-y-auto border-l border-gray-200 bg-white p-6">
+            <div className="space-y-6">
+              {report.error_message && (
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
+                    <p className="text-sm text-yellow-800">{report.error_message}</p>
+                  </div>
+                </div>
+              )}
+
+              {report.generation_time_seconds != null && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock className="h-4 w-4 text-gray-400" />
+                  Generated in {Math.round(report.generation_time_seconds)} seconds
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <FileText className="h-4 w-4 text-gray-400" />
+                {report.row_count.toLocaleString()} rows
+              </div>
+
+              {isPro && report.ai_summary && (
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h3 className="mb-2 text-sm font-semibold text-gray-900">AI Summary</h3>
+                  <p className="text-sm text-gray-600">{report.ai_summary}</p>
+                </div>
+              )}
+
+              {isPro && report.ai_insights && report.ai_insights.length > 0 && (
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Insights</h3>
+                  <div className="space-y-3">
+                    {report.ai_insights.map((insight, idx) => (
+                      <InsightCard key={idx} insight={insight} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!isPro && (
+                <UpgradePrompt feature="AI Summary & Insights" />
+              )}
+
+              {isPro && report.ai_anomalies && report.ai_anomalies.length > 0 && (
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Anomaly Alerts</h3>
+                  <div className="space-y-2">
+                    {report.ai_anomalies.map((anomaly, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3"
+                      >
+                        <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
+                        <div>
+                          <p className="text-sm font-medium text-yellow-800">
+                            {anomaly.column}: {anomaly.value}
+                          </p>
+                          <p className="text-xs text-yellow-600">
+                            Expected: {anomaly.expected} — Deviation: {anomaly.deviation}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <p className="text-xs text-gray-400">
+                Created {format(new Date(report.created_at), 'MMM d, yyyy h:mm a')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Modal isOpen={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Report">
+        <p className="mb-6 text-sm text-gray-600">
+          Are you sure you want to delete "{report.title}"? This cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3">
+          <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" size="sm" loading={deleting} onClick={handleDelete}>
+            Delete
+          </Button>
+        </div>
+      </Modal>
+    </div>
+  )
+}

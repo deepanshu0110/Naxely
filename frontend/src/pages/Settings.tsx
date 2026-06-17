@@ -1,0 +1,556 @@
+import { useEffect, useState, useCallback } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { format } from 'date-fns'
+import toast from 'react-hot-toast'
+import { useAuthStore } from '@/store/authStore'
+import api from '@/lib/axios'
+import Sidebar from '@/components/layout/Sidebar'
+import Tabs from '@/components/ui/Tabs'
+import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import Badge from '@/components/ui/Badge'
+import Modal from '@/components/ui/Modal'
+import UpgradePrompt from '@/components/ui/UpgradePrompt'
+import ApiKeyForm from '@/components/settings/ApiKeyForm'
+import { Upload, Palette, AlertTriangle } from 'lucide-react'
+import type { ProfileResponse, BrandingResponse, CancelSubscriptionResponse, DeleteResponse, CheckoutResponse } from '@/types/api'
+
+const profileSchema = z.object({
+  full_name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(255, 'Name too long')
+    .transform((v) => v.trim()),
+})
+
+type ProfileForm = z.infer<typeof profileSchema>
+
+const brandingSchema = z.object({
+  brand_color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex colour'),
+  company_name: z.string().max(255, 'Company name too long').optional(),
+})
+
+type BrandingForm = z.infer<typeof brandingSchema>
+
+const TABS = [
+  { id: 'profile', label: 'Profile' },
+  { id: 'api-key', label: 'API Key' },
+  { id: 'branding', label: 'Branding' },
+  { id: 'billing', label: 'Billing' },
+]
+
+export default function Settings() {
+  const { user, fetchProfile } = useAuthStore()
+  const [activeTab, setActiveTab] = useState('profile')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [profile, setProfile] = useState<ProfileResponse | null>(null)
+
+  const fetchSettings = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.get('/settings/profile')
+      const data = response.data as ProfileResponse
+      setProfile(data)
+    } catch {
+      setError('Failed to load settings')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchSettings()
+  }, [fetchSettings])
+
+  const tier = profile?.tier ?? user?.tier ?? 'free'
+  const isProOrAbove = tier === 'pro' || tier === 'agency'
+
+  if (loading) return <SettingsSkeleton />
+  if (error) {
+    return (
+      <div className="flex h-screen bg-gray-50">
+        <Sidebar />
+        <main className="flex flex-1 items-center justify-center">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+            <p className="text-sm text-red-700">{error}</p>
+            <Button variant="ghost" size="sm" className="mt-3" onClick={fetchSettings}>Retry</Button>
+          </div>
+        </main>
+      </div>
+    )
+  }
+  if (!profile) return null
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-3xl px-6 py-8">
+          <h1 className="mb-6 text-2xl font-bold text-gray-900">Settings</h1>
+          <Tabs items={TABS} activeId={activeTab} onChange={setActiveTab}>
+            {activeTab === 'profile' && <ProfileTab profile={profile} onSaved={fetchProfile} />}
+            {activeTab === 'api-key' && (
+              <ApiKeyForm
+                hasKey={profile.has_api_key}
+                provider={profile.ai_provider}
+                keyPreview={profile.api_key_preview ?? null}
+                tier={tier}
+                onSaved={() => fetchSettings()}
+                onDeleted={() => fetchSettings()}
+              />
+            )}
+            {activeTab === 'branding' && (
+              isProOrAbove ? (
+                <BrandingTab
+                  logoUrl={profile.logo_url}
+                  brandColor={profile.brand_color ?? '#6366F1'}
+                  companyName={profile.company_name ?? ''}
+                />
+              ) : (
+                <UpgradePrompt feature="Custom Branding" tier="Pro" />
+              )
+            )}
+            {activeTab === 'billing' && <BillingTab profile={profile} tier={tier} tierExpiresAt={user?.tier_expires_at ?? null} />}
+          </Tabs>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+function SettingsSkeleton() {
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-3xl px-6 py-8">
+          <div className="mb-6 h-8 w-32 animate-pulse rounded bg-gray-200" />
+          <div className="mb-6 flex gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-9 w-20 animate-pulse rounded bg-gray-200" />
+            ))}
+          </div>
+          <div className="space-y-4">
+            <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
+            <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
+            <div className="h-10 w-3/4 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+function ProfileTab({ profile, onSaved }: { profile: ProfileResponse; onSaved: () => void }) {
+  const [isSaving, setIsSaving] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileForm>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: { full_name: profile.full_name },
+  })
+
+  const onSubmit = async (data: ProfileForm) => {
+    setIsSaving(true)
+    try {
+      await api.patch('/settings/profile', data)
+      onSaved()
+      toast.success('Profile updated')
+    } catch {
+      toast.error('Failed to update profile')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label htmlFor="full_name" className="mb-1 block text-sm font-medium text-gray-700">Full name</label>
+        <input
+          id="full_name"
+          {...register('full_name')}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+        {errors.full_name && <p className="mt-1 text-xs text-red-500">{errors.full_name.message}</p>}
+      </div>
+      <div>
+        <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">Email</label>
+        <input
+          id="email"
+          type="email"
+          readOnly
+          value={profile.email}
+          className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"
+        />
+        <p className="mt-1 text-xs text-gray-400">Email is managed through your account provider.</p>
+      </div>
+      <Button type="submit" loading={isSaving}>Save</Button>
+    </form>
+  )
+}
+
+function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | null; brandColor: string; companyName: string }) {
+  const [isSaving, setIsSaving] = useState(false)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(logoUrl)
+  const [dragOver, setDragOver] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<BrandingForm>({
+    resolver: zodResolver(brandingSchema),
+    defaultValues: { brand_color: brandColor, company_name: companyName },
+  })
+
+  const watchedColor = watch('brand_color')
+  const watchedName = watch('company_name')
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file && isValidImage(file)) {
+      setLogoFile(file)
+      setLogoPreview(URL.createObjectURL(file))
+    } else {
+      toast.error('Only PNG, JPG, or SVG files under 2MB are allowed')
+    }
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && isValidImage(file)) {
+      setLogoFile(file)
+      setLogoPreview(URL.createObjectURL(file))
+    }
+  }
+
+  const onSubmit = async (data: BrandingForm) => {
+    setIsSaving(true)
+    try {
+      const formData = new FormData()
+      if (logoFile) formData.append('logo', logoFile)
+      formData.append('brand_color', data.brand_color)
+      formData.append('company_name', data.company_name ?? '')
+      const brandResp = await api.post('/settings/branding', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      const resp = brandResp.data as BrandingResponse
+      setLogoPreview(resp.logo_url)
+      setLogoFile(null)
+      setValue('brand_color', resp.brand_color, { shouldValidate: true })
+      setValue('company_name', resp.company_name, { shouldValidate: true })
+      toast.success('Branding saved')
+    } catch {
+      toast.error('Failed to save branding')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div>
+        <label className="mb-1 block text-sm font-medium text-gray-700">Logo</label>
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 bg-gray-50'}`}
+        >
+          {logoPreview ? (
+            <div className="flex flex-col items-center gap-2">
+              <img src={logoPreview} alt="Brand logo" className="h-16 max-w-[200px] object-contain" />
+              <p className="text-xs text-gray-500">Drag & drop to replace, or click below</p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2 text-gray-400">
+              <Upload className="h-8 w-8" />
+              <p className="text-sm">Drag & drop your logo here</p>
+              <p className="text-xs">PNG, JPG, or SVG — max 2MB</p>
+            </div>
+          )}
+        </div>
+        <input
+          type="file"
+          accept=".png,.jpg,.jpeg,.svg"
+          onChange={handleFileSelect}
+          className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-indigo-600 hover:file:bg-indigo-100"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="brand_color" className="mb-1 block text-sm font-medium text-gray-700">Brand Colour</label>
+        <div className="flex items-center gap-3">
+          <input
+            id="brand_color"
+            type="text"
+            {...register('brand_color')}
+            className="w-32 rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+          <input
+            type="color"
+            value={watchedColor ?? '#6366F1'}
+            onChange={(e) => setValue('brand_color', e.target.value, { shouldValidate: true })}
+            className="h-9 w-9 cursor-pointer rounded border border-gray-300"
+          />
+        </div>
+        {errors.brand_color && <p className="mt-1 text-xs text-red-500">{errors.brand_color.message}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="company_name" className="mb-1 block text-sm font-medium text-gray-700">Company Name</label>
+        <input
+          id="company_name"
+          {...register('company_name')}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+
+      <div>
+        <h4 className="mb-3 text-sm font-medium text-gray-700">Preview</h4>
+        <BrandingPreview
+          companyName={watchedName ?? ''}
+          brandColor={watchedColor ?? '#6366F1'}
+          logoUrl={logoPreview}
+        />
+      </div>
+
+      <Button type="submit" loading={isSaving}>Save Branding</Button>
+    </form>
+  )
+}
+
+function BrandingPreview({ companyName, brandColor, logoUrl }: { companyName: string; brandColor: string; logoUrl: string | null }) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-gray-200" style={{ width: 280, height: 200 }}>
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-4" style={{ backgroundColor: brandColor + '10' }}>
+        <div
+          className="flex h-1 w-16 rounded-full"
+          style={{ backgroundColor: brandColor }}
+        />
+        {logoUrl && <img src={logoUrl} alt="Logo" className="h-10 max-w-[100px] object-contain" />}
+        {!logoUrl && <Palette className="h-10 w-10 text-gray-300" />}
+        <p className="text-sm font-semibold" style={{ color: brandColor }}>
+          {companyName || 'Your Company'}
+        </p>
+        <div
+          className="flex h-1 w-16 rounded-full"
+          style={{ backgroundColor: brandColor }}
+        />
+        <p className="text-xs text-gray-400">Powered by Databrief</p>
+      </div>
+    </div>
+  )
+}
+
+function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse; tier: string; tierExpiresAt: string | null }) {
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState<'pro' | 'agency' | null>(null)
+  const [cancelMessage, setCancelMessage] = useState<string | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteEmail, setDeleteEmail] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const planLabels: Record<string, string> = {
+    free: 'Free',
+    pro: 'Pro — $29/month',
+    agency: 'Agency — $79/month',
+  }
+
+  const handleUpgrade = async (plan: 'pro' | 'agency') => {
+    setIsCreatingCheckout(plan)
+    try {
+      const resp = await api.post('/payments/checkout', { plan })
+      const data = resp.data as CheckoutResponse
+      window.location.href = data.checkout_url
+    } catch {
+      toast.error('Failed to start checkout. Please try again.')
+      setIsCreatingCheckout(null)
+    }
+  }
+
+  const handleCancel = async () => {
+    setIsCancelling(true)
+    try {
+      const cancelResp = await api.post('/payments/cancel')
+      const data = cancelResp.data as CancelSubscriptionResponse
+      setCancelMessage(data.message)
+      setShowCancelModal(false)
+    } catch {
+      toast.error('Failed to cancel subscription')
+    } finally {
+      setIsCancelling(false)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-medium text-gray-700">Current Plan</h3>
+        <div className="mt-2 flex items-center gap-2">
+          <Badge variant={tier === 'free' ? 'neutral' : 'success'} text={planLabels[tier] ?? tier} />
+        </div>
+      </div>
+
+      {tierExpiresAt && !cancelMessage && (
+        <div>
+          <h3 className="text-sm font-medium text-gray-700">Next Billing Date</h3>
+          <p className="mt-1 text-sm text-gray-900">{format(new Date(tierExpiresAt), 'MMMM d, yyyy')}</p>
+        </div>
+      )}
+
+      {cancelMessage && (
+        <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
+          <p className="text-sm text-yellow-700">{cancelMessage}</p>
+        </div>
+      )}
+
+      {tier === 'free' && (
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-gray-700">Upgrade</h3>
+          <CompactPlanCard
+            plan="pro"
+            loading={isCreatingCheckout === 'pro'}
+            price="$29/month"
+            features={['Unlimited reports', 'AI insights', 'Custom branding', 'No watermark']}
+            cta="Upgrade to Pro"
+            onUpgrade={handleUpgrade}
+          />
+          <CompactPlanCard
+            plan="agency"
+            loading={isCreatingCheckout === 'agency'}
+            price="$79/month"
+            features={['Everything in Pro', 'White-label', 'Dedicated support']}
+            cta="Upgrade to Agency"
+            onUpgrade={handleUpgrade}
+          />
+        </div>
+      )}
+
+      {tier !== 'free' && !cancelMessage && (
+        <div>
+          <Button variant="danger" onClick={() => setShowCancelModal(true)}>Cancel Subscription</Button>
+          <Modal
+            isOpen={showCancelModal}
+            onClose={() => setShowCancelModal(false)}
+            title="Cancel Subscription"
+          >
+            <div className="space-y-4">
+              <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
+                <p className="text-sm text-yellow-700">
+                  Your access continues until the end of your current billing period. After that, you will be moved to the Free plan.
+                </p>
+              </div>
+              <p className="text-sm text-gray-600">Are you sure you want to cancel?</p>
+              <div className="flex justify-end gap-3">
+                <Button variant="ghost" onClick={() => setShowCancelModal(false)}>Keep Subscription</Button>
+                <Button variant="danger" loading={isCancelling} onClick={handleCancel}>Cancel Subscription</Button>
+              </div>
+            </div>
+          </Modal>
+        </div>
+      )}
+
+      <hr className="border-gray-200" />
+
+      <div>
+        <h3 className="text-sm font-medium text-red-700">Danger Zone</h3>
+        <p className="mt-1 text-xs text-gray-500">Once you delete your account, there is no going back. Please be certain.</p>
+        <div className="mt-3">
+          <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete Account</Button>
+          <Modal
+            isOpen={showDeleteModal}
+            onClose={() => { setShowDeleteModal(false); setDeleteEmail('') }}
+            title="Delete Account"
+          >
+            <div className="space-y-4">
+              <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
+                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
+                <p className="text-sm text-red-700">
+                  This will permanently delete your account and all associated data. This action cannot be undone.
+                </p>
+              </div>
+              <p className="text-sm text-gray-600">
+                Type <strong>{profile?.email}</strong> to confirm:
+              </p>
+              <input
+                type="email"
+                value={deleteEmail}
+                onChange={(e) => setDeleteEmail(e.target.value)}
+                placeholder={profile?.email}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+              />
+              <div className="flex justify-end gap-3">
+                <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteEmail('') }}>Cancel</Button>
+                <Button
+                  variant="danger"
+                  loading={isDeleting}
+                  disabled={deleteEmail !== profile?.email}
+                  onClick={async () => {
+                    setIsDeleting(true)
+                    try {
+                      await api.delete('/settings/account', { data: { email: deleteEmail } })
+                      toast.success('Account deleted')
+                      setTimeout(() => window.location.href = '/', 1500)
+                    } catch {
+                      toast.error('Failed to delete account')
+                    } finally {
+                      setIsDeleting(false)
+                      setShowDeleteModal(false)
+                      setDeleteEmail('')
+                    }
+                  }}
+                >
+                  Permanently Delete
+                </Button>
+              </div>
+            </div>
+          </Modal>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CompactPlanCard({ plan, loading, price, features, cta, onUpgrade }: { plan: 'pro' | 'agency'; loading: boolean; price: string; features: string[]; cta: string; onUpgrade: (plan: 'pro' | 'agency') => void }) {
+  return (
+    <Card padding="p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="text-sm font-semibold text-gray-900">{plan === 'pro' ? 'Pro' : 'Agency'}</h4>
+          <p className="text-lg font-bold text-gray-900">{price}</p>
+          <ul className="mt-2 space-y-1">
+            {features.map((f) => (
+              <li key={f} className="text-xs text-gray-500">
+                <span className="text-indigo-500">✓</span> {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <Button size="sm" loading={loading} onClick={() => onUpgrade(plan)}>{cta}</Button>
+      </div>
+    </Card>
+  )
+}
+
+function isValidImage(file: File): boolean {
+  const validTypes = ['image/png', 'image/jpeg', 'image/svg+xml']
+  const maxSize = 2 * 1024 * 1024
+  return validTypes.includes(file.type) && file.size <= maxSize
+}
