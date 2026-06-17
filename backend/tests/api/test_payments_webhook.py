@@ -2,24 +2,33 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import json
-import hmac as _hmac
-import hashlib
+from datetime import datetime, timezone
 import pytest
 from unittest.mock import MagicMock, patch
+from standardwebhooks import Webhook
 from starlette.requests import Request
 
 
-def _sign(payload: dict, webhook_id: str = "wh_default", webhook_timestamp: str = "1700000000") -> str:
+# Valid base64 webhook secret — decodes to b"testwebhookKey123"
+TEST_WH_SECRET = "dGVzdHdlYmhvb2tLZXkxMjM="
+_wh = Webhook(TEST_WH_SECRET)
+
+
+def _sign(payload: dict, webhook_id: str = "wh_default", webhook_timestamp: str | None = None) -> str:
     body = json.dumps(payload)
-    signed_content = f"{webhook_id}.{webhook_timestamp}.{body}"
-    return _hmac.new(b"wh_test_secret", signed_content.encode(), hashlib.sha256).hexdigest()
+    if webhook_timestamp is None:
+        ts = datetime.now(timezone.utc)
+    else:
+        ts = datetime.fromtimestamp(float(webhook_timestamp), tz=timezone.utc)
+    return _wh.sign(msg_id=webhook_id, timestamp=ts, data=body)
 
 
 def _make_request(payload: dict) -> Request:
     body_bytes = json.dumps(payload).encode()
     wh_id = "wh_default"
-    wh_ts = "1700000000"
-    sig = _sign(payload, wh_id, wh_ts)
+    now_ts = datetime.now(timezone.utc)
+    wh_ts = str(int(now_ts.timestamp()))
+    sig = _wh.sign(msg_id=wh_id, timestamp=now_ts, data=json.dumps(payload))
     headers = [
         (b"webhook-id", wh_id.encode()),
         (b"webhook-timestamp", wh_ts.encode()),
@@ -98,10 +107,9 @@ class TestRealHmacSignatureChain:
     async def test_real_signed_payload_full_chain(self):
         from app.api.routes.payments import dodo_webhook
 
-        secret = "whsec_real_test_secret_12345"
-
         wh_id = "wh_real_chain_001"
-        wh_ts = "1700000000"
+        now_ts = datetime.now(timezone.utc)
+        wh_ts = str(int(now_ts.timestamp()))
         payload = {
             "id": "evt_real_hmac_001",
             "type": "subscription.active",
@@ -111,8 +119,7 @@ class TestRealHmacSignatureChain:
             "current_period_end": "2026-07-01T00:00:00Z",
         }
         body_str = json.dumps(payload)
-        signed_content = f"{wh_id}.{wh_ts}.{body_str}"
-        real_sig = _hmac.new(secret.encode(), signed_content.encode(), hashlib.sha256).hexdigest()
+        real_sig = _wh.sign(msg_id=wh_id, timestamp=now_ts, data=body_str)
 
         headers = [
             (b"webhook-id", wh_id.encode()),
@@ -139,7 +146,7 @@ class TestRealHmacSignatureChain:
 
         db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", secret):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -153,17 +160,16 @@ class TestRealHmacSignatureChain:
         from app.api.routes.payments import dodo_webhook
         from fastapi import HTTPException
 
-        secret = "whsec_correct_secret"
-
+        wrong_wh = Webhook(b"wrong_secret")
         wh_id = "wh_bad_sig_001"
-        wh_ts = "1700000000"
+        now_ts = datetime.now(timezone.utc)
+        wh_ts = str(int(now_ts.timestamp()))
         payload = {
             "id": "evt_bad_sig_001",
             "type": "subscription.active",
         }
         body_str = json.dumps(payload)
-        wrong_signed = f"{wh_id}.{wh_ts}.{body_str}"
-        wrong_sig = _hmac.new(b"wrong_secret", wrong_signed.encode(), hashlib.sha256).hexdigest()
+        wrong_sig = wrong_wh.sign(msg_id=wh_id, timestamp=now_ts, data=body_str)
 
         headers = [
             (b"webhook-id", wh_id.encode()),
@@ -190,7 +196,7 @@ class TestRealHmacSignatureChain:
 
         db = _AsyncDB([])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", secret):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with pytest.raises(HTTPException) as exc_info:
                 await dodo_webhook(request=request, db=db)
             assert exc_info.value.status_code == 400
@@ -210,7 +216,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "processed"
@@ -230,7 +236,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "processed"
@@ -249,7 +255,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "processed"
@@ -272,7 +278,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "processed"
@@ -291,7 +297,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "processed"
@@ -313,7 +319,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -336,7 +342,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_AGENCY_PRODUCT_ID", "agency_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -356,7 +362,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_Found()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "already_processed"
@@ -388,7 +394,7 @@ class TestWebhookEventCoverage:
             return await original_execute(query, params)
         db.execute = raising_on_insert
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "already_processed"
@@ -406,7 +412,7 @@ class TestWebhookEventCoverage:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "processed"
@@ -441,7 +447,7 @@ class TestEmailFailureIsolation:
             return await original_execute(query, params)
         db.execute = tracking_execute
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.RESEND_API_KEY", "test_resend_key"):
                 with patch("app.api.routes.payments.settings.FROM_EMAIL", "hello@databrief.io"):
                     with patch("resend.Emails.send") as mock_send:
@@ -463,7 +469,7 @@ class TestEmailFailureIsolation:
         request = _make_request(payload)
         db = _AsyncDB([_Found()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "already_processed"
@@ -498,7 +504,7 @@ class TestEmailFailureIsolation:
             return await original_execute(query, params)
         db.execute = tracking_execute
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.RESEND_API_KEY", ""):
                 with patch("resend.Emails.send") as mock_send:
                     resp = await dodo_webhook(request=request, db=db)
@@ -527,7 +533,7 @@ class TestWebhookUserResolution:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -551,7 +557,7 @@ class TestWebhookUserResolution:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -577,7 +583,7 @@ class TestWebhookUserResolution:
 
         db = _AsyncDB([existing_result, MagicMock(), found_by_customer, MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -604,7 +610,7 @@ class TestWebhookUserResolution:
 
         db = _AsyncDB([existing_result, MagicMock(), customer_lookup_result])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -644,7 +650,7 @@ class TestWebhookUserResolution:
         request = _make_request(payload)
         db = CustomerCaptureDB()
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 
@@ -667,7 +673,7 @@ class TestWebhookUserResolution:
         request = _make_request(payload)
         db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
 
-        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", "wh_test_secret"):
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.DODO_AGENCY_PRODUCT_ID", "agency_prod_id"):
                 resp = await dodo_webhook(request=request, db=db)
 

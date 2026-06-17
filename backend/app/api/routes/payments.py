@@ -1,5 +1,3 @@
-import hmac
-import hashlib
 import json
 import logging
 from datetime import datetime
@@ -10,6 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from standardwebhooks import Webhook as _Webhook
 import httpx
 
 from app.api.deps import get_current_user
@@ -58,27 +57,6 @@ _DOWNGRADE_EVENTS = frozenset({
     "dispute.expired",
 })
 
-
-def verify_dodo_webhook(
-    payload: bytes,
-    signature: str,
-    secret: str,
-    webhook_id: str,
-    webhook_timestamp: str,
-) -> bool:
-    signed_content = f"{webhook_id}.{webhook_timestamp}.{payload.decode()}"
-    expected = hmac.new(
-        secret.encode(),
-        signed_content.encode(),
-        hashlib.sha256,
-    ).hexdigest()
-    for sig_part in signature.split(" "):
-        sig_value = sig_part
-        if sig_value.startswith("v1="):
-            sig_value = sig_value[3:]
-        if hmac.compare_digest(expected, sig_value):
-            return True
-    return False
 
 
 class CheckoutRequest(BaseModel):
@@ -198,10 +176,16 @@ async def dodo_webhook(
 ) -> Dict[str, Any]:
     body = await request.body()
 
-    signature = request.headers.get("webhook-signature", "")
-    webhook_id = request.headers.get("webhook-id", "")
-    webhook_timestamp = request.headers.get("webhook-timestamp", "")
-    if not verify_dodo_webhook(body, signature, settings.DODO_WEBHOOK_SECRET, webhook_id, webhook_timestamp):
+    try:
+        _Webhook(settings.DODO_WEBHOOK_SECRET).verify(
+            body,
+            {
+                "webhook-id": request.headers.get("webhook-id", ""),
+                "webhook-signature": request.headers.get("webhook-signature", ""),
+                "webhook-timestamp": request.headers.get("webhook-timestamp", ""),
+            },
+        )
+    except Exception:
         raise HTTPException(status_code=400, detail="Invalid webhook signature")
 
     try:

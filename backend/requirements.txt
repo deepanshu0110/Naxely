@@ -39,6 +39,9 @@ alembic==1.13.1
 # NOTE: supabase==2.9.1 required — 2.4.0 conflicts with httpx>=0.26
 supabase==2.9.1
 
+# Standard Webhooks (Dodo Payments uses this format)
+standardwebhooks==1.0.1
+
 # HTTP & File Handling
 httpx==0.27.2
 python-multipart==0.0.31
