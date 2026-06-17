@@ -368,7 +368,7 @@ def build_sync(
     if company_name:
         story.append(Paragraph(company_name, cover_sub_style))
 
-    prepared_by = config.get('brand', {}).get('prepared_by', '')
+    prepared_by = (config.get('brand') or {}).get('prepared_by', '')
     if prepared_by:
         story.append(Paragraph(f'Prepared by: {prepared_by}', cover_sub_style))
 

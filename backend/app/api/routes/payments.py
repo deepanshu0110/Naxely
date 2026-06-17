@@ -208,8 +208,8 @@ async def dodo_webhook(
 
     # Primary: metadata.user_id from our own checkout creation (may be under data or top-level)
     user_id = (
-        payload.get("data", {}).get("metadata", {}).get("user_id")
-        or payload.get("metadata", {}).get("user_id")
+        ((payload.get("data") or {}).get("metadata") or {}).get("user_id")
+        or (payload.get("metadata") or {}).get("user_id")
     )
     # Fallback: lookup by dodo_customer_id for dashboard-originated events
     if not user_id:
@@ -222,16 +222,16 @@ async def dodo_webhook(
             row = result.mappings().first()
             if row:
                 user_id = str(row["id"])
-    subscription_id = payload.get("subscription_id", payload.get("data", {}).get("subscription_id"))
-    expires_at = payload.get("expires_at") or payload.get("data", {}).get("expires_at") or payload.get("current_period_end")
+    subscription_id = payload.get("subscription_id", (payload.get("data") or {}).get("subscription_id"))
+    expires_at = payload.get("expires_at") or (payload.get("data") or {}).get("expires_at") or payload.get("current_period_end")
 
-    product_id = payload.get("product_id") or payload.get("data", {}).get("product_id", "")
+    product_id = payload.get("product_id") or (payload.get("data") or {}).get("product_id", "")
     if product_id == settings.DODO_PRO_PRODUCT_ID:
         new_tier = "pro"
     elif product_id == settings.DODO_AGENCY_PRODUCT_ID:
         new_tier = "agency"
     else:
-        new_tier = payload.get("metadata", {}).get("tier", "pro")
+        new_tier = (payload.get("metadata") or {}).get("tier", "pro")
 
     try:
         await db.execute(
