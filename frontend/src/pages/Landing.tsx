@@ -95,13 +95,11 @@ const plans = [
       'Custom branding (logo + colour)',
       'No watermark',
       'Google Sheets connector',
-      'Save templates',
       'Shareable links',
-      'Priority support',
     ],
     cta: 'Upgrade to Pro',
     ctaVariant: 'filled' as const,
-    href: '#',
+    href: '/settings?tab=billing',
   },
   {
     name: 'Agency',
@@ -110,12 +108,12 @@ const plans = [
     highlight: false,
     features: [
       'Everything in Pro',
-      'White-label reports',
-      'Dedicated support',
+      'Full white-label reports — every trace of Databrief branding removed',
+      'Priority support — direct, fast responses from the founder',
     ],
     cta: 'Upgrade to Agency',
     ctaVariant: 'ghost' as const,
-    href: '#',
+    href: '/settings?tab=billing',
   },
 ]
 

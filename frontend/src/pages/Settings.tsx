@@ -437,7 +437,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
             plan="agency"
             loading={isCreatingCheckout === 'agency'}
             price="$79/month"
-            features={['Everything in Pro', 'White-label', 'Dedicated support']}
+            features={['Everything in Pro', 'Full white-label reports — every trace of Databrief branding removed', 'Priority support — direct, fast responses from the founder']}
             cta="Upgrade to Agency"
             onUpgrade={handleUpgrade}
           />
