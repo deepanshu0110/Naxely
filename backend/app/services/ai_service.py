@@ -126,14 +126,17 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
         except HTTPException:
             raise
         except requests.Timeout:
-            raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
+            logger.warning("Gemini Timeout attempt %d/3 — backing off", attempt + 1)
+            if attempt < 2:
+                time.sleep(1 << attempt)
+            continue
         except requests.RequestException as e:
             status = e.response.status_code if e.response is not None else "N/A"
             body = e.response.text if e.response is not None else "N/A"
             logger.error("Gemini call failed: status=%s body=%s", status, body)
             raise HTTPException(status_code=500, detail="AI generation failed")
-    logger.error("Gemini 503 retry exhausted after 3 attempts")
-    raise HTTPException(status_code=500, detail="AI generation failed")
+    logger.error("Gemini retry exhausted after 3 attempts")
+    raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
 
 
 def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int = 25) -> str:

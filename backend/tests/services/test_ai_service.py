@@ -155,6 +155,31 @@ class TestGeminiRetry:
             call_gemini("prompt", "system", "fake-key")
         assert len(calls) == 3, f"Expected 3 POST calls on all-503, got {len(calls)}"
 
+    def test_timeout_retries_and_succeeds_on_attempt_2(self, monkeypatch):
+        import requests
+        from app.services.ai_service import call_gemini
+
+        call_count = 0
+
+        def timeout_then_ok(*args, **kwargs):
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise requests.Timeout("timed out")
+            resp = type("FakeResp", (), {
+                "status_code": 200,
+                "raise_for_status": lambda self: None,
+                "json": lambda self: {"candidates": [{"content": {"parts": [{"text": "ok"}]}}]},
+            })()
+            return resp
+
+        monkeypatch.setattr("app.services.ai_service.requests.post", timeout_then_ok)
+        monkeypatch.setattr("app.services.ai_service.time.sleep", lambda s: None)
+
+        result = call_gemini("prompt", "system", "fake-key")
+        assert result == "ok"
+        assert call_count == 2
+
     def test_no_retry_on_non_503_errors(self, monkeypatch):
         from app.services.ai_service import call_gemini
 
