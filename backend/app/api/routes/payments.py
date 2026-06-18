@@ -63,7 +63,7 @@ class CheckoutRequest(BaseModel):
     plan: Literal["pro", "agency"]
 
 
-@router.get("/payments/plans")
+@router.get("/plans")
 async def get_plans() -> Dict[str, Any]:
     return {
         "success": True,
@@ -73,7 +73,7 @@ async def get_plans() -> Dict[str, Any]:
     }
 
 
-@router.post("/payments/checkout")
+@router.post("/checkout")
 @limiter.limit("10/minute")
 async def create_checkout_session(
     request: Request,
@@ -324,7 +324,7 @@ async def dodo_webhook(
     return {"success": True, "data": {"status": "processed"}}
 
 
-@router.post("/payments/cancel")
+@router.post("/cancel")
 async def cancel_subscription(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
