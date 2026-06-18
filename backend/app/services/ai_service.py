@@ -10,6 +10,7 @@ from openai import OpenAI, APITimeoutError, AuthenticationError as OpenAIAuthErr
 from anthropic import Anthropic, APITimeoutError as AnthropicTimeoutError, AuthenticationError as AnthropicAuthError, RateLimitError as AnthropicRateLimitError
 import requests
 
+from app.core.config import settings
 from app.models.user import User
 from app.utils.encryption import decrypt_api_key, get_master_key
 from app.services.data_service import compute_column_stats
@@ -91,7 +92,7 @@ def call_claude(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
 
 
 def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{settings.GEMINI_MODEL}:generateContent?key={api_key}"
     payload = {
         "system_instruction": {"parts": [{"text": system}]},
         "contents": [{"parts": [{"text": prompt}]}],
