@@ -101,7 +101,7 @@ async def create_checkout_session(
             try:
                 async with httpx.AsyncClient() as client:
                     resp = await client.post(
-                        "https://api.dodopayments.com/customers/customer_portal",
+                        f"{settings.DODO_API_BASE_URL}/customers/customer_portal",
                         headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
                         json={
                             "customer_id": current_user.dodo_customer_id,
@@ -125,7 +125,7 @@ async def create_checkout_session(
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.post(
-                    f"https://api.dodopayments.com/subscriptions/{current_user.dodo_subscription_id}/change_plan",
+                    f"{settings.DODO_API_BASE_URL}/subscriptions/{current_user.dodo_subscription_id}/change_plan",
                     headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
                     json={"product_id": product_id},
                     timeout=30,
@@ -143,7 +143,7 @@ async def create_checkout_session(
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(
-                "https://api.dodopayments.com/checkout_sessions",
+                f"{settings.DODO_API_BASE_URL}/checkout_sessions",
                 headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
                 json={
                     "product_cart": [{"product_id": product_id, "quantity": 1}],
@@ -338,7 +338,7 @@ async def cancel_subscription(
     try:
         async with httpx.AsyncClient() as client:
             await client.delete(
-                f"https://api.dodopayments.com/subscriptions/{current_user.dodo_subscription_id}",
+                f"{settings.DODO_API_BASE_URL}/subscriptions/{current_user.dodo_subscription_id}",
                 headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
             )
     except Exception as e:

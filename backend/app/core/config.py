@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import Literal
+from pydantic import model_validator
 
 
 class Settings(BaseSettings):
@@ -13,6 +14,7 @@ class Settings(BaseSettings):
     DODO_WEBHOOK_SECRET: str = ""
     DODO_PRO_PRODUCT_ID: str = ""
     DODO_AGENCY_PRODUCT_ID: str = ""
+    DODO_API_BASE_URL: str = "https://live.dodopayments.com"
 
     RESEND_API_KEY: str = ""
     FROM_EMAIL: str = "hello@databrief.io"
@@ -33,6 +35,12 @@ class Settings(BaseSettings):
     SUPABASE_DB_PASSWORD: str = ""
 
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+
+    @model_validator(mode="after")
+    def validate_dodo_base_url(self):
+        if self.DODO_API_KEY and not self.DODO_API_BASE_URL:
+            raise ValueError("DODO_API_BASE_URL is not configured")
+        return self
 
     @property
     def DATABASE_URL(self) -> str:

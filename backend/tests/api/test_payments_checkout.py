@@ -238,7 +238,7 @@ class TestCustomerPortal:
                     )
 
         # Must call Customer Portal, not checkout or change plan
-        assert captured_url == "https://api.dodopayments.com/customers/customer_portal"
+        assert captured_url == "https://live.dodopayments.com/customers/customer_portal"
         assert result["checkout_url"] == "https://pay.dodopayments.com/portal/sess_001"
 
     @pytest.mark.asyncio
@@ -315,7 +315,7 @@ class TestExistingSubscriber:
                         request=_make_request(), body=body, current_user=FakeSubscriber(),
                     )
 
-        assert captured_url == "https://api.dodopayments.com/subscriptions/sub_dodo_001/change_plan"
+        assert captured_url == "https://live.dodopayments.com/subscriptions/sub_dodo_001/change_plan"
         assert result["checkout_url"] == ""
 
     @pytest.mark.asyncio
