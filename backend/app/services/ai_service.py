@@ -99,7 +99,8 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.4,
-            "maxOutputTokens": 1024,
+            "maxOutputTokens": 2048,
+            "thinkingConfig": {"thinkingBudget": 0},
         },
     }
     for attempt in range(3):
@@ -119,7 +120,9 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
             candidates = data.get("candidates", [])
             if not candidates:
                 raise HTTPException(status_code=500, detail="AI returned empty response")
+            finish_reason = candidates[0].get("finishReason", "UNKNOWN")
             result = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+            logger.info("Gemini finishReason=%s result_len=%d", finish_reason, len(result))
             if not result:
                 raise HTTPException(status_code=500, detail="AI returned empty response")
             return result
