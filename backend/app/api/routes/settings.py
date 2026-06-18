@@ -54,7 +54,7 @@ class DeleteAccountRequest(BaseModel):
     email: str
 
 
-@router.get("/settings/profile")
+@router.get("/profile")
 async def get_profile(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -95,7 +95,7 @@ async def get_profile(
     }
 
 
-@router.patch("/settings/profile")
+@router.patch("/profile")
 async def update_profile(
     body: ProfileUpdateRequest,
     current_user: User = Depends(get_current_user),
@@ -128,7 +128,7 @@ async def update_profile(
     }
 
 
-@router.post("/settings/api-key")
+@router.post("/api-key")
 @limiter.limit("5/minute")
 async def save_api_key(
     request: FastAPIRequest,
@@ -186,7 +186,7 @@ async def save_api_key(
     }
 
 
-@router.delete("/settings/api-key")
+@router.delete("/api-key")
 async def delete_api_key(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -208,7 +208,7 @@ async def delete_api_key(
     return {"success": True, "data": {"deleted": True}}
 
 
-@router.post("/settings/branding")
+@router.post("/branding")
 async def update_branding(
     brand_color: str = Form(None),
     company_name: str = Form(None),
@@ -297,7 +297,7 @@ async def update_branding(
     }
 
 
-@router.delete("/settings/account")
+@router.delete("/account")
 async def delete_account(
     body: DeleteAccountRequest,
     current_user: User = Depends(get_current_user),

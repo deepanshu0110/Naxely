@@ -16,17 +16,21 @@ def _error_response(code: str, message: str, status_code: int, detail=None) -> J
     )
 
 
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    code = "INTERNAL_ERROR"
-    message = "An unexpected error occurred."
-    detail = None
+_STATUS_CODES = {
+    400: "BAD_REQUEST",
+    401: "UNAUTHORIZED",
+    403: "FORBIDDEN",
+    404: "NOT_FOUND",
+    409: "CONFLICT",
+    422: "VALIDATION_ERROR",
+    429: "RATE_LIMITED",
+}
 
-    if isinstance(exc.detail, dict):
-        code = exc.detail.get("code", code)
-        message = exc.detail.get("message", message)
-        detail = exc.detail.get("detail") or exc.detail.get("upgrade_url")
-    elif isinstance(exc.detail, str):
-        message = exc.detail
+
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    code = _STATUS_CODES.get(exc.status_code, "INTERNAL_ERROR")
+    message = exc.detail if isinstance(exc.detail, str) else "An unexpected error occurred."
+    detail = exc.detail if isinstance(exc.detail, dict) else None
 
     return _error_response(code, message, exc.status_code, detail)
 
