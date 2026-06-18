@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { formatBillingDate } from '@/lib/dates'
 import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/axios'
 import Sidebar from '@/components/layout/Sidebar'
@@ -409,7 +409,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
       {tierExpiresAt && !cancelMessage && (
         <div>
           <h3 className="text-sm font-medium text-gray-700">Next Billing Date</h3>
-          <p className="mt-1 text-sm text-gray-900">{format(new Date(tierExpiresAt), 'MMMM d, yyyy')}</p>
+          <p className="mt-1 text-sm text-gray-900">{formatBillingDate(tierExpiresAt)}</p>
         </div>
       )}
 

@@ -34,7 +34,7 @@ async def verify_auth(
         "full_name": row.get("full_name"),
         "avatar_url": row.get("avatar_url"),
         "tier": row.get("tier", "free"),
-        "tier_expires_at": row["tier_expires_at"].isoformat() + "Z" if row.get("tier_expires_at") else None,
+        "tier_expires_at": row["tier_expires_at"].isoformat().replace("+00:00", "Z") if row.get("tier_expires_at") else None,
         "has_api_key": row.get("encrypted_api_key") is not None,
         "ai_provider": row.get("ai_provider"),
         "logo_url": row.get("logo_url"),
