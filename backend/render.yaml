@@ -26,8 +26,8 @@ services:
         sync: false
       - key: ENVIRONMENT
         value: production
-      - key: ALLOWED_ORIGINS
-        value: https://naxely.io,https://www.naxely.io
+      - key: FRONTEND_BASE_URL
+        value: https://databrief-gamma.vercel.app
       - key: SUPABASE_JWT_SECRET
         sync: false
       - key: SECRET_KEY

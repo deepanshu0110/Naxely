@@ -21,8 +21,13 @@ class Settings(BaseSettings):
     FROM_EMAIL: str = "hello@naxely.io"
 
     ENVIRONMENT: str = "development"
-    ALLOWED_ORIGINS: str = "http://localhost:5173"
+    ALLOWED_ORIGINS: str = ""
     SECRET_KEY: str
+
+    @property
+    def resolved_allowed_origins(self) -> str:
+        return self.ALLOWED_ORIGINS or self.FRONTEND_BASE_URL
+
     TEMP_DIR: str = "/tmp/naxely"
 
     GOOGLE_SERVICE_ACCOUNT_JSON: str = ""
