@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     DODO_WEBHOOK_SECRET: str = ""
     DODO_PRO_PRODUCT_ID: str = ""
     DODO_AGENCY_PRODUCT_ID: str = ""
+    DODO_ENVIRONMENT: str = "test_mode"
 
     RESEND_API_KEY: str = ""
     FROM_EMAIL: str = "hello@databrief.io"

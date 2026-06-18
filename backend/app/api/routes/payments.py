@@ -23,7 +23,7 @@ router = APIRouter()
 
 dodo = AsyncDodoPayments(
     bearer_token=settings.DODO_API_KEY,
-    environment="live_mode",
+    environment=settings.DODO_ENVIRONMENT,
 )
 
 
