@@ -58,12 +58,14 @@ class _AsyncDB:
         self.results = results or []
         self.call_count = 0
         self.executed_queries = []
+        self.executed_params = []
         self.committed = False
         self.rolled_back = False
 
     async def execute(self, query, params=None):
         qs = str(query)
         self.executed_queries.append(qs)
+        self.executed_params.append(params)
         idx = self.call_count
         self.call_count += 1
         if idx < len(self.results):
@@ -299,6 +301,8 @@ class TestWebhookEventCoverage:
 
     @pytest.mark.asyncio
     async def test_subscription_active_updates_tier(self):
+        from datetime import datetime as dt_type
+
         from app.api.routes.payments import dodo_webhook
 
         payload = {
@@ -318,6 +322,15 @@ class TestWebhookEventCoverage:
         assert resp["data"]["status"] == "processed"
         tier_queries = [q for q in db.executed_queries if "tier = :tier" in q]
         assert len(tier_queries) > 0
+        # Find the UPDATE params and assert expires_at is a datetime, not a string
+        for params in db.executed_params:
+            if params and "expires_at" in params:
+                assert isinstance(params["expires_at"], dt_type), (
+                    f"tier_expires_at must be a datetime object, got {type(params['expires_at'])}"
+                )
+                break
+        else:
+            pytest.fail("No UPDATE params with expires_at found")
         assert db.committed
 
     @pytest.mark.asyncio
