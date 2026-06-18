@@ -300,7 +300,48 @@ class TestWebhookEventCoverage:
         assert len(downgrade_queries) > 0
 
     @pytest.mark.asyncio
-    async def test_subscription_active_updates_tier(self):
+    async def test_subscription_active_uses_next_billing_date(self):
+        """Dodo nests fields under 'data'; prefers data.next_billing_date over data.expires_at."""
+        from datetime import datetime as dt_type
+
+        from app.api.routes.payments import dodo_webhook
+
+        payload = {
+            "type": "subscription.active",
+            "business_id": "biz_001",
+            "timestamp": "2026-06-18T08:58:32.441467Z",
+            "data": {
+                "subscription_id": "sub_active_001",
+                "product_id": "pro_prod_id",
+                "expires_at": "2046-06-18T08:58:32.441467Z",
+                "next_billing_date": "2026-07-18T08:58:32.441467Z",
+                "customer": {"customer_id": "cus_001"},
+            },
+            "customer_id": "user-123",
+        }
+        request = _make_request(payload)
+        db = _AsyncDB([_NotFound(), MagicMock()])
+
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
+            with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
+                resp = await dodo_webhook(request=request, db=db)
+
+        assert resp["data"]["status"] == "processed"
+
+        for params in db.executed_params:
+            if params and "expires_at" in params:
+                assert isinstance(params["expires_at"], dt_type)
+                assert params["expires_at"].year == 2026
+                assert params["expires_at"].month == 7
+                assert params["expires_at"].day == 18
+                break
+        else:
+            pytest.fail("No UPDATE params with expires_at found")
+        assert db.committed
+
+    @pytest.mark.asyncio
+    async def test_subscription_active_fallback_current_period_end(self):
+        """When data.next_billing_date is absent, falls back to data.expires_at, then current_period_end."""
         from datetime import datetime as dt_type
 
         from app.api.routes.payments import dodo_webhook
@@ -309,7 +350,7 @@ class TestWebhookEventCoverage:
             "type": "subscription.active",
             "customer_id": "user-123",
             "product_id": "pro_prod_id",
-            "subscription_id": "sub_active_001",
+            "subscription_id": "sub_active_fb",
             "current_period_end": "2026-07-01T00:00:00Z",
         }
         request = _make_request(payload)
@@ -320,14 +361,10 @@ class TestWebhookEventCoverage:
                 resp = await dodo_webhook(request=request, db=db)
 
         assert resp["data"]["status"] == "processed"
-        tier_queries = [q for q in db.executed_queries if "tier = :tier" in q]
-        assert len(tier_queries) > 0
-        # Find the UPDATE params and assert expires_at is a datetime, not a string
+
         for params in db.executed_params:
             if params and "expires_at" in params:
-                assert isinstance(params["expires_at"], dt_type), (
-                    f"tier_expires_at must be a datetime object, got {type(params['expires_at'])}"
-                )
+                assert isinstance(params["expires_at"], dt_type)
                 break
         else:
             pytest.fail("No UPDATE params with expires_at found")

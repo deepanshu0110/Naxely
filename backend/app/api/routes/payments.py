@@ -198,7 +198,12 @@ async def dodo_webhook(
             if row:
                 user_id = str(row["id"])
     subscription_id = payload.get("subscription_id", (payload.get("data") or {}).get("subscription_id"))
-    expires_at_raw = payload.get("expires_at") or (payload.get("data") or {}).get("expires_at") or payload.get("current_period_end")
+    expires_at_raw = (
+        payload.get("expires_at")
+        or (payload.get("data") or {}).get("next_billing_date")
+        or (payload.get("data") or {}).get("expires_at")
+        or payload.get("current_period_end")
+    )
     expires_at: datetime | None = None
     if expires_at_raw:
         try:
