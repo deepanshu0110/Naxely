@@ -9,7 +9,6 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from standardwebhooks import Webhook as _Webhook
-import httpx
 from dodopayments import AsyncDodoPayments
 
 from app.api.deps import get_current_user
@@ -26,7 +25,6 @@ dodo = AsyncDodoPayments(
     bearer_token=settings.DODO_API_KEY,
     environment="live_mode",
 )
-_DODO_API_BASE_URL = "https://live.dodopayments.com"
 
 
 PLANS_DATA = [
@@ -313,11 +311,10 @@ async def cancel_subscription(
         )
 
     try:
-        async with httpx.AsyncClient() as client:
-            await client.delete(
-                f"{_DODO_API_BASE_URL}/subscriptions/{current_user.dodo_subscription_id}",
-                headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
-            )
+        await dodo.subscriptions.update(
+            subscription_id=current_user.dodo_subscription_id,
+            cancel_at_next_billing_date=True,
+        )
     except Exception as e:
         raise HTTPException(
             status_code=502,
