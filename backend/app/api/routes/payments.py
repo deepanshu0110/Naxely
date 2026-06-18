@@ -68,6 +68,10 @@ class CheckoutRequest(BaseModel):
     plan: Literal["pro", "agency"]
 
 
+class DowngradeRequest(BaseModel):
+    plan: Literal["pro", "free"]
+
+
 @router.get("/plans")
 async def get_plans() -> Dict[str, Any]:
     return {
@@ -310,6 +314,92 @@ async def dodo_webhook(
     return {"success": True, "data": {"status": "processed"}}
 
 
+@router.post("/downgrade")
+@limiter.limit("10/minute")
+async def downgrade_subscription(
+    request: Request,
+    body: DowngradeRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    if not current_user.dodo_subscription_id:
+        raise HTTPException(status_code=400, detail="No active subscription found")
+
+    if current_user.tier == "free":
+        raise HTTPException(status_code=400, detail="No active paid subscription to downgrade")
+
+    if body.plan == "free":
+        try:
+            await dodo.subscriptions.update(
+                subscription_id=current_user.dodo_subscription_id,
+                cancel_at_next_billing_date=True,
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=502,
+                detail=f"Failed to schedule downgrade: {str(e)}",
+            )
+
+        result = await db.execute(
+            text("SELECT tier_expires_at FROM users WHERE id = :uid"),
+            {"uid": str(current_user.id)},
+        )
+        row = result.mappings().first()
+        effective_date = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.utcnow()
+        month_name = f"{effective_date.strftime('%B')} {effective_date.day}, {effective_date.year}" if hasattr(effective_date, "strftime") else str(effective_date)
+
+        return {
+            "success": True,
+            "data": {
+                "planned_tier": "free",
+                "effective_date": effective_date.isoformat() + "Z",
+                "message": f"Your {current_user.tier.capitalize()} access continues until {month_name}. After that, you'll move to the Free plan.",
+            },
+        }
+
+    if body.plan == "pro":
+        if current_user.tier != "agency":
+            raise HTTPException(status_code=400, detail="You are not subscribed to the Agency plan")
+
+        product_id = settings.DODO_PRO_PRODUCT_ID
+        if not product_id:
+            raise HTTPException(status_code=500, detail="Pro product not configured")
+
+        try:
+            await dodo.subscriptions.change_plan(
+                subscription_id=current_user.dodo_subscription_id,
+                product_id=product_id,
+                quantity=1,
+                proration_billing_mode="do_not_bill",
+                effective_at="next_billing_date",
+            )
+        except Exception as e:
+            logger.error("Dodo downgrade error: %s", e)
+            raise HTTPException(status_code=502, detail="Failed to schedule downgrade")
+
+        try:
+            sub = await dodo.subscriptions.retrieve(
+                subscription_id=current_user.dodo_subscription_id,
+            )
+        except Exception as e:
+            logger.error("Failed to retrieve subscription after downgrade: %s", e)
+            raise HTTPException(status_code=502, detail="Downgrade scheduled but failed to confirm date")
+
+        effective_date = sub.next_billing_date
+        month_name = f"{effective_date.strftime('%B')} {effective_date.day}, {effective_date.year}" if hasattr(effective_date, "strftime") else str(effective_date)
+
+        return {
+            "success": True,
+            "data": {
+                "planned_tier": "pro",
+                "effective_date": effective_date.isoformat() + "Z",
+                "message": f"You'll move to Pro starting {month_name}",
+            },
+        }
+
+    raise HTTPException(status_code=400, detail="Invalid plan")
+
+
 @router.post("/cancel")
 async def cancel_subscription(
     current_user: User = Depends(get_current_user),
@@ -340,7 +430,7 @@ async def cancel_subscription(
     access_until = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.utcnow()
 
     access_until_str = access_until.isoformat() + "Z"
-    month_name = access_until.strftime("%B %-d, %Y") if hasattr(access_until, "strftime") else str(access_until)
+    month_name = f"{access_until.strftime('%B')} {access_until.day}, {access_until.year}" if hasattr(access_until, "strftime") else str(access_until)
 
     return {
         "success": True,

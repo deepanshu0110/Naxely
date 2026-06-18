@@ -94,6 +94,15 @@ export interface CheckoutResponse {
   checkout_url: string
 }
 
+export interface DowngradeResponse {
+  success: boolean
+  data: {
+    planned_tier: string
+    effective_date: string
+    message: string
+  }
+}
+
 export interface Plan {
   id: string
   name: string

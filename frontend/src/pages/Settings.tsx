@@ -15,7 +15,7 @@ import Modal from '@/components/ui/Modal'
 import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import ApiKeyForm from '@/components/settings/ApiKeyForm'
 import { Upload, Palette, AlertTriangle } from 'lucide-react'
-import type { ProfileResponse, BrandingResponse, CancelSubscriptionResponse, CheckoutResponse } from '@/types/api'
+import type { ProfileResponse, BrandingResponse, CheckoutResponse, DowngradeResponse } from '@/types/api'
 
 const profileSchema = z.object({
   full_name: z
@@ -357,13 +357,14 @@ function BrandingPreview({ companyName, brandColor, logoUrl }: { companyName: st
 }
 
 function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse; tier: string; tierExpiresAt: string | null }) {
-  const [showCancelModal, setShowCancelModal] = useState(false)
-  const [isCancelling, setIsCancelling] = useState(false)
   const [isCreatingCheckout, setIsCreatingCheckout] = useState<'pro' | 'agency' | null>(null)
-  const [cancelMessage, setCancelMessage] = useState<string | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteEmail, setDeleteEmail] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const [showDowngradeModal, setShowDowngradeModal] = useState<'pro' | 'free' | null>(null)
+  const [isDowngrading, setIsDowngrading] = useState(false)
+  const [downgradeMessage, setDowngradeMessage] = useState<string | null>(null)
 
   const planLabels: Record<string, string> = {
     free: 'Free',
@@ -383,19 +384,23 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
     }
   }
 
-  const handleCancel = async () => {
-    setIsCancelling(true)
+  const handleDowngrade = async () => {
+    const target = showDowngradeModal
+    if (!target) return
+    setIsDowngrading(true)
     try {
-      const cancelResp = await api.post('/payments/cancel')
-      const data = cancelResp.data as CancelSubscriptionResponse
-      setCancelMessage(data.message)
-      setShowCancelModal(false)
+      const resp = await api.post('/payments/downgrade', { plan: target })
+      const data = resp.data as DowngradeResponse
+      setDowngradeMessage(data.data.message)
+      setShowDowngradeModal(null)
     } catch {
-      toast.error('Failed to cancel subscription')
+      toast.error('Failed to schedule downgrade. Please try again.')
     } finally {
-      setIsCancelling(false)
+      setIsDowngrading(false)
     }
   }
+
+  const effectiveDate = tierExpiresAt ? formatBillingDate(tierExpiresAt) : null
 
   return (
     <div className="space-y-6">
@@ -406,17 +411,17 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         </div>
       </div>
 
-      {tierExpiresAt && !cancelMessage && (
+      {tierExpiresAt && !downgradeMessage && (
         <div>
           <h3 className="text-sm font-medium text-gray-700">Next Billing Date</h3>
-          <p className="mt-1 text-sm text-gray-900">{formatBillingDate(tierExpiresAt)}</p>
+          <p className="mt-1 text-sm text-gray-900">{effectiveDate}</p>
         </div>
       )}
 
-      {cancelMessage && (
+      {downgradeMessage && (
         <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
           <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
-          <p className="text-sm text-yellow-700">{cancelMessage}</p>
+          <p className="text-sm text-yellow-700">{downgradeMessage}</p>
         </div>
       )}
 
@@ -444,30 +449,63 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         </div>
       )}
 
-      {tier !== 'free' && !cancelMessage && (
-        <div>
-          <Button variant="danger" onClick={() => setShowCancelModal(true)}>Cancel Subscription</Button>
-          <Modal
-            isOpen={showCancelModal}
-            onClose={() => setShowCancelModal(false)}
-            title="Cancel Subscription"
-          >
-            <div className="space-y-4">
-              <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
-                <p className="text-sm text-yellow-700">
-                  Your access continues until the end of your current billing period. After that, you will be moved to the Free plan.
-                </p>
+      {tier !== 'free' && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-gray-700">Change Plan</h3>
+
+          {tier === 'agency' && !downgradeMessage && (
+            <Card padding="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-900">Downgrade to Pro</h4>
+                  <p className="mt-1 text-xs text-gray-500">$29/month — Unlimited reports, AI insights, custom branding</p>
+                  {effectiveDate && <p className="mt-1 text-xs text-gray-400">Takes effect next billing period ({effectiveDate})</p>}
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setShowDowngradeModal('pro')}>Downgrade to Pro</Button>
               </div>
-              <p className="text-sm text-gray-600">Are you sure you want to cancel?</p>
-              <div className="flex justify-end gap-3">
-                <Button variant="ghost" onClick={() => setShowCancelModal(false)}>Keep Subscription</Button>
-                <Button variant="danger" loading={isCancelling} onClick={handleCancel}>Cancel Subscription</Button>
+            </Card>
+          )}
+
+          <Card padding="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900">Downgrade to Free</h4>
+                <p className="mt-1 text-xs text-gray-500">3 reports/month, CSV upload, basic charts, watermark</p>
+                {effectiveDate && <p className="mt-1 text-xs text-gray-400">Takes effect next billing period ({effectiveDate})</p>}
               </div>
+              {downgradeMessage ? (
+                <Badge variant="neutral" text="Scheduled" />
+              ) : (
+                <Button size="sm" variant="outline" onClick={() => setShowDowngradeModal('free')}>Downgrade to Free</Button>
+              )}
             </div>
-          </Modal>
+          </Card>
         </div>
       )}
+
+      <Modal
+        isOpen={showDowngradeModal !== null}
+        onClose={() => setShowDowngradeModal(null)}
+        title={showDowngradeModal === 'pro' ? 'Downgrade to Pro' : 'Downgrade to Free'}
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
+            <p className="text-sm text-yellow-700">
+              {showDowngradeModal === 'pro'
+                ? `You'll move to the Pro plan at the start of your next billing period${effectiveDate ? ` (${effectiveDate})` : ''}. Your Agency features will remain active until then.`
+                : `Your ${tier.charAt(0).toUpperCase() + tier.slice(1)} access continues until the end of your current billing period${effectiveDate ? ` (${effectiveDate})` : ''}. After that, you'll be moved to the Free plan.`}
+            </p>
+          </div>
+          <p className="text-sm text-gray-600">Are you sure you want to downgrade?</p>
+          <div className="flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setShowDowngradeModal(null)}>Keep Current Plan</Button>
+            <Button variant="danger" loading={isDowngrading} onClick={handleDowngrade}>
+              {showDowngradeModal === 'pro' ? 'Downgrade to Pro' : 'Downgrade to Free'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <hr className="border-gray-200" />
 
