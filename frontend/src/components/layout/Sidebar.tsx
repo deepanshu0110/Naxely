@@ -15,6 +15,7 @@ interface NavItem {
   icon: LucideIcon
   href: string
   tiers: string[]
+  disabled?: boolean
   lockedFor?: string[]
   hideForOthers?: boolean
 }
@@ -22,7 +23,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', tiers: ['free', 'pro', 'agency'] },
   { label: 'New Report', icon: FilePlus, href: '/report/new', tiers: ['free', 'pro', 'agency'] },
-  { label: 'Templates', icon: LayoutTemplate, href: '#', tiers: ['pro', 'agency'], lockedFor: ['free'] },
+  { label: 'Templates', icon: LayoutTemplate, href: '#', tiers: ['pro', 'agency'], disabled: true, lockedFor: ['free'] },
   { label: 'Settings', icon: Settings, href: '/settings', tiers: ['free', 'pro', 'agency'] },
 ]
 
@@ -42,6 +43,22 @@ export default function Sidebar() {
           if (item.hideForOthers && !item.tiers.includes(tier)) return null
 
           const isLocked = item.lockedFor?.includes(tier)
+
+          if (item.disabled && !isLocked) {
+            return (
+              <div
+                key={item.label}
+                className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-400"
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="flex-1">{item.label}</span>
+                <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase text-gray-500">
+                  Coming Soon
+                </span>
+              </div>
+            )
+          }
+
           const isActive = location.pathname === item.href
 
           return (
