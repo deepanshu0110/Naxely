@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
+import api from '@/lib/axios'
+import toast from 'react-hot-toast'
 
 const plans = [
   {
@@ -80,6 +83,36 @@ const faqs = [
 ]
 
 export default function Pricing() {
+  const [loading, setLoading] = useState<'pro' | 'agency' | null>(null)
+
+  const handleCheckout = async (plan: 'pro' | 'agency') => {
+    setLoading(plan)
+    try {
+      const resp = await api.post('/payments/checkout', { plan })
+      const data = resp.data as { checkout_url: string }
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url
+      } else {
+        toast.success(`Upgraded to ${plan === 'pro' ? 'Pro' : 'Agency'}`)
+      }
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number } }
+      if (axiosErr.response?.status === 401) {
+        window.location.href = '/settings?tab=billing'
+        return
+      }
+      toast.error('Failed to start checkout. Please try again.')
+      setLoading(null)
+    }
+  }
+
+  const btnClass = (variant: string) =>
+    `mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
+      variant === 'filled'
+        ? 'bg-indigo-500 text-white hover:bg-indigo-600'
+        : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+    }`
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
@@ -94,7 +127,9 @@ export default function Pricing() {
           </p>
 
           <div className="grid gap-8 md:grid-cols-3">
-            {plans.map((p) => (
+            {plans.map((p) => {
+              const planKey = p.name.toLowerCase() as 'pro' | 'agency'
+              return (
               <div
                 key={p.name}
                 className={`relative rounded-xl bg-white p-8 shadow-sm ${
@@ -121,18 +156,21 @@ export default function Pricing() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  to={p.href}
-                  className={`mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
-                    p.ctaVariant === 'filled'
-                      ? 'bg-indigo-500 text-white hover:bg-indigo-600'
-                      : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {p.cta}
-                </Link>
+                {p.name === 'Free' ? (
+                  <Link to={p.href} className={btnClass(p.ctaVariant)}>
+                    {p.cta}
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => handleCheckout(planKey)}
+                    disabled={loading !== null}
+                    className={btnClass(p.ctaVariant) + (loading === planKey ? ' opacity-60 cursor-wait' : '')}
+                  >
+                    {loading === planKey ? 'Redirecting...' : p.cta}
+                  </button>
+                )}
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </section>

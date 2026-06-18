@@ -8,8 +8,7 @@ import pandas as pd
 from fastapi import HTTPException
 from openai import OpenAI, APITimeoutError, AuthenticationError as OpenAIAuthError, RateLimitError as OpenAIRateLimitError
 from anthropic import Anthropic, APITimeoutError as AnthropicTimeoutError, AuthenticationError as AnthropicAuthError, RateLimitError as AnthropicRateLimitError
-from google import genai
-from google.genai.errors import ClientError as GenAIClientError
+import requests
 
 from app.models.user import User
 from app.utils.encryption import decrypt_api_key, get_master_key
@@ -92,30 +91,34 @@ def call_claude(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
 
 
 def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
-    client = genai.Client(
-        api_key=api_key,
-        http_options={"timeout": timeout * 1000},
-    )
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateContent?key={api_key}"
+    payload = {
+        "system_instruction": {"parts": [{"text": system}]},
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.4,
+            "maxOutputTokens": 1024,
+        },
+    }
     try:
-        response = client.models.generate_content(
-            model="gemini-3-flash",
-            contents=prompt,
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system,
-                temperature=0.4,
-                max_output_tokens=1024,
-            ),
-        )
-        result = response.text
-    except GenAIClientError as e:
-        if e.status == 429:
+        resp = requests.post(url, json=payload, timeout=timeout)
+        if resp.status_code == 429:
             raise HTTPException(status_code=429, detail="AI rate limit — try again in 60 seconds")
-        raise HTTPException(status_code=400, detail="Invalid API key — please update in Settings")
-    except Exception as e:
+        if resp.status_code == 403 or resp.status_code == 401:
+            raise HTTPException(status_code=400, detail="Invalid API key — please update in Settings")
+        resp.raise_for_status()
+        data = resp.json()
+        candidates = data.get("candidates", [])
+        if not candidates:
+            raise HTTPException(status_code=500, detail="AI returned empty response")
+        result = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+    except HTTPException:
+        raise
+    except requests.Timeout:
+        raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
+    except requests.RequestException as e:
         logger.error("Gemini call failed: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="AI generation failed")
-    finally:
-        del client
     if not result:
         raise HTTPException(status_code=500, detail="AI returned empty response")
     return result

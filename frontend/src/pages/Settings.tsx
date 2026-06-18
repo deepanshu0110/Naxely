@@ -420,17 +420,19 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         </div>
       )}
 
-      {tier === 'free' && (
+      {(tier === 'free' || tier === 'pro') && (
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-gray-700">Upgrade</h3>
-          <CompactPlanCard
-            plan="pro"
-            loading={isCreatingCheckout === 'pro'}
-            price="$29/month"
-            features={['Unlimited reports', 'AI insights', 'Custom branding', 'No watermark']}
-            cta="Upgrade to Pro"
-            onUpgrade={handleUpgrade}
-          />
+          {tier === 'free' && (
+            <CompactPlanCard
+              plan="pro"
+              loading={isCreatingCheckout === 'pro'}
+              price="$29/month"
+              features={['Unlimited reports', 'AI insights', 'Custom branding', 'No watermark']}
+              cta="Upgrade to Pro"
+              onUpgrade={handleUpgrade}
+            />
+          )}
           <CompactPlanCard
             plan="agency"
             loading={isCreatingCheckout === 'agency'}
