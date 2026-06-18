@@ -15,7 +15,7 @@ import Modal from '@/components/ui/Modal'
 import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import ApiKeyForm from '@/components/settings/ApiKeyForm'
 import { Upload, Palette, AlertTriangle } from 'lucide-react'
-import type { ProfileResponse, BrandingResponse, CheckoutResponse, DowngradeResponse } from '@/types/api'
+import type { ProfileResponse, BrandingResponse, CheckoutResponse, SubscriptionResponse } from '@/types/api'
 
 const profileSchema = z.object({
   full_name: z
@@ -366,6 +366,44 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
   const [isDowngrading, setIsDowngrading] = useState(false)
   const [downgradeMessage, setDowngradeMessage] = useState<string | null>(null)
 
+  const [scheduledChange, setScheduledChange] = useState<{ type: 'pro' | 'free'; effectiveDate: string } | null>(null)
+  const [isCancellingChange, setIsCancellingChange] = useState(false)
+  const [subLoading, setSubLoading] = useState(true)
+
+  const fetchSubscription = async () => {
+    setSubLoading(true)
+    try {
+      const resp = await api.get('/payments/subscription')
+      const data = resp.data as SubscriptionResponse
+      if (!data.data.has_subscription) {
+        setScheduledChange(null)
+        return
+      }
+      if (data.data.scheduled_change) {
+        const sc = data.data.scheduled_change
+        if (sc.planned_tier === 'pro') {
+          setScheduledChange({ type: 'pro', effectiveDate: sc.effective_at })
+        }
+      } else if (data.data.cancel_at_next_billing_date) {
+        setScheduledChange({ type: 'free', effectiveDate: data.data.next_billing_date ?? '' })
+      } else {
+        setScheduledChange(null)
+      }
+    } catch {
+      setScheduledChange(null)
+    } finally {
+      setSubLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (tier !== 'free') {
+      fetchSubscription()
+    } else {
+      setSubLoading(false)
+    }
+  }, [tier])
+
   const planLabels: Record<string, string> = {
     free: 'Free',
     pro: 'Pro — $29/month',
@@ -389,10 +427,9 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
     if (!target) return
     setIsDowngrading(true)
     try {
-      const resp = await api.post('/payments/downgrade', { plan: target })
-      const data = resp.data as DowngradeResponse
-      setDowngradeMessage(data.data.message)
+      await api.post('/payments/downgrade', { plan: target })
       setShowDowngradeModal(null)
+      await fetchSubscription()
     } catch {
       toast.error('Failed to schedule downgrade. Please try again.')
     } finally {
@@ -400,7 +437,22 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
     }
   }
 
+  const handleCancelScheduledChange = async () => {
+    setIsCancellingChange(true)
+    try {
+      await api.post('/payments/cancel-scheduled-change')
+      setScheduledChange(null)
+      setDowngradeMessage(null)
+      toast.success('Scheduled change cancelled')
+    } catch {
+      toast.error('Failed to cancel scheduled change')
+    } finally {
+      setIsCancellingChange(false)
+    }
+  }
+
   const effectiveDate = tierExpiresAt ? formatBillingDate(tierExpiresAt) : null
+  const scheduledEffectiveDate = scheduledChange?.effectiveDate ? formatBillingDate(scheduledChange.effectiveDate) : null
 
   return (
     <div className="space-y-6">
@@ -411,7 +463,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         </div>
       </div>
 
-      {tierExpiresAt && !downgradeMessage && (
+      {tierExpiresAt && !scheduledChange && !downgradeMessage && (
         <div>
           <h3 className="text-sm font-medium text-gray-700">Next Billing Date</h3>
           <p className="mt-1 text-sm text-gray-900">{effectiveDate}</p>
@@ -425,7 +477,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         </div>
       )}
 
-      {(tier === 'free' || tier === 'pro') && (
+      {(tier === 'free' || tier === 'pro') && !scheduledChange && (
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-gray-700">Upgrade</h3>
           {tier === 'free' && (
@@ -449,11 +501,11 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         </div>
       )}
 
-      {tier !== 'free' && (
+      {tier !== 'free' && !scheduledChange && !subLoading && (
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-gray-700">Change Plan</h3>
 
-          {tier === 'agency' && !downgradeMessage && (
+          {tier === 'agency' && (
             <Card padding="p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -473,14 +525,30 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
                 <p className="mt-1 text-xs text-gray-500">3 reports/month, CSV upload, basic charts, watermark</p>
                 {effectiveDate && <p className="mt-1 text-xs text-gray-400">Takes effect next billing period ({effectiveDate})</p>}
               </div>
-              {downgradeMessage ? (
-                <Badge variant="neutral" text="Scheduled" />
-              ) : (
-                <Button size="sm" variant="outline" onClick={() => setShowDowngradeModal('free')}>Downgrade to Free</Button>
-              )}
+              <Button size="sm" variant="outline" onClick={() => setShowDowngradeModal('free')}>Downgrade to Free</Button>
             </div>
           </Card>
         </div>
+      )}
+
+      {scheduledChange && (
+        <Card padding="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-gray-900">
+                Scheduled: moving to {scheduledChange.type === 'pro' ? 'Pro' : 'Free'}
+              </h4>
+              {scheduledEffectiveDate && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Takes effect {scheduledEffectiveDate}
+                </p>
+              )}
+            </div>
+            <Button size="sm" variant="outline" loading={isCancellingChange} onClick={handleCancelScheduledChange}>
+              Cancel
+            </Button>
+          </div>
+        </Card>
       )}
 
       <Modal

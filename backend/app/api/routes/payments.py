@@ -386,6 +386,7 @@ async def downgrade_subscription(
             raise HTTPException(status_code=502, detail="Downgrade scheduled but failed to confirm date")
 
         effective_date = sub.next_billing_date
+        scheduled_change_id = sub.scheduled_change.id if sub.scheduled_change else None
         month_name = f"{effective_date.strftime('%B')} {effective_date.day}, {effective_date.year}" if hasattr(effective_date, "strftime") else str(effective_date)
 
         return {
@@ -393,11 +394,91 @@ async def downgrade_subscription(
             "data": {
                 "planned_tier": "pro",
                 "effective_date": effective_date.isoformat() + "Z",
+                "scheduled_change_id": scheduled_change_id,
                 "message": f"You'll move to Pro starting {month_name}",
             },
         }
 
     raise HTTPException(status_code=400, detail="Invalid plan")
+
+
+@router.get("/subscription")
+async def get_subscription_state(
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    if not current_user.dodo_subscription_id:
+        return {"success": True, "data": {"has_subscription": False}}
+
+    try:
+        sub = await dodo.subscriptions.retrieve(
+            subscription_id=current_user.dodo_subscription_id,
+        )
+    except Exception as e:
+        logger.error("Failed to retrieve subscription: %s", e)
+        raise HTTPException(status_code=502, detail="Failed to retrieve subscription state")
+
+    scheduled = None
+    if sub.scheduled_change:
+        target_tier = "pro" if sub.scheduled_change.product_id == settings.DODO_PRO_PRODUCT_ID else "agency"
+        scheduled = {
+            "id": sub.scheduled_change.id,
+            "product_id": sub.scheduled_change.product_id,
+            "planned_tier": target_tier,
+            "effective_at": sub.scheduled_change.effective_at.isoformat() + "Z",
+        }
+
+    return {
+        "success": True,
+        "data": {
+            "has_subscription": True,
+            "subscription_id": sub.subscription_id,
+            "status": sub.status,
+            "next_billing_date": sub.next_billing_date.isoformat() + "Z" if sub.next_billing_date else None,
+            "cancel_at_next_billing_date": sub.cancel_at_next_billing_date,
+            "scheduled_change": scheduled,
+        },
+    }
+
+
+@router.post("/cancel-scheduled-change")
+async def cancel_scheduled_change(
+    current_user: User = Depends(get_current_user),
+) -> Dict[str, Any]:
+    if not current_user.dodo_subscription_id:
+        raise HTTPException(status_code=400, detail="No active subscription found")
+
+    try:
+        sub = await dodo.subscriptions.retrieve(
+            subscription_id=current_user.dodo_subscription_id,
+        )
+    except Exception as e:
+        logger.error("Failed to retrieve subscription: %s", e)
+        raise HTTPException(status_code=502, detail="Failed to check subscription state")
+
+    if sub.scheduled_change:
+        try:
+            await dodo.subscriptions.cancel_change_plan(
+                subscription_id=current_user.dodo_subscription_id,
+            )
+        except Exception as e:
+            logger.error("Failed to cancel scheduled change: %s", e)
+            raise HTTPException(status_code=502, detail="Failed to cancel scheduled downgrade")
+
+        return {"success": True, "data": {"cancelled": True, "type": "plan_change"}}
+
+    if sub.cancel_at_next_billing_date:
+        try:
+            await dodo.subscriptions.update(
+                subscription_id=current_user.dodo_subscription_id,
+                cancel_at_next_billing_date=False,
+            )
+        except Exception as e:
+            logger.error("Failed to unschedule cancellation: %s", e)
+            raise HTTPException(status_code=502, detail="Failed to cancel scheduled downgrade")
+
+        return {"success": True, "data": {"cancelled": True, "type": "cancellation"}}
+
+    raise HTTPException(status_code=400, detail="No scheduled change found")
 
 
 @router.post("/cancel")

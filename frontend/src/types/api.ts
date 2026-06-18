@@ -99,7 +99,27 @@ export interface DowngradeResponse {
   data: {
     planned_tier: string
     effective_date: string
+    scheduled_change_id?: string | null
     message: string
+  }
+}
+
+export interface ScheduledChange {
+  id: string
+  product_id: string
+  planned_tier: string
+  effective_at: string
+}
+
+export interface SubscriptionResponse {
+  success: boolean
+  data: {
+    has_subscription: boolean
+    subscription_id?: string
+    status?: string
+    next_billing_date?: string | null
+    cancel_at_next_billing_date?: boolean
+    scheduled_change?: ScheduledChange | null
   }
 }
 
