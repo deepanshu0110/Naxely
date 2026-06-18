@@ -26,6 +26,7 @@ router = APIRouter()
 VALID_KEY_PATTERNS = {
     "openai": r"^sk-[a-zA-Z0-9\-_]{20,}$",
     "claude": r"^sk-ant-[a-zA-Z0-9\-_]{20,}$",
+    "gemini": r"^AIza[a-zA-Z0-9\-_]{30,}$",
 }
 
 ALLOWED_LOGO_EXTENSIONS = {"png", "jpg", "svg"}
@@ -73,7 +74,13 @@ async def get_profile(
         if preview_stored:
             api_key_preview = preview_stored
         else:
-            provider_prefix = "sk-" if row.get("ai_provider") == "openai" else "sk-ant-"
+            prov = row.get("ai_provider")
+            if prov == "openai":
+                provider_prefix = "sk-"
+            elif prov == "claude":
+                provider_prefix = "sk-ant-"
+            else:
+                provider_prefix = "AIza..."
             api_key_preview = f"{provider_prefix}...xxxx"
 
     monthly_limit = MONTHLY_LIMITS.get(row.get("tier", "free"), 3)
@@ -141,7 +148,7 @@ async def save_api_key(
     if body.provider not in VALID_KEY_PATTERNS:
         raise HTTPException(
             status_code=400,
-            detail="Provider must be 'openai' or 'claude'",
+            detail="Provider must be 'openai', 'claude', or 'gemini'",
         )
 
     pattern = VALID_KEY_PATTERNS[body.provider]

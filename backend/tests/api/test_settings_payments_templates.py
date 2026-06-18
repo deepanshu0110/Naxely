@@ -42,6 +42,18 @@ class TestApiKeyValidation:
         pattern = VALID_KEY_PATTERNS["claude"]
         assert not re.match(pattern, "sk-abcdefghijklmnopqrstuv")
 
+    def test_gemini_key_valid(self):
+        pattern = VALID_KEY_PATTERNS["gemini"]
+        assert re.match(pattern, "AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+    def test_gemini_key_invalid_prefix(self):
+        pattern = VALID_KEY_PATTERNS["gemini"]
+        assert not re.match(pattern, "sk-proj-abcdefghijklmnopqrstuv")
+
+    def test_gemini_key_too_short(self):
+        pattern = VALID_KEY_PATTERNS["gemini"]
+        assert not re.match(pattern, "AIzaShort")
+
 
 class TestHexColorValidation:
     def test_valid_hex_color(self):

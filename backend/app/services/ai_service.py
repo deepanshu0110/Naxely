@@ -8,6 +8,8 @@ import pandas as pd
 from fastapi import HTTPException
 from openai import OpenAI, APITimeoutError, AuthenticationError as OpenAIAuthError, RateLimitError as OpenAIRateLimitError
 from anthropic import Anthropic, APITimeoutError as AnthropicTimeoutError, AuthenticationError as AnthropicAuthError, RateLimitError as AnthropicRateLimitError
+from google import genai
+from google.genai.errors import ClientError as GenAIClientError
 
 from app.models.user import User
 from app.utils.encryption import decrypt_api_key, get_master_key
@@ -89,9 +91,41 @@ def call_claude(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
     return result
 
 
+def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
+    client = genai.Client(
+        api_key=api_key,
+        http_options={"timeout": timeout * 1000},
+    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-3-flash",
+            contents=prompt,
+            config=genai.types.GenerateContentConfig(
+                system_instruction=system,
+                temperature=0.4,
+                max_output_tokens=1024,
+            ),
+        )
+        result = response.text
+    except GenAIClientError as e:
+        if e.status == 429:
+            raise HTTPException(status_code=429, detail="AI rate limit — try again in 60 seconds")
+        raise HTTPException(status_code=400, detail="Invalid API key — please update in Settings")
+    except Exception as e:
+        logger.error("Gemini call failed: %s", type(e).__name__)
+        raise HTTPException(status_code=500, detail="AI generation failed")
+    finally:
+        del client
+    if not result:
+        raise HTTPException(status_code=500, detail="AI returned empty response")
+    return result
+
+
 def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
     if provider == "claude":
         return call_claude(prompt, system, api_key, timeout)
+    if provider == "gemini":
+        return call_gemini(prompt, system, api_key, timeout)
     return call_openai(prompt, system, api_key, timeout)
 
 
