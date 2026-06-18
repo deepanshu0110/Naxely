@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from standardwebhooks import Webhook as _Webhook
 import httpx
+from dodopayments import AsyncDodoPayments
 
 from app.api.deps import get_current_user
 from app.core.database import get_db
@@ -20,6 +21,12 @@ from app.core.limiter import limiter
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+dodo = AsyncDodoPayments(
+    bearer_token=settings.DODO_API_KEY,
+    environment="live_mode",
+)
+_DODO_API_BASE_URL = "https://live.dodopayments.com"
 
 
 PLANS_DATA = [
@@ -99,73 +106,43 @@ async def create_checkout_session(
             if not current_user.dodo_customer_id:
                 raise HTTPException(status_code=400, detail="Cannot manage subscription — missing customer reference")
             try:
-                async with httpx.AsyncClient() as client:
-                    resp = await client.post(
-                        f"{settings.DODO_API_BASE_URL}/customers/customer_portal",
-                        headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
-                        json={
-                            "customer_id": current_user.dodo_customer_id,
-                            "return_url": "https://databrief.io/settings?tab=billing",
-                        },
-                        timeout=30,
-                    )
-                    resp.raise_for_status()
-                    data = resp.json()
-            except httpx.HTTPStatusError as e:
-                logger.error("Dodo customer portal API error: %s", e.response.text)
+                session = await dodo.customers.customer_portal.create(
+                    customer_id=current_user.dodo_customer_id,
+                    return_url="https://databrief.io/settings?tab=billing",
+                )
+            except Exception as e:
+                logger.error("Dodo customer portal error: %s", e)
                 raise HTTPException(status_code=502, detail="Failed to create customer portal session")
-            except httpx.RequestError as e:
-                logger.error("Dodo customer portal network error: %s", e)
-                raise HTTPException(status_code=502, detail="Failed to reach payment provider")
-            return {"checkout_url": data["url"]}
+            return {"checkout_url": session.link}
 
         if current_user.tier == new_tier:
             raise HTTPException(status_code=400, detail="Already subscribed to this plan")
 
         try:
-            async with httpx.AsyncClient() as client:
-                resp = await client.post(
-                    f"{settings.DODO_API_BASE_URL}/subscriptions/{current_user.dodo_subscription_id}/change_plan",
-                    headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
-                    json={"product_id": product_id},
-                    timeout=30,
-                )
-                resp.raise_for_status()
-        except httpx.HTTPStatusError as e:
-            logger.error("Dodo change plan API error: %s", e.response.text)
+            await dodo.subscriptions.change_plan(
+                subscription_id=current_user.dodo_subscription_id,
+                product_id=product_id,
+                proration_billing_mode="prorated_immediately",
+                quantity=1,
+            )
+        except Exception as e:
+            logger.error("Dodo change plan error: %s", e)
             raise HTTPException(status_code=502, detail="Failed to change plan")
-        except httpx.RequestError as e:
-            logger.error("Dodo change plan network error: %s", e)
-            raise HTTPException(status_code=502, detail="Failed to reach payment provider")
 
         return {"checkout_url": ""}
 
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.post(
-                f"{settings.DODO_API_BASE_URL}/checkout_sessions",
-                headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
-                json={
-                    "product_cart": [{"product_id": product_id, "quantity": 1}],
-                    "customer": {
-                        "email": current_user.email,
-                        "name": current_user.full_name,
-                    },
-                    "metadata": {"user_id": str(current_user.id)},
-                    "return_url": "https://databrief.io/settings?tab=billing&checkout=complete",
-                },
-                timeout=30,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-    except httpx.HTTPStatusError as e:
-        logger.error("Dodo checkout API error: %s", e.response.text)
+        session = await dodo.checkout_sessions.create(
+            product_cart=[{"product_id": product_id, "quantity": 1}],
+            customer={"email": current_user.email, "name": current_user.full_name},
+            metadata={"user_id": str(current_user.id)},
+            return_url="https://databrief.io/settings?tab=billing&checkout=complete",
+        )
+    except Exception as e:
+        logger.error("Dodo checkout error: %s", e)
         raise HTTPException(status_code=502, detail="Failed to create checkout session")
-    except httpx.RequestError as e:
-        logger.error("Dodo checkout network error: %s", e)
-        raise HTTPException(status_code=502, detail="Failed to reach payment provider")
 
-    return {"checkout_url": data["checkout_url"]}
+    return {"checkout_url": session.checkout_url}
 
 
 @router.post("/webhook")
@@ -338,7 +315,7 @@ async def cancel_subscription(
     try:
         async with httpx.AsyncClient() as client:
             await client.delete(
-                f"{settings.DODO_API_BASE_URL}/subscriptions/{current_user.dodo_subscription_id}",
+                f"{_DODO_API_BASE_URL}/subscriptions/{current_user.dodo_subscription_id}",
                 headers={"Authorization": f"Bearer {settings.DODO_API_KEY}"},
             )
     except Exception as e:
