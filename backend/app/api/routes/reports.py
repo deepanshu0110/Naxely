@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from app.api.deps import get_current_user, check_pro_tier, check_report_limit
 from app.core.database import get_db
+from app.core.config import settings
 from app.models.user import User
 from app.services.report_service import run_report_pipeline
 from app.services.data_service import (
@@ -96,7 +97,7 @@ async def upload_file(
                 detail={
                     "code": "MONTHLY_LIMIT_REACHED",
                     "message": "You've used all 3 free reports this month.",
-                    "upgrade_url": "https://databrief.io/pricing",
+                    "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
                 },
             )
 
@@ -212,7 +213,7 @@ async def upload_sheets(
             detail={
                 "code": "PRO_REQUIRED",
                 "message": "This feature requires a Pro subscription.",
-                "upgrade_url": "https://databrief.io/pricing",
+                "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
             },
         )
 
@@ -584,7 +585,7 @@ async def share_report(
     return {
         "success": True,
         "data": {
-            "share_url": f"https://databrief.io/share/{token}",
+            "share_url": f"{settings.FRONTEND_BASE_URL}/share/{token}",
             "share_token": token,
             "expires_at": expires_at.isoformat() + "Z",
         },

@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import verify_supabase_jwt
 from app.core.database import get_db
+from app.core.config import settings
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,7 @@ async def check_report_limit(current_user: User = Depends(get_current_user)) -> 
                 detail={
                     "code": "MONTHLY_LIMIT_REACHED",
                     "message": "You've used all 3 free reports this month.",
-                    "upgrade_url": "https://databrief.io/pricing",
+                    "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
                 },
             )
 
@@ -107,7 +108,7 @@ async def check_pro_tier(current_user: User = Depends(get_current_user)) -> None
             detail={
                 "code": "PRO_REQUIRED",
                 "message": "This feature requires a Pro subscription.",
-                "upgrade_url": "https://databrief.io/pricing",
+                "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
             },
         )
 
@@ -119,7 +120,7 @@ async def check_agency_tier(current_user: User = Depends(get_current_user)) -> N
             detail={
                 "code": "AGENCY_REQUIRED",
                 "message": "This feature requires an Agency subscription.",
-                "upgrade_url": "https://databrief.io/pricing",
+                "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
             },
         )
 

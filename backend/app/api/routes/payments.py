@@ -106,7 +106,7 @@ async def create_checkout_session(
             try:
                 session = await dodo.customers.customer_portal.create(
                     customer_id=current_user.dodo_customer_id,
-                    return_url="https://databrief.io/settings?tab=billing",
+                    return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing",
                 )
             except Exception as e:
                 logger.error("Dodo customer portal error: %s", e)
@@ -134,7 +134,7 @@ async def create_checkout_session(
             product_cart=[{"product_id": product_id, "quantity": 1}],
             customer={"email": current_user.email, "name": current_user.full_name},
             metadata={"user_id": str(current_user.id)},
-            return_url="https://databrief.io/settings?tab=billing&checkout=complete",
+            return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing&checkout=complete",
         )
     except Exception as e:
         logger.error("Dodo checkout error: %s", e)
@@ -286,8 +286,8 @@ async def dodo_webhook(
                         "html": (
                             "<p>Your most recent payment for Databrief failed.</p>"
                             "<p>Please update your billing information at "
-                            "<a href='https://databrief.io/settings/billing'>"
-                            "https://databrief.io/settings/billing</a> "
+                            f"<a href='{settings.FRONTEND_BASE_URL}/settings/billing'>"
+                            f"{settings.FRONTEND_BASE_URL}/settings/billing</a> "
                             "to avoid any disruption to your subscription.</p>"
                         ),
                     })

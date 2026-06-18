@@ -202,14 +202,15 @@ class TestCustomerPortal:
             return _mock_portal("https://pay.dodopayments.com/portal/sess_001")
 
         with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "prod_pro"):
-            with patch("app.api.routes.payments.dodo.customers.customer_portal.create",
-                       new=AsyncMock(side_effect=fake_portal)):
-                result = await create_checkout_session(
-                    request=_make_request(), body=body, current_user=FakeOnHoldUser(),
-                )
+            with patch("app.api.routes.payments.settings.FRONTEND_BASE_URL", "http://localhost:5173"):
+                with patch("app.api.routes.payments.dodo.customers.customer_portal.create",
+                           new=AsyncMock(side_effect=fake_portal)):
+                    result = await create_checkout_session(
+                        request=_make_request(), body=body, current_user=FakeOnHoldUser(),
+                    )
 
         assert captured_kwargs["customer_id"] == "cust_onhold_001"
-        assert captured_kwargs["return_url"] == "https://databrief.io/settings?tab=billing"
+        assert captured_kwargs["return_url"] == "http://localhost:5173/settings?tab=billing"
         assert result["checkout_url"] == "https://pay.dodopayments.com/portal/sess_001"
 
     @pytest.mark.asyncio
