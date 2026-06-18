@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useRef, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import {
   LayoutDashboard,
@@ -7,6 +8,7 @@ import {
   Settings,
   Lock,
   ArrowRight,
+  LogOut,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -28,8 +30,11 @@ const navItems: NavItem[] = [
 ]
 
 export default function Sidebar() {
-  const { user } = useAuthStore()
+  const { user, logout } = useAuthStore()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
+  const navigate = useNavigate()
   const tier = user?.tier ?? 'free'
 
   return (
@@ -112,8 +117,11 @@ export default function Sidebar() {
         </div>
       )}
 
-      <div className="border-t border-gray-200 px-4 py-3">
-        <div className="flex items-center gap-3">
+      <div className="relative border-t border-gray-200 px-4 py-3" ref={menuRef}>
+        <button
+          className="flex w-full items-center gap-3 rounded-lg px-1 py-1 text-left transition-colors hover:bg-gray-50"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
           {user?.avatar_url ? (
             <img
               src={user.avatar_url}
@@ -131,7 +139,39 @@ export default function Sidebar() {
             </p>
             <p className="truncate text-xs text-gray-500">{user?.email ?? ''}</p>
           </div>
-        </div>
+        </button>
+
+        {menuOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-10"
+              onClick={() => setMenuOpen(false)}
+            />
+            <div className="absolute bottom-full left-2 right-2 z-20 mb-2 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+              <button
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                onClick={() => {
+                  setMenuOpen(false)
+                  navigate('/settings')
+                }}
+              >
+                <Settings className="h-4 w-4" />
+                Settings
+              </button>
+              <button
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                onClick={async () => {
+                  setMenuOpen(false)
+                  await logout()
+                  navigate('/login')
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                Log out
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </aside>
   )
