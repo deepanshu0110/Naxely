@@ -117,7 +117,9 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
     except requests.Timeout:
         raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
     except requests.RequestException as e:
-        logger.error("Gemini call failed: %s", type(e).__name__)
+        status = e.response.status_code if e.response is not None else "N/A"
+        body = e.response.text if e.response is not None else "N/A"
+        logger.error("Gemini call failed: status=%s body=%s", status, body)
         raise HTTPException(status_code=500, detail="AI generation failed")
     if not result:
         raise HTTPException(status_code=500, detail="AI returned empty response")
