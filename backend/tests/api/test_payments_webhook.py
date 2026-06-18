@@ -486,7 +486,7 @@ class TestEmailFailureIsolation:
 
         with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
             with patch("app.api.routes.payments.settings.RESEND_API_KEY", "test_resend_key"):
-                with patch("app.api.routes.payments.settings.FROM_EMAIL", "hello@databrief.io"):
+                with patch("app.api.routes.payments.settings.FROM_EMAIL", "hello@naxely.io"):
                     with patch("resend.Emails.send") as mock_send:
                         mock_send.side_effect = Exception("Resend network error")
                         resp = await dodo_webhook(request=request, db=db)

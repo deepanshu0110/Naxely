@@ -48,7 +48,7 @@ const plans = [
     highlight: false,
     features: [
       'Everything in Pro',
-      'Full white-label reports — every trace of Databrief branding removed',
+      'Full white-label reports — every trace of Naxely branding removed',
       'Priority support — direct, fast responses from the founder',
     ],
     cta: 'Upgrade to Agency',
@@ -76,7 +76,7 @@ const faqs = [
   },
   {
     q: 'Can agencies white-label reports?',
-    a: 'Yes — the Agency plan removes all Databrief branding.',
+    a: 'Yes — the Agency plan removes all Naxely branding.',
   },
 ]
 
@@ -192,7 +192,7 @@ export default function Pricing() {
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-xs text-gray-400">
-            Made in India 🇮🇳 · Databrief © 2026
+            Made in India 🇮🇳 · Naxely © 2026
           </p>
         </div>
       </footer>

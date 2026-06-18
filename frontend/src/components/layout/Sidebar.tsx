@@ -35,7 +35,7 @@ export default function Sidebar() {
   return (
     <aside className="flex h-screen w-60 flex-col border-r border-gray-200 bg-white">
       <div className="flex h-16 items-center gap-2 px-6">
-        <span className="text-xl font-bold text-gray-900">Databrief</span>
+        <span className="text-xl font-bold text-gray-900">Naxely</span>
       </div>
 
       <nav className="flex-1 space-y-1 px-3">

@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: databrief-api
+    name: naxely-api
     runtime: python
     region: oregon
     plan: free
@@ -27,7 +27,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: ALLOWED_ORIGINS
-        value: https://databrief.io,https://www.databrief.io
+        value: https://naxely.io,https://www.naxely.io
       - key: SUPABASE_JWT_SECRET
         sync: false
       - key: SECRET_KEY
@@ -37,9 +37,9 @@ services:
       - key: DODO_AGENCY_PRODUCT_ID
         sync: false
       - key: FROM_EMAIL
-        value: hello@databrief.io
+        value: hello@naxely.io
       - key: TEMP_DIR
-        value: /tmp/databrief
+        value: /tmp/naxely
       - key: SUPABASE_DB_HOST
         sync: false
       - key: SUPABASE_DB_PORT

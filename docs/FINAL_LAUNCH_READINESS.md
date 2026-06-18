@@ -1,4 +1,4 @@
-# Databrief — Final Launch Readiness
+# Naxely — Final Launch Readiness
 
 Builds on `PRODUCTION_READINESS_FINAL.md` (P1-P9 audit). This doc covers the audit gap items (A1-A4) and operational hardening (B1-B4) executed in the final pre-launch pass, plus the consolidated verdict.
 
@@ -31,7 +31,7 @@ Two tests covering the full `parse_csv → generate_sync → build_sync` chain:
 | Test | What it validates |
 |------|-------------------|
 | `test_csv_bytes_to_pdf_e2e` | 10-row CSV → `parse_csv` yields DataFrame → `generate_sync` produces ≥2 chart PNGs → `build_sync` produces PDF → magic bytes `%PDF-` → PyMuPDF page count ≥2 → text contains "Revenue" and "E2E Pipeline Test" |
-| `test_csv_bytes_to_pdf_free_tier_no_charts` | 3-row CSV → Free tier → `build_sync` produces PDF → magic bytes → page text contains "Databrief" watermark |
+| `test_csv_bytes_to_pdf_free_tier_no_charts` | 3-row CSV → Free tier → `build_sync` produces PDF → magic bytes → page text contains "Naxely" watermark |
 
 ### Before
 - `test_pdf_service.py` called `build_sync` directly with pre-built DataFrames and chart paths — never exercised the chain from raw CSV through chart generation.
@@ -193,11 +193,11 @@ finally:
 ```
 
 ### What each run creates (~500KB-2MB total)
-- 5-10 chart PNGs in `/tmp/databrief/{report_id}/` (50-200KB each)
-- 1 PDF at `/tmp/databrief/{report_id}/report.pdf` (500KB-2MB)
+- 5-10 chart PNGs in `/tmp/Naxely/{report_id}/` (50-200KB each)
+- 1 PDF at `/tmp/Naxely/{report_id}/report.pdf` (500KB-2MB)
 
 ### What the `finally` block cleans
-- `/tmp/databrief/{report_id}/` (entire chart directory) — via `cleanup_charts(report_id)`
+- `/tmp/Naxely/{report_id}/` (entire chart directory) — via `cleanup_charts(report_id)`
 - PDF output file at `pdf_path` — via `os.unlink(pdf_path)`
 
 Both wrapped in individual try/except so one failure doesn't block the other.
@@ -210,12 +210,12 @@ Both wrapped in individual try/except so one failure doesn't block the other.
 
 | Item | Value |
 |------|-------|
-| `FROM_EMAIL` | `hello@databrief.io` (custom domain) |
+| `FROM_EMAIL` | `hello@Naxely.io` (custom domain) |
 | Resend requirement | Verified domain with SPF + DKIM |
 | Risk without | Payment failure/confirmation emails will be rejected or land in spam |
 
 **Action required before production deploy:**
-1. Log into Resend dashboard → Domains → verify `databrief.io` shows "Verified" status
+1. Log into Resend dashboard → Domains → verify `Naxely.io` shows "Verified" status
 2. If not verified, add the required DNS TXT records (SPF, DKIM, DMARC) to the domain's DNS provider
 3. Send a test email via Resend API to confirm deliverability
 
@@ -254,7 +254,7 @@ All 166 tests pass. All audit gap items (A1-A4) have been addressed with code ch
 ### ⚠️ Founder must do before flipping the switch
 
 1. **DATABASE_URL pooler** — change port `5432` → `6543` in Render dashboard
-2. **Resend domain verification** — verify `databrief.io` has SPF/DKIM in Resend dashboard
+2. **Resend domain verification** — verify `Naxely.io` has SPF/DKIM in Resend dashboard
 3. **Encryption key backup** — copy `MASTER_ENCRYPTION_KEY` to a password manager
 
 ### 📋 Known limitations (pre-existing, carry forward from P1-P9 audit)

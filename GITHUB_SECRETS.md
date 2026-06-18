@@ -10,4 +10,4 @@
 | `RENDER_DEPLOY_HOOK_URL` | Render deploy trigger URL | Render.com → Your Service → Settings → Deploy Hook → Copy URL | Backend CI (deploy step) |
 | `VITE_SUPABASE_URL` | Supabase project URL (same as SUPABASE_URL) | Supabase Dashboard → Settings → API → Project URL | Frontend CI (build env) |
 | `VITE_SUPABASE_ANON_KEY` | Supabase anonymous/public key | Supabase Dashboard → Settings → API → anon public key | Frontend CI (build env) |
-| `VITE_API_BASE_URL` | Production backend API base URL | Your Render custom domain: `https://api.databrief.io` | Frontend CI (build env) |
+| `VITE_API_BASE_URL` | Production backend API base URL | Your Render custom domain: `https://api.Naxely.io` | Frontend CI (build env) |

@@ -39,7 +39,7 @@ if os.getenv("RENDER") and not os.getenv("ENVIRONMENT"):
     )
     raise SystemExit(1)
 
-app = FastAPI(title="Databrief API", version="1.0.0")
+app = FastAPI(title="Naxely API", version="1.0.0")
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]

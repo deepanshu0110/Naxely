@@ -1,4 +1,4 @@
-# DATABRIEF — COMPLETE BUILD PROMPTS
+# Naxely — COMPLETE BUILD PROMPTS
 > OpenCode Desktop App + NVIDIA NIM Provider | Version: FINAL (corrected) | June 2026
 > 14 Prompts covering every section of the app from setup to deployment
 
@@ -126,7 +126,7 @@ Use `deepseek-v3.2` instead — works perfectly.
 **Model:** DeepSeek V3.2 | **Estimated time:** 5 minutes
 
 ```
-You are building a SaaS app called Databrief — an AI-powered PDF report generator.
+You are building a SaaS app called Naxely — an AI-powered PDF report generator.
 
 Read the TRD using your file-read tool before writing anything. *(Don't wait for pasted content — open the file listed below directly.)*
 
@@ -179,7 +179,7 @@ Follow the documents exactly. Do not add files not specified. Do not change fold
 **Model:** DeepSeek V3.2 | **Estimated time:** 20 minutes
 
 ```
-You are building Databrief. Read the complete database schema document yourself using your file-read tool. *(Don't wait for pasted content — open the file listed below directly.)*
+You are building Naxely. Read the complete database schema document yourself using your file-read tool. *(Don't wait for pasted content — open the file listed below directly.)*
 
 READ: `docs/04_DSD.md` (full file)
 
@@ -233,7 +233,7 @@ Follow the documents exactly. Do not add columns not specified. Do not change ta
 **Model:** GLM 4.7 | **Estimated time:** 20 minutes
 
 ```
-You are building Databrief. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building Naxely. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/02_TRD.md` — Sections 2, 3, 6, 7, 10
 READ: `docs/07_SEC.md` (full file)
@@ -287,7 +287,7 @@ Your task is to build the FastAPI backend core:
    - reset_monthly_usage(db) — from SDD Section 7, uses text() wrapper
 
 6. app/main.py:
-   - FastAPI app with title="Databrief API", version="1.0.0"
+   - FastAPI app with title="Naxely API", version="1.0.0"
    - CORS middleware: allowed_origins from settings.ALLOWED_ORIGINS (split by comma)
    - Security headers middleware (X-Content-Type-Options, X-Frame-Options etc from SEC 4.3)
    - slowapi rate limiter (Limiter from slowapi)
@@ -307,7 +307,7 @@ Follow the documents exactly. Do not add middleware or endpoints not specified.
 **Model:** DeepSeek V3.2 | **Estimated time:** 25 minutes
 
 ```
-You are building Databrief. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building Naxely. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/05_ASD.md` — Section 3, POST /reports/upload and POST /reports/upload-sheets
 READ: `docs/04_DSD.md` — Section 2.0 uploads table only
@@ -386,7 +386,7 @@ Follow the documents exactly. Do not add validation not specified.
 **Model:** DeepSeek V3.2 | **Estimated time:** 15 minutes
 
 ```
-You are building Databrief. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building Naxely. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/01_PRD.md` — Section 7.2 chart type selection rules only
 READ: `docs/02_TRD.md` — Section 6.4 PDF generation constraints only
@@ -417,8 +417,8 @@ Apply EXACT rules from PRD Section 7.2:
 
 generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
                report_id: str, chart_index: int, brand_color: str = '#6366F1') → str:
-- Create /tmp/databrief/{report_id}/ directory if not exists
-- Save chart to /tmp/databrief/{report_id}/chart_{chart_index}.png
+- Create /tmp/Naxely/{report_id}/ directory if not exists
+- Save chart to /tmp/Naxely/{report_id}/chart_{chart_index}.png
 - Resolution: 150 DPI (TRD Section 6.4)
 - Figure size: (10, 5) inches
 - Use tight_layout()
@@ -438,7 +438,7 @@ THIS MUST BE A SYNC FUNCTION (called via run_in_executor — do NOT make it asyn
 - Return list of chart file paths
 
 cleanup_charts(report_id: str) → None:
-- Delete entire /tmp/databrief/{report_id}/ directory
+- Delete entire /tmp/Naxely/{report_id}/ directory
 - Use shutil.rmtree() with ignore_errors=True
 
 Do NOT make generate_sync async. It runs in a thread pool executor.
@@ -452,7 +452,7 @@ Follow the documents exactly.
 **Model:** GLM 4.7 | **Estimated time:** 25 minutes
 
 ```
-You are building Databrief. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building Naxely. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/03_SDD.md` — Section 4 (AI prompts + column_stats format)
 READ: `docs/01_PRD.md` — Section 8 (content rules)
@@ -526,7 +526,7 @@ Follow the documents exactly. Never expose API keys in logs or error messages.
 **Model:** DeepSeek V3.2 | **Estimated time:** 30 minutes
 
 ```
-You are building Databrief. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building Naxely. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/01_PRD.md` — Sections 7.1 and 8
 READ: `docs/02_TRD.md` — Section 6.4
@@ -550,8 +550,8 @@ SECTION 1 — Cover Page:
 - Company name: user_data.get('company_name', '')
 - Prepared by: config.get('brand', {}).get('prepared_by', '')
 - Prepared date: today's date
-- Databrief watermark if user_data['tier'] == 'free':
-  Diagonal "Generated by Databrief" text across every page using canvas.saveState/restoreState
+- Naxely watermark if user_data['tier'] == 'free':
+  Diagonal "Generated by Naxely" text across every page using canvas.saveState/restoreState
 
 SECTION 2 — Table of Contents:
 - Auto-generated with page numbers
@@ -602,7 +602,7 @@ Style rules:
 - Page size: A4
 - Margins: 72pt (1 inch) all sides
 
-Save to: /tmp/databrief/{report_id}/report.pdf
+Save to: /tmp/Naxely/{report_id}/report.pdf
 Return the full file path.
 
 Follow the documents exactly. Build all 10 sections. Do not skip any section.
@@ -614,7 +614,7 @@ Follow the documents exactly. Build all 10 sections. Do not skip any section.
 **Model:** GLM 4.7 | **Estimated time:** 30 minutes
 
 ```
-You are building Databrief. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building Naxely. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/03_SDD.md` — Sections 2, 3, 6, 7
 READ: `docs/05_ASD.md` — Section 3 fully (all report endpoints)
@@ -696,7 +696,7 @@ DELETE /reports/{report_id}:
 POST /reports/{report_id}/share (Pro only):
   - Generate random 64-char token (secrets.token_urlsafe(48))
   - Set share_token, share_expires_at in DB
-  - Return share_url = f"https://databrief.io/share/{token}"
+  - Return share_url = f"https://Naxely.io/share/{token}"
 
 GET /share/{share_token} (PUBLIC — no auth):
   - Look up report by share_token
@@ -714,7 +714,7 @@ Follow the documents exactly. Always generate fresh signed URLs, never return st
 **Model:** DeepSeek V3.2 | **Estimated time:** 20 minutes
 
 ```
-You are building Databrief. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building Naxely. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/05_ASD.md` — Sections 4, 5, 7
 READ: `docs/07_SEC.md` — Sections 2, 5, 6
@@ -805,7 +805,7 @@ Follow the documents exactly. Use text() wrapper for all raw SQL.
 **Model:** GLM 4.7 | **Estimated time:** 30 minutes
 
 ```
-You are building the Databrief React frontend. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building the Naxely React frontend. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/06_FSD.md` — Sections 1, 2, 3.2, 3.3, 4, 5, 6, 7
 READ: `docs/02_TRD.md` — Section 5.2 (package.json)
@@ -895,7 +895,7 @@ Follow the documents exactly. Do not add features not specified.
 **Model:** GLM 4.7 | **Estimated time:** 35 minutes
 
 ```
-You are building the Databrief React frontend. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building the Naxely React frontend. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/06_FSD.md` — Sections 3.4, 3.5, 3.6, 4
 READ: `docs/05_ASD.md` — Section 3 schemas
@@ -1000,7 +1000,7 @@ Follow the documents exactly.
 **Model:** GLM 4.7 | **Estimated time:** 25 minutes
 
 ```
-You are building the Databrief landing page. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building the Naxely landing page. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/06_FSD.md` — Section 3.1 (landing page spec)
 READ: `docs/06_FSD.md` — Section 1 (design system)
@@ -1059,13 +1059,13 @@ Your task is to build src/pages/Landing.tsx with ALL sections from FSD 3.1 in or
 7. Final CTA Banner:
    - Dark background (bg-gray-900)
    - Headline: "Ready to stop spending hours on reports?"
-   - Subtext: "Join thousands of consultants and agencies saving time with Databrief."
+   - Subtext: "Join thousands of consultants and agencies saving time with Naxely."
    - Button: "Get started free" → /signup
 
 8. Footer:
    - Logo + tagline: "Turn data into insights, instantly."
    - Links: Features, Pricing, Privacy Policy, Terms of Service, Contact
-   - "Made in India 🇮🇳 · Databrief © 2026"
+   - "Made in India 🇮🇳 · Naxely © 2026"
    - Subtle top border
 
 Design rules — STRICTLY from FSD Section 1.1:
@@ -1086,7 +1086,7 @@ Follow the documents exactly. Build all 8 sections. Do not add sections not spec
 **Model:** GLM 4.7 | **Estimated time:** 20 minutes
 
 ```
-You are building the Databrief React frontend. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are building the Naxely React frontend. Read these documents yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/06_FSD.md` — Section 3.7 (Settings page spec)
 READ: `docs/06_FSD.md` — Section 3.8 (Pricing page spec)
@@ -1135,7 +1135,7 @@ Your task is to build the settings and pricing pages:
      Q: Do I need a credit card for the free plan? A: No.
      Q: What AI providers are supported? A: OpenAI and Anthropic Claude — bring your own API key.
      Q: Is my data secure? A: Yes — files are encrypted in transit and at rest. CSV files are deleted immediately after your report is generated.
-     Q: Can agencies white-label reports? A: Yes — the Agency plan removes all Databrief branding.
+     Q: Can agencies white-label reports? A: Yes — the Agency plan removes all Naxely branding.
 
 3. src/pages/NotFound.tsx:
    - Simple 404 page
@@ -1162,7 +1162,7 @@ Follow the documents exactly. All forms use react-hook-form + zod validation.
 **Model:** DeepSeek V3.2 | **Estimated time:** 10 minutes
 
 ```
-You are finalizing Databrief for deployment. Read these sections yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
+You are finalizing Naxely for deployment. Read these sections yourself using your file-read tool before writing anything. *(Don't wait for pasted content — open each file listed below directly.)*
 
 READ: `docs/08_DEP.md` — Sections 3, 4, 5, 6, 7, 12, 13, 19, 20
 
@@ -1180,7 +1180,7 @@ Files to create:
 
 3. backend/render.yaml
    EXACT content from DEP Section 4.1
-   Service name: databrief-api, Python runtime, free plan
+   Service name: Naxely-api, Python runtime, free plan
    buildCommand must run: pip install -r requirements.txt && alembic upgrade head
 
 4. frontend/vercel.json
@@ -1190,7 +1190,7 @@ Files to create:
 5. backend/Dockerfile
    EXACT content from DEP Section 12
    Uses python:3.11-slim, installs system deps for matplotlib/reportlab/cryptography,
-   creates /tmp/databrief directory
+   creates /tmp/Naxely directory
 
 6. backend/alembic.ini
    EXACT content from DEP Section 13

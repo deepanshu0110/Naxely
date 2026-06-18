@@ -1,5 +1,5 @@
 # SDD — System Design Document
-## Databrief: AI-Powered Report Generator
+## Naxely: AI-Powered Report Generator
 > Version: 1.0 | Date: June 2026 | Status: Final
 
 ---
@@ -7,7 +7,7 @@
 ## 1. COMPONENT MAP
 
 ```
-┌─────────────────────── DATABRIEF SYSTEM ──────────────────────────┐
+┌─────────────────────── Naxely SYSTEM ──────────────────────────┐
 │                                                                      │
 │  ┌──────────────────────────────────────────────────────────────┐  │
 │  │                    FRONTEND (Vercel)                          │  │
@@ -424,7 +424,7 @@ async def check_report_limit(current_user: User = Depends(get_current_user)):
                 detail={
                     "code": "MONTHLY_LIMIT_REACHED",
                     "message": "You've used all 3 free reports this month.",
-                    "upgrade_url": "https://databrief.io/pricing"
+                    "upgrade_url": "https://Naxely.io/pricing"
                 }
             )
 
@@ -436,7 +436,7 @@ async def check_pro_tier(current_user: User = Depends(get_current_user)):
             detail={
                 "code": "PRO_REQUIRED",
                 "message": "This feature requires a Pro subscription.",
-                "upgrade_url": "https://databrief.io/pricing"
+                "upgrade_url": "https://Naxely.io/pricing"
             }
         )
 

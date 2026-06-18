@@ -1,6 +1,6 @@
-# Databrief — Agent Instructions
+# Naxely — Agent Instructions
 
-Databrief is an AI-powered PDF report generator: FastAPI + SQLAlchemy +
+Naxely is an AI-powered PDF report generator: FastAPI + SQLAlchemy +
 Supabase backend, React + Tailwind frontend, deployed on Render.com +
 Vercel. Full specs are in `docs/` — read the relevant file before writing
 any code for a given prompt.

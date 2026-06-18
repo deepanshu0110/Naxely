@@ -1,6 +1,6 @@
 
 # SEC — Security Specification Document
-## Databrief: AI-Powered Report Generator
+## Naxely: AI-Powered Report Generator
 > Version: 1.0 | Date: June 2026 | Status: Final
 
 ---
@@ -33,7 +33,7 @@
 ### 1.2 Google OAuth Security
 - Use Supabase's built-in Google OAuth (handles PKCE flow)
 - Never handle OAuth tokens manually in frontend code
-- Redirect URI whitelist: only `https://databrief.io/auth/callback`
+- Redirect URI whitelist: only `https://Naxely.io/auth/callback`
 
 ### 1.3 Email/Password Rules
 - Minimum password length: 8 characters
@@ -120,7 +120,7 @@ def decrypt_api_key(encrypted_b64: str, iv_b64: str, master_key: bytes) -> str:
 - Retention: Kept for 90 days after creation, then auto-deleted
 
 ### 3.3 Temp Files (Report Generation)
-- Charts and intermediate files written to `/tmp/databrief/{report_id}/`
+- Charts and intermediate files written to `/tmp/Naxely/{report_id}/`
 - Directory deleted immediately after PDF is built and uploaded
 - Render.com ephemeral disk — automatically wiped on restart
 
@@ -144,7 +144,7 @@ def decrypt_api_key(encrypted_b64: str, iv_b64: str, master_key: bytes) -> str:
 ```python
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://databrief.io", "https://www.databrief.io"],
+    allow_origins=["https://Naxely.io", "https://www.Naxely.io"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],

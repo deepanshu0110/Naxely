@@ -18,12 +18,12 @@ class Settings(BaseSettings):
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 
     RESEND_API_KEY: str = ""
-    FROM_EMAIL: str = "hello@databrief.io"
+    FROM_EMAIL: str = "hello@naxely.io"
 
     ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: str = "http://localhost:5173"
     SECRET_KEY: str
-    TEMP_DIR: str = "/tmp/databrief"
+    TEMP_DIR: str = "/tmp/naxely"
 
     GOOGLE_SERVICE_ACCOUNT_JSON: str = ""
 

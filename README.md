@@ -1,4 +1,4 @@
-# Databrief — AI-Powered PDF Report Generator
+# Naxely — AI-Powered PDF Report Generator
 
 Turn raw data into client-ready PDF reports in 2 minutes. AI-powered insights, auto charts, custom branding.
 
@@ -14,8 +14,8 @@ Turn raw data into client-ready PDF reports in 2 minutes. AI-powered insights, a
 
 ### 1. Clone repository
 ```bash
-git clone https://github.com/yourusername/databrief.git
-cd databrief
+git clone https://github.com/yourusername/Naxely.git
+cd Naxely
 ```
 
 ### 2. Backend setup

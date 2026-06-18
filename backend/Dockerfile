@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create temp directory
-RUN mkdir -p /tmp/databrief
+RUN mkdir -p /tmp/naxely
 
 EXPOSE 8000
 

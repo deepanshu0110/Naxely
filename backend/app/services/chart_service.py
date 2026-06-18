@@ -8,7 +8,7 @@ import pandas as pd
 
 CHART_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6']
 
-CHART_DIR = Path('/tmp/databrief')
+CHART_DIR = Path('/tmp/naxely')
 
 
 def _is_date_column(series: pd.Series) -> bool:

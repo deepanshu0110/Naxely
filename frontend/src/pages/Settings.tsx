@@ -350,7 +350,7 @@ function BrandingPreview({ companyName, brandColor, logoUrl }: { companyName: st
           className="flex h-1 w-16 rounded-full"
           style={{ backgroundColor: brandColor }}
         />
-        <p className="text-xs text-gray-400">Powered by Databrief</p>
+        <p className="text-xs text-gray-400">Powered by Naxely</p>
       </div>
     </div>
   )
@@ -437,7 +437,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
             plan="agency"
             loading={isCreatingCheckout === 'agency'}
             price="$79/month"
-            features={['Everything in Pro', 'Full white-label reports — every trace of Databrief branding removed', 'Priority support — direct, fast responses from the founder']}
+            features={['Everything in Pro', 'Full white-label reports — every trace of Naxely branding removed', 'Priority support — direct, fast responses from the founder']}
             cta="Upgrade to Agency"
             onUpgrade={handleUpgrade}
           />

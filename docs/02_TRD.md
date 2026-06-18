@@ -1,5 +1,5 @@
 # TRD — Technical Requirements Document
-## Databrief: AI-Powered Report Generator
+## Naxely: AI-Powered Report Generator
 > Version: 1.0 | Date: June 2026 | Status: Final
 
 ---
@@ -207,13 +207,13 @@ DODO_AGENCY_PRODUCT_ID=prod_xxx
 
 # Email (Resend)
 RESEND_API_KEY=re_xxx
-FROM_EMAIL=hello@databrief.io
+FROM_EMAIL=hello@Naxely.io
 
 # App
 ENVIRONMENT=production
-ALLOWED_ORIGINS=https://databrief.io,https://www.databrief.io
+ALLOWED_ORIGINS=https://Naxely.io,https://www.Naxely.io
 SECRET_KEY=random-64-char-string
-TEMP_DIR=/tmp/databrief
+TEMP_DIR=/tmp/Naxely
 
 # Google Sheets
 GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
@@ -223,7 +223,7 @@ GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
 ```bash
 VITE_SUPABASE_URL=https://xxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGc...  # Anon key only (safe for frontend)
-VITE_API_BASE_URL=https://api.databrief.io
+VITE_API_BASE_URL=https://api.Naxely.io
 VITE_DODO_CLIENT_TOKEN=dodo_client_xxx
 VITE_ENVIRONMENT=production
 ```
@@ -535,15 +535,15 @@ This copies component source files into `src/components/ui/` — they become YOU
 | Max pages | 20 |
 | Chart image resolution | 150 DPI (balance of quality vs file size) |
 | Max PDF file size | 15MB |
-| Temp chart storage | /tmp/databrief/{report_id}/ — deleted after PDF built |
+| Temp chart storage | /tmp/Naxely/{report_id}/ — deleted after PDF built |
 | Font | Helvetica (built into ReportLab, no font embedding needed) |
 
 ### 6.5 CORS Configuration
 ```python
 # FastAPI CORS settings
 allowed_origins = [
-    "https://databrief.io",
-    "https://www.databrief.io",
+    "https://Naxely.io",
+    "https://www.Naxely.io",
     "http://localhost:5173",  # Dev only
 ]
 # NEVER allow "*" in production

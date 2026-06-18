@@ -60,7 +60,7 @@ const features = [
   {
     icon: Link2,
     title: 'Google Sheets Connector',
-    desc: 'Paste a Sheets URL and Databrief pulls your data automatically.',
+    desc: 'Paste a Sheets URL and Naxely pulls your data automatically.',
   },
 ]
 
@@ -108,7 +108,7 @@ const plans = [
     highlight: false,
     features: [
       'Everything in Pro',
-      'Full white-label reports — every trace of Databrief branding removed',
+      'Full white-label reports — every trace of Naxely branding removed',
       'Priority support — direct, fast responses from the founder',
     ],
     cta: 'Upgrade to Agency',
@@ -325,7 +325,7 @@ export default function Landing() {
           </h2>
           <p className="mt-4 text-gray-400">
             Join thousands of consultants and agencies saving time with
-            Databrief.
+            Naxely.
           </p>
           <Link
             to="/signup"
@@ -341,7 +341,7 @@ export default function Landing() {
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="text-lg font-bold text-gray-900">Databrief</p>
+              <p className="text-lg font-bold text-gray-900">Naxely</p>
               <p className="mt-1 text-sm text-gray-500">
                 Turn data into insights, instantly.
               </p>
@@ -365,7 +365,7 @@ export default function Landing() {
             </div>
           </div>
           <p className="mt-8 text-center text-xs text-gray-400">
-            Made in India 🇮🇳 · Databrief © 2026
+            Made in India 🇮🇳 · Naxely © 2026
           </p>
         </div>
       </footer>

@@ -1,6 +1,6 @@
 
 # DEP — Deployment & DevOps Document
-## Databrief: AI-Powered Report Generator
+## Naxely: AI-Powered Report Generator
 > Version: 1.0 | Date: June 2026 | Status: Final
 
 ---
@@ -25,7 +25,7 @@ External Services:
 ## 2. REPOSITORY STRUCTURE
 
 ```
-databrief/                         ← GitHub repo root
+Naxely/                         ← GitHub repo root
 ├── frontend/                      ← React app
 ├── backend/                       ← FastAPI app
 ├── .github/
@@ -165,7 +165,7 @@ jobs:
 ```yaml
 services:
   - type: web
-    name: databrief-api
+    name: Naxely-api
     runtime: python
     region: oregon
     plan: free
@@ -192,7 +192,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: ALLOWED_ORIGINS
-        value: https://databrief.io,https://www.databrief.io
+        value: https://Naxely.io,https://www.Naxely.io
 ```
 
 ### 4.2 Render Free Tier Gotchas
@@ -238,10 +238,10 @@ services:
 ```
 
 ### 5.2 Custom Domain Setup
-1. Buy `databrief.io` (Namecheap or Cloudflare)
+1. Buy `Naxely.io` (Namecheap or Cloudflare)
 2. In Vercel: Add domain → get CNAME/A records
 3. In Namecheap: Add DNS records from Vercel
-4. In Render: Add custom domain `api.databrief.io` → get CNAME
+4. In Render: Add custom domain `api.Naxely.io` → get CNAME
 5. In Namecheap: Add CNAME `api → xxxx.onrender.com`
 6. SSL: Auto-provisioned by both Vercel and Render (Let's Encrypt)
 
@@ -258,8 +258,8 @@ services:
 ### 6.2 Auth Configuration
 ```
 Supabase Dashboard → Auth → Settings:
-- Site URL: https://databrief.io
-- Redirect URLs: https://databrief.io/auth/callback
+- Site URL: https://Naxely.io
+- Redirect URLs: https://Naxely.io/auth/callback
 - Email confirmations: ON
 - Google OAuth: Enable → add Client ID + Secret from Google Cloud Console
 ```
@@ -303,15 +303,15 @@ alembic downgrade -1
 ```
 Create 2 products in Dodo dashboard:
 
-Product 1: Databrief Pro
-- Name: Databrief Pro
+Product 1: Naxely Pro
+- Name: Naxely Pro
 - Price: $29/month
 - Billing: Monthly recurring
 - Trial: None
 - Copy product ID → DODO_PRO_PRODUCT_ID env var
 
-Product 2: Databrief Agency
-- Name: Databrief Agency
+Product 2: Naxely Agency
+- Name: Naxely Agency
 - Price: $79/month
 - Billing: Monthly recurring
 - Trial: None
@@ -321,7 +321,7 @@ Product 2: Databrief Agency
 ### 7.3 Webhook Configuration
 ```
 Dodo Dashboard → Webhooks:
-- Endpoint URL: https://api.databrief.io/payments/webhook
+- Endpoint URL: https://api.Naxely.io/payments/webhook
 - Events to subscribe:
   ✅ subscription.created
   ✅ subscription.renewed
@@ -338,19 +338,19 @@ Dodo Dashboard → Webhooks:
 
 ### 8.1 Configuration
 1. Create account at resend.com
-2. Add domain: resend.com → Add `databrief.io`
+2. Add domain: resend.com → Add `Naxely.io`
 3. Add DNS records (SPF, DKIM, DMARC) in Namecheap
 4. Create API key → RESEND_API_KEY env var
-5. From address: `hello@databrief.io`
+5. From address: `hello@Naxely.io`
 
 ### 8.2 Email Templates (Transactional)
 | Template | Trigger | Subject |
 |---|---|---|
-| Welcome | New signup | "Welcome to Databrief 👋" |
+| Welcome | New signup | "Welcome to Naxely 👋" |
 | Report Ready | Report generation completes | "Your report is ready — download now" |
-| Upgrade Confirmation | Successful payment | "You're now on Databrief Pro 🎉" |
+| Upgrade Confirmation | Successful payment | "You're now on Naxely Pro 🎉" |
 | Payment Failed | Failed charge | "Action required: Update your payment method" |
-| Cancellation | Subscription cancelled | "You've cancelled Databrief Pro" |
+| Cancellation | Subscription cancelled | "You've cancelled Naxely Pro" |
 | Scheduled Report | Auto-generated report | "[Report Name] — Your scheduled report" |
 
 ---
@@ -375,8 +375,8 @@ sentry_sdk.init(
 ### 9.2 Uptime Robot
 ```
 Create 2 monitors:
-1. Frontend: https://databrief.io — HTTP, every 5 min
-2. Backend: https://api.databrief.io/health — HTTP, every 5 min
+1. Frontend: https://Naxely.io — HTTP, every 5 min
+2. Backend: https://api.Naxely.io/health — HTTP, every 5 min
 
 Alert: Email notification if down for 2+ consecutive checks
 ```
@@ -384,7 +384,7 @@ Alert: Email notification if down for 2+ consecutive checks
 ### 9.3 Render.com Logs
 ```bash
 # View live logs
-render logs --service databrief-api --tail
+render logs --service Naxely-api --tail
 
 # Key log lines to watch:
 # ERROR — needs immediate attention
@@ -406,8 +406,8 @@ git
 ### 10.2 Setup Steps
 ```bash
 # Clone repo
-git clone https://github.com/deepanshu0110/databrief.git
-cd databrief
+git clone https://github.com/deepanshu0110/Naxely.git
+cd Naxely
 
 # Backend setup
 cd backend
@@ -430,7 +430,7 @@ npm run dev  # Runs on http://localhost:5173
 ### 10.3 Development vs Production Differences
 | Setting | Development | Production |
 |---|---|---|
-| CORS origins | localhost:5173 added | Only databrief.io |
+| CORS origins | localhost:5173 added | Only Naxely.io |
 | AI calls | Real (use test key) | Real (user's key) |
 | Dodo Payments | Test mode | Live mode |
 | Sentry | Disabled | Enabled |
@@ -448,8 +448,8 @@ npm run dev  # Runs on http://localhost:5173
 - [ ] Storage buckets created + policies set
 - [ ] Google OAuth redirect URI set to production URL
 - [ ] Dodo Payments webhook pointing to production URL
-- [ ] Custom domain `databrief.io` connected to Vercel
-- [ ] Custom domain `api.databrief.io` connected to Render
+- [ ] Custom domain `Naxely.io` connected to Vercel
+- [ ] Custom domain `api.Naxely.io` connected to Render
 - [ ] SSL certificates active on both domains
 - [ ] Uptime Robot monitors active
 - [ ] Sentry project created + DSN set
@@ -485,7 +485,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create temp directory
-RUN mkdir -p /tmp/databrief
+RUN mkdir -p /tmp/Naxely
 
 EXPOSE 8000
 
@@ -575,13 +575,13 @@ DODO_AGENCY_PRODUCT_ID=prod_xxx
 
 # Email
 RESEND_API_KEY=re_xxx
-FROM_EMAIL=hello@databrief.io
+FROM_EMAIL=hello@Naxely.io
 
 # App
 ENVIRONMENT=development
 ALLOWED_ORIGINS=http://localhost:5173
 SECRET_KEY=random-64-char-string
-TEMP_DIR=/tmp/databrief
+TEMP_DIR=/tmp/Naxely
 
 # Google Sheets
 GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
@@ -609,9 +609,9 @@ VITE_ENVIRONMENT=development
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Databrief — AI Report Generator</title>
+  <title>Naxely — AI Report Generator</title>
   <meta name="description" content="Turn raw data into client-ready PDF reports in 2 minutes. AI-powered insights, auto charts, custom branding." />
-  <meta property="og:title" content="Databrief — AI Report Generator" />
+  <meta property="og:title" content="Naxely — AI Report Generator" />
   <meta property="og:description" content="Upload CSV → AI insights + charts → branded PDF. In 2 minutes." />
   <meta property="og:image" content="/og-image.png" />
   <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
@@ -641,7 +641,7 @@ from app.main import app
 from app.core.config import settings
 
 TEST_USER_ID = "test-user-uuid-1234"
-TEST_USER_EMAIL = "test@databrief.io"
+TEST_USER_EMAIL = "test@Naxely.io"
 
 @pytest.fixture(scope="session")
 def anyio_backend():
@@ -846,7 +846,7 @@ Configure ALL of these in GitHub → Settings → Secrets → Actions:
 | `RENDER_DEPLOY_HOOK_URL` | https://api.render.com/deploy/srv-xxx?key=xxx | Backend deploy trigger |
 | `VITE_SUPABASE_URL` | https://xxxx.supabase.co | Frontend CI build |
 | `VITE_SUPABASE_ANON_KEY` | eyJhbGc... | Frontend CI build |
-| `VITE_API_BASE_URL` | https://api.databrief.io | Frontend CI build |
+| `VITE_API_BASE_URL` | https://api.Naxely.io | Frontend CI build |
 
 **How to get RENDER_DEPLOY_HOOK_URL:**
 Render.com → Your Service → Settings → Deploy Hook → Copy URL

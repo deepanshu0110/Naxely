@@ -1,5 +1,5 @@
 # DSD — Database Schema Document
-## Databrief: AI-Powered Report Generator
+## Naxely: AI-Powered Report Generator
 > Version: 1.0 | Date: June 2026 | Status: Final
 
 ---

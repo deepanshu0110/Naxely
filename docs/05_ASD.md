@@ -1,13 +1,13 @@
 
 # ASD — API Specification Document
-## Databrief: AI-Powered Report Generator
+## Naxely: AI-Powered Report Generator
 > Version: 1.0 | Date: June 2026 | Status: Final
 
 ---
 
 ## 1. API OVERVIEW
 
-- Base URL (production): `https://api.databrief.io`
+- Base URL (production): `https://api.Naxely.io`
 - Base URL (development): `http://localhost:8000`
 - All requests: `Content-Type: application/json` unless file upload
 - All protected routes require: `Authorization: Bearer <supabase_jwt>`
@@ -318,7 +318,7 @@ Generate a shareable link.
 {
   "success": true,
   "data": {
-    "share_url": "https://databrief.io/share/abc123xyz",
+    "share_url": "https://Naxely.io/share/abc123xyz",
     "share_token": "abc123xyz",
     "expires_at": "2026-07-15T00:00:00Z"
   }
