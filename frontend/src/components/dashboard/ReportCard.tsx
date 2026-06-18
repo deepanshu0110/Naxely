@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { MoreHorizontal, Download, Eye, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 import Badge from '@/components/ui/Badge'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import type { Report } from '@/types/report'
-import api from '@/lib/axios'
 
 const statusVariant = (status: Report['status']) => {
   switch (status) {
@@ -28,10 +28,10 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
   const handleDelete = async () => {
     setDeleting(true)
     try {
-      await api.delete(`/reports/${report.id}`)
-      onDelete(report.id)
+      await onDelete(report.id)
+      toast.success('Report deleted')
     } catch {
-      // error handled by store
+      toast.error('Failed to delete report')
     } finally {
       setDeleting(false)
       setConfirmDelete(false)
