@@ -45,6 +45,7 @@ class TestApiKeyValidation:
     def test_gemini_key_valid(self):
         pattern = VALID_KEY_PATTERNS["gemini"]
         assert re.match(pattern, "AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+        assert re.match(pattern, "AQ.ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abc")
 
     def test_gemini_key_invalid_prefix(self):
         pattern = VALID_KEY_PATTERNS["gemini"]

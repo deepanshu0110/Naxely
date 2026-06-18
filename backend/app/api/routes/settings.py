@@ -26,7 +26,7 @@ router = APIRouter()
 VALID_KEY_PATTERNS = {
     "openai": r"^sk-[a-zA-Z0-9\-_]{20,}$",
     "claude": r"^sk-ant-[a-zA-Z0-9\-_]{20,}$",
-    "gemini": r"^AIza[a-zA-Z0-9\-_]{30,}$",
+    "gemini": r"^(AIza|AQ\.)[a-zA-Z0-9\-_]{30,}$",
 }
 
 ALLOWED_LOGO_EXTENSIONS = {"png", "jpg", "svg"}
@@ -80,7 +80,7 @@ async def get_profile(
             elif prov == "claude":
                 provider_prefix = "sk-ant-"
             else:
-                provider_prefix = "AIza..."
+                provider_prefix = "AIza... or AQ...."
             api_key_preview = f"{provider_prefix}...xxxx"
 
     monthly_limit = MONTHLY_LIMITS.get(row.get("tier", "free"), 3)

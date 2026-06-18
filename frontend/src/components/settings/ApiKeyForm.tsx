@@ -16,8 +16,8 @@ const apiKeySchema = z.object({
     .string()
     .min(1, 'API key is required')
     .refine(
-      (val) => val.startsWith('sk-') || val.startsWith('AIza'),
-      { message: 'OpenAI key starts with "sk-", Claude key starts with "sk-ant-", Gemini key starts with "AIza"' },
+      (val) => val.startsWith('sk-') || val.startsWith('AIza') || val.startsWith('AQ.'),
+      { message: 'OpenAI key starts with "sk-", Claude key starts with "sk-ant-", Gemini key starts with "AIza" or "AQ."' },
     )
     .refine((val) => val.length <= 200, { message: 'API key too long (max 200 chars)' }),
 })
@@ -53,7 +53,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
   const placeholder = useMemo(() => {
     if (selectedProvider === 'openai') return 'sk-proj-...'
     if (selectedProvider === 'claude') return 'sk-ant-...'
-    return 'AIza...'
+    return 'AIza... or AQ....'
   }, [selectedProvider])
 
   if (tier === 'free') {
