@@ -162,3 +162,27 @@ class TestPdfService:
             os.unlink(free_path)
         except OSError:
             pass
+
+
+class TestKpiTrendDeterminism:
+    def test_trend_is_deterministic_across_calls(self):
+        from app.services.pdf_service import _compute_kpi_data
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300, 5400, 5500, 5600, 5700, 5800, 5900],
+            "Units Sold": [300, 290, 285, 280, 275, 270, 265, 260, 255, 250],
+            "Clicks": [1000, 1020, 980, 1010, 990, 1005, 1015, 995, 1005, 1010],
+        })
+        config = {"metric_columns": ["Revenue", "Units Sold", "Clicks"]}
+        ai_content = {"insights": [], "summary": None, "anomalies": [], "trends": []}
+
+        result1 = _compute_kpi_data(df, config, ai_content, "#6366F1")
+        result2 = _compute_kpi_data(df, config, ai_content, "#6366F1")
+
+        for kpi1, kpi2 in zip(result1, result2):
+            assert kpi1["name"] == kpi2["name"]
+            assert kpi1["trend"] == kpi2["trend"], (
+                f"Trend mismatch for {kpi1['name']}: "
+                f"run1={kpi1['trend']} run2={kpi2['trend']} — "
+                f"must be deterministic"
+            )

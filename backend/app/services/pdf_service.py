@@ -223,17 +223,7 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         metric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
     metric_cols = metric_cols[:5]
 
-    insights = ai_content.get('insights') or []
-    insight_trends = {}
-    for ins in insights:
-        kpi = ins.get('kpi', '')
-        sentiment = ins.get('sentiment', 'neutral')
-        if sentiment == 'positive':
-            insight_trends[kpi] = 'increasing'
-        elif sentiment == 'negative':
-            insight_trends[kpi] = 'decreasing'
-        else:
-            insight_trends[kpi] = 'flat'
+    from app.services.data_service import _compute_trend
 
     kpis = []
     for col in metric_cols:
@@ -243,14 +233,7 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         if len(series) == 0:
             continue
         total = series.sum()
-        latest = series.iloc[-1]
-        trend = insight_trends.get(col, 'flat')
-        if trend == 'flat' and len(series) >= 2:
-            first = series.iloc[0]
-            if first != 0 and latest > first * 1.05:
-                trend = 'increasing'
-            elif first != 0 and latest < first * 0.95:
-                trend = 'decreasing'
+        trend = _compute_trend(series)
         kpis.append({
             'name': 'Total ' + col.replace('_', ' ').title(),
             'value': _format_number(total),
