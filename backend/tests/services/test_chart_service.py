@@ -24,11 +24,12 @@ class TestChartService:
         paths = generate_sync(df, report_id, config)
 
         assert len(paths) > 0
-        for p in paths:
+        for p, col_name in paths:
             assert Path(p).exists()
             img = Image.open(p)
             assert img.width > 0
             assert img.height > 0
+            assert isinstance(col_name, str)
 
         cleanup_charts(report_id)
 
@@ -43,7 +44,9 @@ class TestChartService:
         report_id = "test-date-chart"
         paths = generate_sync(df, report_id, config)
         assert len(paths) == 1
-        assert Path(paths[0]).exists()
+        p, col_name = paths[0]
+        assert Path(p).exists()
+        assert col_name == "Revenue"
         cleanup_charts(report_id)
 
     def test_select_chart_type_pie(self):

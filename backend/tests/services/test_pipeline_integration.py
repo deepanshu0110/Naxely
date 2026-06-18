@@ -31,8 +31,9 @@ class TestPipelineIntegration:
 
         chart_paths = generate_sync(df, report_id, config)
         assert len(chart_paths) >= 2
-        for p in chart_paths:
+        for p, col_name in chart_paths:
             assert os.path.isfile(p)
+            assert isinstance(col_name, str)
 
         ai_content = {
             "summary": None,

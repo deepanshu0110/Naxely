@@ -147,8 +147,8 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
 
 
 def generate_sync(df: pd.DataFrame, report_id: str, config: dict,
-                  brand_color: str = '#6366F1') -> list[str]:
-    chart_paths: list[str] = []
+                  brand_color: str = '#6366F1') -> list[tuple[str, str]]:
+    chart_data: list[tuple[str, str]] = []
 
     date_column = config.get('date_column')
 
@@ -158,12 +158,27 @@ def generate_sync(df: pd.DataFrame, report_id: str, config: dict,
 
     metric_columns = metric_columns[:8]
 
-    for i, col_name in enumerate(metric_columns):
+    scatter_pairs_seen = set()
+    chart_index = 0
+    for col_name in metric_columns:
         chart_type = select_chart_type(df, col_name, date_column)
-        path = generate_chart(df, col_name, chart_type, report_id, i, brand_color)
-        chart_paths.append(path)
+        if chart_type == 'scatter':
+            other_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c]) and c != col_name]
+            if other_cols:
+                x_col = other_cols[0]
+                y_col = col_name
+            else:
+                x_col = col_name
+                y_col = col_name
+            pair = tuple(sorted([x_col, y_col]))
+            if pair in scatter_pairs_seen:
+                continue
+            scatter_pairs_seen.add(pair)
+        path = generate_chart(df, col_name, chart_type, report_id, chart_index, brand_color)
+        chart_data.append((path, col_name))
+        chart_index += 1
 
-    return chart_paths
+    return chart_data
 
 
 def cleanup_charts(report_id: str) -> None:

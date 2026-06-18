@@ -403,7 +403,11 @@ def build_sync(
     ]
     toc_num = 3
     for sec_key in sections_config:
-        if sec_key == 'executive_summary' and (not ai_content.get('summary')):
+        if sec_key == 'executive_summary' and not ai_content.get('summary'):
+            continue
+        if sec_key == 'insights' and not ai_content.get('insights'):
+            continue
+        if sec_key == 'anomalies' and not ai_content.get('anomalies'):
             continue
         label = section_map.get(sec_key, sec_key.replace('_', ' ').title())
         toc_entries.append((label, str(toc_num)))
@@ -450,11 +454,8 @@ def build_sync(
     story.append(_SectionHeader('Charts', brand_color, content_width))
     story.append(Spacer(1, 10))
 
-    chart_captions = config.get('metric_columns', [])
-    if not chart_captions:
-        chart_captions = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
-
-    for i, chart_path in enumerate(chart_paths[:8]):
+    for i, chart_item in enumerate(chart_paths[:8]):
+        chart_path, col_name = chart_item if isinstance(chart_item, tuple) else (chart_item, f'Chart {i + 1}')
         if not os.path.isfile(chart_path):
             continue
         try:
@@ -468,7 +469,7 @@ def build_sync(
             chart_img = Image(chart_path, width=draw_w, height=draw_h)
             chart_img.hAlign = 'CENTER'
             story.append(chart_img)
-            caption_text = chart_captions[i].replace('_', ' ').title() if i < len(chart_captions) else f'Chart {i + 1}'
+            caption_text = col_name.replace('_', ' ').title()
             caption_style = ParagraphStyle(
                 'ChartCaption',
                 parent=styles['Normal'],
