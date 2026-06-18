@@ -335,9 +335,12 @@ def build_sync(
     )
 
     story = []
+    body_story: list = []
+    toc_entries = [('Cover Page', '1'), ('Table of Contents', '2')]
+    toc_page = 3
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 1 — Cover Page
+    # SECTION 1 — Cover Page (into main story)
     # ────────────────────────────────────────────────────────────
     logo_path = None
     logo_url = user_data.get('logo_url')
@@ -380,60 +383,23 @@ def build_sync(
     story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 2 — Table of Contents
-    # ────────────────────────────────────────────────────────────
-    story.append(_SectionHeader('Table of Contents', brand_color, content_width))
-    story.append(Spacer(1, 12))
-
-    sections_config = config.get('sections', [])
-    section_map = {
-        'executive_summary': 'Executive Summary',
-        'key_metrics': 'Key Metrics Overview',
-        'charts': 'Charts',
-        'insights': 'AI Insights',
-        'anomalies': 'Anomaly Flags',
-        'data_table': 'Data Table',
-        'recommendations': 'Recommendations',
-        'appendix': 'Appendix',
-    }
-
-    toc_entries = [
-        ('Cover Page', '1'),
-        ('Table of Contents', '2'),
-    ]
-    toc_num = 3
-    for sec_key in sections_config:
-        if sec_key == 'executive_summary' and not ai_content.get('summary'):
-            continue
-        if sec_key == 'insights' and not ai_content.get('insights'):
-            continue
-        if sec_key == 'anomalies' and not ai_content.get('anomalies'):
-            continue
-        label = section_map.get(sec_key, sec_key.replace('_', ' ').title())
-        toc_entries.append((label, str(toc_num)))
-        toc_num += 1
-
-    for label, pg in toc_entries:
-        dots = '.' * max(2, 60 - len(label) - len(pg))
-        line = f'{label}  {dots}  {pg}'
-        story.append(Paragraph(line, toc_h1_style))
-    story.append(PageBreak())
-
-    # ────────────────────────────────────────────────────────────
-    # SECTION 3 — Executive Summary
+    # SECTION 2 — Executive Summary
     # ────────────────────────────────────────────────────────────
     if 'executive_summary' in config.get('sections', []) and ai_content.get('summary'):
-        story.append(_SectionHeader('Executive Summary', brand_color, content_width))
-        story.append(Spacer(1, 10))
-        summary_text = ai_content['summary']
-        story.append(Paragraph(summary_text, body_style))
-        story.append(PageBreak())
+        toc_entries.append(('Executive Summary', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Executive Summary', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
+        body_story.append(Paragraph(ai_content['summary'], body_style))
+        body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 4 — Key Metrics Overview
+    # SECTION 3 — Key Metrics Overview
     # ────────────────────────────────────────────────────────────
-    story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
-    story.append(Spacer(1, 10))
+    toc_entries.append(('Key Metrics Overview', str(toc_page)))
+    toc_page += 1
+    body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
+    body_story.append(Spacer(1, 10))
 
     kpis = _compute_kpi_data(df, config, ai_content, brand_color)
     for kpi in kpis:
@@ -444,15 +410,17 @@ def build_sync(
             brand_color_hex=brand_color,
             width=content_width,
         )
-        story.append(card)
-        story.append(Spacer(1, 8))
-    story.append(PageBreak())
+        body_story.append(card)
+        body_story.append(Spacer(1, 8))
+    body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 5 — Charts
+    # SECTION 4 — Charts
     # ────────────────────────────────────────────────────────────
-    story.append(_SectionHeader('Charts', brand_color, content_width))
-    story.append(Spacer(1, 10))
+    toc_entries.append(('Charts', str(toc_page)))
+    toc_page += 1
+    body_story.append(_SectionHeader('Charts', brand_color, content_width))
+    body_story.append(Spacer(1, 10))
 
     for i, chart_item in enumerate(chart_paths[:8]):
         chart_path, col_name = chart_item if isinstance(chart_item, tuple) else (chart_item, f'Chart {i + 1}')
@@ -468,7 +436,7 @@ def build_sync(
                 draw_h = 280
             chart_img = Image(chart_path, width=draw_w, height=draw_h)
             chart_img.hAlign = 'CENTER'
-            story.append(chart_img)
+            body_story.append(chart_img)
             caption_text = col_name.replace('_', ' ').title()
             caption_style = ParagraphStyle(
                 'ChartCaption',
@@ -480,43 +448,49 @@ def build_sync(
                 spaceBefore=4,
                 spaceAfter=12,
             )
-            story.append(Paragraph(caption_text, caption_style))
+            body_story.append(Paragraph(caption_text, caption_style))
         except Exception:
             continue
-    story.append(PageBreak())
+    body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 6 — AI Insight Cards
+    # SECTION 5 — AI Insight Cards
     # ────────────────────────────────────────────────────────────
     insights = ai_content.get('insights') or []
     if 'insights' in config.get('sections', []) and insights:
-        story.append(_SectionHeader('AI Insights', brand_color, content_width))
-        story.append(Spacer(1, 10))
+        toc_entries.append(('AI Insights', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('AI Insights', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
         for ins in insights[:5]:
             card = _InsightCard(ins, width=content_width)
-            story.append(card)
-            story.append(Spacer(1, 8))
-        story.append(PageBreak())
+            body_story.append(card)
+            body_story.append(Spacer(1, 8))
+        body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 7 — Anomaly Flags
+    # SECTION 6 — Anomaly Flags
     # ────────────────────────────────────────────────────────────
     anomalies = ai_content.get('anomalies') or []
     if anomalies:
-        story.append(_SectionHeader('Anomaly Flags', brand_color, content_width))
-        story.append(Spacer(1, 10))
+        toc_entries.append(('Anomaly Flags', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Anomaly Flags', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
         for anomaly in anomalies[:10]:
             msg = anomaly.get('message', 'Anomaly detected')
             box = _AnomalyBox(msg, width=content_width)
-            story.append(box)
-            story.append(Spacer(1, 6))
-        story.append(PageBreak())
+            body_story.append(box)
+            body_story.append(Spacer(1, 6))
+        body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 8 — Data Table
+    # SECTION 7 — Data Table
     # ────────────────────────────────────────────────────────────
-    story.append(_SectionHeader('Data Table', brand_color, content_width))
-    story.append(Spacer(1, 10))
+    toc_entries.append(('Data Table', str(toc_page)))
+    toc_page += 1
+    body_story.append(_SectionHeader('Data Table', brand_color, content_width))
+    body_story.append(Spacer(1, 10))
 
     display_df = df.copy()
     if len(display_df) > 50:
@@ -556,14 +530,16 @@ def build_sync(
             )
 
     data_table.setStyle(TableStyle(table_style_commands))
-    story.append(data_table)
-    story.append(PageBreak())
+    body_story.append(data_table)
+    body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 9 — Recommendations
+    # SECTION 8 — Recommendations
     # ────────────────────────────────────────────────────────────
-    story.append(_SectionHeader('Recommendations', brand_color, content_width))
-    story.append(Spacer(1, 10))
+    toc_entries.append(('Recommendations', str(toc_page)))
+    toc_page += 1
+    body_story.append(_SectionHeader('Recommendations', brand_color, content_width))
+    body_story.append(Spacer(1, 10))
 
     all_insights = ai_content.get('insights') or []
     actions = [ins.get('action', '') for ins in all_insights if ins.get('action')]
@@ -581,17 +557,19 @@ def build_sync(
                 leftIndent=20,
                 bulletIndent=0,
             )
-            story.append(Paragraph(f'{idx}. {action}', rec_style))
+            body_story.append(Paragraph(f'{idx}. {action}', rec_style))
     else:
-        story.append(Paragraph('No recommendations available.', body_style))
-    story.append(PageBreak())
+        body_story.append(Paragraph('No recommendations available.', body_style))
+    body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 10 — Appendix
+    # SECTION 9 — Appendix
     # ────────────────────────────────────────────────────────────
     if 'appendix' in config.get('sections', []):
-        story.append(_SectionHeader('Appendix — Raw Data', brand_color, content_width))
-        story.append(Spacer(1, 10))
+        toc_entries.append(('Appendix — Raw Data', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Appendix — Raw Data', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
 
         appendix_df = df.copy()
         if len(appendix_df) > 100:
@@ -630,7 +608,20 @@ def build_sync(
                 )
 
         app_table.setStyle(TableStyle(app_style_commands))
-        story.append(app_table)
+        body_story.append(app_table)
+
+    # ────────────────────────────────────────────────────────────
+    # TOC — built from recorded entries, inserted after cover
+    # ────────────────────────────────────────────────────────────
+    story.append(_SectionHeader('Table of Contents', brand_color, content_width))
+    story.append(Spacer(1, 12))
+    for label, pg in toc_entries:
+        dots = '.' * max(2, 60 - len(label) - len(pg))
+        line = f'{label}  {dots}  {pg}'
+        story.append(Paragraph(line, toc_h1_style))
+    story.append(PageBreak())
+
+    story.extend(body_story)
 
     doc.build(story, onFirstPage=on_page, onLaterPages=on_page)
 
