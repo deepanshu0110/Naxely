@@ -118,6 +118,65 @@ class TestTrendDetection:
         assert result == []
 
 
+class TestGeminiRetry:
+    def test_requests_post_called_once_on_success(self, monkeypatch):
+        from app.services.ai_service import call_gemini
+
+        calls = []
+
+        def recording_post(*args, **kwargs):
+            calls.append(1)
+            raise Exception("API reachable")
+
+        monkeypatch.setattr("app.services.ai_service.requests.post", recording_post)
+
+        with pytest.raises(Exception):
+            call_gemini("prompt", "system", "fake-key")
+        assert len(calls) == 1, f"Expected 1 POST call, got {len(calls)}"
+
+    def test_requests_post_called_three_times_on_all_503(self, monkeypatch):
+        from app.services.ai_service import call_gemini
+
+        calls = []
+
+        def mock_503_post(*args, **kwargs):
+            calls.append(1)
+            resp = type("FakeResp", (), {
+                "status_code": 503,
+                "raise_for_status": lambda self: None,
+                "json": lambda self: {},
+            })()
+            return resp
+
+        monkeypatch.setattr("app.services.ai_service.requests.post", mock_503_post)
+        monkeypatch.setattr("app.services.ai_service.time.sleep", lambda s: None)
+
+        with pytest.raises(Exception):
+            call_gemini("prompt", "system", "fake-key")
+        assert len(calls) == 3, f"Expected 3 POST calls on all-503, got {len(calls)}"
+
+    def test_no_retry_on_non_503_errors(self, monkeypatch):
+        from app.services.ai_service import call_gemini
+
+        calls = []
+
+        def mock_400_post(*args, **kwargs):
+            calls.append(1)
+            resp = type("FakeResp", (), {
+                "status_code": 400,
+                "raise_for_status": lambda self: None,
+                "json": lambda self: {},
+                "text": "bad request",
+            })()
+            return resp
+
+        monkeypatch.setattr("app.services.ai_service.requests.post", mock_400_post)
+
+        with pytest.raises(Exception):
+            call_gemini("prompt", "system", "fake-key")
+        assert len(calls) == 1, f"Expected 1 POST call on 400 (no retry), got {len(calls)}"
+
+
 class TestBuildColumnStats:
     def test_build_column_stats_structure(self):
         from app.services.ai_service import _build_column_stats

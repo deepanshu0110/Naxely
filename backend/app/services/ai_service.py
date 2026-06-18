@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import time
 from typing import Optional
 
 import numpy as np
@@ -101,30 +102,38 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
             "maxOutputTokens": 1024,
         },
     }
-    try:
-        resp = requests.post(url, json=payload, timeout=timeout)
-        if resp.status_code == 429:
-            raise HTTPException(status_code=429, detail="AI rate limit — try again in 60 seconds")
-        if resp.status_code == 403 or resp.status_code == 401:
-            raise HTTPException(status_code=400, detail="Invalid API key — please update in Settings")
-        resp.raise_for_status()
-        data = resp.json()
-        candidates = data.get("candidates", [])
-        if not candidates:
-            raise HTTPException(status_code=500, detail="AI returned empty response")
-        result = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-    except HTTPException:
-        raise
-    except requests.Timeout:
-        raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
-    except requests.RequestException as e:
-        status = e.response.status_code if e.response is not None else "N/A"
-        body = e.response.text if e.response is not None else "N/A"
-        logger.error("Gemini call failed: status=%s body=%s", status, body)
-        raise HTTPException(status_code=500, detail="AI generation failed")
-    if not result:
-        raise HTTPException(status_code=500, detail="AI returned empty response")
-    return result
+    for attempt in range(3):
+        try:
+            resp = requests.post(url, json=payload, timeout=timeout)
+            if resp.status_code == 429:
+                raise HTTPException(status_code=429, detail="AI rate limit — try again in 60 seconds")
+            if resp.status_code == 403 or resp.status_code == 401:
+                raise HTTPException(status_code=400, detail="Invalid API key — please update in Settings")
+            if resp.status_code == 503:
+                logger.warning("Gemini 503 attempt %d/3 — backing off", attempt + 1)
+                if attempt < 2:
+                    time.sleep(1 << attempt)
+                continue
+            resp.raise_for_status()
+            data = resp.json()
+            candidates = data.get("candidates", [])
+            if not candidates:
+                raise HTTPException(status_code=500, detail="AI returned empty response")
+            result = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+            if not result:
+                raise HTTPException(status_code=500, detail="AI returned empty response")
+            return result
+        except HTTPException:
+            raise
+        except requests.Timeout:
+            raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
+        except requests.RequestException as e:
+            status = e.response.status_code if e.response is not None else "N/A"
+            body = e.response.text if e.response is not None else "N/A"
+            logger.error("Gemini call failed: status=%s body=%s", status, body)
+            raise HTTPException(status_code=500, detail="AI generation failed")
+    logger.error("Gemini 503 retry exhausted after 3 attempts")
+    raise HTTPException(status_code=500, detail="AI generation failed")
 
 
 def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
