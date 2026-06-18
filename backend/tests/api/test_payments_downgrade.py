@@ -204,7 +204,7 @@ class TestDowngradeAgencyToPro:
         assert captured_kwargs["subscription_id"] == "sub_agency_001"
         assert captured_kwargs["product_id"] == "prod_pro"
         assert captured_kwargs["quantity"] == 1
-        assert captured_kwargs["proration_billing_mode"] == "do_not_bill"
+        assert captured_kwargs["proration_billing_mode"] == "full_immediately"
         assert captured_kwargs["effective_at"] == "next_billing_date"
         assert result["success"] is True
         assert result["data"]["planned_tier"] == "pro"

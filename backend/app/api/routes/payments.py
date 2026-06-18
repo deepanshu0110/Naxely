@@ -370,7 +370,7 @@ async def downgrade_subscription(
                 subscription_id=current_user.dodo_subscription_id,
                 product_id=product_id,
                 quantity=1,
-                proration_billing_mode="do_not_bill",
+                proration_billing_mode="full_immediately",
                 effective_at="next_billing_date",
             )
         except Exception as e:
