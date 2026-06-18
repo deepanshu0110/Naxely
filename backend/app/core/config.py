@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 
     RESEND_API_KEY: str = ""
-    FROM_EMAIL: str = "hello@naxely.io"
+    FROM_EMAIL: str = "hello@naxely.com"
 
     ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: str = ""

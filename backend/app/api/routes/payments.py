@@ -297,9 +297,9 @@ async def dodo_webhook(
                     resend.Emails.send({
                         "from": settings.FROM_EMAIL,
                         "to": row["email"],
-                        "subject": "Payment failed — Databrief",
+                        "subject": "Payment failed — Naxely",
                         "html": (
-                            "<p>Your most recent payment for Databrief failed.</p>"
+                            "<p>Your most recent payment for Naxely failed.</p>"
                             "<p>Please update your billing information at "
                             f"<a href='{settings.FRONTEND_BASE_URL}/settings/billing'>"
                             f"{settings.FRONTEND_BASE_URL}/settings/billing</a> "

@@ -37,7 +37,7 @@ services:
       - key: DODO_AGENCY_PRODUCT_ID
         sync: false
       - key: FROM_EMAIL
-        value: hello@naxely.io
+        value: hello@naxely.com
       - key: TEMP_DIR
         value: /tmp/naxely
       - key: SUPABASE_DB_HOST

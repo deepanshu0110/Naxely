@@ -333,7 +333,7 @@ MVP is ready to launch when ALL of the following are true:
 - [ ] Report history saving last 5 reports
 - [ ] Usage counter enforcing 3-report free limit
 - [ ] Deployed on Vercel (frontend) + Render.com (backend)
-- [ ] Custom domain (naxely.io) connected
+- [ ] Custom domain (naxely.com) connected
 - [ ] SSL certificate active
 - [ ] Error monitoring active (Sentry free tier)
 
