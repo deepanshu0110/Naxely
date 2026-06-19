@@ -9,7 +9,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from standardwebhooks import Webhook as _Webhook
-from dodopayments import AsyncDodoPayments
+from dodopayments import AsyncDodoPayments, APIStatusError
 
 from app.api.deps import get_current_user
 from app.core.database import get_db
@@ -70,6 +70,18 @@ class CheckoutRequest(BaseModel):
 
 class DowngradeRequest(BaseModel):
     plan: Literal["pro", "free"]
+
+
+def _dodo_error_to_http(e: APIStatusError) -> HTTPException:
+    body = e.body if isinstance(e.body, dict) else {}
+    code = body.get("code")
+    message = body.get("message", "") or e.message
+    http_status = {400: 400, 401: 401, 403: 403, 404: 404,
+                   409: 400, 422: 400, 429: 429, 500: 502}.get(e.status_code, 502)
+    detail: Dict[str, Any] = {"message": message or "Dodo Payments API error"}
+    if code:
+        detail["code"] = code
+    return HTTPException(status_code=http_status, detail=detail)
 
 
 @router.get("/plans")
@@ -328,17 +340,48 @@ async def downgrade_subscription(
     if current_user.tier == "free":
         raise HTTPException(status_code=400, detail="No active paid subscription to downgrade")
 
+    # Pre-check: fetch current subscription state for pending changes
+    try:
+        sub = await dodo.subscriptions.retrieve(
+            subscription_id=current_user.dodo_subscription_id,
+        )
+    except APIStatusError as e:
+        raise _dodo_error_to_http(e)
+    except Exception as e:
+        logger.error("Failed to retrieve subscription: %s", e)
+        raise HTTPException(status_code=502, detail="Failed to verify subscription state")
+
+    if sub.scheduled_change:
+        effective = sub.scheduled_change.effective_at
+        date_str = f"{effective.strftime('%B')} {effective.day}, {effective.year}" if hasattr(effective, 'strftime') else str(effective)
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "PENDING_SCHEDULED_CHANGE",
+                "message": f"You already have a pending plan change scheduled for {date_str}. Cancel that first before requesting a new change.",
+            },
+        )
+
+    if sub.cancel_at_next_billing_date:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "PENDING_CANCELLATION",
+                "message": "Your subscription is already scheduled for cancellation at the next billing date. Cancel that first before requesting a new change.",
+            },
+        )
+
     if body.plan == "free":
         try:
             await dodo.subscriptions.update(
                 subscription_id=current_user.dodo_subscription_id,
                 cancel_at_next_billing_date=True,
             )
+        except APIStatusError as e:
+            raise _dodo_error_to_http(e)
         except Exception as e:
-            raise HTTPException(
-                status_code=502,
-                detail=f"Failed to schedule downgrade: {str(e)}",
-            )
+            logger.error("Failed to schedule downgrade to free: %s", e)
+            raise HTTPException(status_code=502, detail="Failed to schedule downgrade")
 
         result = await db.execute(
             text("SELECT tier_expires_at FROM users WHERE id = :uid"),
@@ -373,6 +416,8 @@ async def downgrade_subscription(
                 proration_billing_mode="full_immediately",
                 effective_at="next_billing_date",
             )
+        except APIStatusError as e:
+            raise _dodo_error_to_http(e)
         except Exception as e:
             logger.error("Dodo downgrade error: %s", e)
             raise HTTPException(status_code=502, detail="Failed to schedule downgrade")

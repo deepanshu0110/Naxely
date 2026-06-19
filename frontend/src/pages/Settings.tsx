@@ -430,8 +430,10 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
       await api.post('/payments/downgrade', { plan: target })
       setShowDowngradeModal(null)
       await fetchSubscription()
-    } catch {
-      toast.error('Failed to schedule downgrade. Please try again.')
+    } catch (err) {
+      const detail = (err as any)?.response?.data?.detail
+      const message = typeof detail === 'string' ? detail : detail?.message
+      toast.error(message || 'Failed to schedule downgrade. Please try again.')
     } finally {
       setIsDowngrading(false)
     }

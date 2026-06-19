@@ -68,6 +68,12 @@ def _mock_db_result(row):
     return m
 
 
+class FakeSubscription:
+    scheduled_change = None
+    cancel_at_next_billing_date = False
+    next_billing_date = None
+
+
 class TestDowngradeFree:
     @pytest.mark.asyncio
     async def test_free_user_rejected(self):
@@ -100,13 +106,17 @@ class TestDowngradeFree:
         db = MagicMock()
         db.execute = AsyncMock(return_value=_mock_db_result(_mock_db_row(future)))
 
+        fake_sub = FakeSubscription()
+
         with patch("app.api.routes.payments.dodo.subscriptions.update",
                    new=AsyncMock(side_effect=fake_update)):
-            result = await downgrade_subscription(
-                request=_make_request(), body=body,
-                current_user=FakeAgencySubscriber(),
-                db=db,
-            )
+            with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                       new=AsyncMock(return_value=fake_sub)):
+                result = await downgrade_subscription(
+                    request=_make_request(), body=body,
+                    current_user=FakeAgencySubscriber(),
+                    db=db,
+                )
 
         assert captured_kwargs["subscription_id"] == "sub_agency_001"
         assert captured_kwargs["cancel_at_next_billing_date"] is True
@@ -129,13 +139,17 @@ class TestDowngradeFree:
         db = MagicMock()
         db.execute = AsyncMock(return_value=_mock_db_result(_mock_db_row(future)))
 
+        fake_sub = FakeSubscription()
+
         with patch("app.api.routes.payments.dodo.subscriptions.update",
                    new=AsyncMock(side_effect=fake_update)):
-            result = await downgrade_subscription(
-                request=_make_request(), body=body,
-                current_user=FakeAgencySubscriber(),
-                db=db,
-            )
+            with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                       new=AsyncMock(return_value=fake_sub)):
+                result = await downgrade_subscription(
+                    request=_make_request(), body=body,
+                    current_user=FakeAgencySubscriber(),
+                    db=db,
+                )
 
         assert captured_kwargs["subscription_id"] == "sub_agency_001"
         assert captured_kwargs["cancel_at_next_billing_date"] is True
@@ -149,14 +163,17 @@ class TestDowngradeAgencyToPro:
         from app.api.routes.payments import downgrade_subscription, DowngradeRequest
 
         body = DowngradeRequest(plan="pro")
+        fake_sub = FakeSubscription()
 
         with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "prod_pro"):
-            with pytest.raises(Exception) as exc_info:
-                await downgrade_subscription(
-                    request=_make_request(), body=body,
-                    current_user=FakeProSubscriber(),
-                    db=MagicMock(),
-                )
+            with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                       new=AsyncMock(return_value=fake_sub)):
+                with pytest.raises(Exception) as exc_info:
+                    await downgrade_subscription(
+                        request=_make_request(), body=body,
+                        current_user=FakeProSubscriber(),
+                        db=MagicMock(),
+                    )
 
         assert "not subscribed to the Agency plan" in str(exc_info.value)
 
@@ -189,6 +206,8 @@ class TestDowngradeAgencyToPro:
 
         fake_sub = MagicMock()
         fake_sub.next_billing_date = future
+        fake_sub.scheduled_change = None
+        fake_sub.cancel_at_next_billing_date = False
 
         with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "prod_pro"):
             with patch("app.api.routes.payments.dodo.subscriptions.change_plan",
@@ -232,9 +251,32 @@ class TestDowngradeErrors:
         from app.api.routes.payments import downgrade_subscription, DowngradeRequest
 
         body = DowngradeRequest(plan="pro")
+        fake_sub = FakeSubscription()
 
         with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "prod_pro"):
-            with patch("app.api.routes.payments.dodo.subscriptions.change_plan",
+            with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                       new=AsyncMock(return_value=fake_sub)):
+                with patch("app.api.routes.payments.dodo.subscriptions.change_plan",
+                           new=AsyncMock(side_effect=Exception("API error"))):
+                    with pytest.raises(Exception) as exc_info:
+                        await downgrade_subscription(
+                            request=_make_request(), body=body,
+                            current_user=FakeAgencySubscriber(),
+                            db=MagicMock(),
+                        )
+
+        assert "Failed to schedule downgrade" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_downgrade_free_api_error(self):
+        from app.api.routes.payments import downgrade_subscription, DowngradeRequest
+
+        body = DowngradeRequest(plan="free")
+        fake_sub = FakeSubscription()
+
+        with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                   new=AsyncMock(return_value=fake_sub)):
+            with patch("app.api.routes.payments.dodo.subscriptions.update",
                        new=AsyncMock(side_effect=Exception("API error"))):
                 with pytest.raises(Exception) as exc_info:
                     await downgrade_subscription(
@@ -245,19 +287,82 @@ class TestDowngradeErrors:
 
         assert "Failed to schedule downgrade" in str(exc_info.value)
 
+
+class TestPreCheck:
     @pytest.mark.asyncio
-    async def test_downgrade_free_api_error(self):
+    async def test_rejects_existing_scheduled_change(self):
         from app.api.routes.payments import downgrade_subscription, DowngradeRequest
 
-        body = DowngradeRequest(plan="free")
+        body = DowngradeRequest(plan="pro")
+        fake_change = MagicMock()
+        fake_change.effective_at = datetime(2026, 7, 18, tzinfo=timezone.utc)
+        fake_sub = MagicMock()
+        fake_sub.scheduled_change = fake_change
+        fake_sub.cancel_at_next_billing_date = False
 
-        with patch("app.api.routes.payments.dodo.subscriptions.update",
-                   new=AsyncMock(side_effect=Exception("API error"))):
-            with pytest.raises(Exception) as exc_info:
-                await downgrade_subscription(
-                    request=_make_request(), body=body,
-                    current_user=FakeAgencySubscriber(),
-                    db=MagicMock(),
-                )
+        with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "prod_pro"):
+            with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                       new=AsyncMock(return_value=fake_sub)):
+                with pytest.raises(Exception) as exc_info:
+                    await downgrade_subscription(
+                        request=_make_request(), body=body,
+                        current_user=FakeAgencySubscriber(),
+                        db=MagicMock(),
+                    )
 
-        assert "Failed to schedule downgrade" in str(exc_info.value)
+        assert "PENDING_SCHEDULED_CHANGE" in str(exc_info.value)
+        assert "already have a pending plan change" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_rejects_existing_cancellation(self):
+        from app.api.routes.payments import downgrade_subscription, DowngradeRequest
+
+        body = DowngradeRequest(plan="pro")
+        fake_sub = MagicMock()
+        fake_sub.scheduled_change = None
+        fake_sub.cancel_at_next_billing_date = True
+
+        with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "prod_pro"):
+            with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                       new=AsyncMock(return_value=fake_sub)):
+                with pytest.raises(Exception) as exc_info:
+                    await downgrade_subscription(
+                        request=_make_request(), body=body,
+                        current_user=FakeAgencySubscriber(),
+                        db=MagicMock(),
+                    )
+
+        assert "PENDING_CANCELLATION" in str(exc_info.value)
+        assert "already scheduled for cancellation" in str(exc_info.value)
+
+
+class TestDodoErrorSurfacing:
+    @pytest.mark.asyncio
+    async def test_dodo_409_returns_real_message(self):
+        from app.api.routes.payments import downgrade_subscription, DowngradeRequest
+        from dodopayments import ConflictError
+
+        body = DowngradeRequest(plan="pro")
+        fake_sub = FakeSubscription()
+
+        conflict = ConflictError(
+            message="Conflict Error",
+            response=MagicMock(status_code=409),
+            body={"code": "SCHEDULED_PLAN_CHANGE_EXISTS", "message": "A scheduled plan change already exists."},
+        )
+
+        with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "prod_pro"):
+            with patch("app.api.routes.payments.dodo.subscriptions.retrieve",
+                       new=AsyncMock(return_value=fake_sub)):
+                with patch("app.api.routes.payments.dodo.subscriptions.change_plan",
+                           new=AsyncMock(side_effect=conflict)):
+                    with pytest.raises(Exception) as exc_info:
+                        await downgrade_subscription(
+                            request=_make_request(), body=body,
+                            current_user=FakeAgencySubscriber(),
+                            db=MagicMock(),
+                        )
+
+        error_str = str(exc_info.value)
+        assert "SCHEDULED_PLAN_CHANGE_EXISTS" in error_str
+        assert "A scheduled plan change already exists" in error_str
