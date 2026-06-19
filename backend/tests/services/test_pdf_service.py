@@ -84,7 +84,7 @@ class TestPdfService:
             pass
 
     def test_build_sync_white_label_footer(self):
-        """Agency-tier PDF footer must NOT contain 'Databrief'; Pro-tier must still contain it."""
+        """Agency-tier PDF footer must NOT contain 'Naxely'; Pro-tier must still contain it."""
         import fitz
         from app.services.pdf_service import build_sync
 
@@ -99,7 +99,7 @@ class TestPdfService:
         }
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
 
-        # Agency tier with company name — footer should say company name, not Databrief
+        # Agency tier with company name — footer should say company name, not Naxely
         wl_config = dict(base_config)
         wl_config["report_id"] = "test-pdf-wl"
         wl_user_data = {
@@ -114,14 +114,14 @@ class TestPdfService:
         for page in wl_doc:
             wl_text += page.get_text()
         wl_doc.close()
-        assert 'Databrief' not in wl_text, "White-label PDF should not contain 'Databrief' in footer"
+        assert 'Naxely' not in wl_text, "White-label PDF should not contain 'Naxely' in footer"
         assert 'AgencyCo' in wl_text, "White-label PDF should contain company name in footer"
         try:
             os.unlink(wl_path)
         except OSError:
             pass
 
-        # Pro tier — footer must still contain Databrief
+        # Pro tier — footer must still contain Naxely
         pro_config = dict(base_config)
         pro_config["report_id"] = "test-pdf-pro-footer"
         pro_user_data = {
@@ -136,13 +136,13 @@ class TestPdfService:
         for page in pro_doc:
             pro_text += page.get_text()
         pro_doc.close()
-        assert 'Databrief' in pro_text, "Pro-tier PDF should contain 'Databrief' in footer"
+        assert 'Naxely' in pro_text, "Pro-tier PDF should contain 'Naxely' in footer"
         try:
             os.unlink(pro_path)
         except OSError:
             pass
 
-        # Free tier — footer must also contain Databrief
+        # Free tier — footer must also contain Naxely
         free_config = dict(base_config)
         free_config["report_id"] = "test-pdf-free-footer"
         free_user_data = {
@@ -157,7 +157,7 @@ class TestPdfService:
         for page in free_doc:
             free_text += page.get_text()
         free_doc.close()
-        assert 'Databrief' in free_text, "Free-tier PDF should contain 'Databrief' in footer"
+        assert 'Naxely' in free_text, "Free-tier PDF should contain 'Naxely' in footer"
         try:
             os.unlink(free_path)
         except OSError:

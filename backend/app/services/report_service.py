@@ -142,10 +142,20 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
 
         await update_status(report_id, 'processing', step='pdf')
 
+        logo_url = None
+        if user_data_row and user_data_row.get("logo_url"):
+            try:
+                def _sync_signed():
+                    return _get_supabase().storage.from_("logos").create_signed_url(user_data_row["logo_url"], 3600)
+                signed = await _run_sync(_sync_signed)
+                logo_url = signed.get("signedURL", signed.get("signedUrl", ""))
+            except Exception:
+                logo_url = None
+
         user_data_dict = {
             "brand_color": brand_color,
             "tier": user_data_row.get("tier", "free") if user_data_row else "free",
-            "logo_url": (user_data_row.get("logo_url") if user_data_row else None),
+            "logo_url": logo_url,
             "company_name": (user_data_row.get("company_name") if user_data_row else None),
         }
 

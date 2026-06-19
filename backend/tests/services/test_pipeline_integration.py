@@ -112,7 +112,7 @@ class TestPipelineIntegration:
         doc = fitz.open(pdf_path)
         assert len(doc) >= 1
         page_text = doc[0].get_text()
-        assert "Databrief" in page_text
+        assert "Naxely" in page_text
         doc.close()
 
         cleanup_charts(report_id)
