@@ -51,6 +51,10 @@ class BrandingUpdateRequest(BaseModel):
     company_name: Optional[str] = None
 
 
+class ThemeUpdateRequest(BaseModel):
+    theme: str = Field(..., pattern=r"^(light|dark)$")
+
+
 class DeleteAccountRequest(BaseModel):
     email: str
 
@@ -302,6 +306,20 @@ async def update_branding(
             "company_name": row["company_name"] if row else company_name,
         },
     }
+
+
+@router.post("/theme")
+async def update_theme(
+    body: ThemeUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    await db.execute(
+        text("UPDATE users SET theme_preference = :theme, updated_at = NOW() WHERE id = :uid"),
+        {"theme": body.theme, "uid": str(current_user.id)},
+    )
+    await db.commit()
+    return {"success": True, "data": {"theme": body.theme}}
 
 
 @router.delete("/account")

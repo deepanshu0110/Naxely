@@ -105,12 +105,12 @@ export default function NewReport() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">New Report</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">New Report</h1>
           </div>
 
           <div className="mb-8 flex items-center justify-center">
@@ -127,48 +127,48 @@ export default function NewReport() {
                           ? 'bg-indigo-500 text-white'
                           : isCompleted
                             ? 'bg-green-500 text-white'
-                            : 'bg-gray-200 text-gray-500'
+                            : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
                       }`}
                     >
                       {isCompleted ? '✓' : stepNum}
                     </div>
                     <span
                       className={`mt-1 text-xs ${
-                        isActive ? 'font-medium text-indigo-600' : 'text-gray-400'
+                        isActive ? 'font-medium text-indigo-600' : 'text-gray-400 dark:text-gray-500'
                       }`}
                     >
                       {label}
                     </span>
                   </div>
-                  {idx < STEP_LABELS.length - 1 && <div className="mx-4 h-0.5 w-12 bg-gray-200" />}
+                  {idx < STEP_LABELS.length - 1 && <div className="mx-4 h-0.5 w-12 bg-gray-200 dark:bg-gray-700" />}
                 </div>
               )
             })}
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             {currentStep === 1 && (
               <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-900">Upload Data</h2>
+                <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Upload Data</h2>
                 <FileUpload onUploadComplete={handleUploadComplete} />
               </div>
             )}
 
             {currentStep === 2 && uploadResult && (
               <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-900">Map Columns</h2>
+                <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Map Columns</h2>
                 <ColumnMapper columns={uploadResult.columns} onChange={handleColumnConfigChange} />
               </div>
             )}
 
             {currentStep === 3 && (
               <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-900">Configure Report</h2>
+                <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Configure Report</h2>
                 <ReportConfigForm onConfigChange={handleConfigChange} />
               </div>
             )}
 
-            <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-4">
+            <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
               <Button
                 variant="ghost"
                 onClick={() => setCurrentStep((s) => Math.max(1, s - 1))}

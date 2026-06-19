@@ -42,25 +42,25 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
 
   return (
     <>
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
         <div className="mb-3 flex items-start justify-between">
-          <h3 className="text-sm font-semibold text-gray-900" title={report.title}>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100" title={report.title}>
             {truncatedTitle}
           </h3>
           <div className="relative">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
             >
               <MoreHorizontal className="h-4 w-4" />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
                 {report.pdf_url && (
                   <a
                     href={report.pdf_url}
                     download
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
                     onClick={() => setMenuOpen(false)}
                   >
                     <Download className="h-4 w-4" /> Download PDF
@@ -71,7 +71,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
                     setMenuOpen(false)
                     navigate(`/report/${report.id}`)
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
                 >
                   <Eye className="h-4 w-4" /> View
                 </button>
@@ -80,7 +80,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
                     setMenuOpen(false)
                     setConfirmDelete(true)
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
                 >
                   <Trash2 className="h-4 w-4" /> Delete
                 </button>
@@ -94,14 +94,14 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
           <Badge variant={statusVariant(report.status)} text={report.status.charAt(0).toUpperCase() + report.status.slice(1)} />
         </div>
 
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>{report.row_count.toLocaleString()} rows</span>
           <span>{format(new Date(report.created_at), 'MMM d, yyyy')}</span>
         </div>
       </div>
 
       <Modal isOpen={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Report">
-        <p className="mb-6 text-sm text-gray-600">
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
           Are you sure you want to delete "{report.title}"? This action cannot be undone.
         </p>
         <div className="flex justify-end gap-3">

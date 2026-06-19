@@ -37,10 +37,10 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
   const activeIdx = stepIndexFromCurrent(currentStep)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gray-900">
       <div className="w-full max-w-md px-6 text-center">
-        <h2 className="mb-2 text-2xl font-bold text-gray-900">Generating your report</h2>
-        <p className="mb-10 text-sm text-gray-500">This usually takes 30–90 seconds</p>
+        <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">Generating your report</h2>
+        <p className="mb-10 text-sm text-gray-500 dark:text-gray-400">This usually takes 30–90 seconds</p>
 
         <div className="mb-8 space-y-4">
           {steps.map((step, idx) => {
@@ -55,16 +55,16 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
                   ) : active ? (
                     <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
                   ) : (
-                    <span className="text-xs text-gray-400">{idx + 1}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{idx + 1}</span>
                   )}
                 </div>
                 <span
                   className={`text-sm ${
                     completed
-                      ? 'font-medium text-green-600'
+                      ? 'font-medium text-green-600 dark:text-green-400'
                       : active
-                        ? 'font-medium text-indigo-600'
-                        : 'text-gray-400'
+                        ? 'font-medium text-indigo-600 dark:text-indigo-400'
+                        : 'text-gray-400 dark:text-gray-500'
                   }`}
                 >
                   {step.label}
@@ -76,21 +76,21 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
 
         {isPolling && (
           <div className="space-y-2">
-            <div className="h-2 w-full rounded-full bg-gray-200">
+            <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
               <div
                 className="h-2 rounded-full bg-indigo-500 transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               {elapsed > 0 ? `${elapsed}s elapsed` : 'Starting...'}
             </p>
           </div>
         )}
 
         {timeoutMessage && (
-          <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-            <p className="text-sm text-yellow-700">{timeoutMessage}</p>
+          <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/30">
+            <p className="text-sm text-yellow-700 dark:text-yellow-400">{timeoutMessage}</p>
           </div>
         )}
       </div>

@@ -54,18 +54,18 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
 
   if (uploadResult) {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-6">
+      <div className="rounded-xl border border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-900/30">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <FileText className="h-8 w-8 text-green-600" />
+            <FileText className="h-8 w-8 text-green-600 dark:text-green-400" />
             <div>
-              <p className="font-medium text-gray-900">{uploadResult.filename}</p>
-              <p className="text-sm text-gray-500">
+              <p className="font-medium text-gray-900 dark:text-gray-100">{uploadResult.filename}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {uploadResult.row_count.toLocaleString()} rows × {uploadResult.column_count} columns
               </p>
             </div>
           </div>
-          <button onClick={reset} className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+          <button onClick={reset} className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -79,30 +79,30 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
         {...getRootProps()}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-colors ${
           isDragActive
-            ? 'border-indigo-400 bg-indigo-50'
+            ? 'border-indigo-400 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/30'
             : error
-              ? 'border-red-300 bg-red-50'
-              : 'border-gray-300 bg-gray-50 hover:border-indigo-300 hover:bg-indigo-50/50'
+              ? 'border-red-300 bg-red-50 dark:border-red-500 dark:bg-red-900/30'
+              : 'border-gray-300 bg-gray-50 hover:border-indigo-300 hover:bg-indigo-50/50 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-indigo-500 dark:hover:bg-indigo-900/20'
         }`}
       >
         <input {...getInputProps()} />
         {uploading ? (
           <div className="flex flex-col items-center gap-3">
             <Spinner size="lg" />
-            <p className="text-sm text-gray-600">Uploading...</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Uploading...</p>
           </div>
         ) : (
           <>
-            <CloudUpload className="mb-4 h-12 w-12 text-gray-400" />
-            <p className="mb-1 text-sm font-medium text-gray-700">
+            <CloudUpload className="mb-4 h-12 w-12 text-gray-400 dark:text-gray-500" />
+            <p className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
               {isDragActive ? 'Drop your file here' : 'Drag & drop your CSV or XLSX file'}
             </p>
-            <p className="text-xs text-gray-500">or click to browse</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">or click to browse</p>
           </>
         )}
       </div>
       {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>
       )}
     </div>
   )

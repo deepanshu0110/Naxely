@@ -26,6 +26,7 @@ export interface AuthVerifyResponse {
   logo_url: string | null
   brand_color: string | null
   company_name: string | null
+  theme_preference: string
   reports_this_month: number
   monthly_limit: number | null
 }
@@ -76,6 +77,7 @@ export interface ProfileResponse {
   logo_url: string | null
   brand_color: string | null
   company_name: string | null
+  theme_preference: string
   reports_this_month: number
   monthly_limit: number | null
 }

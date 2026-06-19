@@ -100,24 +100,24 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-gray-700">Current Status</h3>
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Status</h3>
         <div className="mt-2 flex items-center gap-2">
           <Badge variant={hasKey ? 'success' : 'neutral'} text={statusLabel} />
           {hasKey && keyPreview && (
-            <span className="font-mono text-xs text-gray-500">{keyPreview}</span>
+            <span className="font-mono text-xs text-gray-500 dark:text-gray-400">{keyPreview}</span>
           )}
         </div>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label htmlFor="provider" className="mb-1 block text-sm font-medium text-gray-700">
+          <label htmlFor="provider" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Provider
           </label>
           <select
             id="provider"
             {...register('provider')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           >
             <option value="openai">OpenAI</option>
             <option value="claude">Claude (Anthropic)</option>
@@ -129,7 +129,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
         </div>
 
         <div>
-          <label htmlFor="api_key" className="mb-1 block text-sm font-medium text-gray-700">
+          <label htmlFor="api_key" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             API Key
           </label>
           <input
@@ -138,7 +138,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
             placeholder={placeholder}
             autoComplete="off"
             {...register('api_key')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
           />
           {errors.api_key && (
             <p className="mt-1 text-xs text-red-500">{errors.api_key.message}</p>
@@ -187,7 +187,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
               Removing your API key means AI-powered features (Executive Summary, Insight Cards, Anomaly Detection) will not work until you add a new key.
             </p>
           </div>
-          <p className="text-sm text-gray-600">Are you sure you want to delete your API key?</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Are you sure you want to delete your API key?</p>
           <div className="flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
             <Button variant="danger" loading={isDeleting} onClick={handleDelete}>Delete Key</Button>
@@ -200,11 +200,11 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
 
 function UpgradePromptInline({ feature, tier }: { feature: string; tier: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-      <Shield className="h-5 w-5 flex-shrink-0 text-gray-400" />
+    <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+      <Shield className="h-5 w-5 flex-shrink-0 text-gray-400 dark:text-gray-500" />
       <div className="flex-1">
-        <p className="text-sm font-medium text-gray-700">{feature}</p>
-        <p className="text-xs text-gray-500">Available on {tier} plan</p>
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{feature}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Available on {tier} plan</p>
       </div>
       <a
         href="/pricing"

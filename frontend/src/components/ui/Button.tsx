@@ -23,9 +23,9 @@ export default function Button({
 
   const variants = {
     primary: 'bg-indigo-500 text-white hover:bg-indigo-600',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100',
+    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50',
     danger: 'bg-red-500 text-white hover:bg-red-600',
-    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50',
+    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/50',
   }
 
   const sizes = {

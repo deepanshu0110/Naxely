@@ -75,7 +75,7 @@ export default function ReportView() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
+      <div className="flex h-screen items-center justify-center bg-white dark:bg-gray-900">
         <Spinner size="lg" />
       </div>
     )
@@ -83,8 +83,8 @@ export default function ReportView() {
 
   if (error || !report) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-white">
-        <p className="text-gray-500">{error ?? 'Report not found'}</p>
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-white dark:bg-gray-900">
+        <p className="text-gray-500 dark:text-gray-400">{error ?? 'Report not found'}</p>
         <Button variant="ghost" onClick={() => navigate('/dashboard')}>
           Back to Dashboard
         </Button>
@@ -104,12 +104,12 @@ export default function ReportView() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+        <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-gray-900">{report.title}</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{report.title}</h1>
             <Badge variant={statusVariant(report.status)} text={report.status} />
           </div>
           <div className="flex items-center gap-2">
@@ -141,53 +141,53 @@ export default function ReportView() {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          <div className="flex-1 overflow-y-auto bg-gray-100 p-4">
+          <div className="flex-1 overflow-y-auto bg-gray-100 p-4 dark:bg-gray-800">
             {report.pdf_url ? (
               <iframe
                 src={report.pdf_url}
                 title="Report PDF"
-                className="h-full w-full rounded-lg border border-gray-200 bg-white"
+                className="h-full w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900"
               />
             ) : (
               <div className="flex h-full items-center justify-center">
-                <p className="text-gray-500">PDF preview not available</p>
+                <p className="text-gray-500 dark:text-gray-400">PDF preview not available</p>
               </div>
             )}
           </div>
 
-          <div className="w-96 overflow-y-auto border-l border-gray-200 bg-white p-6">
+          <div className="w-96 overflow-y-auto border-l border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
             <div className="space-y-6">
               {report.error_message && (
-                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">
                   <div className="flex items-start gap-2">
-                    <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
-                    <p className="text-sm text-yellow-800">{report.error_message}</p>
+                    <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+                    <p className="text-sm text-yellow-800 dark:text-yellow-200">{report.error_message}</p>
                   </div>
                 </div>
               )}
 
               {report.generation_time_seconds != null && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="h-4 w-4 text-gray-400" />
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <Clock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                   Generated in {Math.round(report.generation_time_seconds)} seconds
                 </div>
               )}
 
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <FileText className="h-4 w-4 text-gray-400" />
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <FileText className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                 {typeof report.row_count === 'number' ? report.row_count.toLocaleString() : '—'} rows
               </div>
 
               {isPro && report.ai_summary && (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                  <h3 className="mb-2 text-sm font-semibold text-gray-900">AI Summary</h3>
-                  <p className="text-sm text-gray-600">{report.ai_summary}</p>
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-700/50">
+                  <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">AI Summary</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{report.ai_summary}</p>
                 </div>
               )}
 
               {isPro && report.ai_insights && report.ai_insights.length > 0 && (
                 <div>
-                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Insights</h3>
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Insights</h3>
                   <div className="space-y-3">
                     {report.ai_insights.map((insight, idx) => (
                       <InsightCard key={idx} insight={insight} />
@@ -202,19 +202,19 @@ export default function ReportView() {
 
               {isPro && report.ai_anomalies && report.ai_anomalies.length > 0 && (
                 <div>
-                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Anomaly Alerts</h3>
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Anomaly Alerts</h3>
                   <div className="space-y-2">
                     {report.ai_anomalies.map((anomaly, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3"
+                        className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30"
                       >
-                        <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
+                        <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
                         <div>
-                          <p className="text-sm font-medium text-yellow-800">
+                          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                             {anomaly.column}: {anomaly.value}
                           </p>
-                          <p className="text-xs text-yellow-600">
+                          <p className="text-xs text-yellow-600 dark:text-yellow-400">
                             Expected: {anomaly.expected} — Deviation: {anomaly.deviation}
                           </p>
                         </div>
@@ -224,7 +224,7 @@ export default function ReportView() {
                 </div>
               )}
 
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-gray-500">
                 Created {format(new Date(report.created_at), 'MMM d, yyyy h:mm a')}
               </p>
             </div>
@@ -233,7 +233,7 @@ export default function ReportView() {
       </main>
 
       <Modal isOpen={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Report">
-        <p className="mb-6 text-sm text-gray-600">
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
           Are you sure you want to delete "{report.title}"? This cannot be undone.
         </p>
         <div className="flex justify-end gap-3">

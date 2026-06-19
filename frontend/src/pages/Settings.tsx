@@ -72,11 +72,11 @@ export default function Settings() {
   if (loading) return <SettingsSkeleton />
   if (error) {
     return (
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
         <Sidebar />
         <main className="flex flex-1 items-center justify-center">
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/30">
+            <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             <Button variant="ghost" size="sm" className="mt-3" onClick={fetchSettings}>Retry</Button>
           </div>
         </main>
@@ -86,11 +86,11 @@ export default function Settings() {
   if (!profile) return null
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
-          <h1 className="mb-6 text-2xl font-bold text-gray-900">Settings</h1>
+          <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
           <Tabs items={TABS} activeId={activeTab} onChange={setActiveTab}>
             {activeTab === 'profile' && <ProfileTab profile={profile} onSaved={fetchProfile} />}
             {activeTab === 'api-key' && (
@@ -124,20 +124,20 @@ export default function Settings() {
 
 function SettingsSkeleton() {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
-          <div className="mb-6 h-8 w-32 animate-pulse rounded bg-gray-200" />
+          <div className="mb-6 h-8 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
           <div className="mb-6 flex gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-9 w-20 animate-pulse rounded bg-gray-200" />
+              <div key={i} className="h-9 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
             ))}
           </div>
           <div className="space-y-4">
-            <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
-            <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
-            <div className="h-10 w-3/4 animate-pulse rounded bg-gray-200" />
+            <div className="h-10 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="h-10 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="h-10 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
           </div>
         </div>
       </main>
@@ -173,24 +173,24 @@ function ProfileTab({ profile, onSaved }: { profile: ProfileResponse; onSaved: (
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label htmlFor="full_name" className="mb-1 block text-sm font-medium text-gray-700">Full name</label>
+        <label htmlFor="full_name" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Full name</label>
         <input
           id="full_name"
           {...register('full_name')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
         />
         {errors.full_name && <p className="mt-1 text-xs text-red-500">{errors.full_name.message}</p>}
       </div>
       <div>
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">Email</label>
+        <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
         <input
           id="email"
           type="email"
           readOnly
           value={profile.email}
-          className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"
+          className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400"
         />
-        <p className="mt-1 text-xs text-gray-400">Email is managed through your account provider.</p>
+        <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">Email is managed through your account provider.</p>
       </div>
       <Button type="submit" loading={isSaving}>Save</Button>
     </form>
@@ -263,20 +263,20 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Logo</label>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Logo</label>
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
-          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 bg-gray-50'}`}
+          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700'}`}
         >
           {logoPreview ? (
             <div className="flex flex-col items-center gap-2">
               <img src={logoPreview} alt="Brand logo" className="h-16 max-w-[200px] object-contain" />
-              <p className="text-xs text-gray-500">Drag & drop to replace, or click below</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Drag & drop to replace, or click below</p>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-2 text-gray-400">
+            <div className="flex flex-col items-center gap-2 text-gray-400 dark:text-gray-500">
               <Upload className="h-8 w-8" />
               <p className="text-sm">Drag & drop your logo here</p>
               <p className="text-xs">PNG, JPG, or SVG — max 2MB</p>
@@ -287,40 +287,40 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
           type="file"
           accept=".png,.jpg,.jpeg,.svg"
           onChange={handleFileSelect}
-          className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-indigo-600 hover:file:bg-indigo-100"
+          className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-indigo-600 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/30 dark:file:text-indigo-400"
         />
       </div>
 
       <div>
-        <label htmlFor="brand_color" className="mb-1 block text-sm font-medium text-gray-700">Brand Colour</label>
+        <label htmlFor="brand_color" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Brand Colour</label>
         <div className="flex items-center gap-3">
           <input
             id="brand_color"
             type="text"
             {...register('brand_color')}
-            className="w-32 rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-32 rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           />
           <input
             type="color"
             value={watchedColor ?? '#6366F1'}
             onChange={(e) => setValue('brand_color', e.target.value, { shouldValidate: true })}
-            className="h-9 w-9 cursor-pointer rounded border border-gray-300"
+            className="h-9 w-9 cursor-pointer rounded border border-gray-300 dark:border-gray-600"
           />
         </div>
         {errors.brand_color && <p className="mt-1 text-xs text-red-500">{errors.brand_color.message}</p>}
       </div>
 
       <div>
-        <label htmlFor="company_name" className="mb-1 block text-sm font-medium text-gray-700">Company Name</label>
+        <label htmlFor="company_name" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</label>
         <input
           id="company_name"
           {...register('company_name')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
         />
       </div>
 
       <div>
-        <h4 className="mb-3 text-sm font-medium text-gray-700">Preview</h4>
+        <h4 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Preview</h4>
         <BrandingPreview
           companyName={watchedName ?? ''}
           brandColor={watchedColor ?? '#6366F1'}
@@ -335,7 +335,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
 
 function BrandingPreview({ companyName, brandColor, logoUrl }: { companyName: string; brandColor: string; logoUrl: string | null }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200" style={{ width: 280, height: 200 }}>
+    <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700" style={{ width: 280, height: 200 }}>
       <div className="flex h-full flex-col items-center justify-center gap-3 p-4" style={{ backgroundColor: brandColor + '10' }}>
         <div
           className="flex h-1 w-16 rounded-full"
@@ -459,7 +459,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-gray-700">Current Plan</h3>
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Plan</h3>
         <div className="mt-2 flex items-center gap-2">
           <Badge variant={tier === 'free' ? 'neutral' : 'success'} text={planLabels[tier] ?? tier} />
         </div>
@@ -467,21 +467,21 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
 
       {tierExpiresAt && !scheduledChange && !downgradeMessage && (
         <div>
-          <h3 className="text-sm font-medium text-gray-700">Next Billing Date</h3>
-          <p className="mt-1 text-sm text-gray-900">{effectiveDate}</p>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Next Billing Date</h3>
+          <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{effectiveDate}</p>
         </div>
       )}
 
       {downgradeMessage && (
-        <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
-          <p className="text-sm text-yellow-700">{downgradeMessage}</p>
+        <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+          <p className="text-sm text-yellow-700 dark:text-yellow-400">{downgradeMessage}</p>
         </div>
       )}
 
       {(tier === 'free' || tier === 'pro') && !scheduledChange && (
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-gray-700">Upgrade</h3>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Upgrade</h3>
           {tier === 'free' && (
             <CompactPlanCard
               plan="pro"
@@ -505,15 +505,15 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
 
       {tier !== 'free' && !scheduledChange && !subLoading && (
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Change Plan</h3>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Change Plan</h3>
 
           {tier === 'agency' && (
             <Card padding="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-900">Downgrade to Pro</h4>
-                  <p className="mt-1 text-xs text-gray-500">$29/month — Unlimited reports, AI insights, custom branding</p>
-                  {effectiveDate && <p className="mt-1 text-xs text-gray-400">Takes effect next billing period ({effectiveDate})</p>}
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Downgrade to Pro</h4>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">$29/month — Unlimited reports, AI insights, custom branding</p>
+                  {effectiveDate && <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">Takes effect next billing period ({effectiveDate})</p>}
                 </div>
                 <Button size="sm" variant="outline" onClick={() => setShowDowngradeModal('pro')}>Downgrade to Pro</Button>
               </div>
@@ -523,9 +523,9 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
           <Card padding="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-semibold text-gray-900">Downgrade to Free</h4>
-                <p className="mt-1 text-xs text-gray-500">3 reports/month, CSV upload, basic charts, watermark</p>
-                {effectiveDate && <p className="mt-1 text-xs text-gray-400">Takes effect next billing period ({effectiveDate})</p>}
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Downgrade to Free</h4>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">3 reports/month, CSV upload, basic charts, watermark</p>
+                {effectiveDate && <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">Takes effect next billing period ({effectiveDate})</p>}
               </div>
               <Button size="sm" variant="outline" onClick={() => setShowDowngradeModal('free')}>Downgrade to Free</Button>
             </div>
@@ -537,11 +537,11 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         <Card padding="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-semibold text-gray-900">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 Scheduled: moving to {scheduledChange.type === 'pro' ? 'Pro' : 'Free'}
               </h4>
               {scheduledEffectiveDate && (
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Takes effect {scheduledEffectiveDate}
                 </p>
               )}
@@ -559,15 +559,15 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         title={showDowngradeModal === 'pro' ? 'Downgrade to Pro' : 'Downgrade to Free'}
       >
         <div className="space-y-4">
-          <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600" />
-            <p className="text-sm text-yellow-700">
+          <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">
+            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+            <p className="text-sm text-yellow-700 dark:text-yellow-400">
               {showDowngradeModal === 'pro'
                 ? `You'll move to the Pro plan at the start of your next billing period${effectiveDate ? ` (${effectiveDate})` : ''}. Your Agency features will remain active until then.`
                 : `Your ${tier.charAt(0).toUpperCase() + tier.slice(1)} access continues until the end of your current billing period${effectiveDate ? ` (${effectiveDate})` : ''}. After that, you'll be moved to the Free plan.`}
             </p>
           </div>
-          <p className="text-sm text-gray-600">Are you sure you want to downgrade?</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Are you sure you want to downgrade?</p>
           <div className="flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setShowDowngradeModal(null)}>Keep Current Plan</Button>
             <Button variant="danger" loading={isDowngrading} onClick={handleDowngrade}>
@@ -577,11 +577,11 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
         </div>
       </Modal>
 
-      <hr className="border-gray-200" />
+      <hr className="border-gray-200 dark:border-gray-700" />
 
       <div>
         <h3 className="text-sm font-medium text-red-700">Danger Zone</h3>
-        <p className="mt-1 text-xs text-gray-500">Once you delete your account, there is no going back. Please be certain.</p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Once you delete your account, there is no going back. Please be certain.</p>
         <div className="mt-3">
           <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Delete Account</Button>
           <Modal
@@ -590,13 +590,13 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
             title="Delete Account"
           >
             <div className="space-y-4">
-              <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
-                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
-                <p className="text-sm text-red-700">
+              <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/30">
+                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600 dark:text-red-400" />
+                <p className="text-sm text-red-700 dark:text-red-400">
                   This will permanently delete your account and all associated data. This action cannot be undone.
                 </p>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Type <strong>{profile?.email}</strong> to confirm:
               </p>
               <input
@@ -604,7 +604,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
                 value={deleteEmail}
                 onChange={(e) => setDeleteEmail(e.target.value)}
                 placeholder={profile?.email}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
               />
               <div className="flex justify-end gap-3">
                 <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteEmail('') }}>Cancel</Button>
@@ -643,11 +643,11 @@ function CompactPlanCard({ plan, loading, price, features, cta, onUpgrade }: { p
     <Card padding="p-4">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-sm font-semibold text-gray-900">{plan === 'pro' ? 'Pro' : 'Agency'}</h4>
-          <p className="text-lg font-bold text-gray-900">{price}</p>
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{plan === 'pro' ? 'Pro' : 'Agency'}</h4>
+          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{price}</p>
           <ul className="mt-2 space-y-1">
             {features.map((f) => (
-              <li key={f} className="text-xs text-gray-500">
+              <li key={f} className="text-xs text-gray-500 dark:text-gray-400">
                 <span className="text-indigo-500">✓</span> {f}
               </li>
             ))}

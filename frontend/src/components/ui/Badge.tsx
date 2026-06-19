@@ -7,11 +7,11 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<string, string> = {
-  success: 'bg-green-50 text-green-700 ring-green-600/20',
-  warning: 'bg-yellow-50 text-yellow-700 ring-yellow-600/20',
-  error: 'bg-red-50 text-red-700 ring-red-600/20',
-  info: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  neutral: 'bg-gray-50 text-gray-700 ring-gray-600/20',
+  success: 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-400 dark:ring-green-400/20',
+  warning: 'bg-yellow-50 text-yellow-700 ring-yellow-600/20 dark:bg-yellow-900/30 dark:text-yellow-400 dark:ring-yellow-400/20',
+  error: 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-400/20',
+  info: 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20',
+  neutral: 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-700/50 dark:text-gray-300 dark:ring-gray-400/20',
 }
 
 export default function Badge({ variant = 'neutral', text, className }: BadgeProps) {

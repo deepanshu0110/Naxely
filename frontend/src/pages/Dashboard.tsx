@@ -28,12 +28,12 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-5xl px-6 py-8">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Your Reports</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Your Reports</h1>
             <Button onClick={() => navigate('/report/new')}>+ New Report</Button>
           </div>
 
@@ -42,8 +42,8 @@ export default function Dashboard() {
               <Spinner size="lg" />
             </div>
           ) : error ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/30">
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
               <Button variant="ghost" size="sm" className="mt-3" onClick={() => fetchReports()}>
                 Retry
               </Button>

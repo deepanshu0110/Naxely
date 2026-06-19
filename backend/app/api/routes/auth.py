@@ -24,7 +24,7 @@ async def verify_auth(
     )
     row = result.mappings().first()
     if not row:
-        return {"id": str(current_user.id), "email": "", "full_name": "", "avatar_url": None, "tier": "free", "tier_expires_at": None, "has_api_key": False, "ai_provider": None, "logo_url": None, "brand_color": "#6366F1", "company_name": None, "reports_this_month": 0, "monthly_limit": 3}
+        return {"id": str(current_user.id), "email": "", "full_name": "", "avatar_url": None, "tier": "free", "tier_expires_at": None, "has_api_key": False, "ai_provider": None, "logo_url": None, "brand_color": "#6366F1", "company_name": None, "reports_this_month": 0, "monthly_limit": 3, "theme_preference": "light"}
 
     monthly_limit = MONTHLY_LIMITS.get(row.get("tier", "free"), 3)
 
@@ -42,4 +42,5 @@ async def verify_auth(
         "company_name": row.get("company_name"),
         "reports_this_month": row.get("reports_this_month", 0),
         "monthly_limit": monthly_limit,
+        "theme_preference": row.get("theme_preference", "light"),
     }

@@ -20,7 +20,7 @@ export default function UsageBar({ reportsThisMonth, monthlyLimit }: UsageBarPro
         color={atLimit ? 'bg-red-500' : 'bg-gray-400'}
       />
       {atLimit && (
-        <Link to="/pricing" className="mt-2 inline-block text-xs font-medium text-red-500 hover:text-red-600">
+        <Link to="/pricing" className="mt-2 inline-block text-xs font-medium text-red-500 hover:text-red-600 dark:text-red-400">
           Upgrade for unlimited →
         </Link>
       )}

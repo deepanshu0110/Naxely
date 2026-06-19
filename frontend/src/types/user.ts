@@ -12,4 +12,5 @@ export interface User {
   company_name: string | null
   reports_this_month: number
   monthly_limit: number | null
+  theme_preference: string
 }

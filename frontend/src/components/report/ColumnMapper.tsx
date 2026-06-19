@@ -32,7 +32,7 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-200 text-left text-xs font-medium uppercase text-gray-500">
+          <tr className="border-b border-gray-200 text-left text-xs font-medium uppercase text-gray-500 dark:border-gray-700">
             <th className="pb-3 pr-4">Original Name</th>
             <th className="pb-3 pr-4">Display Name</th>
             <th className="pb-3 pr-4">Type</th>
@@ -40,23 +40,23 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
             <th className="pb-3">Sample Values</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
           {columns.map((col, idx) => (
             <tr key={col.original_name}>
-              <td className="py-3 pr-4 font-medium text-gray-900">{col.original_name}</td>
+              <td className="py-3 pr-4 font-medium text-gray-900 dark:text-gray-100">{col.original_name}</td>
               <td className="py-3 pr-4">
                 <input
                   type="text"
                   value={config[idx]?.display_name ?? ''}
                   onChange={(e) => updateField(idx, 'display_name', e.target.value)}
-                  className="w-40 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-40 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                 />
               </td>
               <td className="py-3 pr-4">
                 <select
                   value={config[idx]?.type ?? 'dimension'}
                   onChange={(e) => updateField(idx, 'type', e.target.value)}
-                  className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                 >
                   {typeOptions.map((t) => (
                     <option key={t} value={t}>
@@ -82,7 +82,7 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
               <td className="py-3">
                 <div className="flex flex-wrap gap-1">
                   {col.sample_values.slice(0, 3).map((v, i) => (
-                    <span key={i} className="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                    <span key={i} className="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400">
                       {String(v ?? '—')}
                     </span>
                   ))}

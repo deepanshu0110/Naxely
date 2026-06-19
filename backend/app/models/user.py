@@ -35,6 +35,9 @@ class User(Base, TimestampMixin):
     reports_this_month = Column(Integer, default=0)
     usage_reset_at = Column(DateTime(timezone=True), server_default=text("date_trunc('month', NOW() + interval '1 month')"))
     
+    # Preferences
+    theme_preference = Column(String(10), default='light')
+
     # Soft delete
     deleted_at = Column(DateTime(timezone=True))
     
