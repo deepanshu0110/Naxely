@@ -251,6 +251,7 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         f'- Every "number" field MUST start with an actual number from the data\n'
         f'- Every "action" must be specific and executable\n'
         f"- Maximum 5 insights\n"
+        f"- trend and trend_pct_change measure different things and may point in different directions — this is expected, not an error. trend reflects the slope across the full period; trend_pct_change reflects only the first-to-last value change. NEVER generate an insight whose finding is that these two fields conflict, are \"contradictory\", indicate a \"calculation error\", need \"review\", \"correction\", or \"clarification\" of methodology. If they diverge, that itself is not insight-worthy — instead look for the REAL underlying business pattern (e.g. an overall upward trend with a recent dip) and only surface it as an insight if it reflects genuine business significance, not a metric-definition mismatch.\n"
         f"- Return ONLY the JSON array"
     )
 
