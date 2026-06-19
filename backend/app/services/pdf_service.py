@@ -420,18 +420,6 @@ def build_sync(
             chart_img = Image(chart_path, width=draw_w, height=draw_h)
             chart_img.hAlign = 'CENTER'
             body_story.append(chart_img)
-            caption_text = col_name.replace('_', ' ').title()
-            caption_style = ParagraphStyle(
-                'ChartCaption',
-                parent=styles['Normal'],
-                fontName='Helvetica-Oblique',
-                fontSize=9,
-                textColor=HexColor('#6B7280'),
-                alignment=TA_CENTER,
-                spaceBefore=4,
-                spaceAfter=12,
-            )
-            body_story.append(Paragraph(caption_text, caption_style))
         except Exception:
             continue
     body_story.append(PageBreak())

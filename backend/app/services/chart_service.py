@@ -8,7 +8,34 @@ import pandas as pd
 
 CHART_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6']
 
+SECONDARY_COLOR = '#94A3B8'
+GRID_COLOR = '#E5E7EB'
+SPINE_COLOR = '#D1D5DB'
+TICK_COLOR = '#6B7280'
+LABEL_COLOR = '#374151'
+TITLE_COLOR = '#1F2937'
+
 CHART_DIR = Path('/tmp/naxely')
+
+
+def _apply_chart_style(fig, ax, brand_color: str) -> None:
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_color(SPINE_COLOR)
+    ax.spines['bottom'].set_color(SPINE_COLOR)
+    ax.grid(True, axis='y', color=GRID_COLOR, linewidth=0.5, zorder=0)
+    ax.set_axisbelow(True)
+    ax.tick_params(axis='both', labelsize=10, colors=TICK_COLOR)
+    ax.xaxis.label.set_size(12)
+    ax.xaxis.label.set_color(LABEL_COLOR)
+    ax.xaxis.label.set_fontweight('bold')
+    ax.yaxis.label.set_size(12)
+    ax.yaxis.label.set_color(LABEL_COLOR)
+    ax.yaxis.label.set_fontweight('bold')
+    ax.set_title(
+        ax.get_title() or '',
+        fontsize=14, fontweight='bold', color=TITLE_COLOR, pad=12,
+    )
 
 
 def _is_date_column(series: pd.Series) -> bool:
@@ -70,6 +97,7 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
     output_path = output_dir / f'chart_{chart_index}.png'
 
     fig, ax = plt.subplots(figsize=(10, 5))
+    _apply_chart_style(fig, ax, brand_color)
 
     display_name = column_name.replace('_', ' ').title()
 
@@ -93,14 +121,11 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
             ax.bar(counts.index.astype(str), counts.values, color=brand_color)
             ax.set_xlabel(display_name)
             ax.set_ylabel('Count')
-            fig.tight_layout()
-            fig.savefig(str(output_path), dpi=150)
-            plt.close(fig)
-            return str(output_path)
-        values = df[column_name].dropna()
-        ax.bar(range(len(values)), values, color=brand_color)
-        ax.set_xlabel('Row')
-        ax.set_ylabel(display_name)
+        else:
+            values = df[column_name].dropna()
+            ax.bar(range(len(values)), values, color=brand_color)
+            ax.set_xlabel('Row')
+            ax.set_ylabel(display_name)
 
     elif chart_type == 'histogram':
         ax.hist(df[column_name].dropna(), bins=20, color=brand_color, edgecolor='white')
