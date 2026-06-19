@@ -3,6 +3,7 @@ import { clsx } from 'clsx'
 interface BadgeProps {
   variant?: 'success' | 'warning' | 'error' | 'info' | 'neutral'
   text: string
+  mono?: boolean
   className?: string
 }
 
@@ -14,11 +15,12 @@ const variantStyles: Record<string, string> = {
   neutral: 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-700/50 dark:text-gray-300 dark:ring-gray-400/20',
 }
 
-export default function Badge({ variant = 'neutral', text, className }: BadgeProps) {
+export default function Badge({ variant = 'neutral', text, mono = false, className }: BadgeProps) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset',
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-body font-medium ring-1 ring-inset',
+        mono && 'font-mono tabular-nums',
         variantStyles[variant],
         className,
       )}

@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import { COLORS, FONTS } from './src/design-tokens'
 
 const config: Config = {
   darkMode: ['class'],
@@ -33,9 +34,17 @@ const config: Config = {
           7: '#EC4899',
           8: '#14B8A6',
         },
+        ink: COLORS.ink,
+        paper: COLORS.paper,
+        slate: COLORS.slate,
+        amber: COLORS.amber,
+        mint: COLORS.mint,
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: FONTS.display,
+        body: FONTS.body,
+        mono: FONTS.mono,
       },
       borderRadius: {
         lg: '0.5rem',

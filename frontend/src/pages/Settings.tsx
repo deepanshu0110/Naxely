@@ -72,7 +72,7 @@ export default function Settings() {
   if (loading) return <SettingsSkeleton />
   if (error) {
     return (
-      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="flex h-screen bg-slate dark:bg-ink">
         <Sidebar />
         <main className="flex flex-1 items-center justify-center">
           <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/30">
@@ -86,11 +86,11 @@ export default function Settings() {
   if (!profile) return null
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-slate dark:bg-ink">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
-          <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
+          <h1 className="mb-6 font-display text-2xl font-bold text-ink dark:text-gray-100">Settings</h1>
           <Tabs items={TABS} activeId={activeTab} onChange={setActiveTab}>
             {activeTab === 'profile' && <ProfileTab profile={profile} onSaved={fetchProfile} />}
             {activeTab === 'api-key' && (
@@ -124,7 +124,7 @@ export default function Settings() {
 
 function SettingsSkeleton() {
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-slate dark:bg-ink">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
@@ -459,7 +459,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Plan</h3>
+        <h3 className="text-sm font-body font-medium text-gray-700 dark:text-gray-300">Current Plan</h3>
         <div className="mt-2 flex items-center gap-2">
           <Badge variant={tier === 'free' ? 'neutral' : 'success'} text={planLabels[tier] ?? tier} />
         </div>
@@ -467,7 +467,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
 
       {tierExpiresAt && !scheduledChange && !downgradeMessage && (
         <div>
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Next Billing Date</h3>
+          <h3 className="text-sm font-body font-medium text-gray-700 dark:text-gray-300">Next Billing Date</h3>
           <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{effectiveDate}</p>
         </div>
       )}
@@ -481,7 +481,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
 
       {(tier === 'free' || tier === 'pro') && !scheduledChange && (
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Upgrade</h3>
+          <h3 className="text-sm font-body font-medium text-gray-700 dark:text-gray-300">Upgrade</h3>
           {tier === 'free' && (
             <CompactPlanCard
               plan="pro"
@@ -505,7 +505,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
 
       {tier !== 'free' && !scheduledChange && !subLoading && (
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Change Plan</h3>
+          <h3 className="text-sm font-body font-medium text-gray-700 dark:text-gray-300">Change Plan</h3>
 
           {tier === 'agency' && (
             <Card padding="p-4">
@@ -644,7 +644,7 @@ function CompactPlanCard({ plan, loading, price, features, cta, onUpgrade }: { p
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{plan === 'pro' ? 'Pro' : 'Agency'}</h4>
-          <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{price}</p>
+          <p className="text-lg font-mono tabular-nums font-bold text-gray-900 dark:text-gray-100">{price}</p>
           <ul className="mt-2 space-y-1">
             {features.map((f) => (
               <li key={f} className="text-xs text-gray-500 dark:text-gray-400">

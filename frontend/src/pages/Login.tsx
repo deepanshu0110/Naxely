@@ -42,17 +42,17 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-md">
+    <div className="flex min-h-screen items-center justify-center bg-slate px-4">
+      <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Naxely</h1>
-          <p className="mt-2 text-sm text-gray-500">Welcome back</p>
+          <h1 className="font-display text-2xl font-bold text-ink">Naxely</h1>
+          <p className="mt-2 text-sm font-body text-gray-500">Welcome back</p>
         </div>
 
         <button
           type="button"
           onClick={loginWithGoogle}
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-paper px-4 py-2.5 text-sm font-body font-medium text-gray-700 hover:bg-slate"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
             <path
@@ -83,14 +83,14 @@ export default function Login() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="mb-1 block text-sm font-body font-medium text-gray-700">
               Email
             </label>
             <input
               id="email"
               type="email"
               {...register('email')}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-ink placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               placeholder="you@example.com"
             />
             {errors.email && (
@@ -99,7 +99,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="mb-1 block text-sm font-body font-medium text-gray-700">
               Password
             </label>
             <div className="relative">
@@ -107,7 +107,7 @@ export default function Login() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm text-ink placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 placeholder="Min. 8 characters"
               />
               <button

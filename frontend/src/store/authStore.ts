@@ -24,6 +24,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isAuthenticated: false,
 
   initialize: async () => {
+    if (import.meta.env.VITE_BYPASS_AUTH === 'true') {
+      set({ user: { id: 'dev', email: 'dev@test.com', full_name: 'Dev User', avatar_url: null, tier: 'pro', tier_expires_at: null, has_api_key: false, ai_provider: null, logo_url: null, brand_color: null, company_name: 'Dev Co', reports_this_month: 0, monthly_limit: null, theme_preference: 'light' }, isAuthenticated: true, isLoading: false })
+      return
+    }
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {
       set({ session, isAuthenticated: true, isLoading: false })

@@ -16,6 +16,10 @@ node_modules/
 dist/
 .vite/
 
+# Playwright MCP artifacts
+.playwright-mcp/
+*.png
+
 # Temp files
 /tmp/
 *.pdf

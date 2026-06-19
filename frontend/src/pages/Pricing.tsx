@@ -112,12 +112,12 @@ export default function Pricing() {
     }`
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-paper text-ink">
       <Navbar />
 
       <section className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h1 className="mb-4 text-center text-3xl font-bold text-gray-900">
+          <h1 className="font-display mb-4 text-center text-3xl font-bold text-ink">
             Simple, transparent pricing
           </h1>
           <p className="mb-14 text-center text-lg text-gray-500">
@@ -130,7 +130,7 @@ export default function Pricing() {
               return (
               <div
                 key={p.name}
-                className={`relative rounded-xl bg-white p-8 shadow-sm ${
+                className={`relative rounded-xl bg-paper p-8 shadow-sm ${
                   p.highlight
                     ? 'border-2 border-indigo-500'
                     : 'border border-gray-200'
@@ -141,9 +141,9 @@ export default function Pricing() {
                     {p.badge}
                   </span>
                 )}
-                <h3 className="text-lg font-semibold text-gray-900">{p.name}</h3>
+                <h3 className="font-body text-lg font-semibold text-ink">{p.name}</h3>
                 <p className="mt-2">
-                  <span className="text-3xl font-bold text-gray-900">{p.price}</span>
+                  <span className="font-mono tabular-nums text-3xl font-bold text-ink">{p.price}</span>
                   <span className="text-sm text-gray-500">{p.period}</span>
                 </p>
                 <ul className="mt-6 space-y-3">
@@ -173,15 +173,15 @@ export default function Pricing() {
         </div>
       </section>
 
-      <section className="border-t border-gray-200 bg-gray-50 px-6 py-20">
+      <section className="border-t border-gray-200 bg-slate px-6 py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="mb-10 text-center text-2xl font-bold text-gray-900">
+          <h2 className="font-display mb-10 text-center text-2xl font-bold text-ink">
             Frequently Asked Questions
           </h2>
           <div className="space-y-6">
             {faqs.map((faq) => (
-              <div key={faq.q} className="rounded-xl bg-white p-6 shadow-sm">
-                <h3 className="text-base font-semibold text-gray-900">{faq.q}</h3>
+              <div key={faq.q} className="rounded-xl bg-paper p-6 shadow-sm">
+                <h3 className="font-body text-base font-semibold text-ink">{faq.q}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">{faq.a}</p>
               </div>
             ))}

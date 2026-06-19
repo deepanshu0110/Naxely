@@ -105,12 +105,12 @@ export default function NewReport() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-slate dark:bg-ink">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">New Report</h1>
+            <h1 className="font-display text-2xl font-bold text-ink dark:text-gray-100">New Report</h1>
           </div>
 
           <div className="mb-8 flex items-center justify-center">
@@ -146,24 +146,24 @@ export default function NewReport() {
             })}
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <div className="rounded-xl border border-gray-200 bg-paper p-6 shadow-sm dark:border-gray-700 dark:bg-ink">
             {currentStep === 1 && (
               <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Upload Data</h2>
+                <h2 className="mb-4 text-lg font-semibold text-ink dark:text-gray-100">Upload Data</h2>
                 <FileUpload onUploadComplete={handleUploadComplete} />
               </div>
             )}
 
             {currentStep === 2 && uploadResult && (
               <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Map Columns</h2>
+                <h2 className="mb-4 text-lg font-semibold text-ink dark:text-gray-100">Map Columns</h2>
                 <ColumnMapper columns={uploadResult.columns} onChange={handleColumnConfigChange} />
               </div>
             )}
 
             {currentStep === 3 && (
               <div>
-                <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Configure Report</h2>
+                <h2 className="mb-4 text-lg font-semibold text-ink dark:text-gray-100">Configure Report</h2>
                 <ReportConfigForm onConfigChange={handleConfigChange} />
               </div>
             )}

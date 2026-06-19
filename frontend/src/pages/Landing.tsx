@@ -140,7 +140,7 @@ const testimonials = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-paper text-ink">
       <Navbar />
 
       {/* ── Hero ── */}
@@ -153,7 +153,7 @@ export default function Landing() {
         }}
       >
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-bold leading-tight tracking-tight text-gray-900 sm:text-5xl">
+          <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
             Turn raw data into a client-ready report in 2&nbsp;minutes
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500">
@@ -173,9 +173,9 @@ export default function Landing() {
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how-it-works" className="bg-gray-50 px-6 py-20">
+      <section id="how-it-works" className="bg-slate px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-14 text-center text-2xl font-bold text-gray-900">
+          <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             How it works
           </h2>
           <div className="grid gap-10 md:grid-cols-3">
@@ -187,7 +187,7 @@ export default function Landing() {
                 <div className="mx-auto mt-4 flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-50">
                   <s.icon className="h-7 w-7 text-indigo-500" />
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-gray-900">
+                <h3 className="mt-4 text-base font-semibold text-ink">
                   {s.title}
                 </h3>
               </div>
@@ -199,19 +199,19 @@ export default function Landing() {
       {/* ── Features Grid ── */}
       <section id="features" className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-14 text-center text-2xl font-bold text-gray-900">
+          <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             Features
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f) => (
               <div
                 key={f.title}
-                className="rounded-xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                className="rounded-xl bg-paper p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50">
                   <f.icon className="h-5 w-5 text-indigo-500" />
                 </div>
-                <h3 className="text-base font-semibold text-gray-900">
+                <h3 className="text-base font-semibold text-ink">
                   {f.title}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">
@@ -224,16 +224,16 @@ export default function Landing() {
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" className="bg-gray-50 px-6 py-20">
+      <section id="pricing" className="bg-slate px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-14 text-center text-2xl font-bold text-gray-900">
+          <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             Pricing
           </h2>
           <div className="grid gap-8 md:grid-cols-3">
             {plans.map((p) => (
               <div
                 key={p.name}
-                className={`relative rounded-xl bg-white p-8 shadow-sm ${
+                className={`relative rounded-xl bg-paper p-8 shadow-sm ${
                   p.highlight
                     ? 'border-2 border-indigo-500'
                     : 'border border-gray-200'
@@ -244,11 +244,11 @@ export default function Landing() {
                     {p.badge}
                   </span>
                 )}
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-ink">
                   {p.name}
                 </h3>
                 <p className="mt-2">
-                  <span className="text-3xl font-bold text-gray-900">
+                  <span className="font-mono tabular-nums text-3xl font-bold text-ink">
                     {p.price}
                   </span>
                   <span className="text-sm text-gray-500">{p.period}</span>
@@ -283,14 +283,14 @@ export default function Landing() {
       {/* ── Testimonials ── */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-14 text-center text-2xl font-bold text-gray-900">
+          <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             What our users say
           </h2>
           <div className="grid gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
               <div
                 key={i}
-                className="rounded-xl bg-white p-6 shadow-sm"
+                className="rounded-xl bg-paper p-6 shadow-sm"
               >
                 <div className="mb-3 flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, j) => (
@@ -320,7 +320,7 @@ export default function Landing() {
       {/* ── Final CTA Banner ── */}
       <section className="bg-gray-900 px-6 py-20">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="font-display text-3xl font-bold text-white">
             Ready to stop spending hours on reports?
           </h2>
           <p className="mt-4 text-gray-400">
@@ -341,7 +341,7 @@ export default function Landing() {
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="text-lg font-bold text-gray-900">Naxely</p>
+              <p className="font-display text-lg font-bold text-ink">Naxely</p>
               <p className="mt-1 text-sm text-gray-500">
                 Turn data into insights, instantly.
               </p>

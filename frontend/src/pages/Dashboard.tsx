@@ -28,12 +28,12 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-slate dark:bg-ink">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-5xl px-6 py-8">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Your Reports</h1>
+            <h1 className="font-display text-2xl font-bold text-ink dark:text-gray-100">Your Reports</h1>
             <Button onClick={() => navigate('/report/new')}>+ New Report</Button>
           </div>
 
