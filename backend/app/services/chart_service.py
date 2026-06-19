@@ -6,9 +6,13 @@ matplotlib.use('Agg')
 import shutil
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import matplotlib.colors as mcolors
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
+
+from app.core.design_tokens import PAPER, SLATE, INDIGO, AMBER
 
 logger = logging.getLogger(__name__)
 
@@ -18,21 +22,24 @@ fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Bold.ttf'))
 matplotlib.rcParams['font.family'] = 'IBM Plex Mono'
 
 SECONDARY_COLOR = '#94A3B8'
-GRID_COLOR = '#E5E7EB'
+GRID_COLOR = SLATE
 SPINE_COLOR = '#D1D5DB'
 TICK_COLOR = '#6B7280'
 LABEL_COLOR = '#374151'
 TITLE_COLOR = '#1F2937'
+_DARK_INDIGO = mcolors.to_hex([max(0, c * 0.75) for c in mcolors.to_rgb(INDIGO)])
 
 CHART_DIR = Path('/tmp/naxely')
 
 
 def _apply_chart_style(fig, ax, brand_color: str) -> None:
+    fig.patch.set_facecolor(PAPER)
+    ax.set_facecolor(PAPER)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_color(SPINE_COLOR)
     ax.spines['bottom'].set_color(SPINE_COLOR)
-    ax.grid(True, axis='y', color=GRID_COLOR, linewidth=0.5, zorder=0)
+    ax.grid(True, axis='y', color=GRID_COLOR, linewidth=0.8, zorder=0)
     ax.set_axisbelow(True)
     ax.tick_params(axis='both', labelsize=10, colors=TICK_COLOR)
     ax.xaxis.label.set_size(12)
@@ -118,21 +125,23 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
                 break
         if date_col:
             plot_df = df.sort_values(date_col)
-            ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2)
+            ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2.5)
+            ax.fill_between(plot_df[date_col], plot_df[column_name], alpha=0.12, color=brand_color)
             ax.set_xlabel(date_col.replace('_', ' ').title())
         else:
-            ax.plot(df.index, df[column_name], color=brand_color, linewidth=2)
+            ax.plot(df.index, df[column_name], color=brand_color, linewidth=2.5)
+            ax.fill_between(df.index, df[column_name], alpha=0.12, color=brand_color)
         ax.set_ylabel(display_name)
 
     elif chart_type == 'bar':
         if _is_categorical_column(df[column_name]):
             counts = df[column_name].value_counts()
-            ax.bar(counts.index.astype(str), counts.values, color=brand_color)
+            ax.bar(counts.index.astype(str), counts.values, color=brand_color, edgecolor=_DARK_INDIGO, linewidth=1)
             ax.set_xlabel(display_name)
             ax.set_ylabel('Count')
         else:
             values = df[column_name].dropna()
-            ax.bar(range(len(values)), values, color=brand_color)
+            ax.bar(range(len(values)), values, color=brand_color, edgecolor=_DARK_INDIGO, linewidth=1)
             ax.set_xlabel('Row')
             ax.set_ylabel(display_name)
 
@@ -157,7 +166,13 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
         else:
             x_col = column_name
             y_col = column_name
-        ax.scatter(df[x_col], df[y_col], color=brand_color, alpha=0.6, s=40)
+        ax.scatter(df[x_col], df[y_col], color=brand_color, alpha=0.85, s=90, edgecolor='white', linewidth=1)
+        valid = df[[x_col, y_col]].dropna()
+        if len(valid) >= 5:
+            x_vals = valid[x_col].values.astype(float)
+            y_vals = valid[y_col].values.astype(float)
+            m, b = np.polyfit(x_vals, y_vals, 1)
+            ax.plot(x_vals, m * x_vals + b, color=AMBER, linewidth=1.5)
         ax.set_xlabel(x_col.replace('_', ' ').title())
         ax.set_ylabel(y_col.replace('_', ' ').title())
 
@@ -169,7 +184,8 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
                 break
         if date_col:
             plot_df = df.sort_values(date_col)
-            ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2)
+            ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2.5)
+            ax.fill_between(plot_df[date_col], plot_df[column_name], alpha=0.12, color=brand_color)
             ax.set_xlabel(date_col.replace('_', ' ').title())
             ax.set_ylabel(display_name)
 
