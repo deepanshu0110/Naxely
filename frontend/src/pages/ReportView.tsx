@@ -75,7 +75,7 @@ export default function ReportView() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-paper dark:bg-ink">
+      <div className="flex h-screen items-center justify-center bg-paper dark:bg-darkBg">
         <Spinner size="lg" />
       </div>
     )
@@ -83,7 +83,7 @@ export default function ReportView() {
 
   if (error || !report) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-paper dark:bg-ink">
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-paper dark:bg-darkBg">
         <p className="text-gray-500 dark:text-gray-400">{error ?? 'Report not found'}</p>
         <Button variant="ghost" onClick={() => navigate('/dashboard')}>
           Back to Dashboard
@@ -104,10 +104,10 @@ export default function ReportView() {
   }
 
   return (
-    <div className="flex h-screen bg-slate dark:bg-ink">
+    <div className="flex h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
       <main className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex items-center justify-between border-b border-gray-200 bg-paper px-6 py-4 dark:border-gray-700 dark:bg-ink">
+        <header className="flex items-center justify-between border-b border-gray-200 bg-paper px-6 py-4 dark:border-gray-700 dark:bg-darkBg">
           <div className="flex items-center gap-4">
             <h1 className="font-display text-xl font-bold text-ink dark:text-gray-100">{report.title}</h1>
             <Badge variant={statusVariant(report.status)} text={report.status} />
@@ -141,12 +141,12 @@ export default function ReportView() {
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          <div className="flex-1 overflow-y-auto bg-slate p-4 dark:bg-ink">
+          <div className="flex-1 overflow-y-auto bg-slate p-4 dark:bg-darkBg">
             {report.pdf_url ? (
               <iframe
                 src={report.pdf_url}
                 title="Report PDF"
-                className="h-full w-full rounded-lg border border-gray-200 bg-paper dark:border-gray-700 dark:bg-ink"
+                className="h-full w-full rounded-lg border border-gray-200 bg-paper dark:border-gray-700 dark:bg-darkBg"
               />
             ) : (
               <div className="flex h-full items-center justify-center">
@@ -155,7 +155,7 @@ export default function ReportView() {
             )}
           </div>
 
-          <div className="w-96 overflow-y-auto border-l border-gray-200 bg-paper p-6 dark:border-gray-700 dark:bg-ink">
+          <div className="w-96 overflow-y-auto border-l border-gray-200 bg-paper p-6 dark:border-gray-700 dark:bg-darkBg">
             <div className="space-y-6">
               {report.error_message && (
                 <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">

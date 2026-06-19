@@ -68,12 +68,12 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
               <td className="py-3 pr-4">
                 <button
                   onClick={() => updateField(idx, 'include', !config[idx]?.include)}
-                  className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer items-center rounded-full transition-colors ${
+                  className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
                     config[idx]?.include ? 'bg-amber-500' : 'bg-gray-200'
                   }`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-150 ease-in-out ${
                       config[idx]?.include ? 'translate-x-4' : 'translate-x-0.5'
                     }`}
                   />

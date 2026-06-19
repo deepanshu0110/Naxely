@@ -72,7 +72,7 @@ export default function Settings() {
   if (loading) return <SettingsSkeleton />
   if (error) {
     return (
-      <div className="flex h-screen bg-slate dark:bg-ink">
+      <div className="flex h-screen bg-slate dark:bg-darkBg">
         <Sidebar />
         <main className="flex flex-1 items-center justify-center">
           <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/30">
@@ -86,7 +86,7 @@ export default function Settings() {
   if (!profile) return null
 
   return (
-    <div className="flex h-screen bg-slate dark:bg-ink">
+    <div className="flex h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
@@ -124,7 +124,7 @@ export default function Settings() {
 
 function SettingsSkeleton() {
   return (
-    <div className="flex h-screen bg-slate dark:bg-ink">
+    <div className="flex h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
@@ -268,7 +268,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
           onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
-          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${dragOver ? 'border-amber-500 bg-amber-50' : 'border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700'}`}
+          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors duration-150 ease-in-out ${dragOver ? 'border-amber-500 bg-amber-50' : 'border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700'}`}
         >
           {logoPreview ? (
             <div className="flex flex-col items-center gap-2">
@@ -287,7 +287,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
           type="file"
           accept=".png,.jpg,.jpeg,.svg"
           onChange={handleFileSelect}
-          className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-amber-600 hover:file:bg-amber-100 dark:text-gray-400 dark:file:bg-amber-900/30 dark:file:text-amber-400"
+          className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-amber-600 file:transition-colors file:duration-150 file:ease-in-out hover:file:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-400 dark:file:bg-amber-900/30 dark:file:text-amber-400"
         />
       </div>
 

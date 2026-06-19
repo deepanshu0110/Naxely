@@ -105,7 +105,7 @@ export default function NewReport() {
   }
 
   return (
-    <div className="flex h-screen bg-slate dark:bg-ink">
+    <div className="flex h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
@@ -146,7 +146,7 @@ export default function NewReport() {
             })}
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-paper p-6 shadow-sm dark:border-gray-700 dark:bg-ink">
+          <div className="rounded-xl border border-gray-200 bg-paper p-6 shadow-sm dark:border-gray-700 dark:bg-darkBg">
             {currentStep === 1 && (
               <div>
                 <h2 className="mb-4 text-lg font-semibold text-ink dark:text-gray-100">Upload Data</h2>
@@ -170,7 +170,7 @@ export default function NewReport() {
 
             <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
               <Button
-                variant="ghost"
+                variant="outline"
                 onClick={() => setCurrentStep((s) => Math.max(1, s - 1))}
                 disabled={currentStep === 1}
               >

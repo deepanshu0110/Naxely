@@ -7,6 +7,7 @@ export const COLORS = {
   indigo: '#6366F1' as const,
   amber: '#D97A34' as const,
   mint: '#0E9F6E' as const,
+  darkBg: '#1C1A16' as const,
 } as const
 
 export type ColorKey = keyof typeof COLORS

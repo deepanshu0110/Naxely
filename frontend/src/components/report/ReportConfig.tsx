@@ -116,7 +116,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
                   setTone(t.id)
                   emit()
                 }}
-                className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors ${
+                className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
                   active
                     ? 'border-amber-500 bg-amber-50 text-amber-600 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400'
                     : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-600'
@@ -139,7 +139,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
                   type="checkbox"
                   checked={sections.includes(s.id)}
                   onChange={() => toggleSection(s.id)}
-                  className="h-4 w-4 rounded border-gray-300 text-indigo-500 focus:ring-indigo-500 dark:border-gray-600"
+                    className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600"
                 />
                 <span className="text-sm text-gray-700 dark:text-gray-300">{s.label}</span>
                 <span className="ml-auto text-xs text-green-600">✅</span>

@@ -49,7 +49,7 @@ export default function Sidebar() {
   }, [user?.theme_preference])
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-slate bg-paper dark:border-gray-700 dark:bg-ink">
+    <aside className="flex h-screen w-60 flex-col border-r border-slate bg-paper dark:border-gray-700 dark:bg-darkBg">
       <div className="flex h-16 items-center gap-2 px-6">
         <span className="font-display text-xl font-bold text-ink dark:text-gray-100">Naxely</span>
       </div>
@@ -81,7 +81,7 @@ export default function Sidebar() {
             <Link
               key={item.label}
               to={isLocked ? '/pricing' : item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
                 isActive
               ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-gray-200'
@@ -103,7 +103,7 @@ export default function Sidebar() {
             </p>
             <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-600">
               <div
-                className={`h-1.5 rounded-full transition-all ${
+                className={`h-1.5 rounded-full transition-all duration-150 ease-in-out ${
                   (user?.reports_this_month ?? 0) >= (user?.monthly_limit ?? 3)
                     ? 'bg-red-500'
                     : 'bg-amber-500'
@@ -120,7 +120,7 @@ export default function Sidebar() {
 
           <Link
             to="/pricing"
-            className="flex items-center justify-between rounded-lg bg-amber-500 px-3 py-2.5 text-sm font-medium text-white hover:bg-amber-600"
+            className="flex items-center justify-between rounded-lg bg-amber-500 px-3 py-2.5 text-sm font-medium text-white transition-colors duration-150 ease-in-out hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
           >
             Upgrade to Pro
             <ArrowRight className="h-4 w-4" />
@@ -128,22 +128,34 @@ export default function Sidebar() {
         </div>
       )}
 
-      <button
-        onClick={async () => {
-          const next = user?.theme_preference === 'dark' ? 'light' : 'dark'
-          await api.post('/settings/theme', { theme: next })
-          document.documentElement.classList.toggle('dark', next === 'dark')
-          useAuthStore.getState().fetchProfile()
-        }}
-        className="flex w-full items-center gap-3 border-t border-slate px-6 py-2.5 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-      >
-        {user?.theme_preference === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        {user?.theme_preference === 'dark' ? 'Light Mode' : 'Dark Mode'}
-      </button>
+      <div className="flex items-center justify-between border-t border-slate px-4 py-2.5 dark:border-gray-700">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {user?.theme_preference === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </span>
+        <button
+          role="switch"
+          aria-checked={user?.theme_preference === 'dark'}
+          onClick={async () => {
+            const next = user?.theme_preference === 'dark' ? 'light' : 'dark'
+            await api.post('/settings/theme', { theme: next })
+            document.documentElement.classList.toggle('dark', next === 'dark')
+            useAuthStore.getState().fetchProfile()
+          }}
+          className={`relative inline-flex h-[22px] w-[40px] flex-shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
+            user?.theme_preference === 'dark' ? 'bg-amber-500' : 'bg-slate dark:bg-gray-600'
+          }`}
+        >
+          <span
+            className={`inline-block h-[18px] w-[18px] transform rounded-full bg-white shadow transition-transform duration-150 ease-in-out ${
+              user?.theme_preference === 'dark' ? 'translate-x-[20px]' : 'translate-x-0.5'
+            }`}
+          />
+        </button>
+      </div>
 
       <div className="relative border-t border-slate px-4 py-3" ref={menuRef}>
         <button
-          className="flex w-full items-center gap-3 rounded-lg px-1 py-1 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+          className="flex w-full items-center gap-3 rounded-lg px-1 py-1 text-left transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700/50"
           onClick={() => setMenuOpen((o) => !o)}
         >
           {user?.avatar_url ? (
@@ -171,9 +183,9 @@ export default function Sidebar() {
               className="fixed inset-0 z-10"
               onClick={() => setMenuOpen(false)}
             />
-            <div className="absolute bottom-full left-2 right-2 z-20 mb-2 overflow-hidden rounded-lg border border-slate bg-paper shadow-lg dark:border-gray-700 dark:bg-ink">
+            <div className="absolute bottom-full left-2 right-2 z-20 mb-2 overflow-hidden rounded-lg border border-slate bg-paper shadow-lg dark:border-gray-700 dark:bg-darkBg">
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700/50"
                 onClick={() => {
                   setMenuOpen(false)
                   navigate('/settings')
@@ -183,7 +195,7 @@ export default function Sidebar() {
                 Settings
               </button>
               <button
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition-colors duration-150 ease-in-out hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-red-400 dark:hover:bg-red-900/30"
                 onClick={async () => {
                   setMenuOpen(false)
                   await logout()

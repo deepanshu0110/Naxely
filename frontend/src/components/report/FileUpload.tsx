@@ -65,7 +65,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
               </p>
             </div>
           </div>
-          <button onClick={reset} className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300">
+          <button onClick={reset} className="rounded-md p-1 text-gray-400 transition-colors duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300">
             <X className="h-4 w-4" />
           </button>
         </div>

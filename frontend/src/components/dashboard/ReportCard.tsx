@@ -42,7 +42,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
 
   return (
     <>
-      <div className="rounded-xl border border-slate bg-paper p-4 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-ink">
+      <div className="rounded-xl border border-slate bg-paper p-4 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md dark:border-gray-700 dark:bg-darkBg">
         <div className="mb-3 flex items-start justify-between">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100" title={report.title}>
             {truncatedTitle}
@@ -50,17 +50,17 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
           <div className="relative">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+              className="rounded-md p-1 text-gray-400 transition-colors duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300"
             >
               <MoreHorizontal className="h-4 w-4" />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-slate bg-paper py-1 shadow-lg dark:border-gray-700 dark:bg-ink">
+              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-slate bg-paper py-1 shadow-lg dark:border-gray-700 dark:bg-darkBg">
                 {report.pdf_url && (
                   <a
                     href={report.pdf_url}
                     download
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700/50"
                     onClick={() => setMenuOpen(false)}
                   >
                     <Download className="h-4 w-4" /> Download PDF
@@ -71,7 +71,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
                     setMenuOpen(false)
                     navigate(`/report/${report.id}`)
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700/50"
                 >
                   <Eye className="h-4 w-4" /> View
                 </button>
@@ -80,7 +80,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
                     setMenuOpen(false)
                     setConfirmDelete(true)
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition-colors duration-150 ease-in-out hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-red-400 dark:hover:bg-red-900/30"
                 >
                   <Trash2 className="h-4 w-4" /> Delete
                 </button>

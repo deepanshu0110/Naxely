@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
+import Button from '@/components/ui/Button'
 import api from '@/lib/axios'
 import toast from 'react-hot-toast'
 
@@ -104,13 +105,6 @@ export default function Pricing() {
     }
   }
 
-  const btnClass = (variant: string) =>
-    `mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
-      variant === 'filled'
-        ? 'bg-amber-500 text-white hover:bg-amber-600'
-        : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-    }`
-
   return (
     <div className="min-h-screen bg-paper text-ink">
       <Navbar />
@@ -155,17 +149,19 @@ export default function Pricing() {
                   ))}
                 </ul>
                 {p.name === 'Free' ? (
-                  <Link to={p.href} className={btnClass(p.ctaVariant)}>
+                  <Link to={p.href} className="mt-8 block w-full rounded-lg border border-gray-300 bg-paper py-2.5 text-center text-sm font-semibold text-gray-700 transition-colors duration-150 ease-in-out hover:bg-slate focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
                     {p.cta}
                   </Link>
                 ) : (
-                  <button
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="mt-8 w-full justify-center"
+                    loading={loading === planKey}
                     onClick={() => handleCheckout(planKey)}
-                    disabled={loading !== null}
-                    className={btnClass(p.ctaVariant) + (loading === planKey ? ' opacity-60 cursor-wait' : '')}
                   >
-                    {loading === planKey ? 'Redirecting...' : p.cta}
-                  </button>
+                    {p.cta}
+                  </Button>
                 )}
               </div>
             )})}

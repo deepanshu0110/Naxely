@@ -15,7 +15,7 @@ export default function AuthCallback() {
   }, [navigate])
 
   return (
-    <div className="flex h-screen items-center justify-center bg-paper dark:bg-ink">
+    <div className="flex h-screen items-center justify-center bg-paper dark:bg-darkBg">
       <div className="flex flex-col items-center gap-4">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-200 border-t-amber-500" />
         <p className="text-base text-gray-600 dark:text-gray-400">Signing you in...</p>

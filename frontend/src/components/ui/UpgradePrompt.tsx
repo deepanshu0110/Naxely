@@ -16,7 +16,7 @@ export default function UpgradePrompt({ feature, tier = 'Pro' }: UpgradePromptPr
       </div>
       <Link
         to="/pricing"
-        className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600"
+        className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-white transition-colors duration-150 ease-in-out hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
       >
         Upgrade to {tier}
       </Link>

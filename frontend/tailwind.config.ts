@@ -34,6 +34,7 @@ const config: Config = {
         warmSlate: COLORS.warmSlate,
         amber: COLORS.amber,
         mint: COLORS.mint,
+        darkBg: COLORS.darkBg,
       },
       fontFamily: {
         sans: FONTS.body,

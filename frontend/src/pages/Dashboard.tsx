@@ -28,7 +28,7 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="flex h-screen bg-slate dark:bg-ink">
+    <div className="flex h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-5xl px-6 py-8">
