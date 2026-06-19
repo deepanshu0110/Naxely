@@ -1,3 +1,5 @@
+import logging
+
 import matplotlib
 matplotlib.use('Agg')
 
@@ -7,6 +9,8 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
+
+logger = logging.getLogger(__name__)
 
 FONT_DIR = Path(__file__).resolve().parent.parent / 'static' / 'fonts'
 fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Regular.ttf'))
@@ -168,6 +172,17 @@ def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
             ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2)
             ax.set_xlabel(date_col.replace('_', ' ').title())
             ax.set_ylabel(display_name)
+
+    spines_visible = [s for s in ax.spines if ax.spines[s].get_visible()]
+    first_color = "none"
+    if ax.lines:
+        first_color = ax.lines[0].get_color()
+    elif ax.collections:
+        first_color = str(ax.collections[0].get_facecolor())
+    elif ax.patches:
+        first_color = str(ax.patches[0].get_facecolor())
+    logger.info("CHART DEBUG type=%s spines_visible=%s font=%s color=%s path=%s",
+                chart_type, spines_visible, matplotlib.rcParams['font.family'], first_color, output_path)
 
     fig.tight_layout()
     fig.savefig(str(output_path), dpi=150)
