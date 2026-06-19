@@ -73,7 +73,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="e.g. Q1 2024 Marketing Performance"
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
         />
         <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{title.length}/255</p>
       </div>
@@ -88,7 +88,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
               setDateFrom(e.target.value)
               emit()
             }}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           />
           <span className="self-center text-gray-400 dark:text-gray-500">to</span>
           <input
@@ -98,7 +98,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
               setDateTo(e.target.value)
               emit()
             }}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
                 }}
                 className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors ${
                   active
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-600 dark:border-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-400'
+                    ? 'border-amber-500 bg-amber-50 text-amber-600 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400'
                     : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-600'
                 }`}
               >
@@ -152,7 +152,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
                   type="checkbox"
                   checked={sections.includes(s.id)}
                   onChange={() => toggleSection(s.id)}
-                  className="h-4 w-4 rounded border-gray-300 text-indigo-500 focus:ring-indigo-500 dark:border-gray-600"
+                  className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600"
                 />
                 <span className="text-sm text-gray-700">{s.label}</span>
                 <span className="ml-auto text-xs text-green-600">✅</span>

@@ -12,17 +12,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Match FSD design system exactly
         accent: {
-          DEFAULT: '#6366F1',
-          hover: '#4F46E5',
-          light: '#EEF2FF',
-        },
-        brand: {
-          bg: '#FFFFFF',
-          subtle: '#F9FAFB',
-          muted: '#F3F4F6',
-          border: '#E5E7EB',
+          DEFAULT: '#D97A34',
+          hover: '#C06A2E',
+          light: '#FDF1E6',
         },
         chart: {
           1: '#6366F1',
@@ -37,11 +30,13 @@ const config: Config = {
         ink: COLORS.ink,
         paper: COLORS.paper,
         slate: COLORS.slate,
+        cream: COLORS.cream,
+        warmSlate: COLORS.warmSlate,
         amber: COLORS.amber,
         mint: COLORS.mint,
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: FONTS.body,
         display: FONTS.display,
         body: FONTS.body,
         mono: FONTS.mono,

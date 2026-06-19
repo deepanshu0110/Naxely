@@ -124,7 +124,7 @@ export default function NewReport() {
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                         isActive
-                          ? 'bg-indigo-500 text-white'
+                          ? 'bg-amber-500 text-white'
                           : isCompleted
                             ? 'bg-green-500 text-white'
                             : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
@@ -134,7 +134,7 @@ export default function NewReport() {
                     </div>
                     <span
                       className={`mt-1 text-xs ${
-                        isActive ? 'font-medium text-indigo-600' : 'text-gray-400 dark:text-gray-500'
+                        isActive ? 'font-medium text-amber-600' : 'text-gray-400 dark:text-gray-500'
                       }`}
                     >
                       {label}

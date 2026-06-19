@@ -107,7 +107,7 @@ export default function Pricing() {
   const btnClass = (variant: string) =>
     `mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
       variant === 'filled'
-        ? 'bg-indigo-500 text-white hover:bg-indigo-600'
+        ? 'bg-amber-500 text-white hover:bg-amber-600'
         : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
     }`
 
@@ -132,12 +132,12 @@ export default function Pricing() {
                 key={p.name}
                 className={`relative rounded-xl bg-paper p-8 shadow-sm ${
                   p.highlight
-                    ? 'border-2 border-indigo-500'
+                    ? 'border-2 border-amber-500'
                     : 'border border-gray-200'
                 }`}
               >
                 {p.badge && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-indigo-500 px-3 py-0.5 text-xs font-semibold text-white">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-500 px-3 py-0.5 text-xs font-semibold text-white">
                     {p.badge}
                   </span>
                 )}
@@ -149,7 +149,7 @@ export default function Pricing() {
                 <ul className="mt-6 space-y-3">
                   {p.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
-                      <span className="mt-0.5 text-indigo-500">✓</span>
+                      <span className="mt-0.5 text-amber-500">✓</span>
                       {f}
                     </li>
                   ))}

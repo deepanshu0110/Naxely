@@ -79,10 +79,10 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
         {...getRootProps()}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-colors ${
           isDragActive
-            ? 'border-indigo-400 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/30'
+            ? 'border-amber-400 bg-amber-50 dark:border-amber-500 dark:bg-amber-900/30'
             : error
               ? 'border-red-300 bg-red-50 dark:border-red-500 dark:bg-red-900/30'
-              : 'border-gray-300 bg-gray-50 hover:border-indigo-300 hover:bg-indigo-50/50 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-indigo-500 dark:hover:bg-indigo-900/20'
+              : 'border-gray-300 bg-gray-50 hover:border-amber-300 hover:bg-amber-50/50 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-amber-500 dark:hover:bg-amber-900/20'
         }`}
       >
         <input {...getInputProps()} />

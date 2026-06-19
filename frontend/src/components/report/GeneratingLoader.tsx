@@ -37,7 +37,7 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
   const activeIdx = stepIndexFromCurrent(currentStep)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gray-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper dark:bg-ink">
       <div className="w-full max-w-md px-6 text-center">
         <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">Generating your report</h2>
         <p className="mb-10 text-sm text-gray-500 dark:text-gray-400">This usually takes 30–90 seconds</p>
@@ -49,11 +49,17 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
 
             return (
               <div key={step.key} className="flex items-center gap-4">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2">
+                <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 ${
+                  completed
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/30'
+                    : active
+                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/30'
+                      : 'border-gray-300 dark:border-gray-600'
+                }`}>
                   {completed ? (
                     <Check className="h-4 w-4 text-green-500" />
                   ) : active ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
+                    <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
                   ) : (
                     <span className="text-xs text-gray-400 dark:text-gray-500">{idx + 1}</span>
                   )}
@@ -63,7 +69,7 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
                     completed
                       ? 'font-medium text-green-600 dark:text-green-400'
                       : active
-                        ? 'font-medium text-indigo-600 dark:text-indigo-400'
+                        ? 'font-medium text-amber-600 dark:text-amber-400'
                         : 'text-gray-400 dark:text-gray-500'
                   }`}
                 >
@@ -78,7 +84,7 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
           <div className="space-y-2">
             <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
               <div
-                className="h-2 rounded-full bg-indigo-500 transition-all"
+                className="h-2 rounded-full bg-amber-500 transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>

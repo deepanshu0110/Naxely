@@ -148,32 +148,62 @@ export default function Landing() {
         className="px-6 py-24"
         style={{
           backgroundImage:
-            'radial-gradient(circle, #e5e7eb 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
+            'radial-gradient(circle, #D97A3422 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
         }}
       >
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
-            Turn raw data into a client-ready report in 2&nbsp;minutes
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500">
-            Upload a CSV, get an AI-powered PDF report with insights, charts,
-            and recommendations. No design skills needed.
-          </p>
-          <Link
-            to="/signup"
-            className="mt-10 inline-block rounded-lg bg-indigo-500 px-8 py-3.5 text-base font-semibold text-white hover:bg-indigo-600"
-          >
-            Start Free — No credit card required
-          </Link>
-          <p className="mt-4 text-sm text-gray-400">
-            Join consultants and agencies worldwide
-          </p>
+        <div className="relative mx-auto flex max-w-6xl items-center gap-12">
+          <div className="flex-1">
+            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+              Turn raw data into a client-ready report in 2&nbsp;minutes
+            </h1>
+            <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500">
+              Upload a CSV, get an AI-powered PDF report with insights, charts,
+              and recommendations. No design skills needed.
+            </p>
+            <Link
+              to="/signup"
+              className="mt-10 inline-block rounded-lg bg-amber-500 px-8 py-3.5 text-base font-semibold text-white hover:bg-amber-600"
+            >
+              Start Free — No credit card required
+            </Link>
+            <p className="mt-4 text-sm text-gray-400">
+              Join consultants and agencies worldwide
+            </p>
+          </div>
+          <div className="hidden flex-1 lg:block">
+            <div className="rounded-xl border border-amber-200/40 bg-paper p-4 shadow-lg">
+              <div className="mb-3 flex items-center gap-2 border-b border-amber-200/20 pb-3">
+                <div className="flex gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
+                </div>
+                <div className="text-xs font-medium text-gray-400">report_preview.pdf</div>
+              </div>
+              <div className="space-y-3">
+                <div className="h-3 w-3/4 rounded bg-amber-200/30" />
+                <div className="h-3 w-1/2 rounded bg-amber-200/20" />
+                <div className="mt-4 flex gap-3">
+                  <div className="h-16 w-16 rounded-lg bg-amber-100" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-full rounded bg-amber-200/30" />
+                    <div className="h-3 w-2/3 rounded bg-amber-200/20" />
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <div className="h-12 flex-1 rounded bg-amber-50" />
+                  <div className="h-12 flex-1 rounded bg-amber-50" />
+                  <div className="h-12 flex-1 rounded bg-amber-50" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how-it-works" className="bg-slate px-6 py-20">
+      <section id="how-it-works" className="bg-slate px-6 py-20" style={{ backgroundImage: 'radial-gradient(circle, #D97A3411 1px, transparent 1px)', backgroundSize: '28px 28px' }}>
         <div className="mx-auto max-w-5xl">
           <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             How it works
@@ -181,11 +211,11 @@ export default function Landing() {
           <div className="grid gap-10 md:grid-cols-3">
             {stepped.map((s) => (
               <div key={s.num} className="text-center">
-                <span className="text-5xl font-bold text-indigo-200">
+                <span className="font-display text-5xl font-bold text-amber-200/60">
                   {s.num}
                 </span>
-                <div className="mx-auto mt-4 flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-50">
-                  <s.icon className="h-7 w-7 text-indigo-500" />
+                <div className="mx-auto mt-4 flex h-14 w-14 items-center justify-center rounded-xl bg-amber-50">
+                  <s.icon className="h-7 w-7 text-amber-500" />
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-ink">
                   {s.title}
@@ -199,24 +229,22 @@ export default function Landing() {
       {/* ── Features Grid ── */}
       <section id="features" className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
-            Features
+          <h2 className="font-display mb-4 text-center text-3xl font-bold text-ink">
+            Everything you need to turn data into reports
           </h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="rounded-xl bg-paper p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50">
-                  <f.icon className="h-5 w-5 text-indigo-500" />
+          <p className="mb-16 text-center text-gray-500">
+            Six capabilities, one seamless flow — from upload to polished PDF.
+          </p>
+          <div className="grid gap-x-16 gap-y-12 md:grid-cols-2">
+            {features.map((f, i) => (
+              <div key={f.title} className="flex gap-5">
+                <span className="font-display text-4xl font-bold leading-none text-amber-200/70">
+                  {(i + 1).toString().padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 className="text-base font-semibold text-ink">{f.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{f.desc}</p>
                 </div>
-                <h3 className="text-base font-semibold text-ink">
-                  {f.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                  {f.desc}
-                </p>
               </div>
             ))}
           </div>
@@ -235,12 +263,12 @@ export default function Landing() {
                 key={p.name}
                 className={`relative rounded-xl bg-paper p-8 shadow-sm ${
                   p.highlight
-                    ? 'border-2 border-indigo-500'
+                    ? 'border-2 border-amber-500'
                     : 'border border-gray-200'
                 }`}
               >
                 {p.badge && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-indigo-500 px-3 py-0.5 text-xs font-semibold text-white">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-500 px-3 py-0.5 text-xs font-semibold text-white">
                     {p.badge}
                   </span>
                 )}
@@ -248,7 +276,7 @@ export default function Landing() {
                   {p.name}
                 </h3>
                 <p className="mt-2">
-                  <span className="font-mono tabular-nums text-3xl font-bold text-ink">
+                  <span className="font-display text-3xl font-bold tracking-tight text-ink">
                     {p.price}
                   </span>
                   <span className="text-sm text-gray-500">{p.period}</span>
@@ -259,7 +287,7 @@ export default function Landing() {
                       key={f}
                       className="flex items-start gap-2 text-sm text-gray-600"
                     >
-                      <span className="mt-0.5 text-indigo-500">✓</span>
+                      <span className="mt-0.5 text-amber-500">✓</span>
                       {f}
                     </li>
                   ))}
@@ -268,7 +296,7 @@ export default function Landing() {
                   to={p.href}
                   className={`mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
                     p.ctaVariant === 'filled'
-                      ? 'bg-indigo-500 text-white hover:bg-indigo-600'
+                      ? 'bg-amber-500 text-white hover:bg-amber-600'
                       : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >

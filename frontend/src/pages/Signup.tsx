@@ -119,7 +119,7 @@ export default function Signup() {
               id="full_name"
               type="text"
               {...register('full_name')}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
               placeholder="Sarah Johnson"
             />
             {errors.full_name && (
@@ -135,7 +135,7 @@ export default function Signup() {
               id="email"
               type="email"
               {...register('email')}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-ink placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-ink placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
               placeholder="you@example.com"
             />
             {errors.email && (
@@ -152,7 +152,7 @@ export default function Signup() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm text-ink placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm text-ink placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 placeholder="Min. 8 characters"
               />
               <button
@@ -178,15 +178,15 @@ export default function Signup() {
 
           <p className="text-xs text-gray-400">
             By signing up, you agree to our{' '}
-            <a href="#" className="text-indigo-500 hover:text-indigo-600">Terms of Service</a>{' '}
+            <a href="#" className="text-amber-500 hover:text-amber-600">Terms of Service</a>{' '}
             and{' '}
-            <a href="#" className="text-indigo-500 hover:text-indigo-600">Privacy Policy</a>
+            <a href="#" className="text-amber-500 hover:text-amber-600">Privacy Policy</a>
           </p>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+            className="w-full rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50"
           >
             {isSubmitting ? 'Creating account...' : 'Create account'}
           </button>
@@ -194,7 +194,7 @@ export default function Signup() {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-indigo-500 hover:text-indigo-600">
+          <Link to="/login" className="font-medium text-amber-500 hover:text-amber-600">
             Log in
           </Link>
         </p>

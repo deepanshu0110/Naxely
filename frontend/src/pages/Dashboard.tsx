@@ -22,8 +22,8 @@ export default function Dashboard() {
       <rect x="30" y="55" width="55" height="4" rx="2" fill="#E5E7EB" />
       <rect x="30" y="65" width="45" height="4" rx="2" fill="#E5E7EB" />
       <rect x="30" y="75" width="35" height="4" rx="2" fill="#E5E7EB" />
-      <circle cx="85" cy="35" r="15" fill="#EEF2FF" stroke="#6366F1" strokeWidth="2" />
-      <path d="M80 35L85 30L90 35M85 30V42" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="85" cy="35" r="15" fill="#FDF1E6" stroke="#D97A34" strokeWidth="2" />
+      <path d="M80 35L85 30L90 35M85 30V42" stroke="#D97A34" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 

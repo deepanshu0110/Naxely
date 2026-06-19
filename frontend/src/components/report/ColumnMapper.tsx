@@ -49,14 +49,14 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
                   type="text"
                   value={config[idx]?.display_name ?? ''}
                   onChange={(e) => updateField(idx, 'display_name', e.target.value)}
-                  className="w-40 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                  className="w-40 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                 />
               </td>
               <td className="py-3 pr-4">
                 <select
                   value={config[idx]?.type ?? 'dimension'}
                   onChange={(e) => updateField(idx, 'type', e.target.value)}
-                  className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                  className="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
                 >
                   {typeOptions.map((t) => (
                     <option key={t} value={t}>
@@ -69,7 +69,7 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
                 <button
                   onClick={() => updateField(idx, 'include', !config[idx]?.include)}
                   className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer items-center rounded-full transition-colors ${
-                    config[idx]?.include ? 'bg-indigo-500' : 'bg-gray-200'
+                    config[idx]?.include ? 'bg-amber-500' : 'bg-gray-200'
                   }`}
                 >
                   <span

@@ -107,7 +107,7 @@ export default function Settings() {
               isProOrAbove ? (
                 <BrandingTab
                   logoUrl={profile.logo_url}
-                  brandColor={profile.brand_color ?? '#6366F1'}
+                  brandColor={profile.brand_color ?? '#D97A34'}
                   companyName={profile.company_name ?? ''}
                 />
               ) : (
@@ -177,7 +177,7 @@ function ProfileTab({ profile, onSaved }: { profile: ProfileResponse; onSaved: (
         <input
           id="full_name"
           {...register('full_name')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
         />
         {errors.full_name && <p className="mt-1 text-xs text-red-500">{errors.full_name.message}</p>}
       </div>
@@ -268,7 +268,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
           onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
-          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700'}`}
+          className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${dragOver ? 'border-amber-500 bg-amber-50' : 'border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-700'}`}
         >
           {logoPreview ? (
             <div className="flex flex-col items-center gap-2">
@@ -287,7 +287,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
           type="file"
           accept=".png,.jpg,.jpeg,.svg"
           onChange={handleFileSelect}
-          className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-indigo-600 hover:file:bg-indigo-100 dark:text-gray-400 dark:file:bg-indigo-900/30 dark:file:text-indigo-400"
+          className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-amber-600 hover:file:bg-amber-100 dark:text-gray-400 dark:file:bg-amber-900/30 dark:file:text-amber-400"
         />
       </div>
 
@@ -298,11 +298,11 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
             id="brand_color"
             type="text"
             {...register('brand_color')}
-            className="w-32 rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="w-32 rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           />
           <input
             type="color"
-            value={watchedColor ?? '#6366F1'}
+            value={watchedColor ?? '#D97A34'}
             onChange={(e) => setValue('brand_color', e.target.value, { shouldValidate: true })}
             className="h-9 w-9 cursor-pointer rounded border border-gray-300 dark:border-gray-600"
           />
@@ -315,7 +315,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
         <input
           id="company_name"
           {...register('company_name')}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
         />
       </div>
 
@@ -323,7 +323,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
         <h4 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Preview</h4>
         <BrandingPreview
           companyName={watchedName ?? ''}
-          brandColor={watchedColor ?? '#6366F1'}
+          brandColor={watchedColor ?? '#D97A34'}
           logoUrl={logoPreview}
         />
       </div>
@@ -648,7 +648,7 @@ function CompactPlanCard({ plan, loading, price, features, cta, onUpgrade }: { p
           <ul className="mt-2 space-y-1">
             {features.map((f) => (
               <li key={f} className="text-xs text-gray-500 dark:text-gray-400">
-                <span className="text-indigo-500">✓</span> {f}
+                <span className="text-amber-500">✓</span> {f}
               </li>
             ))}
           </ul>

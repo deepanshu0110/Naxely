@@ -42,7 +42,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
 
   return (
     <>
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-xl border border-slate bg-paper p-4 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-ink">
         <div className="mb-3 flex items-start justify-between">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100" title={report.title}>
             {truncatedTitle}
@@ -55,7 +55,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
               <MoreHorizontal className="h-4 w-4" />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-slate bg-paper py-1 shadow-lg dark:border-gray-700 dark:bg-ink">
                 {report.pdf_url && (
                   <a
                     href={report.pdf_url}

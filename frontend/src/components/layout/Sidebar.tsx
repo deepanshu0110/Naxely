@@ -49,9 +49,9 @@ export default function Sidebar() {
   }, [user?.theme_preference])
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+    <aside className="flex h-screen w-60 flex-col border-r border-slate bg-paper dark:border-gray-700 dark:bg-ink">
       <div className="flex h-16 items-center gap-2 px-6">
-        <span className="text-xl font-bold text-gray-900 dark:text-gray-100">Naxely</span>
+        <span className="font-display text-xl font-bold text-ink dark:text-gray-100">Naxely</span>
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
@@ -83,7 +83,7 @@ export default function Sidebar() {
               to={isLocked ? '/pricing' : item.href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-              ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400'
+              ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-gray-200'
               }`}
             >
@@ -97,7 +97,7 @@ export default function Sidebar() {
 
       {tier === 'free' && (
         <div className="mx-3 mb-3 space-y-3">
-          <div className="rounded-lg bg-gray-50 px-3 py-3 dark:bg-gray-700/50">
+          <div className="rounded-lg bg-slate px-3 py-3 dark:bg-gray-700/50">
             <p className="mb-1.5 text-xs text-gray-600 dark:text-gray-400">
               {user?.reports_this_month ?? 0} of {user?.monthly_limit ?? 3} reports used
             </p>
@@ -106,7 +106,7 @@ export default function Sidebar() {
                 className={`h-1.5 rounded-full transition-all ${
                   (user?.reports_this_month ?? 0) >= (user?.monthly_limit ?? 3)
                     ? 'bg-red-500'
-                    : 'bg-indigo-500'
+                    : 'bg-amber-500'
                 }`}
                 style={{
                   width: `${Math.min(
@@ -120,7 +120,7 @@ export default function Sidebar() {
 
           <Link
             to="/pricing"
-            className="flex items-center justify-between rounded-lg bg-indigo-500 px-3 py-2.5 text-sm font-medium text-white hover:bg-indigo-600"
+            className="flex items-center justify-between rounded-lg bg-amber-500 px-3 py-2.5 text-sm font-medium text-white hover:bg-amber-600"
           >
             Upgrade to Pro
             <ArrowRight className="h-4 w-4" />
@@ -135,13 +135,13 @@ export default function Sidebar() {
           document.documentElement.classList.toggle('dark', next === 'dark')
           useAuthStore.getState().fetchProfile()
         }}
-        className="flex w-full items-center gap-3 border-t border-gray-200 px-6 py-2.5 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        className="flex w-full items-center gap-3 border-t border-slate px-6 py-2.5 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
       >
         {user?.theme_preference === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         {user?.theme_preference === 'dark' ? 'Light Mode' : 'Dark Mode'}
       </button>
 
-      <div className="relative border-t border-gray-200 px-4 py-3" ref={menuRef}>
+      <div className="relative border-t border-slate px-4 py-3" ref={menuRef}>
         <button
           className="flex w-full items-center gap-3 rounded-lg px-1 py-1 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
           onClick={() => setMenuOpen((o) => !o)}
@@ -153,7 +153,7 @@ export default function Sidebar() {
               className="h-8 w-8 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-xs font-medium text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
               {user?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
             </div>
           )}
@@ -171,7 +171,7 @@ export default function Sidebar() {
               className="fixed inset-0 z-10"
               onClick={() => setMenuOpen(false)}
             />
-            <div className="absolute bottom-full left-2 right-2 z-20 mb-2 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+            <div className="absolute bottom-full left-2 right-2 z-20 mb-2 overflow-hidden rounded-lg border border-slate bg-paper shadow-lg dark:border-gray-700 dark:bg-ink">
               <button
                 className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
                 onClick={() => {

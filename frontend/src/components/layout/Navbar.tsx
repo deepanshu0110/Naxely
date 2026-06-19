@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 
 export default function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 border-b border-slate bg-paper/95 backdrop-blur dark:border-gray-700 dark:bg-ink/95">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <Link to="/" className="text-xl font-bold text-gray-900">
+        <Link to="/" className="font-display text-xl font-bold text-ink dark:text-gray-100">
           Naxely
         </Link>
 
@@ -29,7 +29,7 @@ export default function Navbar() {
           </Link>
           <Link
             to="/signup"
-            className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-600"
+            className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600"
           >
             Start Free
           </Link>

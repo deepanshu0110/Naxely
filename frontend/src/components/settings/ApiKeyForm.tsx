@@ -117,7 +117,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
           <select
             id="provider"
             {...register('provider')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           >
             <option value="openai">OpenAI</option>
             <option value="claude">Claude (Anthropic)</option>
@@ -138,7 +138,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
             placeholder={placeholder}
             autoComplete="off"
             {...register('api_key')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
           />
           {errors.api_key && (
             <p className="mt-1 text-xs text-red-500">{errors.api_key.message}</p>
@@ -208,7 +208,7 @@ function UpgradePromptInline({ feature, tier }: { feature: string; tier: string 
       </div>
       <a
         href="/pricing"
-        className="rounded-lg bg-indigo-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-600"
+        className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600"
       >
         Upgrade to {tier}
       </a>

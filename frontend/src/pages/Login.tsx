@@ -90,7 +90,7 @@ export default function Login() {
               id="email"
               type="email"
               {...register('email')}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-ink placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-ink placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
               placeholder="you@example.com"
             />
             {errors.email && (
@@ -107,7 +107,7 @@ export default function Login() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm text-ink placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm text-ink placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 placeholder="Min. 8 characters"
               />
               <button
@@ -122,7 +122,7 @@ export default function Login() {
               <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
             )}
             <div className="mt-1 text-right">
-              <a href="#" className="text-xs text-indigo-500 hover:text-indigo-600">
+              <a href="#" className="text-xs text-amber-500 hover:text-amber-600">
                 Forgot password?
               </a>
             </div>
@@ -131,7 +131,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+            className="w-full rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50"
           >
             {isSubmitting ? 'Logging in...' : 'Log in'}
           </button>
@@ -139,7 +139,7 @@ export default function Login() {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Don't have an account?{' '}
-          <Link to="/signup" className="font-medium text-indigo-500 hover:text-indigo-600">
+          <Link to="/signup" className="font-medium text-amber-500 hover:text-amber-600">
             Sign up
           </Link>
         </p>
