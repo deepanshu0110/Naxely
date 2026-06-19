@@ -5,8 +5,13 @@ import shutil
 from pathlib import Path
 
 import pandas as pd
+import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
 
-CHART_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6']
+FONT_DIR = Path(__file__).resolve().parent.parent / 'static' / 'fonts'
+fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Regular.ttf'))
+fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Bold.ttf'))
+matplotlib.rcParams['font.family'] = 'IBM Plex Mono'
 
 SECONDARY_COLOR = '#94A3B8'
 GRID_COLOR = '#E5E7EB'

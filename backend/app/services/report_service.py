@@ -27,8 +27,8 @@ async def update_status(report_id: str, status: str, step: str | None = None, er
     async with AsyncSessionLocal() as db:
         if step:
             await db.execute(
-                text("UPDATE reports SET status = :status WHERE id = :rid"),
-                {"status": status, "rid": report_id},
+                text("UPDATE reports SET status = :status, current_step = :step WHERE id = :rid"),
+                {"status": status, "step": step, "rid": report_id},
             )
         if error_message is not None:
             await db.execute(

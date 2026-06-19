@@ -41,6 +41,7 @@ class Report(Base, TimestampMixin):
     
     # Performance
     generation_time_seconds = Column(Float)
+    current_step = Column(String(50))
     error_message = Column(Text)
     
     # Soft delete

@@ -395,16 +395,10 @@ async def get_report_status(
         "pdf": (85, "Building PDF...", ["parsing", "charts", "ai_insights", "pdf_build"] if has_ai else ["parsing", "charts", "pdf_build"], []),
     }
 
-    progress_percent = 10
-    current_step_label = "Initializing..."
-    steps_completed: list[str] = []
-    steps_remaining: list[str] = ["parsing", "charts", "ai_insights", "pdf_build"] if has_ai else ["parsing", "charts", "pdf_build"]
-
-    for _step_key, (_pct, _label, _completed, _remaining) in step_map.items():
-        progress_percent = _pct  # type: ignore[assignment]
-        current_step_label = _label  # type: ignore[assignment]
-        steps_completed = _completed  # type: ignore[assignment]
-        steps_remaining = _remaining  # type: ignore[assignment]
+    real_step = report.get("current_step") or ""
+    defaults = (10, "Initializing...", [],
+                ["parsing", "charts", "ai_insights", "pdf_build"] if has_ai else ["parsing", "charts", "pdf_build"])
+    progress_percent, current_step_label, steps_completed, steps_remaining = step_map.get(real_step, defaults)  # type: ignore[misc]
 
     return {
         "success": True,

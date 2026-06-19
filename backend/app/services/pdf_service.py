@@ -11,7 +11,7 @@ from PIL import Image as PILImage
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor, white, Color
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.platypus import (
     SimpleDocTemplate,
@@ -27,6 +27,19 @@ from reportlab.platypus import (
 PAGE_WIDTH, PAGE_HEIGHT = A4
 MARGIN = 72
 CHART_DPI = 150
+
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+FONT_DIR = Path(__file__).resolve().parent.parent / 'static' / 'fonts'
+pdfmetrics.registerFont(TTFont('SpaceGrotesk-Bold', str(FONT_DIR / 'SpaceGrotesk-Bold.ttf')))
+pdfmetrics.registerFont(TTFont('IBMPlexSans', str(FONT_DIR / 'IBMPlexSans-Regular.ttf')))
+pdfmetrics.registerFont(TTFont('IBMPlexSans-Italic', str(FONT_DIR / 'IBMPlexSans-Italic.ttf')))
+pdfmetrics.registerFont(TTFont('IBMPlexMono', str(FONT_DIR / 'IBMPlexMono-Regular.ttf')))
+pdfmetrics.registerFont(TTFont('IBMPlexMono-Bold', str(FONT_DIR / 'IBMPlexMono-Bold.ttf')))
+pdfmetrics.registerFontFamily('SpaceGrotesk', bold='SpaceGrotesk-Bold')
+pdfmetrics.registerFontFamily('IBMPlexSans', normal='IBMPlexSans', italic='IBMPlexSans-Italic')
+pdfmetrics.registerFontFamily('IBMPlexMono', normal='IBMPlexMono', bold='IBMPlexMono-Bold')
 
 BRAND_COLOR_DEFAULT = '#6366F1'
 ROW_ALT_COLOR = '#F9FAFB'
@@ -51,32 +64,38 @@ class _SectionHeader(Flowable):
         self.canv.setFillColor(self.brand_color)
         self.canv.rect(0, 2, self._width, 28, fill=1, stroke=0)
         self.canv.setFillColor(white)
-        self.canv.setFont('Helvetica-Bold', 16)
+        self.canv.setFont('SpaceGrotesk-Bold', 16)
         self.canv.drawString(12, 9, self.text)
 
 
 class _KPICard(Flowable):
-    def __init__(self, name, value_str, trend, brand_color_hex, width=None):
+    def __init__(self, name, value_str, trend, trend_pct, brand_color_hex, width=None, highlight=False):
         Flowable.__init__(self)
         self.name = name
         self.value_str = value_str
         self.trend = trend
+        self.trend_pct = trend_pct
+        self.highlight = highlight
+        self.brand_color_hex = brand_color_hex
         self.brand_color = HexColor(brand_color_hex)
         self._width = width or (PAGE_WIDTH - 2 * MARGIN)
-        self.height = 60
+        self.height = 94 if highlight else 74
 
     def wrap(self, availWidth, availHeight):
         return (self._width, self.height)
 
     def draw(self):
-        self.canv.setFillColor(HexColor('#F9FAFB'))
-        self.canv.roundRect(0, 0, self._width, 52, 6, fill=1, stroke=0)
+        card_h = 84 if self.highlight else 64
+        bg = _brand_tint(self.brand_color_hex) if self.highlight else HexColor('#F9FAFB')
+        self.canv.setFillColor(bg)
+        self.canv.roundRect(0, 0, self._width, card_h, 6, fill=1, stroke=0)
         self.canv.setFillColor(HexColor('#374151'))
-        self.canv.setFont('Helvetica', 9)
-        self.canv.drawString(12, 36, self.name)
+        self.canv.setFont('IBMPlexSans', 9)
+        self.canv.drawString(12, card_h - 18, self.name)
         self.canv.setFillColor(self.brand_color)
-        self.canv.setFont('Helvetica-Bold', 22)
-        self.canv.drawString(12, 8, self.value_str)
+        val_size = 26 if self.highlight else 22
+        self.canv.setFont('IBMPlexMono-Bold', val_size)
+        self.canv.drawString(12, card_h - 46 if self.highlight else 18, self.value_str)
         if self.trend == 'increasing':
             arrow, color = '\u2191', HexColor('#10B981')
         elif self.trend == 'decreasing':
@@ -84,8 +103,13 @@ class _KPICard(Flowable):
         else:
             arrow, color = '\u2192', HexColor('#6B7280')
         self.canv.setFillColor(color)
-        self.canv.setFont('Helvetica-Bold', 18)
-        self.canv.drawRightString(self._width - 12, 14, arrow)
+        arrow_size = 20 if self.highlight else 18
+        self.canv.setFont('SpaceGrotesk-Bold', arrow_size)
+        self.canv.drawRightString(self._width - 12, card_h - 40 if self.highlight else 24, arrow)
+        self.canv.setFillColor(HexColor('#6B7280'))
+        self.canv.setFont('IBMPlexMono', 7.5)
+        pct_label = f'recent: {self.trend_pct:+.1f}%'
+        self.canv.drawRightString(self._width - 12, 6, pct_label)
 
 
 class _InsightCard(Flowable):
@@ -116,22 +140,22 @@ class _InsightCard(Flowable):
         x = 16
         y = self.height - 18
         self.canv.setFillColor(HexColor('#111827'))
-        self.canv.setFont('Helvetica-Bold', 11)
+        self.canv.setFont('SpaceGrotesk-Bold', 11)
         self.canv.drawString(x, y, str(self.insight.get('kpi', '')))
 
         y -= 18
         self.canv.setFillColor(HexColor('#374151'))
-        self.canv.setFont('Helvetica-Bold', 9.5)
+        self.canv.setFont('IBMPlexMono-Bold', 9.5)
         number_text = self.insight.get('number', '')
         self.canv.drawString(x, y, '\U0001F4CA ' + number_text[:90])
 
         y -= 16
-        self.canv.setFont('Helvetica', 9.5)
+        self.canv.setFont('IBMPlexSans', 9.5)
         reason_text = self.insight.get('reason', '')
         self.canv.drawString(x, y, '\u25B6 ' + reason_text[:90])
 
         y -= 16
-        self.canv.setFont('Helvetica-Oblique', 9.5)
+        self.canv.setFont('IBMPlexSans-Italic', 9.5)
         action_text = self.insight.get('action', '')
         self.canv.drawString(x, y, '\u2713 ' + action_text[:90])
 
@@ -150,7 +174,7 @@ class _AnomalyBox(Flowable):
         self.canv.setFillColor(HexColor(ANOMALY_BG_COLOR))
         self.canv.roundRect(0, 0, self._width, 22, 4, fill=1, stroke=0)
         self.canv.setFillColor(HexColor('#92400E'))
-        self.canv.setFont('Helvetica', 9.5)
+        self.canv.setFont('IBMPlexSans', 9.5)
         display = '\u26A0\uFE0F ' + self.message[:120]
         self.canv.drawString(10, 6, display)
 
@@ -182,12 +206,77 @@ class _CoverBand(Flowable):
                 pass
         title_y = self.band_height - 90 if self.logo_path else int(self.band_height * 0.55)
         self.canv.setFillColor(white)
-        self.canv.setFont('Helvetica-Bold', 28)
+        self.canv.setFont('SpaceGrotesk-Bold', 28)
         self.canv.drawCentredString(cx, title_y, self.title)
         if self.company_name:
-            self.canv.setFont('Helvetica', 14)
+            self.canv.setFont('IBMPlexSans', 14)
             self.canv.drawCentredString(cx, title_y - 28, self.company_name)
         self.canv.restoreState()
+
+
+def _strip_standard_fonts(pdf_path: str) -> None:
+    """Remove unused standard PDF fonts from page Resources and their Tf
+    operators from content streams, so the font listing is clean.
+
+    ReportLab always registers the 14 standard PDF fonts on every canvas and
+    writes a Tf operator for Helvetica 12pt as the initial graphics state.
+    Since no text is ever rendered with these fonts, both the resource entry
+    and the Tf call can be safely removed.
+    """
+    try:
+        import pikepdf
+        from pikepdf import parse_content_stream, unparse_content_stream, Operator
+    except ImportError:
+        return
+    try:
+        pdf = pikepdf.open(pdf_path)
+
+        std = {'/Helvetica', '/Helvetica-Bold', '/Helvetica-Oblique', '/Helvetica-BoldOblique',
+               '/Times-Roman', '/Times-Bold', '/Times-Italic', '/Times-BoldItalic',
+               '/Courier', '/Courier-Bold', '/Courier-Oblique', '/Courier-BoldOblique',
+               '/Symbol', '/ZapfDingbats'}
+
+        # Pass 1: collect standard-font resource keys per page (before any
+        # modifications, since /Font dicts may be shared via indirect refs).
+        page_std_keys = []
+        for page in pdf.pages:
+            fonts = page.get('/Resources', {}).get('/Font', pikepdf.Dictionary())
+            keys = set()
+            for key in fonts:
+                try:
+                    if str(fonts[key].get('/BaseFont')) in std:
+                        keys.add(str(key))
+                except Exception:
+                    pass
+            page_std_keys.append(keys)
+
+        # Pass 2: remove from Resources and content streams
+        for page, std_keys in zip(pdf.pages, page_std_keys):
+            if not std_keys:
+                continue
+
+            # Remove from /Font
+            fonts = page.get('/Resources', {}).get('/Font', pikepdf.Dictionary())
+            for key in list(fonts.keys()):
+                if str(key) in std_keys:
+                    del fonts[key]
+
+            # Remove Tf operators from content stream
+            cs = page.get('/Contents')
+            if cs is not None:
+                ops = parse_content_stream(cs)
+                filtered = [(o, op) for o, op in ops
+                            if not (op == Operator('Tf') and str(list(o)[0]) in std_keys)]
+                cs.write(unparse_content_stream(filtered))
+
+        import tempfile, shutil
+        tmp = tempfile.mktemp(suffix='.pdf')
+        pdf.save(tmp)
+        pdf.close()
+        shutil.move(tmp, pdf_path)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
 
 
 def _brand_tint(brand_hex, alpha=0.08):
@@ -211,7 +300,7 @@ class _RecommendationCard(Flowable):
         self.text_x = self.badge_x + self.badge_size + 12
         self.text_width = self._full_width - self.text_x - 12
         self.rec_style = ParagraphStyle(
-            'RecCardText', fontName='Helvetica', fontSize=10,
+            'RecCardText', fontName='IBMPlexSans', fontSize=10,
             textColor=HexColor('#374151'), leading=14,
             spaceBefore=0, spaceAfter=0,
         )
@@ -232,7 +321,7 @@ class _RecommendationCard(Flowable):
         self.canv.setFillColor(self.brand_color)
         self.canv.roundRect(bx, by, bs, bs, 14, fill=1, stroke=0)
         self.canv.setFillColor(white)
-        self.canv.setFont('Helvetica-Bold', 12)
+        self.canv.setFont('SpaceGrotesk-Bold', 12)
         self.canv.drawCentredString(bx + bs / 2, by + 7, str(self.index))
         para_y = (self.height - self._para_height) / 2
         self.para.drawOn(self.canv, self.text_x, para_y)
@@ -276,7 +365,7 @@ def _format_number(val) -> str:
 
 def _add_watermark(canvas, doc):
     canvas.saveState()
-    canvas.setFont('Helvetica-Bold', 50)
+    canvas.setFont('SpaceGrotesk-Bold', 50)
     canvas.setFillColor(Color(0, 0, 0, alpha=0.06))
     canvas.translate(PAGE_WIDTH / 2, PAGE_HEIGHT / 2)
     canvas.rotate(45)
@@ -286,7 +375,7 @@ def _add_watermark(canvas, doc):
 
 def _on_page(canvas, doc, add_watermark=False, is_white_label=False, company_name=''):
     canvas.saveState()
-    canvas.setFont('Helvetica', 8)
+    canvas.setFont('IBMPlexSans', 8)
     canvas.setFillColor(HexColor('#9CA3AF'))
     if is_white_label:
         if company_name:
@@ -358,12 +447,9 @@ def build_sync(
         bottomMargin=MARGIN,
     )
 
-    styles = getSampleStyleSheet()
-
     body_style = ParagraphStyle(
         'BodyText2',
-        parent=styles['Normal'],
-        fontName='Helvetica',
+        fontName='IBMPlexSans',
         fontSize=10,
         textColor=HexColor('#374151'),
         alignment=TA_JUSTIFY,
@@ -373,13 +459,13 @@ def build_sync(
 
     toc_h1_style = ParagraphStyle(
         'TOCH1',
-        parent=styles['Normal'],
-        fontName='Helvetica',
+        fontName='IBMPlexSans',
         fontSize=11,
         textColor=HexColor('#374151'),
         leftIndent=20,
         spaceBefore=4,
         spaceAfter=2,
+        leading=14,
     )
 
     story = []
@@ -408,21 +494,24 @@ def build_sync(
 
     if hero:
         trend_pct = hero['trend_pct']
-        trend_dir = hero['trend']
-        arrow = '\u2191' if trend_dir == 'increasing' else ('\u2193' if trend_dir == 'decreasing' else '\u2192')
-        arrow_color = '#10B981' if trend_dir == 'increasing' else ('#EF4444' if trend_dir == 'decreasing' else '#6B7280')
+        if trend_pct > 0:
+            arrow, arrow_color = '\u2191', '#10B981'
+        elif trend_pct < 0:
+            arrow, arrow_color = '\u2193', '#EF4444'
+        else:
+            arrow, arrow_color = '\u2192', '#6B7280'
         sign = '+' if trend_pct > 0 else ''
         hero_text = f'{hero["name"]}: {sign}{trend_pct:.1f}%  <font color="{arrow_color}">{arrow}</font>'
         hero_style = ParagraphStyle(
-            'CoverHeroStat', parent=styles['Normal'],
-            fontName='Helvetica-Bold', fontSize=22, leading=28,
+            'CoverHeroStat',
+            fontName='SpaceGrotesk-Bold', fontSize=22, leading=28,
             textColor=HexColor(brand_color),
             alignment=TA_CENTER, spaceBefore=24, spaceAfter=16,
         )
         story.append(Paragraph(hero_text, hero_style))
 
     info_style = ParagraphStyle(
-        'CoverInfo', parent=styles['Normal'], fontName='Helvetica',
+        'CoverInfo', fontName='IBMPlexSans',
         fontSize=10, textColor=HexColor('#6B7280'),
         alignment=TA_CENTER, spaceAfter=4,
     )
@@ -458,12 +547,15 @@ def build_sync(
     body_story.append(Spacer(1, 10))
 
     for kpi in kpis:
+        is_hero = hero is not None and kpi['name'] == hero['name']
         card = _KPICard(
             name=kpi['name'],
             value_str=kpi['value'],
             trend=kpi['trend'],
+            trend_pct=kpi.get('trend_pct', 0),
             brand_color_hex=brand_color,
             width=content_width,
+            highlight=is_hero,
         )
         body_story.append(card)
         body_story.append(Spacer(1, 8))
@@ -554,9 +646,9 @@ def build_sync(
     table_style_commands = [
         ('BACKGROUND', (0, 0), (-1, 0), HexColor(brand_color)),
         ('TEXTCOLOR', (0, 0), (-1, 0), white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 0), (-1, 0), 'SpaceGrotesk-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 8),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
         ('FONTSIZE', (0, 1), (-1, -1), 7),
         ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#D1D5DB')),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -623,9 +715,9 @@ def build_sync(
         app_style_commands = [
             ('BACKGROUND', (0, 0), (-1, 0), HexColor(brand_color)),
             ('TEXTCOLOR', (0, 0), (-1, 0), white),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (-1, 0), 'SpaceGrotesk-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 8),
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+            ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
             ('FONTSIZE', (0, 1), (-1, -1), 7),
             ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#D1D5DB')),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -657,6 +749,8 @@ def build_sync(
     story.extend(body_story)
 
     doc.build(story, onFirstPage=on_page, onLaterPages=on_page)
+
+    _strip_standard_fonts(pdf_path)
 
     if logo_path:
         try:
