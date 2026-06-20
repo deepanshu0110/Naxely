@@ -17,13 +17,15 @@ export default function Dashboard() {
 
   const EmptyIllustration = () => (
     <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="20" y="30" width="80" height="70" rx="6" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="2" />
-      <rect x="30" y="45" width="40" height="4" rx="2" fill="#9CA3AF" />
-      <rect x="30" y="55" width="55" height="4" rx="2" fill="#E5E7EB" />
-      <rect x="30" y="65" width="45" height="4" rx="2" fill="#E5E7EB" />
-      <rect x="30" y="75" width="35" height="4" rx="2" fill="#E5E7EB" />
-      <circle cx="85" cy="35" r="15" fill="#FDF1E6" stroke="#D97A34" strokeWidth="2" />
-      <path d="M80 35L85 30L90 35M85 30V42" stroke="#D97A34" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="18" y="22" width="72" height="62" rx="5" stroke="#D97A34" stroke-width="1.5" />
+      <line x1="30" y1="36" x2="68" y2="36" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="30" y1="44" x2="78" y2="44" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="30" y1="51" x2="72" y2="51" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
+      <rect x="32" y="68" width="8" height="8" rx="1" stroke="#D97A34" stroke-width="1.5" />
+      <rect x="46" y="58" width="8" height="18" rx="1" stroke="#D97A34" stroke-width="1.5" />
+      <rect x="60" y="48" width="8" height="28" rx="1" stroke="#D97A34" stroke-width="1.5" />
+      <circle cx="88" cy="34" r="13" stroke="#D97A34" stroke-width="1.5" />
+      <line x1="97" y1="43" x2="106" y2="52" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
     </svg>
   )
 
@@ -51,8 +53,8 @@ export default function Dashboard() {
           ) : reports.length === 0 ? (
             <EmptyState
               illustration={<EmptyIllustration />}
-              title="Generate your first report"
-              description="Upload a CSV and get an AI-powered PDF in 2 minutes"
+              title="No reports yet"
+              description="Upload a CSV to generate your first client-ready PDF report in minutes."
               action={
                 <Button onClick={() => navigate('/report/new')}>Create Report</Button>
               }

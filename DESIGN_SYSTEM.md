@@ -144,3 +144,31 @@ FONT_MONO = "'IBM Plex Mono', monospace"
 |---|---|
 | `frontend/src/components/report/GeneratingLoader.tsx` | 6-bar growing animation above checklist; replaces `Loader2` spinner + progress bar |
 | `DESIGN_SYSTEM.md` | This file |
+
+### Phase 5 — Empty state illustration
+
+| File | What it does |
+|---|---|
+| `frontend/src/pages/Dashboard.tsx` | Inline SVG — document outline + chart bars + magnifying glass, amber strokes |
+| `frontend/src/components/ui/EmptyState.tsx` | Title changed to `font-display` (Fraunces) for consistent heading hierarchy |
+| `DESIGN_SYSTEM.md` | This file |
+
+---
+
+## Illustration Style
+
+Phase 5 introduced the first **stroke-based SVG illustration** in the app. All prior
+SVG assets (favicon, loading bars) use filled shapes. This illustration debuts the
+outline-only style for empty/decorative states.
+
+| Attribute | Value | Notes |
+|---|---|---|
+| Stroke color | `#D97A34` (amber, `--color-amber-500`) | Matches primary accent |
+| Stroke width | `1.5` on `120×120` viewBox (~1.25% of viewBox) | Deliberately thinner than the old `2` used in the pre-Phase-5 inline SVG; refined for pure-outline look |
+| Line caps/joins | `round` | Softens the stroke ends |
+| Fill | `none` | All elements are outlines |
+| ViewBox | `120×120` | Scales cleanly at 64px, 120px, 200px — tested in all three |
+| Composition | Document outline (rounded rect) + 3 header lines + 3 ascending bar-chart bars + magnifying-glass circle+handle accent overlapping top-right | |
+
+This style is intended to be reusable for other empty states (no API key, no branding,
+etc.) — each would get its own distinct icon in the same stroke-only amber treatment.
