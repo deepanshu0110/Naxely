@@ -42,7 +42,7 @@ pdfmetrics.registerFontFamily('Fraunces', normal='Fraunces-Medium', bold='Fraunc
 pdfmetrics.registerFontFamily('IBMPlexSans', normal='IBMPlexSans', italic='IBMPlexSans-Italic')
 pdfmetrics.registerFontFamily('IBMPlexMono', normal='IBMPlexMono', bold='IBMPlexMono-Bold')
 
-from app.core.design_tokens import RED, MINT
+from app.core.design_tokens import RED, MINT, GRID_LINE
 
 BRAND_COLOR_DEFAULT = '#D97A34'
 CREAM_BG = HexColor('#F7F2E9')
@@ -224,6 +224,52 @@ class _CoverBand(Flowable):
         if self.company_name:
             self.canv.setFont('IBMPlexSans', 14)
             self.canv.drawCentredString(cx, title_y - 28, self.company_name)
+        self.canv.restoreState()
+
+
+class _CoverMotif(Flowable):
+    """Brand motif (3 ascending bars, common baseline) centred below the cover band."""
+    def __init__(self, brand_color_hex):
+        Flowable.__init__(self)
+        self.brand_color = HexColor(brand_color_hex)
+        self.content_size = 48  # 48×48 pt content area (uniform 2× favicon viewBox)
+        self.width = PAGE_WIDTH
+        self.height = self.content_size + 40  # 20pt pad above + below
+
+    def wrap(self, availWidth, availHeight):
+        return (self.width, self.height)
+
+    def draw(self):
+        self.canv.saveState()
+        self.canv.translate(-MARGIN, 0)
+        cx = self.width / 2
+        area_left = cx - self.content_size / 2
+        area_bottom = 20  # 20pt padding from bottom of flowable
+        baseline = area_bottom + 4  # 4pt from area bottom = common bar baseline
+        self.canv.setFillColor(self.brand_color)
+        # Bars at uniform 2× from 24×24 viewBox; common baseline, ascending tops
+        self.canv.roundRect(area_left + 4,    baseline, 11, 18,  2.4, fill=1, stroke=0)
+        self.canv.roundRect(area_left + 18.5, baseline, 11, 29,  2.4, fill=1, stroke=0)
+        self.canv.roundRect(area_left + 33,   baseline, 11, 40,  2.4, fill=1, stroke=0)
+        self.canv.restoreState()
+
+
+class _CoverRule(Flowable):
+    """Thin horizontal rule separating hero area from metadata."""
+    def __init__(self, grid_color_hex):
+        Flowable.__init__(self)
+        self.grid_color = HexColor(grid_color_hex)
+        self._width = PAGE_WIDTH - 2 * MARGIN
+        self.height = 20  # spacing only; the rule is vertically centred
+
+    def wrap(self, availWidth, availHeight):
+        return (self._width, self.height)
+
+    def draw(self):
+        self.canv.saveState()
+        self.canv.setStrokeColor(self.grid_color)
+        self.canv.setLineWidth(0.5)
+        self.canv.line(0, self.height / 2, self._width, self.height / 2)
         self.canv.restoreState()
 
 
@@ -503,6 +549,7 @@ def build_sync(
         title=title, company_name=company_name,
         logo_path=logo_path, brand_color_hex=brand_color,
     ))
+    story.append(_CoverMotif(brand_color))
 
     kpis = _compute_kpi_data(df, config, ai_content, brand_color)
     hero = max(kpis, key=lambda k: abs(k.get('trend_pct', 0))) if kpis else None
@@ -560,6 +607,8 @@ def build_sync(
                 self.canv.setFillColor(self.arrow_color)
                 self.canv.drawPath(p, fill=1, stroke=0)
         story.append(_CoverHeroStat(hero, sign, trend_pct, arrow_color_hex, brand_color))
+
+    story.append(_CoverRule(GRID_LINE))
 
     info_style = ParagraphStyle(
         'CoverInfo', fontName='IBMPlexSans',
@@ -701,7 +750,7 @@ def build_sync(
         ('FONTSIZE', (0, 0), (-1, 0), 8),
         ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
         ('FONTSIZE', (0, 1), (-1, -1), 7),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#D1D5DB')),
+        ('GRID', (0, 0), (-1, -1), 0.5, HexColor(GRID_LINE)),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('LEFTPADDING', (0, 0), (-1, -1), 4),
         ('RIGHTPADDING', (0, 0), (-1, -1), 4),
@@ -770,7 +819,7 @@ def build_sync(
             ('FONTSIZE', (0, 0), (-1, 0), 8),
             ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
             ('FONTSIZE', (0, 1), (-1, -1), 7),
-            ('GRID', (0, 0), (-1, -1), 0.5, HexColor('#D1D5DB')),
+            ('GRID', (0, 0), (-1, -1), 0.5, HexColor(GRID_LINE)),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('LEFTPADDING', (0, 0), (-1, -1), 4),
             ('RIGHTPADDING', (0, 0), (-1, -1), 4),
