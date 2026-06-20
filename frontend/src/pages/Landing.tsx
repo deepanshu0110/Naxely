@@ -234,25 +234,39 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Features Grid ── */}
+      {/* ── Features Grid (bento) ── */}
       <section id="features" className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-display mb-4 text-center text-3xl font-bold text-ink">
+          <h2 className="font-display mb-4 text-center text-3xl font-bold text-ink dark:text-gray-100">
             Everything you need to turn data into reports
           </h2>
-          <p className="mb-16 text-center text-gray-500">
+          <p className="mb-16 text-center text-gray-500 dark:text-gray-400">
             Six capabilities, one seamless flow — from upload to polished PDF.
           </p>
-          <div className="grid gap-x-16 gap-y-12 md:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-3">
             {features.map((f, i) => (
-              <div key={f.title} className="flex gap-5">
-                <span className="font-display text-4xl font-bold leading-none text-amber-200/70">
-                  {(i + 1).toString().padStart(2, '0')}
-                </span>
-                <div>
-                  <h3 className="text-base font-semibold text-ink">{f.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{f.desc}</p>
+              <div
+                key={f.title}
+                className={`rounded-xl border border-amber-200/20 dark:border-amber-900/50 bg-paper dark:bg-darkBg shadow-sm ${
+                  i === 0 ? 'lg:col-span-2 lg:row-span-2 p-6' : 'p-5'
+                }`}
+              >
+                <div className="mb-3 flex items-start justify-between">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-500/10">
+                    <f.icon className="h-5 w-5 text-amber-500" />
+                  </div>
+                  {i === 5 && (
+                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase text-gray-500 dark:bg-gray-700 dark:text-gray-400">
+                      Coming Soon
+                    </span>
+                  )}
                 </div>
+                <h3 className="font-display mb-1 text-base font-semibold text-ink dark:text-gray-100">
+                  {f.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+                  {f.desc}
+                </p>
               </div>
             ))}
           </div>
