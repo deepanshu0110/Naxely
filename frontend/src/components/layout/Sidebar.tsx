@@ -35,15 +35,18 @@ const navItems: NavItem[] = [
 export default function Sidebar() {
   const { user, logout } = useAuthStore()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
   const menuRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
   const tier = user?.tier ?? 'free'
 
   useEffect(() => {
+    const dark = document.documentElement.classList.contains('dark')
+    setIsDark(dark)
     if (user?.theme_preference === 'dark') {
       document.documentElement.classList.add('dark')
-    } else {
+    } else if (user?.theme_preference === 'light') {
       document.documentElement.classList.remove('dark')
     }
   }, [user?.theme_preference])
@@ -83,8 +86,8 @@ export default function Sidebar() {
               to={isLocked ? '/pricing' : item.href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
                 isActive
-              ? 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700/50 dark:hover:text-gray-200'
+              ? 'bg-amber-50 text-amber-600 dark:border-l-amber-400 dark:bg-amber-900/40 dark:text-amber-300'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700/50 dark:hover:text-gray-100'
               }`}
             >
               <item.icon className="h-5 w-5" />
@@ -130,24 +133,30 @@ export default function Sidebar() {
 
       <div className="flex items-center justify-between border-t border-slate px-4 py-2.5 dark:border-gray-700">
         <span className="text-sm text-gray-500 dark:text-gray-400">
-          {user?.theme_preference === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </span>
         <button
           role="switch"
-          aria-checked={user?.theme_preference === 'dark'}
+          aria-checked={isDark}
           onClick={async () => {
-            const next = user?.theme_preference === 'dark' ? 'light' : 'dark'
-            await api.post('/settings/theme', { theme: next })
-            document.documentElement.classList.toggle('dark', next === 'dark')
+            const next = !isDark
+            setIsDark(next)
+            document.documentElement.classList.toggle('dark', next)
+            try {
+              await api.post('/settings/theme', { theme: next ? 'dark' : 'light' })
+            } catch {
+              setIsDark(!next)
+              document.documentElement.classList.toggle('dark', !next)
+            }
             useAuthStore.getState().fetchProfile()
           }}
           className={`relative inline-flex h-[22px] w-[40px] flex-shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
-            user?.theme_preference === 'dark' ? 'bg-amber-500' : 'bg-slate dark:bg-gray-600'
+            isDark ? 'bg-amber-500' : 'bg-slate dark:bg-gray-500'
           }`}
         >
           <span
             className={`inline-block h-[18px] w-[18px] transform rounded-full bg-white shadow transition-transform duration-150 ease-in-out ${
-              user?.theme_preference === 'dark' ? 'translate-x-[20px]' : 'translate-x-0.5'
+              isDark ? 'translate-x-[20px]' : 'translate-x-0.5'
             }`}
           />
         </button>

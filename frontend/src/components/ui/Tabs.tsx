@@ -27,8 +27,8 @@ export default function Tabs({ items, activeId, onChange, children }: TabsProps)
               className={clsx(
                 'whitespace-nowrap border-b-2 px-1 py-3 text-sm font-body font-medium transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2',
                 tab.id === activeId
-                  ? 'border-amber-500 text-amber-600 dark:border-amber-400 dark:text-amber-400'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300',
+                  ? 'border-amber-500 text-amber-600 dark:border-amber-400 dark:text-amber-300'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:text-gray-100',
                 tab.disabled && 'cursor-not-allowed opacity-50',
               )}
             >
