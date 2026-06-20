@@ -98,16 +98,32 @@ class _KPICard(Flowable):
         val_size = 26 if self.highlight else 22
         self.canv.setFont('IBMPlexMono-Bold', val_size)
         self.canv.drawString(12, card_h - 46 if self.highlight else 18, self.value_str)
+        arrow_x = self._width - 12
+        arrow_y = card_h - 40 if self.highlight else 24
+        s = 7
         if self.trend == 'increasing':
-            arrow, color = '\u2191', HexColor('#10B981')
+            color = HexColor('#10B981')
+            p = self.canv.beginPath()
+            p.moveTo(arrow_x - s, arrow_y - s)
+            p.lineTo(arrow_x + s, arrow_y - s)
+            p.lineTo(arrow_x, arrow_y + s)
+            p.close()
         elif self.trend == 'decreasing':
-            arrow, color = '\u2193', HexColor('#EF4444')
+            color = HexColor('#EF4444')
+            p = self.canv.beginPath()
+            p.moveTo(arrow_x - s, arrow_y + s)
+            p.lineTo(arrow_x + s, arrow_y + s)
+            p.lineTo(arrow_x, arrow_y - s)
+            p.close()
         else:
-            arrow, color = '\u2192', HexColor('#6B7280')
+            color = HexColor('#6B7280')
+            p = self.canv.beginPath()
+            p.moveTo(arrow_x - s, arrow_y - s)
+            p.lineTo(arrow_x - s, arrow_y + s)
+            p.lineTo(arrow_x + s, arrow_y)
+            p.close()
         self.canv.setFillColor(color)
-        arrow_size = 20 if self.highlight else 18
-        self.canv.setFont('Fraunces-SemiBold', arrow_size)
-        self.canv.drawRightString(self._width - 12, card_h - 40 if self.highlight else 24, arrow)
+        self.canv.drawPath(p, fill=1, stroke=0)
         self.canv.setFillColor(HexColor('#6B7280'))
         self.canv.setFont('IBMPlexMono', 7.5)
         pct_label = f'recent: {self.trend_pct:+.1f}%'
@@ -499,20 +515,56 @@ def build_sync(
     if hero:
         trend_pct = hero['trend_pct']
         if trend_pct > 0:
-            arrow, arrow_color = '\u2191', '#10B981'
+            arrow_color_hex = '#10B981'
         elif trend_pct < 0:
-            arrow, arrow_color = '\u2193', '#EF4444'
+            arrow_color_hex = '#EF4444'
         else:
-            arrow, arrow_color = '\u2192', '#6B7280'
+            arrow_color_hex = '#6B7280'
         sign = '+' if trend_pct > 0 else ''
-        hero_text = f'{hero["name"]}: {sign}{trend_pct:.1f}%  <font color="{arrow_color}">{arrow}</font>'
-        hero_style = ParagraphStyle(
-            'CoverHeroStat',
-            fontName='Fraunces-SemiBold', fontSize=22, leading=28,
-            textColor=HexColor(brand_color),
-            alignment=TA_CENTER, spaceBefore=24, spaceAfter=16,
-        )
-        story.append(Paragraph(hero_text, hero_style))
+        class _CoverHeroStat(Flowable):
+            def __init__(self, hero, sign, trend_pct, arrow_color_hex, brand_color):
+                Flowable.__init__(self)
+                self.hero = hero
+                self.sign = sign
+                self.trend_pct = trend_pct
+                self.arrow_color = HexColor(arrow_color_hex)
+                self.brand_color = HexColor(brand_color)
+                self._width = content_width
+                self.height = 56
+
+            def wrap(self, availWidth, availHeight):
+                return (self._width, self.height)
+
+            def draw(self):
+                cx = self._width / 2
+                label = f'{self.hero["name"]}: {self.sign}{self.trend_pct:.1f}%'
+                self.canv.setFillColor(self.brand_color)
+                self.canv.setFont('Fraunces-SemiBold', 22)
+                self.canv.drawCentredString(cx, 18, label)
+                s = 9
+                arrow_x = cx + self.canv.stringWidth(label, 'Fraunces-SemiBold', 22) / 2 + 16
+                arrow_y = 28
+                if self.trend_pct > 0:
+                    p = self.canv.beginPath()
+                    p.moveTo(arrow_x - s, arrow_y - s)
+                    p.lineTo(arrow_x + s, arrow_y - s)
+                    p.lineTo(arrow_x, arrow_y + s)
+                    p.close()
+                elif self.trend_pct < 0:
+                    p = self.canv.beginPath()
+                    p.moveTo(arrow_x - s, arrow_y + s)
+                    p.lineTo(arrow_x + s, arrow_y + s)
+                    p.lineTo(arrow_x, arrow_y - s)
+                    p.close()
+                else:
+                    p = self.canv.beginPath()
+                    p.moveTo(arrow_x - s, arrow_y - s)
+                    p.lineTo(arrow_x - s, arrow_y + s)
+                    p.lineTo(arrow_x + s, arrow_y)
+                    p.close()
+                self.canv.setFillColor(self.arrow_color)
+                self.canv.drawPath(p, fill=1, stroke=0)
+        story.append(_CoverHeroStat(hero, sign, trend_pct, arrow_color_hex, brand_color))
 
     info_style = ParagraphStyle(
         'CoverInfo', fontName='IBMPlexSans',
