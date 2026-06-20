@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Check } from 'lucide-react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface GeneratingLoaderProps {
   currentStep: string
@@ -38,15 +39,7 @@ function barsFilledCount(activeIdx: number): number {
 
 export default function GeneratingLoader({ currentStep, progress, isPolling, timeoutMessage }: GeneratingLoaderProps) {
   const [elapsed, setElapsed] = useState(0)
-  const [reducedMotion, setReducedMotion] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
     if (!isPolling) return

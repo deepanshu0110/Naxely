@@ -1,5 +1,7 @@
 import { clsx } from 'clsx'
 import Badge from '@/components/ui/Badge'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useCountUp } from '@/hooks/useCountUp'
 import type { AIInsight } from '@/types/report'
 
 const sentimentBorder: Record<string, string> = {
@@ -15,6 +17,9 @@ const priorityVariant: Record<string, 'error' | 'warning' | 'neutral'> = {
 }
 
 export default function InsightCard({ insight }: { insight: AIInsight }) {
+  const reducedMotion = useReducedMotion()
+  const displayNumber = useCountUp(insight.number, 700, reducedMotion)
+
   return (
     <div
       className={clsx(
@@ -30,7 +35,7 @@ export default function InsightCard({ insight }: { insight: AIInsight }) {
         />
       </div>
 
-      <p className="mb-2 text-sm font-bold text-gray-800 dark:text-gray-200"># {insight.number}</p>
+      <p className="mb-2 text-sm font-bold text-gray-800 dark:text-gray-200"># {displayNumber}</p>
       <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">▶ {insight.reason}</p>
       <p className="text-sm italic text-gray-500 dark:text-gray-400">✓ {insight.action}</p>
     </div>

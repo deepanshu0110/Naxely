@@ -12,6 +12,8 @@ import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import Modal from '@/components/ui/Modal'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/store/authStore'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useCountUp } from '@/hooks/useCountUp'
 import type { Report } from '@/types/report'
 
 export default function ReportView() {
@@ -25,6 +27,17 @@ export default function ReportView() {
   const [error, setError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const reducedMotion = useReducedMotion()
+  const displayGenTime = useCountUp(
+    report?.generation_time_seconds != null ? Math.round(report.generation_time_seconds) : null,
+    700,
+    reducedMotion,
+  )
+  const displayRowCount = useCountUp(
+    typeof report?.row_count === 'number' ? report.row_count : null,
+    700,
+    reducedMotion,
+  )
 
   useEffect(() => {
     if (!id) return
@@ -169,13 +182,13 @@ export default function ReportView() {
               {report.generation_time_seconds != null && (
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <Clock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                  Generated in <span className="font-mono tabular-nums">{Math.round(report.generation_time_seconds)}</span> seconds
+                  Generated in <span className="font-mono tabular-nums">{displayGenTime}</span> seconds
                 </div>
               )}
 
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <FileText className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                <span className="font-mono tabular-nums">{typeof report.row_count === 'number' ? report.row_count.toLocaleString() : '—'}</span> rows
+                <span className="font-mono tabular-nums">{displayRowCount}</span> rows
               </div>
 
               {isPro && report.ai_summary && (

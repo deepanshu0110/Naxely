@@ -6,6 +6,8 @@ import toast from 'react-hot-toast'
 import Badge from '@/components/ui/Badge'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useCountUp } from '@/hooks/useCountUp'
 import type { Report } from '@/types/report'
 
 const statusVariant = (status: Report['status']) => {
@@ -24,6 +26,8 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const reducedMotion = useReducedMotion()
+  const displayRowCount = useCountUp(report.row_count, 700, reducedMotion)
 
   const handleDelete = async () => {
     setDeleting(true)
@@ -95,7 +99,7 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
         </div>
 
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-          <span>{report.row_count.toLocaleString()} rows</span>
+          <span className="font-mono tabular-nums">{displayRowCount} rows</span>
           <span>{format(new Date(report.created_at), 'MMM d, yyyy')}</span>
         </div>
       </div>
