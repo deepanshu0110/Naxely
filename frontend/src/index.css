@@ -9,3 +9,21 @@ body {
   background-color: #F7F2E9;
   color: #14131F;
 }
+
+/* Phase 2 — Tactile paper texture overlay */
+#root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url('/noise-texture.svg');
+  background-repeat: repeat;
+  background-size: 300px 300px;
+  mix-blend-mode: multiply;
+  opacity: 0.04;
+}
+
+html.dark #root::before {
+  opacity: 0.012;
+}

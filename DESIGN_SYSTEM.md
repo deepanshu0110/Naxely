@@ -124,3 +124,16 @@ FONT_MONO = "'IBM Plex Mono', monospace"
 | `frontend/public/favicon.svg` | SVG brand motif glyph (3 ascending bars) |
 | `frontend/index.html` | Favicon link, apple-touch-icon |
 | `DESIGN_SYSTEM.md` | This file |
+
+### Phase 2 — Tactile paper texture (web app only)
+
+| File | What it does |
+|---|---|
+| `frontend/public/noise-texture.svg` | SVG feTurbulence fractal noise (300×300, grayscale) |
+| `frontend/src/index.css` | `#root::before` overlay w/ `mix-blend-mode: multiply`, 4% opacity light / 1.2% dark |
+| `DESIGN_SYSTEM.md` | This file |
+
+> PDF note: ReportLab can't render SVG feTurbulence filters natively.
+> Embedding a rasterized noise PNG would add ~5-10 KB per PDF. Skipped
+> for now — the texture is strong enough in the web app alone to establish
+> the tactile identity. Revisit if the brand calls for it. |
