@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { MoreHorizontal, Download, Eye, Trash2 } from 'lucide-react'
+import { FileText, MoreHorizontal, Download, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Badge from '@/components/ui/Badge'
 import Modal from '@/components/ui/Modal'
@@ -18,6 +18,17 @@ const statusVariant = (status: Report['status']) => {
       return 'warning'
     case 'failed':
       return 'error'
+  }
+}
+
+const statusLabel = (status: Report['status']) => {
+  switch (status) {
+    case 'completed':
+      return 'Done'
+    case 'processing':
+      return 'Generating'
+    case 'failed':
+      return 'Failed'
   }
 }
 
@@ -42,65 +53,79 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
     }
   }
 
-  const truncatedTitle = report.title.length > 50 ? report.title.slice(0, 50) + '...' : report.title
-
   return (
     <>
-      <div className="rounded-xl border border-slate bg-paper p-4 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md dark:border-gray-700 dark:bg-darkBg">
-        <div className="mb-3 flex items-start justify-between">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100" title={report.title}>
-            {truncatedTitle}
-          </h3>
-          <div className="relative">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="rounded-md p-1 text-gray-400 transition-colors duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-            {menuOpen && (
-              <div className="absolute right-0 top-8 z-10 w-40 rounded-lg border border-slate bg-paper py-1 shadow-lg dark:border-gray-700 dark:bg-darkBg">
-                {report.pdf_url && (
-                  <a
-                    href={report.pdf_url}
-                    download
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700/50"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    <Download className="h-4 w-4" /> Download PDF
-                  </a>
-                )}
-                <button
-                  onClick={() => {
-                    setMenuOpen(false)
-                    navigate(`/report/${report.id}`)
-                  }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700/50"
-                >
-                  <Eye className="h-4 w-4" /> View
-                </button>
-                <button
-                  onClick={() => {
-                    setMenuOpen(false)
-                    setConfirmDelete(true)
-                  }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition-colors duration-150 ease-in-out hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-red-400 dark:hover:bg-red-900/30"
-                >
-                  <Trash2 className="h-4 w-4" /> Delete
-                </button>
-              </div>
-            )}
-          </div>
+      <div
+        className="flex cursor-pointer items-center gap-4 rounded-xl border border-amber-200/40 bg-paper p-4 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md dark:border-amber-900/40 dark:bg-darkBg"
+        onClick={() => navigate(`/report/${report.id}`)}
+      >
+        {/* Icon thumbnail */}
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-500/10">
+          <FileText className="h-5 w-5 text-amber-500" />
         </div>
 
-        <div className="mb-3 flex flex-wrap gap-2">
-          <Badge variant="info" text={report.template_type} />
-          <Badge variant={statusVariant(report.status)} text={report.status.charAt(0).toUpperCase() + report.status.slice(1)} />
+        {/* Title + date */}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-ink dark:text-gray-100" title={report.title}>
+            {report.title}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {format(new Date(report.created_at), 'MMM d, yyyy')}
+          </p>
         </div>
 
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-          <span className="font-mono tabular-nums">{displayRowCount} rows</span>
-          <span>{format(new Date(report.created_at), 'MMM d, yyyy')}</span>
+        {/* Row count — hidden on mobile */}
+        <div className="hidden flex-shrink-0 text-right sm:block">
+          <p className="font-mono tabular-nums text-sm text-ink dark:text-gray-100">{displayRowCount}</p>
+          <p className="text-[10px] text-gray-400 dark:text-gray-500">rows</p>
+        </div>
+
+        {/* Status badge */}
+        <Badge variant={statusVariant(report.status)} text={statusLabel(report.status)} />
+
+        {/* Download — always visible */}
+        {report.pdf_url && (
+          <a
+            href={report.pdf_url}
+            download
+            onClick={(e) => e.stopPropagation()}
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md text-gray-400 transition-colors duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+            title="Download PDF"
+          >
+            <Download className="h-4 w-4" />
+          </a>
+        )}
+
+        {/* 3-dot menu — View + Delete only */}
+        <div className="relative flex-shrink-0">
+          <button
+            onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen) }}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-9 z-10 w-36 rounded-lg border border-slate bg-paper py-1 shadow-lg dark:border-gray-700 dark:bg-darkBg">
+              <button
+                onClick={() => {
+                  setMenuOpen(false)
+                  navigate(`/report/${report.id}`)
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700/50"
+              >
+                View
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false)
+                  setConfirmDelete(true)
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 transition-colors duration-150 ease-in-out hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-red-400 dark:hover:bg-red-900/30"
+              >
+                <Trash2 className="h-4 w-4" /> Delete
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -60,7 +60,7 @@ export default function Dashboard() {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-3">
               {reports.map((report) => (
                 <ReportCard key={report.id} report={report} onDelete={deleteReport} />
               ))}
