@@ -2,7 +2,7 @@ import uuid
 import json
 import secrets
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Literal
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query, File, UploadFile, Request
@@ -33,7 +33,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024
 class ColumnConfigItem(BaseModel):
     original_name: str
     display_name: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[Literal["date", "metric", "dimension", "text"]] = None
     include: bool = True
 
 

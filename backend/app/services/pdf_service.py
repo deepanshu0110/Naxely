@@ -451,6 +451,9 @@ def _on_page(canvas, doc, add_watermark=False, is_white_label=False, company_nam
 
 
 def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_color_hex: str) -> list[dict]:
+    if config.get("_precomputed_kpis"):
+        return config["_precomputed_kpis"]
+
     metric_cols = config.get('metric_columns', [])
     if not metric_cols:
         metric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]

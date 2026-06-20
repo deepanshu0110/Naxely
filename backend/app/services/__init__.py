@@ -6,6 +6,7 @@ from .data_service import (
     detect_column_types,
     apply_column_config,
     compute_column_stats,
+    normalize_for_aggregation,
 )
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "detect_column_types",
     "apply_column_config",
     "compute_column_stats",
+    "normalize_for_aggregation",
 ]

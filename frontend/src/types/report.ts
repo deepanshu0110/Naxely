@@ -45,7 +45,7 @@ export interface UploadResult {
 export interface ColumnInfo {
   original_name: string
   suggested_name: string
-  suggested_type: 'date' | 'metric' | 'dimension'
+  suggested_type: 'date' | 'metric' | 'dimension' | 'text'
   sample_values: (string | number | null)[]
   null_count: number
   unique_count: number
@@ -54,7 +54,7 @@ export interface ColumnInfo {
 export interface ColumnConfig {
   original_name: string
   display_name: string
-  type: 'date' | 'metric' | 'dimension'
+  type: 'date' | 'metric' | 'dimension' | 'text'
   include: boolean
 }
 

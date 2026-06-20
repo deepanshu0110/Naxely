@@ -88,6 +88,22 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
         if column_config:
             df = data_service.apply_column_config(df, column_config)
 
+        column_types = {}
+        for cc in column_config:
+            if cc.get("include", True):
+                col_name = cc.get("display_name") or cc.get("original_name")
+                col_type = cc.get("type", "dimension")
+                if col_type:
+                    column_types[col_name] = col_type
+
+        df_norm = data_service.normalize_for_aggregation(df, column_types)
+
+        config["_raw_null_counts"] = {
+            col: int(df[col].isna().sum())
+            for col in df.columns
+            if column_types.get(col) in ("dimension", "text")
+        }
+
         await update_status(report_id, 'processing', step='charts')
 
         brand_color = (config.get("brand") or {}).get("color") or "#6366F1"
@@ -99,7 +115,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
         chart_paths = await loop.run_in_executor(
             None,
             chart_service.generate_sync,
-            df, report_id, config, brand_color,
+            df_norm, report_id, config, brand_color,
         )
 
         try:
@@ -120,24 +136,24 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
                 await update_status(report_id, 'processing', step='ai')
 
                 try:
-                    summary = await ai_service.generate_summary(df, config, user_obj)
+                    summary = await ai_service.generate_summary(df_norm, config, user_obj)
                     ai_content["summary"] = summary
                 except HTTPException as e:
                     ai_error = str(e.detail) if isinstance(e.detail, str) else str(e.detail)
                     logger.warning("AI summary skipped for %s: %s", report_id, ai_error)
 
                 try:
-                    insights = await ai_service.generate_nra_insights(df, config, user_obj)
+                    insights = await ai_service.generate_nra_insights(df_norm, config, user_obj)
                     ai_content["insights"] = insights
                 except HTTPException as e:
                     msg = str(e.detail) if isinstance(e.detail, str) else str(e.detail)
                     ai_error = ai_error or msg
                     logger.warning("AI insights skipped for %s: %s", report_id, msg)
 
-                anomalies = ai_service.detect_anomalies(df)
+                anomalies = ai_service.detect_anomalies(df_norm)
                 ai_content["anomalies"] = anomalies
 
-                trends = ai_service.detect_trends(df)
+                trends = ai_service.detect_trends(df_norm)
                 ai_content["trends"] = trends
 
         await update_status(report_id, 'processing', step='pdf')
@@ -159,8 +175,11 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
             "company_name": (user_data_row.get("company_name") if user_data_row else None),
         }
 
+        kpis = pdf_service._compute_kpi_data(df_norm, config, ai_content, brand_color)
+
         pdf_config = dict(config)
         pdf_config["report_id"] = report_id
+        pdf_config["_precomputed_kpis"] = kpis
 
         pdf_path = await loop.run_in_executor(
             None,

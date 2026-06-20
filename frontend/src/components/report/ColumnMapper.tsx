@@ -6,7 +6,7 @@ interface ColumnMapperProps {
   onChange: (config: ColumnConfig[]) => void
 }
 
-const typeOptions: ColumnConfig['type'][] = ['date', 'metric', 'dimension']
+const typeOptions: ColumnConfig['type'][] = ['date', 'metric', 'dimension', 'text']
 
 export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
   const [config, setConfig] = useState<ColumnConfig[]>([])

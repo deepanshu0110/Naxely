@@ -150,7 +150,7 @@ def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int
     return call_openai(prompt, system, api_key, timeout)
 
 
-def _build_column_stats(df: pd.DataFrame) -> dict:
+def _build_column_stats(df: pd.DataFrame, null_counts_override: dict | None = None) -> dict:
     stats = compute_column_stats(df)
     columns_out = []
     for col in stats["columns"]:
@@ -163,7 +163,7 @@ def _build_column_stats(df: pd.DataFrame) -> dict:
             "latest_value": col.get("latest_value"),
             "trend": col.get("trend", "flat"),
             "trend_pct_change": col.get("trend_pct_change", 0.0),
-            "null_count": col["null_count"],
+            "null_count": (null_counts_override or {}).get(col["name"], col["null_count"]),
             "row_count": col["row_count"],
         }
         columns_out.append(entry)
@@ -180,7 +180,7 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
     except HTTPException:
         return None
 
-    column_stats = _build_column_stats(df)
+    column_stats = _build_column_stats(df, null_counts_override=config.get("_raw_null_counts"))
     column_stats_json = json.dumps(column_stats, default=str)
 
     metric_cols = [c for c in column_stats["columns"] if c["type"] == "metric"]
@@ -227,7 +227,7 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
     except HTTPException:
         return []
 
-    column_stats = _build_column_stats(df)
+    column_stats = _build_column_stats(df, null_counts_override=config.get("_raw_null_counts"))
     metric_cols = [c for c in column_stats["columns"] if c["type"] == "metric"]
     kpi_stats_json = json.dumps(metric_cols, default=str)
 

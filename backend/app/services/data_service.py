@@ -1,8 +1,13 @@
 import io
+import logging
 import pandas as pd
 import numpy as np
 from typing import List, Dict, Any
 import re
+
+logger = logging.getLogger(__name__)
+
+FREE_TEXT_NAME_PATTERNS = ('note', 'comment', 'description', 'remark')
 
 
 def parse_csv(content: bytes) -> pd.DataFrame:
@@ -21,7 +26,7 @@ def parse_csv(content: bytes) -> pd.DataFrame:
     try:
         # Try CSV first
         try:
-            df = pd.read_csv(io.BytesIO(content))
+            df = pd.read_csv(io.BytesIO(content), keep_default_na=False, na_values=[''])
             return df
         except Exception as csv_error:
             # If CSV fails, try Excel
@@ -230,6 +235,48 @@ def compute_column_stats(df: pd.DataFrame) -> Dict[str, Any]:
         "date_column": date_column,
         "date_range": date_range or {"from": None, "to": None}
     }
+
+
+def _is_likely_free_text(column_name: str) -> bool:
+    name_lower = column_name.lower()
+    return any(pattern in name_lower for pattern in FREE_TEXT_NAME_PATTERNS)
+
+
+def normalize_for_aggregation(df: pd.DataFrame, column_types: Dict[str, str]) -> pd.DataFrame:
+    normalized = df.copy()
+
+    for col, col_type in column_types.items():
+        if col not in normalized.columns:
+            continue
+
+        if col_type == 'text':
+            continue
+
+        if col_type == 'dimension':
+            if _is_likely_free_text(col):
+                logger.info(
+                    "Free-text heuristic fired for column '%s' "
+                    "(typed 'dimension', name matched free-text pattern)",
+                    col,
+                )
+                continue
+            normalized[col] = normalized[col].str.strip().str.title()
+
+        elif col_type == 'date':
+            normalized[col] = pd.to_datetime(
+                normalized[col], format='mixed', dayfirst=False, errors='coerce'
+            )
+
+        elif col_type == 'metric' and normalized[col].dtype == object:
+            normalized[col] = (
+                normalized[col]
+                .astype(str)
+                .str.replace(r'[\$,]', '', regex=True)
+                .replace('nan', pd.NA)
+            )
+            normalized[col] = pd.to_numeric(normalized[col], errors='coerce')
+
+    return normalized
 
 
 def _clean_column_name(col_name: str) -> str:

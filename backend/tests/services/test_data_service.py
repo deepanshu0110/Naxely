@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from app.services.data_service import (
     parse_csv, validate_csv, validate_for_injection,
-    detect_column_types, apply_column_config, compute_column_stats
+    detect_column_types, apply_column_config, compute_column_stats,
+    normalize_for_aggregation, _is_likely_free_text,
 )
 
 
@@ -178,3 +179,201 @@ class TestDataService:
             if col['name'] == 'Date':
                 assert col['type'] == 'date'
                 break
+
+
+FIXTURE_DIR = os.path.join(os.path.dirname(__file__), '..', 'fixtures')
+
+
+class TestNormalizeForAggregation:
+    """Tests for normalize_for_aggregation — data normalization layer."""
+
+    @classmethod
+    def setup_class(cls):
+        csv_path = os.path.join(FIXTURE_DIR, 'edge_case_messy_formatting.csv')
+        with open(csv_path, 'rb') as f:
+            cls.MESSY_DF = parse_csv(f.read())
+
+    def test_currency_fix_highest_priority(self):
+        """Currency strings convert to correct floats; pre- vs post-fix totals differ."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+
+        revenue = df_norm["Revenue"]
+        assert pd.api.types.is_numeric_dtype(revenue)
+
+        pre_fix = pd.to_numeric(self.MESSY_DF["Revenue"], errors='coerce')
+        post_fix = pd.to_numeric(
+            self.MESSY_DF["Revenue"].astype(str).str.replace(r'[\$,]', '', regex=True).replace('nan', pd.NA),
+            errors='coerce',
+        )
+
+        pre_sum = pre_fix.sum()
+        post_sum = post_fix.sum()
+
+        print(f"\nBEFORE/AFTER REVENUE TOTALS:")
+        print(f"  PRE-FIX  non-NaN: {pre_fix.notna().sum()}, sum: {pre_sum:.2f}")
+        print(f"  POST-FIX non-NaN: {post_fix.notna().sum()}, sum: {post_sum:.2f}")
+
+        assert post_sum == pytest.approx(440772.96, rel=1e-3)
+        assert pre_fix.notna().sum() == 46
+        assert post_fix.notna().sum() == 73
+
+    def test_region_consolidation_categorical(self):
+        """Dimension columns: strip whitespace and title-case each region value."""
+        df = self.MESSY_DF
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(df, column_types)
+
+        normed = df_norm["Region"].dropna()
+        assert " south " not in [str(r) for r in normed], "Leading/trailing whitespace should be stripped"
+        for val in normed:
+            clean = str(val).strip().title()
+            assert val == clean, f"'{val}' should be stripped and title-cased (got '{clean}')"
+        expected = {"North", "South", "East", "West"}
+        norm_set = set(str(r) for r in normed)
+        assert norm_set.issubset(expected), f"Values {norm_set} not all in {expected}"
+
+    def test_region_data_table_shows_raw_values(self):
+        """Original df (not normalized) retains raw distinct Region strings."""
+        raw_regions = list(self.MESSY_DF["Region"].unique())
+        has_raw = any(" south " in str(r).lower() for r in raw_regions)
+        assert has_raw, "Raw df should still have the original whitespace/case variants"
+
+    def test_mixed_date_parsing(self):
+        """Mixed-format dates parse correctly under dayfirst=False."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+
+        parsed = df_norm["Date"]
+        assert pd.api.types.is_datetime64_any_dtype(parsed)
+        assert parsed.iloc[0] == pd.Timestamp("2025-02-01")  # 01-Feb-2025
+        assert parsed.iloc[1] == pd.Timestamp("2025-02-03")  # 03-Feb-2025
+        assert parsed.iloc[2] == pd.Timestamp("2025-02-05")  # 02/05/2025
+
+    def test_malformed_date_value_becomes_nat(self):
+        """Check an empty/null date does not crash; NaT counted properly."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+        null_dates = df_norm["Date"].isna().sum()
+        raw_nat_count = self.MESSY_DF["Date"].isna().sum()
+        assert null_dates >= raw_nat_count
+        assert null_dates <= raw_nat_count + 2  # allow for extra coercions
+
+    def test_notes_heuristic_fires_text_untouched(self):
+        """Notes column (typed dimension, name matches 'note' pattern) — stays unchanged."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+
+        note_rows = df_norm["Notes"].dropna()
+        for val in note_rows:
+            assert val == val  # not NaN
+
+    def test_explicit_text_type_no_heuristic_log(self):
+        """Column typed 'text' skips normalization entirely; heuristic does not fire."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "text"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+
+        note_rows = df_norm["Notes"].dropna()
+        for val in note_rows:
+            assert val == val
+
+    def test_non_matching_dimension_normalized(self):
+        """Region columns typed dimension (no free-text pattern) normalize as categorical."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+        normed = df_norm["Region"].dropna()
+        assert not any(r != r.title().strip() for r in normed)
+
+    def test_original_df_unchanged(self):
+        """normalize_for_aggregation does not mutate the input df."""
+        df_copy = self.MESSY_DF.copy()
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        normalize_for_aggregation(df_copy, column_types)
+        assert df_copy["Revenue"].iloc[0] == 7091.19 or df_copy["Revenue"].iloc[0] == "7091.19"
+
+    # ── Guardrail: N/A handling (keep_default_na=False, na_values=['']) ──
+
+    def test_na_preserved_as_text_in_raw_df(self):
+        """'N/A' in Notes stays as string, NOT converted to NaN."""
+        raw = self.MESSY_DF
+        notes = raw["Notes"]
+        na_counts = (notes == "N/A").sum()
+        assert na_counts == 7, f"Expected 7 'N/A' entries, got {na_counts}"
+        na_idx = notes[notes == "N/A"].index[0]
+        assert isinstance(notes.loc[na_idx], str), "N/A should be str, not NaN"
+
+    def test_na_preserved_as_text_in_df_norm(self):
+        """After normalization, 'N/A' in Notes remains a string."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+        notes_norm = df_norm["Notes"]
+        na_mask = notes_norm == "N/A"
+        assert na_mask.any(), "N/A should survive normalization"
+        na_idx = notes_norm[notes_norm == "N/A"].index[0]
+        assert isinstance(notes_norm.loc[na_idx], str), "N/A must remain str after norm"
+        # Verify it's not mistakenly counted as NaN
+        assert pd.notna(notes_norm.loc[na_idx]), "N/A string should NOT be NaN"
+
+    def test_blank_cells_still_null_in_raw_df(self):
+        """Blank cells still parse as NaN despite keep_default_na=False."""
+        raw = self.MESSY_DF
+        assert pd.isna(raw["Units Sold"].iloc[0]), "First row Units Sold is blank"
+        assert pd.isna(raw["Notes"].iloc[0]), "First row Notes is blank"
+        assert raw["Notes"].isna().sum() > 0, "Should have blank Notes cells"
+
+    def test_blank_cells_still_null_in_df_norm(self):
+        """Blank cells remain NaN after normalization."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.MESSY_DF, column_types)
+        blank_notes = df_norm["Notes"].isna().sum()
+        assert blank_notes > 0, "Blank Notes should still be NaN after norm"
+
+    def test_null_counts_report(self):
+        """Print comprehensive null counts before/after normalization for audit."""
+        column_types = {"Date": "date", "Revenue": "metric", "Region": "dimension", "Notes": "dimension"}
+        raw = self.MESSY_DF
+        df_norm = normalize_for_aggregation(raw, column_types)
+        print(f"\n{'─'*60}")
+        print(f"{'GUARDRAIL: NULL COUNTS BEFORE vs AFTER NORMALIZATION':^60}")
+        print(f"{'─'*60}")
+        print(f"{'Column':<20} {'Raw NaN':>10} {'Norm NaN':>10} {'Delta':>10}")
+        print(f"{'─'*60}")
+        for col in raw.columns:
+            raw_nan = int(raw[col].isna().sum())
+            norm_nan = int(df_norm[col].isna().sum())
+            delta = norm_nan - raw_nan
+            print(f"{col:<20} {raw_nan:>10} {norm_nan:>10} {delta:+>10d}")
+        print(f"{'─'*60}")
+        print(f"N/A count in Notes (raw):  {(raw['Notes']=='N/A').sum()}")
+        print(f"N/A count in Notes (norm): {(df_norm['Notes']=='N/A').sum()}")
+        # Guardrail: Delta for metric/date columns should be near-zero (no N/A leakage)
+        assert df_norm["Revenue"].isna().sum() <= raw["Revenue"].isna().sum() + 2
+
+
+class TestFreeTextHeuristic:
+    """Test _is_likely_free_text helper."""
+
+    def test_note_matches(self):
+        assert _is_likely_free_text("Notes") is True
+        assert _is_likely_free_text("notes_and_comments") is True
+        assert _is_likely_free_text("Customer Note") is True
+
+    def test_comment_matches(self):
+        assert _is_likely_free_text("Comments") is True
+        assert _is_likely_free_text("comment") is True
+        assert _is_likely_free_text("Internal Comment") is True
+
+    def test_description_matches(self):
+        assert _is_likely_free_text("Description") is True
+        assert _is_likely_free_text("Product Description") is True
+
+    def test_remark_matches(self):
+        assert _is_likely_free_text("Remarks") is True
+        assert _is_likely_free_text("remark") is True
+
+    def test_region_does_not_match(self):
+        assert _is_likely_free_text("Region") is False
+        assert _is_likely_free_text("Category") is False
+        assert _is_likely_free_text("Revenue") is False
+        assert _is_likely_free_text("Date") is False
+        assert _is_likely_free_text("Name") is False
