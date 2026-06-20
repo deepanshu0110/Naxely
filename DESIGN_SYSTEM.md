@@ -18,7 +18,7 @@
 | Background (dark) | **#1C1A16** (warm dark) | NOT pure black, NOT cold gray/navy |
 | Text (light) | **#14131F** (ink) | Default text color |
 | Positive trend | **#0E9F6E** (mint) | Upward trends, semantic only |
-| Negative trend | **#C13B3B** (red) | Downward trends, semantic only |
+| Negative trend | **#EF4444** (red) | Downward trends, semantic only |
 
 ### Brand Motif
 
@@ -62,8 +62,9 @@ app chrome.
 
 ## Color Tokens
 
-These are defined in `frontend/src/design-tokens.ts` and mapped in
-`frontend/tailwind.config.ts`.
+### Frontend (`frontend/src/design-tokens.ts`)
+
+Mapped in `frontend/tailwind.config.ts`.
 
 ```typescript
 // design-tokens.ts — canonical source
@@ -87,6 +88,27 @@ COLORS = {
   mint:       '#0E9F6E',     // positive trend
   darkBg:     '#1C1A16',     // dark mode background
 }
+```
+
+### Backend (`backend/app/core/design_tokens.py`)
+
+Used by `pdf_service.py` and `chart_service.py` for PDF/chart generation.
+
+```python
+# design_tokens.py — canonical source for backend rendering
+INK = "#14131F"
+PAPER = "#F7F2E9"
+SLATE = "#EAE3D3"
+CREAM = "#F7F2E9"
+WARM_SLATE = "#EAE3D3"
+INDIGO = "#6366F1"
+AMBER = "#D97A34"
+MINT = "#0E9F6E"         # positive trend
+RED = "#EF4444"           # negative trend
+BRAND_COLOR = AMBER       # default, overridable in Settings > Branding
+FONT_DISPLAY = "'Fraunces', Georgia, serif"
+FONT_BODY = "'IBM Plex Sans', system-ui, sans-serif"
+FONT_MONO = "'IBM Plex Mono', monospace"
 ```
 
 ---

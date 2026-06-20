@@ -42,6 +42,8 @@ pdfmetrics.registerFontFamily('Fraunces', normal='Fraunces-Medium', bold='Fraunc
 pdfmetrics.registerFontFamily('IBMPlexSans', normal='IBMPlexSans', italic='IBMPlexSans-Italic')
 pdfmetrics.registerFontFamily('IBMPlexMono', normal='IBMPlexMono', bold='IBMPlexMono-Bold')
 
+from app.core.design_tokens import RED, MINT
+
 BRAND_COLOR_DEFAULT = '#D97A34'
 CREAM_BG = HexColor('#F7F2E9')
 ROW_ALT_COLOR = '#F7F2E9'
@@ -109,7 +111,7 @@ class _KPICard(Flowable):
             p.lineTo(arrow_x, arrow_y + s)
             p.close()
         else:
-            color = HexColor('#EF4444')
+            color = HexColor(RED)
             p = self.canv.beginPath()
             p.moveTo(arrow_x - s, arrow_y + s)
             p.lineTo(arrow_x + s, arrow_y + s)
@@ -130,9 +132,9 @@ class _InsightCard(Flowable):
         self._width = width or (PAGE_WIDTH - 2 * MARGIN)
         sentiment = insight.get('sentiment', 'neutral')
         if sentiment == 'positive':
-            self.border_color = HexColor('#10B981')
+            self.border_color = HexColor(MINT)
         elif sentiment == 'negative':
-            self.border_color = HexColor('#EF4444')
+            self.border_color = HexColor(RED)
         else:
             self.border_color = HexColor('#6B7280')
         self.height = 90
@@ -508,9 +510,9 @@ def build_sync(
     if hero:
         trend_pct = hero['trend_pct']
         if trend_pct > 0:
-            arrow_color_hex = '#10B981'
+            arrow_color_hex = MINT
         elif trend_pct < 0:
-            arrow_color_hex = '#EF4444'
+            arrow_color_hex = RED
         else:
             arrow_color_hex = '#6B7280'
         sign = '+' if trend_pct > 0 else ''
