@@ -12,8 +12,11 @@ import {
   LogOut,
   Sun,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
   type LucideIcon,
 } from 'lucide-react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 interface NavItem {
   label: string
@@ -36,10 +39,25 @@ export default function Sidebar() {
   const { user, logout } = useAuthStore()
   const [menuOpen, setMenuOpen] = useState(false)
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
+  const [hidden, setHidden] = useState(() => {
+    try {
+      const stored = localStorage.getItem('naxely_sidebar_hidden')
+      if (stored !== null) return stored === 'true'
+    } catch {}
+    return window.innerWidth < 1024
+  })
+  const reducedMotion = useReducedMotion()
   const menuRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
   const navigate = useNavigate()
   const tier = user?.tier ?? 'free'
+  const sidebarId = 'app-sidebar'
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('naxely_sidebar_hidden', String(hidden))
+    } catch {}
+  }, [hidden])
 
   useEffect(() => {
     const dark = document.documentElement.classList.contains('dark')
@@ -51,10 +69,38 @@ export default function Sidebar() {
     }
   }, [user?.theme_preference])
 
+  const wrapperTransition = reducedMotion ? '' : 'transition-all duration-200'
+  const slideTransition = reducedMotion ? '' : 'transition-transform duration-200'
+
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-slate bg-paper dark:border-gray-700 dark:bg-darkBg">
-      <div className="flex h-16 items-center gap-2 px-6">
+    <>
+      {hidden && (
+        <button
+          onClick={() => setHidden(false)}
+          className="fixed left-3 top-4 z-30 flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-gray-500 dark:hover:bg-gray-700/50 dark:hover:text-gray-300"
+          aria-label="Toggle sidebar"
+          aria-expanded={false}
+          aria-controls={sidebarId}
+        >
+          <PanelLeftOpen className="h-5 w-5" />
+        </button>
+      )}
+      <div className={`shrink-0 overflow-hidden ${wrapperTransition} ${hidden ? 'w-0' : 'w-60'}`}>
+      <aside
+        id={sidebarId}
+        className={`flex h-screen flex-col border-r w-60 shrink-0 bg-paper dark:bg-darkBg border-amber-200/40 dark:border-amber-900/40 ${slideTransition} ${hidden ? '-translate-x-full' : 'translate-x-0'}`}
+      >
+      <div className="flex h-16 items-center justify-between px-4">
         <span className="font-display text-xl font-bold text-ink dark:text-gray-100">Naxely</span>
+        <button
+          onClick={() => setHidden(true)}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-gray-500 dark:hover:bg-gray-700/50 dark:hover:text-gray-300"
+          aria-label="Toggle sidebar"
+          aria-expanded={true}
+          aria-controls={sidebarId}
+        >
+          <PanelLeftClose className="h-5 w-5" />
+        </button>
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
@@ -131,7 +177,7 @@ export default function Sidebar() {
         </div>
       )}
 
-      <div className="flex items-center justify-between border-t border-slate px-4 py-2.5 dark:border-gray-700">
+      <div className="flex items-center justify-between border-t border-amber-200/40 px-4 py-2.5 dark:border-amber-900/40">
         <span className="text-sm text-gray-500 dark:text-gray-400">
           {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </span>
@@ -162,7 +208,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <div className="relative border-t border-slate px-4 py-3" ref={menuRef}>
+      <div className="relative border-t border-amber-200/40 px-4 py-3 dark:border-amber-900/40" ref={menuRef}>
         <button
           className="flex w-full items-center gap-3 rounded-lg px-1 py-1 text-left transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700/50"
           onClick={() => setMenuOpen((o) => !o)}
@@ -192,7 +238,7 @@ export default function Sidebar() {
               className="fixed inset-0 z-10"
               onClick={() => setMenuOpen(false)}
             />
-            <div className="absolute bottom-full left-2 right-2 z-20 mb-2 overflow-hidden rounded-lg border border-slate bg-paper shadow-lg dark:border-gray-700 dark:bg-darkBg">
+            <div className="absolute bottom-full left-2 right-2 z-20 mb-2 overflow-hidden rounded-lg border border-amber-200/40 bg-paper shadow-lg dark:border-amber-900/40 dark:bg-darkBg">
               <button
                 className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700/50"
                 onClick={() => {
@@ -219,5 +265,7 @@ export default function Sidebar() {
         )}
       </div>
     </aside>
+    </div>
+    </>
   )
 }
