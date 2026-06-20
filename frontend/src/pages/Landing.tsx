@@ -12,6 +12,7 @@ import {
   Star,
 } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
+import Button from '@/components/ui/Button'
 
 const stepped = [
   {
@@ -145,56 +146,63 @@ export default function Landing() {
 
       {/* ── Hero ── */}
       <section
-        className="px-6 py-24"
+        className="px-6 py-24 dark:[--dot-color:#D97A3410]"
         style={{
           backgroundImage:
-            'radial-gradient(circle, #D97A3422 1px, transparent 1px)',
+            'radial-gradient(circle, var(--dot-color, #D97A3422) 1px, transparent 1px)',
           backgroundSize: '28px 28px',
         }}
       >
         <div className="relative mx-auto flex max-w-6xl items-center gap-12">
           <div className="flex-1">
-            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl">
+            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-ink dark:text-gray-100 sm:text-5xl">
               Turn raw data into a client-ready report in 2&nbsp;minutes
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500">
+            <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500 dark:text-gray-400">
               Upload a CSV, get an AI-powered PDF report with insights, charts,
               and recommendations. No design skills needed.
             </p>
-            <Link
-              to="/signup"
-              className="mt-10 inline-block rounded-lg bg-amber-500 px-8 py-3.5 text-base font-semibold text-white hover:bg-amber-600"
-            >
-              Start Free — No credit card required
+            <Link to="/signup">
+              <Button variant="primary" className="mt-10 px-8 py-3.5 text-base">
+                Start Free — No credit card required
+              </Button>
             </Link>
-            <p className="mt-4 text-sm text-gray-400">
+            <p className="mt-4 text-sm text-gray-400 dark:text-gray-500">
               Join consultants and agencies worldwide
             </p>
           </div>
           <div className="hidden flex-1 lg:block">
-            <div className="rounded-xl border border-amber-200/40 bg-paper p-4 shadow-lg">
-              <div className="mb-3 flex items-center gap-2 border-b border-amber-200/20 pb-3">
+            <div className="rounded-xl border border-amber-200/40 dark:border-amber-900/40 bg-paper p-4 shadow-lg">
+              <div className="mb-3 flex items-center gap-2 border-b border-amber-200/20 dark:border-amber-900/20 pb-3">
                 <div className="flex gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-400 dark:bg-red-600" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-400 dark:bg-yellow-600" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-600" />
                 </div>
-                <div className="text-xs font-medium text-gray-400">report_preview.pdf</div>
+                <div className="text-xs font-medium text-gray-400 dark:text-gray-500">report_preview.pdf</div>
               </div>
-              <div className="space-y-3">
-                <div className="h-3 w-3/4 rounded bg-amber-200/30" />
-                <div className="h-3 w-1/2 rounded bg-amber-200/20" />
-                <div className="mt-4 flex gap-3">
-                  <div className="h-16 w-16 rounded-lg bg-amber-100" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-3 w-full rounded bg-amber-200/30" />
-                    <div className="h-3 w-2/3 rounded bg-amber-200/20" />
+              <div className="overflow-hidden rounded-md bg-paper">
+                <div className="h-3 rounded-t-md bg-amber-500" />
+                <div className="space-y-2.5 p-3">
+                  <div className="flex h-7 items-end gap-1.5">
+                    <div className="w-2.5 rounded-sm bg-amber-500" style={{ height: '37%' }} />
+                    <div className="w-2.5 rounded-sm bg-amber-500" style={{ height: '60%' }} />
+                    <div className="w-2.5 rounded-sm bg-amber-500" style={{ height: '83%' }} />
                   </div>
-                </div>
-                <div className="flex gap-2 pt-2">
-                  <div className="h-12 flex-1 rounded bg-amber-50" />
-                  <div className="h-12 flex-1 rounded bg-amber-50" />
-                  <div className="h-12 flex-1 rounded bg-amber-50" />
+                  <div className="h-px bg-gray-300" />
+                  <div className="font-display text-[10px] font-bold uppercase tracking-tight text-gray-500">Revenue</div>
+                  <div className="font-display text-lg font-bold leading-tight text-ink">$1,900</div>
+                  <div className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-mint">
+                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M5 1 L9 9 L1 9 Z" fill="#0E9F6E" /></svg>
+                    +90%
+                  </div>
+                  <div className="flex h-6 items-end gap-1 pt-1">
+                    <div className="flex-1 rounded-t-sm bg-amber-500/20" style={{ height: '40%' }} />
+                    <div className="flex-1 rounded-t-sm bg-amber-500/30" style={{ height: '55%' }} />
+                    <div className="flex-1 rounded-t-sm bg-amber-500/40" style={{ height: '70%' }} />
+                    <div className="flex-1 rounded-t-sm bg-amber-500/50" style={{ height: '85%' }} />
+                    <div className="flex-1 rounded-t-sm bg-amber-500/60" style={{ height: '100%' }} />
+                  </div>
                 </div>
               </div>
             </div>
