@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Check, Loader2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Check } from 'lucide-react'
 
 interface GeneratingLoaderProps {
   currentStep: string
@@ -25,6 +25,17 @@ function stepIndexFromCurrent(currentStep: string): number {
   return 0
 }
 
+const BAR_MAX_HEIGHTS = [28, 44, 36, 52, 32, 48]
+const BAR_MIN_HEIGHT = 4
+const NUM_BARS = 6
+
+function barsFilledCount(activeIdx: number): number {
+  if (activeIdx <= 0) return 1
+  if (activeIdx === 1) return 3
+  if (activeIdx === 2) return 5
+  return NUM_BARS
+}
+
 export default function GeneratingLoader({ currentStep, progress, isPolling, timeoutMessage }: GeneratingLoaderProps) {
   const [elapsed, setElapsed] = useState(0)
 
@@ -35,12 +46,56 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
   }, [isPolling])
 
   const activeIdx = stepIndexFromCurrent(currentStep)
+  const filled = barsFilledCount(activeIdx)
+
+  const barStates = useMemo(() => {
+    return Array.from({ length: NUM_BARS }, (_, i) => {
+      if (i < filled) return 'full'
+      if (i === filled && filled < NUM_BARS) return 'growing'
+      return 'empty'
+    })
+  }, [filled])
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper dark:bg-darkBg">
       <div className="w-full max-w-md px-6 text-center">
         <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">Generating your report</h2>
         <p className="mb-10 text-sm text-gray-500 dark:text-gray-400">This usually takes 30–90 seconds</p>
+
+        {isPolling && (
+          <div className="mb-10 flex items-end justify-center gap-3">
+            {BAR_MAX_HEIGHTS.map((maxH, i) => {
+              const state = barStates[i]
+              const heightPx = state === 'full'
+                ? maxH
+                : state === 'growing'
+                  ? BAR_MIN_HEIGHT + (maxH - BAR_MIN_HEIGHT) * (progress / 100)
+                  : BAR_MIN_HEIGHT
+              const isCurrent = state === 'growing'
+              return (
+                <div
+                  key={i}
+                  className={`w-4 rounded-full bg-amber-500 transition-all duration-300 ease-out ${
+                    isCurrent ? 'animate-pulse' : ''
+                  }`}
+                  style={{ height: `${heightPx}px` }}
+                />
+              )
+            })}
+          </div>
+        )}
+
+        {!isPolling && (
+          <div className="mb-10 flex items-end justify-center gap-3">
+            {BAR_MAX_HEIGHTS.map((_, i) => (
+              <div
+                key={i}
+                className="w-4 rounded-full bg-gray-300 dark:bg-gray-600 transition-all duration-300 ease-out"
+                style={{ height: `${BAR_MIN_HEIGHT}px` }}
+              />
+            ))}
+          </div>
+        )}
 
         <div className="mb-8 space-y-4">
           {steps.map((step, idx) => {
@@ -59,7 +114,7 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
                   {completed ? (
                     <Check className="h-4 w-4 text-green-500" />
                   ) : active ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
+                    <span className="text-xs font-bold text-amber-500">{idx + 1}</span>
                   ) : (
                     <span className="text-xs text-gray-400 dark:text-gray-500">{idx + 1}</span>
                   )}
@@ -81,17 +136,9 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
         </div>
 
         {isPolling && (
-          <div className="space-y-2">
-            <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-              <div
-                className="h-2 rounded-full bg-amber-500 transition-all"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              {elapsed > 0 ? `${elapsed}s elapsed` : 'Starting...'}
-            </p>
-          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            {elapsed > 0 ? `${elapsed}s elapsed` : 'Starting...'}
+          </p>
         )}
 
         {timeoutMessage && (

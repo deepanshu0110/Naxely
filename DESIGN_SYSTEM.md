@@ -136,4 +136,11 @@ FONT_MONO = "'IBM Plex Mono', monospace"
 > PDF note: ReportLab can't render SVG feTurbulence filters natively.
 > Embedding a rasterized noise PNG would add ~5-10 KB per PDF. Skipped
 > for now — the texture is strong enough in the web app alone to establish
-> the tactile identity. Revisit if the brand calls for it. |
+> the tactile identity. Revisit if the brand calls for it.
+
+### Phase 3 — Report generation loading animation
+
+| File | What it does |
+|---|---|
+| `frontend/src/components/report/GeneratingLoader.tsx` | 6-bar growing animation above checklist; replaces `Loader2` spinner + progress bar |
+| `DESIGN_SYSTEM.md` | This file |
