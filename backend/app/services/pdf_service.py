@@ -101,26 +101,19 @@ class _KPICard(Flowable):
         arrow_x = self._width - 12
         arrow_y = card_h - 40 if self.highlight else 24
         s = 7
-        if self.trend == 'increasing':
-            color = HexColor('#10B981')
+        if self.trend_pct >= 0:
+            color = HexColor('#0E9F6E')
             p = self.canv.beginPath()
             p.moveTo(arrow_x - s, arrow_y - s)
             p.lineTo(arrow_x + s, arrow_y - s)
             p.lineTo(arrow_x, arrow_y + s)
             p.close()
-        elif self.trend == 'decreasing':
+        else:
             color = HexColor('#EF4444')
             p = self.canv.beginPath()
             p.moveTo(arrow_x - s, arrow_y + s)
             p.lineTo(arrow_x + s, arrow_y + s)
             p.lineTo(arrow_x, arrow_y - s)
-            p.close()
-        else:
-            color = HexColor('#6B7280')
-            p = self.canv.beginPath()
-            p.moveTo(arrow_x - s, arrow_y - s)
-            p.lineTo(arrow_x - s, arrow_y + s)
-            p.lineTo(arrow_x + s, arrow_y)
             p.close()
         self.canv.setFillColor(color)
         self.canv.drawPath(p, fill=1, stroke=0)

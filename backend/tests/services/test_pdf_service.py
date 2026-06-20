@@ -186,3 +186,158 @@ class TestKpiTrendDeterminism:
                 f"run1={kpi1['trend']} run2={kpi2['trend']} — "
                 f"must be deterministic"
             )
+
+
+class TestKpiCardArrowDirection:
+    """Arrow drawn on KPI cards must derive direction/color from trend_pct, not trend field."""
+
+    def _extract_triangle_apex_direction(self, pdf_path: str) -> list[str]:
+        """Parse a PDF and return 'up' / 'down' for each filled
+        3-point path found (the triangle arrows drawn by _KPICard)."""
+        import pikepdf
+        from pikepdf import parse_content_stream, Operator
+
+        directions = []
+        fill_ops = {Operator('f'), Operator('f*')}
+        with pikepdf.open(pdf_path) as pdf:
+            for page in pdf.pages:
+                cs = page.get('/Contents')
+                if cs is None:
+                    continue
+                ops = list(parse_content_stream(cs))
+                i = 0
+                while i < len(ops) - 4:
+                    op0_obj, op0 = ops[i]
+                    op1_obj, op1 = ops[i + 1]
+                    op2_obj, op2 = ops[i + 2]
+                    op3_obj, op3 = ops[i + 3]
+                    op4_obj, op4 = ops[i + 4] if i + 4 < len(ops) else (None, None)
+                    # Skip if any of the path ops are Bézier curves (c or v)
+                    if op0 not in {Operator('m')}:
+                        i += 1
+                        continue
+                    # Collect contiguous path ops
+                    path_ops = [(op0_obj, op0)]
+                    j = i + 1
+                    while j < len(ops) and ops[j][1] not in fill_ops:
+                        path_ops.append(ops[j])
+                        j += 1
+                    if j < len(ops) and ops[j][1] in fill_ops:
+                        path_ops.append(ops[j])
+                    # 3-point filled path: m + l + l + [h] + f/f*
+                    line_ops = [(o, op) for o, op in path_ops if op == Operator('l')]
+                    has_fill = any(op in fill_ops for _, op in path_ops)
+                    has_curve = any(op in {Operator('c'), Operator('v'), Operator('y')}
+                                    for _, op in path_ops)
+                    if len(line_ops) == 2 and has_fill and not has_curve:
+                        # Extract y coords from moveto and both linetos
+                        _, m_y = [float(v) for v in list(path_ops[0][0])[:2]]
+                        _, l1_y = [float(v) for v in list(path_ops[1][0])[:2]]
+                        _, l2_y = [float(v) for v in list(path_ops[2][0])[:2]]
+                        ys = {m_y, l1_y, l2_y}
+                        if len(ys) == 2:
+                            # Two points at one Y (base), one at other Y (apex)
+                            y_counts = {}
+                            for y in [m_y, l1_y, l2_y]:
+                                y_counts[y] = y_counts.get(y, 0) + 1
+                            base_y = max(y for y, c in y_counts.items() if c == 2)
+                            apex_y = min(y for y, c in y_counts.items() if c == 1)
+                            if apex_y > base_y:
+                                directions.append('up')
+                            else:
+                                directions.append('down')
+                    i = j + 1 if j < len(ops) else i + 1
+        return directions
+
+    def test_negative_trend_pct_produces_apex_down_arrow(self):
+        import tempfile
+        from reportlab.platypus import SimpleDocTemplate
+        from reportlab.lib.pagesizes import A4
+        from app.services.pdf_service import _KPICard
+
+        tmp = tempfile.mktemp(suffix='.pdf')
+        try:
+            doc = SimpleDocTemplate(tmp, pagesize=A4)
+            card = _KPICard("Units Sold", "1,500", "increasing", -35.7, "#D97A34")
+            doc.build([card])
+
+            directions = self._extract_triangle_apex_direction(tmp)
+            assert 'down' in directions, (
+                f"Expected at least one apex-down triangle for negative trend_pct, "
+                f"found: {directions}"
+            )
+        finally:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+
+    def test_positive_trend_pct_produces_apex_up_arrow(self):
+        import tempfile
+        from reportlab.platypus import SimpleDocTemplate
+        from reportlab.lib.pagesizes import A4
+        from app.services.pdf_service import _KPICard
+
+        tmp = tempfile.mktemp(suffix='.pdf')
+        try:
+            doc = SimpleDocTemplate(tmp, pagesize=A4)
+            card = _KPICard("Revenue", "$50K", "increasing", 12.5, "#D97A34")
+            doc.build([card])
+
+            directions = self._extract_triangle_apex_direction(tmp)
+            assert 'up' in directions, (
+                f"Expected at least one apex-up triangle for positive trend_pct, "
+                f"found: {directions}"
+            )
+        finally:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+
+    def test_full_pipeline_trend_pct_sign_matches_label(self):
+        """End-to-end: build_sync with known data must produce trend_pct labels
+        whose sign matches the arrow direction in the rendered PDF."""
+        import tempfile, fitz
+        from app.services.pdf_service import build_sync, _compute_kpi_data
+        from app.services.chart_service import generate_sync, cleanup_charts
+
+        # Revenue: clearly decreasing series
+        df = pd.DataFrame({
+            "Revenue": [5000, 4800, 4600, 4400, 4200],
+            "Profit": [100, 300, 500, 700, 900],
+        })
+        config = {
+            "metric_columns": ["Revenue", "Profit"],
+            "title": "Arrow Test",
+            "sections": ["key_metrics"],
+            "report_id": "test-arrow-pipeline",
+        }
+        chart_config = {"metric_columns": []}
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+
+        kpis = _compute_kpi_data(df, config, ai_content, "#D97A34")
+        rev_kpi = next(k for k in kpis if "Revenue" in k["name"])
+        profit_kpi = next(k for k in kpis if "Profit" in k["name"])
+        assert rev_kpi["trend_pct"] < 0, f"Revenue trend_pct should be negative, got {rev_kpi['trend_pct']}"
+        assert profit_kpi["trend_pct"] >= 0, f"Profit trend_pct should be >=0, got {profit_kpi['trend_pct']}"
+
+        pdf_path = build_sync(
+            df, [], ai_content,
+            {**config, "metric_columns": ["Revenue", "Profit"]},
+            {"brand_color": "#D97A34", "tier": "pro", "logo_url": None, "company_name": "Test"},
+        )
+        try:
+            directions = self._extract_triangle_apex_direction(pdf_path)
+            # Revenue (negative) → apex-down; Profit (positive) → apex-up
+            assert 'down' in directions, f"Expected down arrow for negative trend, got {directions}"
+            assert 'up' in directions, f"Expected up arrow for positive trend, got {directions}"
+        finally:
+            try:
+                os.unlink(pdf_path)
+            except OSError:
+                pass
+            try:
+                cleanup_charts("test-arrow-pipeline")
+            except Exception:
+                pass
