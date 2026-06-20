@@ -38,6 +38,15 @@ function barsFilledCount(activeIdx: number): number {
 
 export default function GeneratingLoader({ currentStep, progress, isPolling, timeoutMessage }: GeneratingLoaderProps) {
   const [elapsed, setElapsed] = useState(0)
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   useEffect(() => {
     if (!isPolling) return
@@ -75,10 +84,13 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
               return (
                 <div
                   key={i}
-                  className={`w-4 rounded-full bg-amber-500 transition-all duration-300 ease-out ${
-                    isCurrent ? 'animate-pulse' : ''
-                  }`}
-                  style={{ height: `${heightPx}px` }}
+                  className={`w-4 rounded-full bg-amber-500 ${
+                    reducedMotion ? 'transition-none' : 'transition-all ease-out'
+                  } ${isCurrent && !reducedMotion ? 'animate-pulse' : ''}`}
+                  style={{
+                    height: `${heightPx}px`,
+                    transitionDuration: reducedMotion ? '0ms' : '2800ms',
+                  }}
                 />
               )
             })}
@@ -90,8 +102,13 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
             {BAR_MAX_HEIGHTS.map((_, i) => (
               <div
                 key={i}
-                className="w-4 rounded-full bg-gray-300 dark:bg-gray-600 transition-all duration-300 ease-out"
-                style={{ height: `${BAR_MIN_HEIGHT}px` }}
+                className={`w-4 rounded-full bg-gray-300 dark:bg-gray-600 ${
+                  reducedMotion ? 'transition-none' : 'transition-all ease-out'
+                }`}
+                style={{
+                  height: `${BAR_MIN_HEIGHT}px`,
+                  transitionDuration: reducedMotion ? '0ms' : '2800ms',
+                }}
               />
             ))}
           </div>
