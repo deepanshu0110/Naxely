@@ -145,6 +145,14 @@ FONT_MONO = "'IBM Plex Mono', monospace"
 | `frontend/src/components/report/GeneratingLoader.tsx` | 6-bar growing animation above checklist; replaces `Loader2` spinner + progress bar |
 | `DESIGN_SYSTEM.md` | This file |
 
+### Phase 4 — Count-up animation hook
+
+| File | What it does |
+|---|---|
+| `frontend/src/hooks/useCountUp.ts` | `useCountUp` — rAF-based number animation with easeOutQuad, `useReducedMotion` guard, format-preserving parse/reapply |
+| `frontend/src/hooks/__tests__/useCountUp.test.ts` | 10 vitest tests covering parse + reapply edge cases |
+| `DESIGN_SYSTEM.md` | This file |
+
 ### Phase 5 — Empty state illustration
 
 | File | What it does |
@@ -172,3 +180,33 @@ outline-only style for empty/decorative states.
 
 This style is intended to be reusable for other empty states (no API key, no branding,
 etc.) — each would get its own distinct icon in the same stroke-only amber treatment.
+
+### Phase 6 — PDF cover page redesign
+
+| File | What it does |
+|---|---|
+| `backend/app/services/pdf_service.py` | `_CoverMotif` — brand motif flowable (48×48pt, 3 ascending bars, common baseline, brand color); `_CoverRule` — 0.5pt horizontal rule (GRID_LINE); both wired into `build_sync()` |
+| `backend/app/core/design_tokens.py` | Added `GRID_LINE = "#D1D5DB"` token; two hardcoded `#D1D5DB` in data table grids replaced with import |
+| `DESIGN_SYSTEM.md` | This file |
+
+### Phase 7 — Landing page hero redesign
+
+| File | What it does |
+|---|---|
+| `frontend/src/pages/Landing.tsx` | Hero: mini Phase 6 PDF cover (amber band, 3 ascending bars, thin rule, revenue stat + mint trend arrow, mini chart bars); chrome/document split (chrome gets `dark:` treatment, mini-cover invariant); CTA uses `<Button variant="primary">`; dot-pattern background via `--dot-color` CSS variable |
+| `DESIGN_SYSTEM.md` | This file |
+
+### Phase 8 — Bento features grid
+
+| File | What it does |
+|---|---|
+| `frontend/src/pages/Landing.tsx` | Asymmetric 3×3 CSS grid: AI Executive Summary at col-span-2 row-span-2, 5 smaller cards in remaining cells; lucide-react icons rendered as amber line-icons; Google Sheets gets "Coming Soon" badge; dark-mode separation via `dark:border-amber-900/50` |
+| `DESIGN_SYSTEM.md` | This file |
+
+### Phase 9 — Dashboard reports list rows
+
+| File | What it does |
+|---|---|
+| `frontend/src/components/dashboard/ReportCard.tsx` | Card grid → single-column rows: FileText icon thumbnail, title + date (truncated), row count (useCountUp), status badge (semantic Badge colors), always-visible download icon, 3-dot menu (View + Delete) |
+| `frontend/src/pages/Dashboard.tsx` | Grid layout changed from `grid grid-cols-1 gap-4 md:grid-cols-2` to `space-y-3` single-column rows; empty state (Phase 5) untouched |
+| `DESIGN_SYSTEM.md` | This file |
