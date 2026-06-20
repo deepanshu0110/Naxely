@@ -104,7 +104,7 @@ class _KPICard(Flowable):
         arrow_y = card_h - 40 if self.highlight else 24
         s = 7
         if self.trend_pct >= 0:
-            color = HexColor('#0E9F6E')
+            color = HexColor(MINT)
             p = self.canv.beginPath()
             p.moveTo(arrow_x - s, arrow_y - s)
             p.lineTo(arrow_x + s, arrow_y - s)

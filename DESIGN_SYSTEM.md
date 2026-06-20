@@ -189,12 +189,29 @@ etc.) — each would get its own distinct icon in the same stroke-only amber tre
 | `backend/app/core/design_tokens.py` | Added `GRID_LINE = "#D1D5DB"` token; two hardcoded `#D1D5DB` in data table grids replaced with import |
 | `DESIGN_SYSTEM.md` | This file |
 
+> **SVG→ReportLab geometry note:** SVG's y-axis increases downward, ReportLab's increases
+> upward. When porting SVG bar geometry (e.g. the 3-bar brand motif) into ReportLab
+> `roundRect` calls, all bars must share a common **bottom** baseline, with tops ascending
+> from there — NOT a common top with descenders below it. The inverted form (common top)
+> was caught via direct PDF path-coordinate extraction before shipping; this note
+> prevents rediscovery.
+
 ### Phase 7 — Landing page hero redesign
 
 | File | What it does |
 |---|---|
 | `frontend/src/pages/Landing.tsx` | Hero: mini Phase 6 PDF cover (amber band, 3 ascending bars, thin rule, revenue stat + mint trend arrow, mini chart bars); chrome/document split (chrome gets `dark:` treatment, mini-cover invariant); CTA uses `<Button variant="primary">`; dot-pattern background via `--dot-color` CSS variable |
 | `DESIGN_SYSTEM.md` | This file |
+
+> **Mini-cover invariance rationale:** The mock card represents a printed PDF page, which in
+> reality has no dark mode. Both the document background (cream) and all text/stroke colors
+> inside it must stay fixed at light-mode values in dark mode — they cannot receive `dark:`
+> classes. An earlier version applied dark-mode text colors on the still-light cream
+> background, producing near-invisible text. This is a deliberate exclusion zone: only the
+> chrome layer (border, title bar, traffic dots, label text above/below the document) gets
+> `dark:` treatment. Any future edit adding `dark:` classes inside the mini-cover's visual
+> bounds should be treated as a bug unless the printed-page metaphor itself is being
+> abandoned.
 
 ### Phase 8 — Bento features grid
 
@@ -210,3 +227,11 @@ etc.) — each would get its own distinct icon in the same stroke-only amber tre
 | `frontend/src/components/dashboard/ReportCard.tsx` | Card grid → single-column rows: FileText icon thumbnail, title + date (truncated), row count (useCountUp), status badge (semantic Badge colors), always-visible download icon, 3-dot menu (View + Delete) |
 | `frontend/src/pages/Dashboard.tsx` | Grid layout changed from `grid grid-cols-1 gap-4 md:grid-cols-2` to `space-y-3` single-column rows; empty state (Phase 5) untouched |
 | `DESIGN_SYSTEM.md` | This file |
+
+> **`row_count` vs originally-specified trend stat:** The spec originally called for a
+> per-row mint/red trend percentage (trend_pct). This field does not exist at the
+> report-list level (no DB column, no API field, no frontend type) — it only exists inside
+> the AI generation context used for PDF building. `row_count` is a deliberate substitute,
+> chosen because it IS per-report, already available in the list response, and meaningful on
+> its own. Adding `trend_pct` to the list endpoint is a separate backend follow-up flagged
+> in consolidated follow-up list (item 1).
