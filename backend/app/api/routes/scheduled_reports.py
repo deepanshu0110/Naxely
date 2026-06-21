@@ -128,12 +128,37 @@ async def create_scheduled_report(
 ):
     await check_agency_tier(current_user)
 
+    logger.info(
+        "SCHEDULED_REPORT_DIAGNOSTIC create attempt — upload_id=%s, user_id=%s (type=%s), user.id=%s",
+        body.upload_id,
+        str(current_user.id),
+        type(current_user.id).__name__,
+        current_user.id,
+    )
     upload_result = await db.execute(
         text("SELECT id, user_id FROM uploads WHERE id = :uid"),
         {"uid": body.upload_id},
     )
     upload = upload_result.mappings().first()
+    if upload:
+        logger.info(
+            "SCHEDULED_REPORT_DIAGNOSTIC upload found in DB — upload_id=%s, upload[user_id]=%s (type=%s), str(current_user.id)=%s",
+            upload["id"],
+            upload["user_id"],
+            type(upload["user_id"]).__name__,
+            str(current_user.id),
+        )
+    else:
+        logger.warning(
+            "SCHEDULED_REPORT_DIAGNOSTIC upload NOT FOUND in DB for upload_id=%s",
+            body.upload_id,
+        )
     if not upload or upload["user_id"] != str(current_user.id):
+        logger.error(
+            "SCHEDULED_REPORT_DIAGNOSTIC rejecting — upload_found=%s, match=%s",
+            upload is not None,
+            str(upload["user_id"]) == str(current_user.id) if upload else False,
+        )
         raise HTTPException(status_code=404, detail="Upload not found")
 
     next_run_at = _compute_next_run(body.frequency)
