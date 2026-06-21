@@ -8,6 +8,8 @@ from unittest.mock import MagicMock, patch
 from standardwebhooks import Webhook
 from starlette.requests import Request
 
+_wh_req_counter = 0
+
 
 # Valid base64 webhook secret — decodes to b"testwebhookKey123"
 TEST_WH_SECRET = "dGVzdHdlYmhvb2tLZXkxMjM="
@@ -24,6 +26,8 @@ def _sign(payload: dict, webhook_id: str = "wh_default", webhook_timestamp: str 
 
 
 def _make_request(payload: dict) -> Request:
+    global _wh_req_counter
+    _wh_req_counter += 1
     body_bytes = json.dumps(payload).encode()
     wh_id = "wh_default"
     now_ts = datetime.now(timezone.utc)
@@ -45,7 +49,7 @@ def _make_request(payload: dict) -> Request:
         "path": "/payments/webhook",
         "headers": headers,
         "query_string": b"",
-        "client": ("127.0.0.1", 8000),
+        "client": (f"127.0.0.{_wh_req_counter}", 8000),
         "scheme": "http",
         "server": ("test", 80),
         "root_path": "",
@@ -688,6 +692,52 @@ class TestWebhookUserResolution:
         # Should have captured dodo_customer_id
         capture_queries = [q for q in db.executed_queries if "dodo_customer_id = :dci" in q]
         assert len(capture_queries) > 0
+
+    @pytest.mark.asyncio
+    async def test_customer_id_captured_from_nested_data(self):
+        """When customer_id is inside data (not top-level), it must still be captured."""
+        from app.api.routes.payments import dodo_webhook
+
+        class NestedCIDDB:
+            def __init__(self):
+                self.call_count = 0
+                self.executed_queries = []
+                self.committed = False
+
+            async def execute(self, query, params=None):
+                self.executed_queries.append(str(query))
+                self.call_count += 1
+                if self.call_count == 1:
+                    return _NotFound()
+                if self.call_count == 2:
+                    return MagicMock()
+                return MagicMock()
+
+            async def commit(self):
+                self.committed = True
+
+        payload = {
+            "type": "subscription.created",
+            "data": {
+                "customer_id": "cus_from_nested_data",
+                "product_id": "pro_prod_id",
+            },
+            "metadata": {"user_id": "user-nested-cid"},
+            "subscription_id": "sub_nested_cid_001",
+        }
+        request = _make_request(payload)
+        db = NestedCIDDB()
+
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
+            with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
+                resp = await dodo_webhook(request=request, db=db)
+
+        assert resp["data"]["status"] == "processed"
+        capture_queries = [q for q in db.executed_queries if "dodo_customer_id = :dci" in q]
+        assert len(capture_queries) > 0, (
+            "Expected a dodo_customer_id UPDATE query even when customer_id "
+            "is nested inside data"
+        )
 
     @pytest.mark.asyncio
     async def test_dunning_recovered_restores_tier(self):

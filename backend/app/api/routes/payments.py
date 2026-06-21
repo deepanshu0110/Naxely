@@ -116,35 +116,40 @@ async def create_checkout_session(
 
     # Existing subscriber — change plan in-place instead of creating a new checkout
     if current_user.dodo_subscription_id:
-        # Subscription on hold (tier='free' but sub_id survived the hold) — route to Customer Portal
+        # Subscription on hold (tier='free' but sub_id survived the hold)
         if current_user.tier == "free":
-            if not current_user.dodo_customer_id:
-                raise HTTPException(status_code=400, detail="Cannot manage subscription — missing customer reference")
+            # Route to Customer Portal if we have a customer reference
+            if current_user.dodo_customer_id:
+                try:
+                    session = await dodo.customers.customer_portal.create(
+                        customer_id=current_user.dodo_customer_id,
+                        return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing",
+                    )
+                except Exception as e:
+                    logger.error("Dodo customer portal error: %s", e)
+                    raise HTTPException(status_code=502, detail="Failed to create customer portal session")
+                return {"checkout_url": session.link}
+            # No customer reference — log and fall through to new checkout below
+            logger.warning(
+                "On-hold user %s has no dodo_customer_id; creating new checkout session",
+                current_user.id,
+            )
+        else:
+            if current_user.tier == new_tier:
+                raise HTTPException(status_code=400, detail="Already subscribed to this plan")
+
             try:
-                session = await dodo.customers.customer_portal.create(
-                    customer_id=current_user.dodo_customer_id,
-                    return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing",
+                await dodo.subscriptions.change_plan(
+                    subscription_id=current_user.dodo_subscription_id,
+                    product_id=product_id,
+                    proration_billing_mode="prorated_immediately",
+                    quantity=1,
                 )
             except Exception as e:
-                logger.error("Dodo customer portal error: %s", e)
-                raise HTTPException(status_code=502, detail="Failed to create customer portal session")
-            return {"checkout_url": session.link}
+                logger.error("Dodo change plan error: %s", e)
+                raise HTTPException(status_code=502, detail="Failed to change plan")
 
-        if current_user.tier == new_tier:
-            raise HTTPException(status_code=400, detail="Already subscribed to this plan")
-
-        try:
-            await dodo.subscriptions.change_plan(
-                subscription_id=current_user.dodo_subscription_id,
-                product_id=product_id,
-                proration_billing_mode="prorated_immediately",
-                quantity=1,
-            )
-        except Exception as e:
-            logger.error("Dodo change plan error: %s", e)
-            raise HTTPException(status_code=502, detail="Failed to change plan")
-
-        return {"checkout_url": ""}
+            return {"checkout_url": ""}
 
     try:
         session = await dodo.checkout_sessions.create(
@@ -205,7 +210,7 @@ async def dodo_webhook(
     )
     # Fallback: lookup by dodo_customer_id for dashboard-originated events
     if not user_id:
-        dodo_customer_id = payload.get("customer_id")
+        dodo_customer_id = payload.get("customer_id") or (payload.get("data") or {}).get("customer_id")
         if dodo_customer_id:
             result = await db.execute(
                 text("SELECT id FROM users WHERE dodo_customer_id = :dci"),
@@ -275,7 +280,7 @@ async def dodo_webhook(
         )
 
         # Capture Dodo's customer_id for future fallback lookups
-        dodo_customer_id = payload.get("customer_id")
+        dodo_customer_id = payload.get("customer_id") or (payload.get("data") or {}).get("customer_id")
         if dodo_customer_id:
             await db.execute(
                 text("UPDATE users SET dodo_customer_id = :dci, updated_at = NOW() WHERE id = :uid AND dodo_customer_id IS NULL"),

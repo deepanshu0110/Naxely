@@ -54,6 +54,16 @@ class FakeOnHoldUser:
     dodo_customer_id = "cust_onhold_001"
 
 
+class FakeOnHoldUserNoCID:
+    """On-hold user missing dodo_customer_id — should fall through to new checkout."""
+    id = "user-onhold-nocid-999"
+    email = "onhold-nocid@example.com"
+    full_name = "On Hold No CID User"
+    tier = "free"
+    dodo_subscription_id = "sub_onhold_nocid_001"
+    dodo_customer_id = None
+
+
 def _mock_session(checkout_url: str = "https://pay.dodopayments.com/sess_001"):
     m = MagicMock()
     m.checkout_url = checkout_url
@@ -246,6 +256,33 @@ class TestCustomerPortal:
                     )
 
         assert exc_info.value.status_code == 502
+
+
+class TestOnHoldNoCustomerId:
+    """On-hold users without dodo_customer_id should fall through to new checkout."""
+
+    @pytest.mark.asyncio
+    async def test_on_hold_no_cid_creates_new_checkout(self):
+        from app.api.routes.payments import create_checkout_session, CheckoutRequest
+
+        body = CheckoutRequest(plan="agency")
+        captured_kwargs = {}
+
+        async def fake_create(**kwargs):
+            captured_kwargs.update(kwargs)
+            return _mock_session("https://pay.dodopayments.com/sess_new_001")
+
+        with patch("app.api.routes.payments.settings.DODO_AGENCY_PRODUCT_ID", "prod_agency"):
+            with patch("app.api.routes.payments.dodo.checkout_sessions.create",
+                       new=AsyncMock(side_effect=fake_create)):
+                result = await create_checkout_session(
+                    request=_make_request(), body=body, current_user=FakeOnHoldUserNoCID(),
+                )
+
+        assert result["checkout_url"] == "https://pay.dodopayments.com/sess_new_001"
+        assert captured_kwargs["customer"]["email"] == "onhold-nocid@example.com"
+        assert captured_kwargs["metadata"]["user_id"] == "user-onhold-nocid-999"
+        assert captured_kwargs["product_cart"] == [{"product_id": "prod_agency", "quantity": 1}]
 
 
 class TestExistingSubscriber:
