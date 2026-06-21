@@ -30,6 +30,7 @@ vi.mock('react-hot-toast', () => ({
 
 import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/axios'
+import toast from 'react-hot-toast'
 
 function renderPage() {
   return render(
@@ -190,6 +191,70 @@ describe('ScheduledReports', () => {
     await user.keyboard('{Enter}')
     const fileInput = screen.getByLabelText(/upload csv/i)
     expect(fileInput).toBeInTheDocument()
+  })
+
+  it('captures upload_id from upload response and shows filename', async () => {
+    const user = userEvent.setup()
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: { tier: 'agency', full_name: 'Agency User', email: 'agency@test.com' },
+    })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
+    vi.mocked(api.post).mockImplementation(async (url: string) => {
+      if (url === '/reports/upload') {
+        return { data: { upload_id: 'up-123', filename: 'test.csv' } }
+      }
+      if (url === '/scheduled-reports') {
+        return { data: { id: 'sr-new' } }
+      }
+      return { data: {} }
+    })
+    renderPage()
+    await waitFor(() => {
+      expect(screen.getByText('Create Schedule')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('Create Schedule'))
+    await waitFor(() => {
+      expect(screen.getByText('Create Scheduled Report')).toBeInTheDocument()
+    })
+
+    const testFile = new File(['col1,col2\n1,2'], 'test.csv', { type: 'text/csv' })
+    const fileInput = screen.getByLabelText(/upload csv/i)
+    await user.upload(fileInput, testFile)
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith('File uploaded')
+    })
+    // The label text "test.csv" should appear in the uploaded-file display
+    expect(screen.getByText('test.csv')).toBeInTheDocument()
+    // "Upload CSV or XLSX" placeholder should no longer be visible
+    expect(screen.queryByText(/upload csv or xlsx/i)).not.toBeInTheDocument()
+  })
+
+  it('shows error toast when file upload fails', async () => {
+    const user = userEvent.setup()
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: { tier: 'agency', full_name: 'Agency User', email: 'agency@test.com' },
+    })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
+    vi.mocked(api.post).mockRejectedValue(new Error('Network error'))
+    renderPage()
+    await waitFor(() => {
+      expect(screen.getByText('Create Schedule')).toBeInTheDocument()
+    })
+    await user.click(screen.getByText('Create Schedule'))
+    await waitFor(() => {
+      expect(screen.getByText('Create Scheduled Report')).toBeInTheDocument()
+    })
+
+    const testFile = new File(['col1,col2\n1,2'], 'test.csv', { type: 'text/csv' })
+    const fileInput = screen.getByLabelText(/upload csv/i)
+    await user.upload(fileInput, testFile)
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Failed to upload file')
+    })
+    // Placeholder should still show after failure
+    expect(screen.getByText(/upload csv or xlsx/i)).toBeInTheDocument()
   })
 
   it('calls PATCH with is_active on pause/resume toggle', async () => {

@@ -135,10 +135,10 @@ export default function ScheduledReports() {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const { data } = await api.post<{ data: { upload_id: string } }>('/reports/upload', formData, {
+      const { data } = await api.post<{ upload_id: string; filename: string }>('/reports/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
-      setFormUploadId(data.data.upload_id)
+      setFormUploadId(data.upload_id)
       toast.success('File uploaded')
     } catch {
       toast.error('Failed to upload file')
