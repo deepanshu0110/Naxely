@@ -61,28 +61,25 @@ class TestRunReportPipelineDefaultPath:
         assert param.default is None, "csv_bytes default must be None"
         assert param.kind == param.KEYWORD_ONLY or param.kind == param.POSITIONAL_OR_KEYWORD
 
-    def test_diff_shows_three_guards(self):
-        """The git diff must show exactly three 'if _use_default_path:' guards
-        wrapping the original upload/download/delete/mark-used blocks, and
-        zero other behavioral changes inside run_report_pipeline."""
-        import subprocess, os
-        repo = os.path.join(os.path.dirname(__file__), '..', '..')
-        result = subprocess.run(
-            ["git", "diff", "--", "app/services/report_service.py"],
-            capture_output=True, text=True, cwd=repo,
+    def test_source_has_three_guards(self):
+        """The source file must contain exactly three 'if _use_default_path:' guards
+        wrapping the original upload/download/delete/mark-used blocks."""
+        import os
+        source_path = os.path.join(
+            os.path.dirname(__file__), '..', '..',
+            'app', 'services', 'report_service.py',
         )
-        diff = result.stdout
+        with open(source_path) as f:
+            source = f.read()
 
-        # Count the guard additions (not the function signature change)
-        guard_lines = [l for l in diff.splitlines() if "if _use_default_path:" in l]
+        guard_lines = [l for l in source.splitlines() if "if _use_default_path:" in l.strip()]
         assert len(guard_lines) == 3, (
-            f"Expected exactly 3 'if _use_default_path:' guards in diff, "
+            f"Expected exactly 3 'if _use_default_path:' guards in source, "
             f"found {len(guard_lines)}: {guard_lines}"
         )
-        # Verify the original operations are still present (inside guards)
-        assert "get_upload" in diff, "get_upload call should still be in the default path"
-        assert "mark_upload_used" in diff, "mark_upload_used should still be in the default path"
-        assert ".remove" in diff, "storage remove should still be in the default path"
+        assert "get_upload" in source, "get_upload call should still be in the default path"
+        assert "mark_upload_used" in source, "mark_upload_used should still be in the default path"
+        assert ".remove" in source, "storage remove should still be in the default path"
 
     @pytest.mark.asyncio
     async def test_csv_bytes_path_skips_upload_and_cleanup(self):

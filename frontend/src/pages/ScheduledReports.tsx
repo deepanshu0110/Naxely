@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Clock, Pause, Play, Trash2, Edit3, Plus, AlertCircle, Upload, X } from 'lucide-react'
+import { Pause, Play, Trash2, Edit3, Plus, AlertCircle, Upload, X } from 'lucide-react'
 import Sidebar from '@/components/layout/Sidebar'
 import EmptyState from '@/components/ui/EmptyState'
 import Button from '@/components/ui/Button'
@@ -10,7 +9,7 @@ import Modal from '@/components/ui/Modal'
 import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/axios'
-import type { ScheduledReport, ScheduledReportCreatePayload, ScheduledReportUpdatePayload, UploadInfo } from '@/types/api'
+import type { ScheduledReport, ScheduledReportCreatePayload, ScheduledReportUpdatePayload } from '@/types/api'
 import toast from 'react-hot-toast'
 
 function formatDate(iso: string | null): string {
@@ -27,7 +26,6 @@ type FormMode = 'create' | 'edit'
 
 export default function ScheduledReports() {
   const { user } = useAuthStore()
-  const navigate = useNavigate()
   const isAgency = user?.tier === 'agency'
 
   const [reports, setReports] = useState<ScheduledReport[]>([])
