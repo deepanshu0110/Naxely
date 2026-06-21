@@ -33,11 +33,15 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.0",
+    "jsdom": "^24.1.0",
     "postcss": "^8.4.0",
     "tailwindcss-animate": "^1.0.7",
     "vite": "^5.2.0",

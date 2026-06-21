@@ -226,6 +226,37 @@ async def upload_sheets(
     raise HTTPException(status_code=501, detail="Google Sheets integration coming soon")
 
 
+@router.get("/uploads")
+async def list_uploads(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    result = await db.execute(
+        text("""
+            SELECT id, filename, row_count, column_count, created_at
+            FROM uploads
+            WHERE user_id = :user_id AND used = FALSE
+            ORDER BY created_at DESC
+            LIMIT 50
+        """),
+        {"user_id": str(current_user.id)},
+    )
+    rows = result.mappings().all()
+    return {
+        "success": True,
+        "data": [
+            {
+                "upload_id": str(r["id"]),
+                "filename": r["filename"],
+                "row_count": r["row_count"],
+                "column_count": r["column_count"],
+                "created_at": r["created_at"].isoformat() if r["created_at"] else None,
+            }
+            for r in rows
+        ],
+    }
+
+
 @router.post("/reports/generate")
 @limiter.limit("10/minute")
 async def generate_report(

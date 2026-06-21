@@ -14,6 +14,7 @@ from dodopayments import AsyncDodoPayments, APIStatusError
 from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.core.config import settings
+from app.services.email_service import send_email
 from app.models.user import User
 from app.core.limiter import limiter
 
@@ -303,24 +304,17 @@ async def dodo_webhook(
             )
             row = result.mappings().first()
             if row and settings.RESEND_API_KEY:
-                try:
-                    import resend
-                    resend.api_key = settings.RESEND_API_KEY
-                    resend.Emails.send({
-                        "from": settings.FROM_EMAIL,
-                        "to": row["email"],
-                        "subject": "Payment failed — Naxely",
-                        "html": (
-                            "<p>Your most recent payment for Naxely failed.</p>"
-                            "<p>Please update your billing information at "
-                            f"<a href='{settings.FRONTEND_BASE_URL}/settings/billing'>"
-                            f"{settings.FRONTEND_BASE_URL}/settings/billing</a> "
-                            "to avoid any disruption to your subscription.</p>"
-                        ),
-                    })
-                    logger.info("Payment failure email sent to %s", row["email"])
-                except Exception as e:
-                    logger.error("Failed to send payment failure email: %s", e)
+                send_email(
+                    to=row["email"],
+                    subject="Payment failed — Naxely",
+                    html=(
+                        "<p>Your most recent payment for Naxely failed.</p>"
+                        "<p>Please update your billing information at "
+                        f"<a href='{settings.FRONTEND_BASE_URL}/settings/billing'>"
+                        f"{settings.FRONTEND_BASE_URL}/settings/billing</a> "
+                        "to avoid any disruption to your subscription.</p>"
+                    ),
+                )
 
     await db.commit()
     return {"success": True, "data": {"status": "processed"}}

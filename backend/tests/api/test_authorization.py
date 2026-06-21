@@ -348,3 +348,96 @@ class TestTemplateOwnership:
         with patch("app.api.routes.templates.check_pro_tier"):
             result = await delete_template("template-owned-by-a", current_user=FakeUserA(), db=db)
         assert result["success"] is True
+
+
+class FakeFreeUser:
+    """Free-tier user — should be blocked by PRO_REQUIRED gate."""
+    id = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+    email = "free@test.com"
+    full_name = "Free User"
+    tier = "free"
+    tier_expires_at = None
+    dodo_subscription_id = None
+    dodo_customer_id = None
+    logo_url = None
+    reports_this_month = 0
+
+
+class TestTemplateDeleteProGate:
+    @pytest.mark.asyncio
+    async def test_free_user_cannot_delete_template(self):
+        from app.api.routes.templates import delete_template
+
+        db = _AsyncDB([_NotFound()])
+        with pytest.raises(HTTPException) as exc:
+            await delete_template("any-template", current_user=FakeFreeUser(), db=db)
+        assert exc.value.status_code == 402
+        detail = exc.value.detail
+        if isinstance(detail, dict):
+            assert detail["code"] == "PRO_REQUIRED"
+
+    @pytest.mark.asyncio
+    async def test_pro_user_can_delete_own_template(self):
+        from app.api.routes.templates import delete_template
+
+        template_row = _Row(id="my-template", user_id=FakeUserA.id)
+        db = _AsyncDB([template_row, MagicMock()])
+        result = await delete_template("my-template", current_user=FakeUserA(), db=db)
+        assert result["success"] is True
+
+    @pytest.mark.asyncio
+    async def test_pro_user_cannot_delete_other_template(self):
+        from app.api.routes.templates import delete_template
+
+        db = _AsyncDB([_NotFound()])
+        with pytest.raises(HTTPException) as exc:
+            await delete_template("template-owned-by-a", current_user=FakeUserB(), db=db)
+        assert exc.value.status_code == 404
+
+
+class TestApiKeyDeleteProGate:
+    @pytest.mark.asyncio
+    async def test_free_user_cannot_delete_api_key(self):
+        from app.api.routes.settings import delete_api_key
+
+        db = _AsyncDB()
+        with pytest.raises(HTTPException) as exc:
+            await delete_api_key(current_user=FakeFreeUser(), db=db)
+        assert exc.value.status_code == 402
+        detail = exc.value.detail
+        if isinstance(detail, dict):
+            assert detail["code"] == "PRO_REQUIRED"
+
+    @pytest.mark.asyncio
+    async def test_pro_user_can_delete_api_key(self):
+        from app.api.routes.settings import delete_api_key
+
+        db = _AsyncDB([MagicMock()])
+        result = await delete_api_key(current_user=FakeUserA(), db=db)
+        assert result["success"] is True
+
+    @pytest.mark.asyncio
+    async def test_pro_user_delete_api_key_is_self_scoped(self):
+        from app.api.routes.settings import delete_api_key
+
+        db = _AsyncDB([MagicMock()])
+        result = await delete_api_key(current_user=FakeUserA(), db=db)
+        assert result["success"] is True
+        executed = " ".join(db.executed_queries).lower() if hasattr(db, "executed_queries") else ""
+        assert len(db.executed_queries) >= 1
+        assert "where id = :uid" in db.executed_queries[0].lower() or ":uid" in db.executed_queries[0]
+
+    @pytest.mark.asyncio
+    async def test_cross_user_api_key_delete_self_scoped(self):
+        """Pro user A cannot delete Pro user B's API key — the route inherently
+        scopes to the authenticated user via `WHERE id = :uid`; there is no
+        mechanism to target another user."""
+        from app.api.routes.settings import delete_api_key
+
+        db = _AsyncDB([MagicMock()])
+        result = await delete_api_key(current_user=FakeUserA(), db=db)
+        assert result["success"] is True
+        assert len(db.executed_queries) >= 1
+        sql = db.executed_queries[0].lower()
+        assert ":uid" in sql
+        assert FakeUserB.id.lower() not in sql

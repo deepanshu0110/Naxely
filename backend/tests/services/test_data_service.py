@@ -12,6 +12,7 @@ from app.services.data_service import (
     parse_csv, validate_csv, validate_for_injection,
     detect_column_types, apply_column_config, compute_column_stats,
     normalize_for_aggregation, _is_likely_free_text,
+    _detect_column_type, _try_clean_numeric, _NUMERIC_DETECTION_THRESHOLD,
 )
 
 
@@ -377,3 +378,122 @@ class TestFreeTextHeuristic:
         assert _is_likely_free_text("Revenue") is False
         assert _is_likely_free_text("Date") is False
         assert _is_likely_free_text("Name") is False
+
+
+FIXTURE_DIR = os.path.join(os.path.dirname(__file__), '..', 'fixtures')
+
+
+class TestDetectColumnTypeFix:
+    """Tests for upload-time type detection improvement (_try_clean_numeric fallback)."""
+
+    @classmethod
+    def setup_class(cls):
+        csv_path = os.path.join(FIXTURE_DIR, 'edge_case_messy_formatting.csv')
+        with open(csv_path, 'rb') as f:
+            cls.RAW = parse_csv(f.read())
+
+    # ── Test 1: Revenue (currency $X,XXX.XX + N/A) → "metric" ──
+
+    def test_revenue_now_detected_as_metric(self):
+        """Revenue with $X,XXX.XX strings now returns 'metric' via _try_clean_numeric."""
+        col_data = self.RAW["Revenue"]
+        assert col_data.dtype == object, "Revenue should be object in raw df"
+        result = _detect_column_type(col_data, "Revenue")
+        assert result == "metric", f"Expected 'metric', got '{result}'"
+
+    # ── Test 2: Region guardrail → still "dimension" ──
+
+    def test_region_still_dimension(self):
+        """Region with ' south ', 'North', 'EAST', 'West' returns 'dimension' (no false positive)."""
+        col_data = self.RAW["Region"]
+        result = _detect_column_type(col_data, "Region")
+        assert result == "dimension", f"Expected 'dimension', got '{result}'"
+
+    # ── Test 3: Notes guardrail → still "dimension" ──
+
+    def test_notes_still_dimension(self):
+        """Notes with free text stays 'dimension', not accidentally caught by numeric cleaning."""
+        col_data = self.RAW["Notes"]
+        result = _detect_column_type(col_data, "Notes")
+        assert result == "dimension", f"Expected 'dimension', got '{result}'"
+
+    # ── Test 4: Percentage column → "metric" ──
+
+    def test_percentage_column_detected_as_metric(self):
+        """Synthetic percentage strings '85%', '12.5%' return 'metric'."""
+        col = pd.Series(["85%", "12.5%", "99.9%", "0.5%", "50%"])
+        result = _detect_column_type(col, "Conversion Rate")
+        assert result == "metric", f"Expected 'metric', got '{result}'"
+
+    # ── Test 5: Comma-thousands column → "metric" ──
+
+    def test_comma_thousands_detected_as_metric(self):
+        """Synthetic comma-thousands '1,234,567' returns 'metric'."""
+        col = pd.Series(["1,234,567", "2,345,678", "3,456,789"])
+        result = _detect_column_type(col, "Population")
+        assert result == "metric", f"Expected 'metric', got '{result}'"
+
+    # ── Test 6: End-to-end via detect_column_types (upload API) ──
+
+    def test_detect_column_types_returns_metric_for_revenue(self):
+        """End-to-end: detect_column_types() returns suggested_type='metric' for Revenue."""
+        meta = detect_column_types(self.RAW)
+        revenue_meta = next(m for m in meta if m["original_name"] == "Revenue")
+        assert revenue_meta["suggested_type"] == "metric", (
+            f"Expected 'metric', got '{revenue_meta['suggested_type']}'"
+        )
+
+    def test_detect_column_types_still_dimension_for_region(self):
+        """End-to-end: detect_column_types() still returns 'dimension' for Region."""
+        meta = detect_column_types(self.RAW)
+        region_meta = next(m for m in meta if m["original_name"] == "Region")
+        assert region_meta["suggested_type"] == "dimension"
+
+    def test_detect_column_types_still_dimension_for_notes(self):
+        """End-to-end: detect_column_types() still returns 'dimension' for Notes."""
+        meta = detect_column_types(self.RAW)
+        notes_meta = next(m for m in meta if m["original_name"] == "Notes")
+        assert notes_meta["suggested_type"] == "dimension"
+
+    # ── Test 7: _try_clean_numeric helper directly ──
+
+    def test_try_clean_numeric_currency(self):
+        """_try_clean_numeric converts $X,XXX.XX to float."""
+        col = pd.Series(["$9,770.44", "$666.80", "N/A"])
+        result = _try_clean_numeric(col)
+        assert pd.api.types.is_numeric_dtype(result)
+        assert result.iloc[0] == pytest.approx(9770.44)
+        assert pd.isna(result.iloc[2]), "N/A should stay NaN"
+
+    def test_try_clean_numeric_percentage(self):
+        """_try_clean_numeric strips % sign and converts."""
+        col = pd.Series(["85%", "12.5%", "N/A"])
+        result = _try_clean_numeric(col)
+        assert result.iloc[0] == pytest.approx(85.0)
+        assert result.iloc[1] == pytest.approx(12.5)
+
+    def test_try_clean_numeric_comma_thousands(self):
+        """_try_clean_numeric strips commas and converts."""
+        col = pd.Series(["1,234,567", "999,999"])
+        result = _try_clean_numeric(col)
+        assert result.iloc[0] == pytest.approx(1234567.0)
+        assert result.iloc[1] == pytest.approx(999999.0)
+
+    def test_try_clean_numeric_free_text_returns_all_nan(self):
+        """_try_clean_numeric on free text returns all NaN."""
+        col = pd.Series(["follow up needed", "VIP client", "hello world"])
+        result = _try_clean_numeric(col)
+        assert result.isna().all()
+
+    def test_normalize_uses_same_helper_for_metric(self):
+        """normalize_for_aggregation's metric branch uses _try_clean_numeric (not inline regex)."""
+        column_types = {"Revenue": "metric", "Date": "date", "Region": "dimension", "Notes": "dimension"}
+        df_norm = normalize_for_aggregation(self.RAW, column_types)
+        assert pd.api.types.is_numeric_dtype(df_norm["Revenue"])
+        assert df_norm["Revenue"].sum() == pytest.approx(440772.96, rel=1e-3)
+
+    # ── Test 8: Threshold constant ──
+
+    def test_threshold_is_reasonable(self):
+        """_NUMERIC_DETECTION_THRESHOLD is between 0 and 1."""
+        assert 0 < _NUMERIC_DETECTION_THRESHOLD <= 1

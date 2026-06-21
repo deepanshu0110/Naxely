@@ -64,23 +64,25 @@ def _has_ai_sections(config: dict) -> bool:
     return bool(sections & ai_sections)
 
 
-async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> None:
+async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_bytes: bytes | None = None) -> None:
     start_time = time.monotonic()
 
     chart_paths = []
     pdf_path = None
+    _use_default_path = csv_bytes is None
 
     try:
         await update_status(report_id, 'processing', step='data')
 
-        upload = await get_upload(config["upload_id"])
-        if not upload:
-            raise ValueError(f"Upload {config['upload_id']} not found")
-        file_url = upload["file_url"]
+        if _use_default_path:
+            upload = await get_upload(config["upload_id"])
+            if not upload:
+                raise ValueError(f"Upload {config['upload_id']} not found")
+            file_url = upload["file_url"]
 
-        csv_bytes = await _run_sync(
-            _get_supabase().storage.from_("uploads").download, file_url,
-        )
+            csv_bytes = await _run_sync(
+                _get_supabase().storage.from_("uploads").download, file_url,
+            )
 
         df = data_service.parse_csv(csv_bytes)
 
@@ -118,12 +120,13 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
             df_norm, report_id, config, brand_color,
         )
 
-        try:
-            await _run_sync(
-                _get_supabase().storage.from_("uploads").remove, [file_url],
-            )
-        except Exception:
-            logger.warning("Failed to delete CSV from storage: %s", file_url)
+        if _use_default_path:
+            try:
+                await _run_sync(
+                    _get_supabase().storage.from_("uploads").remove, [file_url],
+                )
+            except Exception:
+                logger.warning("Failed to delete CSV from storage: %s", file_url)
 
         ai_content: dict = {"summary": None, "insights": [], "anomalies": [], "trends": []}
         ai_error: str | None = None
@@ -195,8 +198,9 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict) -> Non
             {"content-type": "application/pdf"},
         )
 
-        async with AsyncSessionLocal() as db:
-            await mark_upload_used(config["upload_id"], db)
+        if _use_default_path:
+            async with AsyncSessionLocal() as db:
+                await mark_upload_used(config["upload_id"], db)
 
         async with AsyncSessionLocal() as db:
             await increment_report_count(user_id, db)

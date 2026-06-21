@@ -80,6 +80,7 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler) 
 app.add_exception_handler(Exception, unhandled_exception_handler)
 
 from app.api.routes import auth, reports, settings as settings_router, payments, health, templates  # noqa: E402
+from app.api.routes.scheduled_reports import router as scheduled_reports_router  # noqa: E402
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(reports.router, tags=["reports"])
@@ -87,6 +88,7 @@ app.include_router(settings_router.router, prefix="/settings", tags=["settings"]
 app.include_router(payments.router, prefix="/payments", tags=["payments"])
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(templates.router, tags=["templates"])
+app.include_router(scheduled_reports_router, tags=["scheduled_reports"])
 
 
 @app.on_event("startup")

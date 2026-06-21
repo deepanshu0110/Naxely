@@ -459,13 +459,13 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         metric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
     metric_cols = metric_cols[:5]
 
-    from app.services.data_service import _compute_trend, _compute_trend_percentage
+    from app.services.data_service import _compute_trend, _compute_trend_percentage, _try_clean_numeric
 
     kpis = []
     for col in metric_cols:
         if col not in df.columns:
             continue
-        series = pd.to_numeric(df[col], errors='coerce').dropna()
+        series = _try_clean_numeric(df[col]).dropna()
         if len(series) == 0:
             continue
         total = series.sum()

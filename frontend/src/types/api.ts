@@ -146,3 +146,38 @@ export interface Template {
 }
 
 export interface WorkspaceListResponse extends Array<Workspace> {}
+
+export interface ScheduledReport {
+  id: string
+  name: string
+  frequency: 'daily' | 'weekly' | 'monthly'
+  next_run_at: string
+  last_run_at: string | null
+  recipient_emails: string[]
+  csv_storage_path: string | null
+  is_active: boolean
+  created_at: string
+  config_json: Record<string, unknown> | null
+}
+
+export interface ScheduledReportCreatePayload {
+  upload_id: string
+  name: string
+  frequency: 'daily' | 'weekly' | 'monthly'
+  recipient_emails: string[]
+}
+
+export interface ScheduledReportUpdatePayload {
+  name?: string
+  frequency?: 'daily' | 'weekly' | 'monthly'
+  recipient_emails?: string[]
+  is_active?: boolean
+}
+
+export interface UploadInfo {
+  upload_id: string
+  filename: string
+  row_count: number
+  column_count: number
+  created_at: string
+}

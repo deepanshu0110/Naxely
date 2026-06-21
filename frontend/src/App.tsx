@@ -7,6 +7,7 @@ import AuthCallback from '@/pages/AuthCallback'
 import Dashboard from '@/pages/Dashboard'
 import NewReport from '@/pages/NewReport'
 import ReportView from '@/pages/ReportView'
+import ScheduledReports from '@/pages/ScheduledReports'
 import Landing from '@/pages/Landing'
 import Settings from '@/pages/Settings'
 import Pricing from '@/pages/Pricing'
@@ -78,6 +79,7 @@ function AppRouter() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/report/new" element={<NewReport />} />
         <Route path="/report/:id" element={<ReportView />} />
+        <Route path="/scheduled-reports" element={<ScheduledReports />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings/api-key" element={<Navigate to="/settings" replace />} />
         <Route path="/settings/billing" element={<Navigate to="/settings" replace />} />

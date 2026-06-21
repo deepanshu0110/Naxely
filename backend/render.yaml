@@ -50,3 +50,17 @@ services:
         sync: false
       - key: SUPABASE_DB_PASSWORD
         sync: false
+      - key: CRON_SECRET
+        sync: false
+
+  - type: cron
+    name: naxely-scheduled-reports
+    runtime: python
+    region: oregon
+    plan: free
+    schedule: "*/15 * * * *"
+    buildCommand: ""
+    startCommand: curl -X POST http://naxely-api:8000/internal/scheduled-reports/run -H "X-Cron-Secret: $CRON_SECRET"
+    envVars:
+      - key: CRON_SECRET
+        sync: false

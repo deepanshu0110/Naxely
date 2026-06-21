@@ -341,3 +341,95 @@ class TestKpiCardArrowDirection:
                 cleanup_charts("test-arrow-pipeline")
             except Exception:
                 pass
+
+
+class TestKpiCurrencyCleanPath:
+    """Regression: _compute_kpi_data's fallback path must handle currency-formatted strings,
+    and both the normalization-first and direct-fallback paths must agree."""
+
+    def test_fallback_handles_currency_strings(self):
+        """_compute_kpi_data without _precomputed_kpis must correctly sum
+        currency-formatted Revenue values, not silently drop them."""
+        from app.services.pdf_service import _compute_kpi_data
+
+        df = pd.DataFrame({
+            "Revenue": ["$9,770.44", "$666.80", "5000", "$1,234.56", "3000"],
+            "Units Sold": [100, 200, 150, 175, 125],
+        })
+        config = {"metric_columns": ["Revenue", "Units Sold"]}
+        ai_content = {"insights": [], "summary": None, "anomalies": [], "trends": []}
+
+        kpis = _compute_kpi_data(df, config, ai_content, "#6366F1")
+        rev_kpi = next(k for k in kpis if "Revenue" in k["name"])
+
+        total = 9770.44 + 666.80 + 5000 + 1234.56 + 3000
+        assert rev_kpi["value"] == "19.7K", (
+            f"Expected '19.7K' (${total:,.2f}), got '{rev_kpi['value']}'"
+        )
+
+    def test_messy_csv_revenue_kpi_440772(self):
+        """Full pipeline regression: edge_case_messy_formatting.csv Revenue
+        sum 440,772.96 → KPI tile reads '440.8K' (short-hand format).
+        This value must not drift after any refactor."""
+        import os
+        from app.services.data_service import parse_csv, normalize_for_aggregation, detect_column_types
+        from app.services.pdf_service import _compute_kpi_data
+
+        csv_path = os.path.join(
+            os.path.dirname(__file__), '..', 'fixtures', 'edge_case_messy_formatting.csv',
+        )
+        with open(csv_path, 'rb') as f:
+            raw = parse_csv(f.read())
+
+        # Full pipeline: detect types → normalize → KPIs
+        col_meta = detect_column_types(raw)
+        column_types = {}
+        for m in col_meta:
+            col_name = m.get("display_name") or m["original_name"]
+            column_types[col_name] = m.get("suggested_type", "dimension")
+        df_norm = normalize_for_aggregation(raw, column_types)
+
+        revenue_sum = df_norm["Revenue"].sum()
+        assert revenue_sum == pytest.approx(440772.96, rel=1e-3), (
+            f"Revenue sum drifted: {revenue_sum} vs expected 440772.96"
+        )
+
+        config = {"metric_columns": ["Revenue"]}
+        ai_content = {"insights": [], "summary": None, "anomalies": [], "trends": []}
+        kpis = _compute_kpi_data(df_norm, config, ai_content, "#6366F1")
+        rev_kpi = next(k for k in kpis if "Revenue" in k["name"])
+        assert rev_kpi["value"] == "440.8K", (
+            f"Revenue KPI tile value: expected '440.8K', got '{rev_kpi['value']}'"
+        )
+
+    def test_normalize_and_fallback_agree(self):
+        """Both code paths — normalization-first and direct-fallback — must
+        produce identical KPI values on the same currency-formatted input."""
+        from app.services.pdf_service import _compute_kpi_data
+        from app.services.data_service import normalize_for_aggregation
+
+        raw = pd.DataFrame({
+            "Date": ["2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05"],
+            "Revenue": ["$9,770.44", "$666.80", "5000", "$1,234.56", "3000"],
+            "Units Sold": [100, 200, 150, 175, 125],
+        })
+        column_types = {"Date": "date", "Revenue": "metric", "Units Sold": "metric"}
+        ai_content = {"insights": [], "summary": None, "anomalies": [], "trends": []}
+        config = {"metric_columns": ["Revenue", "Units Sold"]}
+
+        # Path A: normalize first, then compute KPIs (report_service flow)
+        df_norm = normalize_for_aggregation(raw, column_types)
+        kpis_a = _compute_kpi_data(df_norm, config, ai_content, "#6366F1")
+
+        # Path B: direct fallback on raw df (build_sync fallback flow)
+        kpis_b = _compute_kpi_data(raw, config, ai_content, "#6366F1")
+
+        assert len(kpis_a) == len(kpis_b)
+        for a, b in zip(kpis_a, kpis_b):
+            assert a["name"] == b["name"], (
+                f"Name mismatch: '{a['name']}' vs '{b['name']}'"
+            )
+            assert a["value"] == b["value"], (
+                f"Value mismatch for {a['name']}: "
+                f"normalize-first='{a['value']}' fallback='{b['value']}'"
+            )

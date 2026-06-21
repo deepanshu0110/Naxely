@@ -202,6 +202,8 @@ async def delete_api_key(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
+    await check_pro_tier(current_user)
+
     await db.execute(
         text("""
             UPDATE users SET

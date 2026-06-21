@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: str = ""
     SECRET_KEY: str
+    CRON_SECRET: str = ""
 
     @property
     def resolved_allowed_origins(self) -> str:

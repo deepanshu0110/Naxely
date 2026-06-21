@@ -21,6 +21,10 @@ class ScheduledReport(Base):
     
     # Data source
     sheets_url = Column(Text)
+    csv_storage_path = Column(Text)
+    
+    # Snapshot of report config (sections, column_config, brand, etc.)
+    config_json = Column(Text)
     
     # Email recipients
     recipient_emails = Column(ARRAY(Text), nullable=False)  # type: ignore[var-annotated]

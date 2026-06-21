@@ -161,6 +161,8 @@ async def delete_template(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
+    await check_pro_tier(current_user)
+
     result = await db.execute(
         text("SELECT * FROM templates WHERE id = :tid AND user_id = :uid"),
         {"tid": template_id, "uid": str(current_user.id)},

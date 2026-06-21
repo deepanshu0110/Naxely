@@ -237,6 +237,19 @@ def compute_column_stats(df: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
+def _try_clean_numeric(series: pd.Series) -> pd.Series:
+    cleared = (
+        series.astype(str)
+        .str.replace(r'[\$,€¥%]', '', regex=True)
+        .str.strip()
+        .replace({'nan': pd.NA, 'N/A': pd.NA, 'NA': pd.NA, '': pd.NA})
+    )
+    return pd.to_numeric(cleared, errors='coerce')
+
+
+_NUMERIC_DETECTION_THRESHOLD = 0.5
+
+
 def _is_likely_free_text(column_name: str) -> bool:
     name_lower = column_name.lower()
     return any(pattern in name_lower for pattern in FREE_TEXT_NAME_PATTERNS)
@@ -268,13 +281,7 @@ def normalize_for_aggregation(df: pd.DataFrame, column_types: Dict[str, str]) ->
             )
 
         elif col_type == 'metric' and normalized[col].dtype == object:
-            normalized[col] = (
-                normalized[col]
-                .astype(str)
-                .str.replace(r'[\$,]', '', regex=True)
-                .replace('nan', pd.NA)
-            )
-            normalized[col] = pd.to_numeric(normalized[col], errors='coerce')
+            normalized[col] = _try_clean_numeric(normalized[col])
 
     return normalized
 
@@ -335,13 +342,21 @@ def _detect_column_type(col_data: pd.Series, col_name: str) -> str:
     if pd.api.types.is_numeric_dtype(col_data):
         return "metric"
     
-    # Try to convert to numeric
+    # Try to convert to numeric (handles plain numeric strings like "1234")
     try:
         numeric_data = pd.to_numeric(col_data, errors='raise')
         if numeric_data.notna().any():
             return "metric"
     except Exception:
         pass
+    
+    # Fallback: try cleaning formatting noise (currency, percentage, thousands)
+    non_null = col_data.dropna()
+    if len(non_null) > 0:
+        cleaned = _try_clean_numeric(non_null)
+        parse_ratio = cleaned.notna().sum() / len(non_null)
+        if parse_ratio >= _NUMERIC_DETECTION_THRESHOLD:
+            return "metric"
     
     # Default to dimension
     return "dimension"
