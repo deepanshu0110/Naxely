@@ -1,10 +1,13 @@
 """One-time backfill: fetch dodo_customer_id from Dodo API for existing users.
 
 Usage:
-    set DODO_API_KEY=sk_live_...  (PowerShell)
+    $env:DODO_API_KEY="sk_live_..."
     & "backend/venv/Scripts/python.exe" backend/scripts/backfill_dodo_customer_ids.py
 
-Or set the key in .env as DODO_API_KEY=sk_live_...
+    # Preview only (no writes):
+    & "backend/venv/Scripts/python.exe" backend/scripts/backfill_dodo_customer_ids.py --dry-run
+
+Or set DODO_API_KEY in .env. Dry-run prints what it would write and exits.
 """
 
 import os, sys
@@ -15,6 +18,8 @@ import httpx
 
 os.environ.setdefault("ENVIRONMENT", "development")
 from app.core.config import settings
+
+DRY_RUN = "--dry-run" in sys.argv
 
 sync_url = str(settings.DATABASE_URL).replace("+asyncpg", "+psycopg2")
 engine = create_engine(sync_url, isolation_level="AUTOCOMMIT")
@@ -48,7 +53,12 @@ if not rows:
     print("No users need backfill.")
     sys.exit(0)
 
-print(f"Found {len(rows)} user(s) to backfill...")
+print(f"Found {len(rows)} user(s) to backfill...", end="")
+if DRY_RUN:
+    print(" [DRY RUN — no writes]")
+else:
+    print()
+
 backfilled = 0
 failed = 0
 
@@ -67,20 +77,27 @@ for user_id, email, sub_id in rows:
             failed += 1
             continue
 
-        with engine.connect() as conn:
-            conn.execute(
-                text("""
-                    UPDATE users
-                    SET dodo_customer_id = :cid, updated_at = NOW()
-                    WHERE id = :uid AND dodo_customer_id IS NULL
-                """),
-                {"cid": customer_id, "uid": str(user_id)},
-            )
-        print(f"  + {email}: sub={sub_id} -> customer_id={customer_id}")
+        if DRY_RUN:
+            print(f"  ~ {email}: would set dodo_customer_id={customer_id} (from sub={sub_id})")
+        else:
+            with engine.connect() as conn:
+                conn.execute(
+                    text("""
+                        UPDATE users
+                        SET dodo_customer_id = :cid, updated_at = NOW()
+                        WHERE id = :uid AND dodo_customer_id IS NULL
+                    """),
+                    {"cid": customer_id, "uid": str(user_id)},
+                )
+            print(f"  + {email}: sub={sub_id} -> customer_id={customer_id}")
         backfilled += 1
 
     except Exception as e:
         print(f"  ! {email} (sub={sub_id}): {e}")
         failed += 1
 
-print(f"\nDone. Backfilled: {backfilled}, Failed: {failed}")
+if DRY_RUN:
+    print(f"\nDry-run complete. Would backfill: {backfilled}, Would fail: {failed}")
+    print("Run without --dry-run to apply.")
+else:
+    print(f"\nDone. Backfilled: {backfilled}, Failed: {failed}")
