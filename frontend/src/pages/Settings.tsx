@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -202,6 +202,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(logoUrl)
   const [dragOver, setDragOver] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const {
     register,
@@ -265,6 +266,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
       <div>
         <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Logo</label>
         <div
+          onClick={() => fileInputRef.current?.click()}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
@@ -284,6 +286,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
           )}
         </div>
         <input
+          ref={fileInputRef}
           type="file"
           accept=".png,.jpg,.jpeg,.svg"
           onChange={handleFileSelect}
