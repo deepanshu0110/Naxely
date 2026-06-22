@@ -216,13 +216,14 @@ class _CoverBand(Flowable):
         cx = PAGE_WIDTH / 2
         if self.logo_path:
             try:
-                img_reader = ImageReader(self.logo_path)
-                iw, ih = img_reader.getSize()
+                from PIL import Image as PILImage
+                with PILImage.open(self.logo_path) as img:
+                    iw, ih = img.size
                 max_h = 48
                 scale = max_h / ih
                 draw_w = int(iw * scale)
                 self.canv.drawImage(
-                    img_reader,
+                    self.logo_path,
                     MARGIN + 16,
                     self.band_height - 16 - max_h,
                     width=draw_w,
@@ -409,27 +410,21 @@ def _download_logo(logo_url: str) -> str | None:
         req = urllib.request.Request(logo_url, headers={'User-Agent': 'Naxely/1.0'})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = resp.read()
-        img = PILImage.open(io.BytesIO(data))
-        img = img.convert('RGBA')
-
-        # Composite alpha against white background so the logo sits on
-        # a white rectangle on the cover, not the brand color.
-        background = PILImage.new('RGB', img.size, (255, 255, 255))
-        background.paste(img, mask=img.split()[3])
-        img = background
+        img = PILImage.open(io.BytesIO(data)).convert('RGBA')
 
         max_h = 120
         if img.height > max_h:
             ratio = max_h / img.height
-            new_w = int(img.width * ratio)
-            img = img.resize((new_w, max_h), PILImage.Resampling.LANCZOS)
+            img = img.resize((int(img.width * ratio), max_h), PILImage.Resampling.LANCZOS)
+
         tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
-        img.save(tmp.name, 'PNG')
+        tmp_path = tmp.name
         tmp.close()
-        logging.info(f"[pdf_service] _download_logo success: tmp={tmp.name} size={len(data)} bytes")
-        return tmp.name
+        img.save(tmp_path, 'PNG')
+        logging.info(f"[pdf_service] _download_logo success: {tmp_path}")
+        return tmp_path
     except Exception as e:
-        logging.warning(f"[pdf_service] _download_logo failed for {logo_url!r}: {e}")
+        logging.warning(f"[pdf_service] _download_logo failed: {e}")
         return None
 
 
