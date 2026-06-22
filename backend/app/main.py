@@ -45,9 +45,21 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
 app.add_middleware(SlowAPIMiddleware)
 
+def _resolve_origins() -> list[str]:
+    raw = [o.strip() for o in settings.resolved_allowed_origins.split(",")]
+    expanded: list[str] = []
+    for origin in raw:
+        expanded.append(origin)
+        if origin == "https://naxely.com":
+            expanded.append("https://www.naxely.com")
+        elif origin == "http://localhost:5173":
+            expanded.append("http://localhost:3000")
+    return expanded
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in settings.resolved_allowed_origins.split(",")],
+    allow_origins=_resolve_origins(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],

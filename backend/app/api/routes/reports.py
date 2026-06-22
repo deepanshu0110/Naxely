@@ -675,7 +675,7 @@ async def get_shared_report(
         text("""
             SELECT r.*, u.tier AS user_tier
             FROM reports r
-            JOIN users u ON r.user_id = u.id
+            LEFT JOIN users u ON r.user_id = u.id
             WHERE r.share_token = :token AND r.deleted_at IS NULL
         """),
         {"token": share_token},
