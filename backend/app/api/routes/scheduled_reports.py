@@ -212,6 +212,7 @@ async def create_scheduled_report(
             {"path": storage_path, "rid": scheduled_report_id},
         )
         await db.commit()
+        row = dict(row)
         row["csv_storage_path"] = storage_path
     except Exception as e:
         logger.error("Failed to copy CSV for scheduled report %s: %s", scheduled_report_id, e)
