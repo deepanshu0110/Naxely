@@ -11,6 +11,7 @@ from PIL import Image as PILImage
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
 from reportlab.lib.colors import HexColor, white, Color
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
@@ -215,7 +216,20 @@ class _CoverBand(Flowable):
         cx = PAGE_WIDTH / 2
         if self.logo_path:
             try:
-                self.canv.drawImage(self.logo_path, MARGIN + 24, self.band_height - 72, width=56, height=56, preserveAspectRatio=True, mask='auto')
+                img_reader = ImageReader(self.logo_path)
+                iw, ih = img_reader.getSize()
+                max_h = 48
+                scale = max_h / ih
+                draw_w = int(iw * scale)
+                self.canv.drawImage(
+                    img_reader,
+                    MARGIN + 16,
+                    self.band_height - 16 - max_h,
+                    width=draw_w,
+                    height=max_h,
+                    preserveAspectRatio=True,
+                    mask='auto',
+                )
             except Exception as e:
                 logging.warning(f"[pdf_service] drawImage failed: {e}")
         title_y = self.band_height - 90 if self.logo_path else int(self.band_height * 0.55)
