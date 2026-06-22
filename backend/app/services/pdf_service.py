@@ -216,18 +216,22 @@ class _CoverBand(Flowable):
         cx = PAGE_WIDTH / 2
         if self.logo_path:
             try:
-                from PIL import Image as PILImage
-                with PILImage.open(self.logo_path) as img:
-                    iw, ih = img.size
-                max_h = 48
-                scale = max_h / ih
+                from reportlab.lib.utils import ImageReader
+                img_reader = ImageReader(self.logo_path)
+                iw, ih = img_reader.getSize()
+                # Badge is already sized correctly (max 48px tall + padding)
+                # Just draw at natural size, capped at 80px height on cover
+                max_draw_h = 80
+                scale = min(1.0, max_draw_h / ih)
                 draw_w = int(iw * scale)
+                draw_h = int(ih * scale)
                 self.canv.drawImage(
-                    self.logo_path,
+                    img_reader,
                     MARGIN + 16,
-                    self.band_height - 16 - max_h,
+                    self.band_height - 16 - draw_h,
                     width=draw_w,
-                    height=max_h,
+                    height=draw_h,
+                    mask='auto',
                     preserveAspectRatio=True,
                 )
             except Exception as e:
@@ -405,29 +409,43 @@ def _hex_to_reportlab(hex_str: str) -> HexColor:
     return HexColor(hex_str)
 
 
-def _download_logo(logo_url: str, brand_color_hex: str) -> str | None:
+def _download_logo(logo_url: str) -> str | None:
     try:
         req = urllib.request.Request(logo_url, headers={'User-Agent': 'Naxely/1.0'})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = resp.read()
+
         img = PILImage.open(io.BytesIO(data)).convert('RGBA')
 
-        # Composite transparent areas against the cover background color
-        hex_color = brand_color_hex.lstrip('#')
-        bg_rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-        background = PILImage.new('RGB', img.size, bg_rgb)
-        background.paste(img, mask=img.split()[3])
-        img = background
-
-        max_h = 120
+        # Resize logo to max height 48px (fits cleanly in cover band)
+        max_h = 48
         if img.height > max_h:
             ratio = max_h / img.height
             img = img.resize((int(img.width * ratio), max_h), PILImage.Resampling.LANCZOS)
 
+        # Add padding around the logo
+        pad_x, pad_y = 16, 10
+        badge_w = img.width + pad_x * 2
+        badge_h = img.height + pad_y * 2
+
+        # Create white background with rounded corners using PIL
+        from PIL import ImageDraw
+        badge = PILImage.new('RGBA', (badge_w, badge_h), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(badge)
+        draw.rounded_rectangle(
+            [(0, 0), (badge_w - 1, badge_h - 1)],
+            radius=6,
+            fill=(255, 255, 255, 255)
+        )
+        # Paste logo centered on badge
+        badge.paste(img, (pad_x, pad_y), mask=img.split()[3])
+
+        # Save as RGBA PNG with transparent corners (badge on transparent canvas)
         tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
         tmp_path = tmp.name
         tmp.close()
-        img.save(tmp_path, 'PNG')
+        badge.save(tmp_path, 'PNG')
+
         logging.info(f"[pdf_service] _download_logo success: {tmp_path}")
         return tmp_path
     except Exception as e:
@@ -568,7 +586,7 @@ def build_sync(
     logo_path = None
     logo_signed_url = user_data.get('logo_url')
     if logo_signed_url:
-        logo_path = _download_logo(logo_signed_url, brand_color)
+        logo_path = _download_logo(logo_signed_url)
 
     title = config.get('title', 'Marketing Performance Report')
     company_name = user_data.get('company_name', '')
