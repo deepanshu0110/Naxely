@@ -242,17 +242,16 @@ class _CoverBand(Flowable):
             except Exception as e:
                 logging.warning(f"[pdf_service] drawImage failed: {e}")
 
-        # --- 2. Company name + Report title (centered in remaining band space) ---
-        # Remaining space: from logo_bottom_y down to 0 (bottom of band)
-        remaining_mid_y = (logo_bottom_y + 0) / 2
+        # --- 2. Company name + Report title (centered in full band) ---
+        # Center vertically in the full band, not just space below logo
 
         COMPANY_FONT = 'Fraunces-SemiBold'
         COMPANY_FONT_SIZE = 28
         TITLE_FONT = 'IBMPlexSans'
         TITLE_FONT_SIZE = 14
 
-        # Company name: centered, vertically centered in remaining space
-        company_y = remaining_mid_y + COMPANY_FONT_SIZE * 0.3
+        # Company name: centered, vertically centered in full band
+        company_y = self.band_height * 0.5 + COMPANY_FONT_SIZE * 0.3
         self.canv.setFillColor(white)
         self.canv.setFont(COMPANY_FONT, COMPANY_FONT_SIZE)
         if self.company_name:
@@ -438,14 +437,14 @@ def _download_logo(logo_url: str) -> str | None:
 
         img = PILImage.open(io.BytesIO(data)).convert('RGBA')
 
-        # Resize logo to max height 48px (fits cleanly in cover band)
-        max_h = 48
+        # Resize logo to max height 36px (fits cleanly in cover band)
+        max_h = 36
         if img.height > max_h:
             ratio = max_h / img.height
             img = img.resize((int(img.width * ratio), max_h), PILImage.Resampling.LANCZOS)
 
         # Add padding around the logo
-        pad_x, pad_y = 16, 10
+        pad_x, pad_y = 12, 8
         badge_w = img.width + pad_x * 2
         badge_h = img.height + pad_y * 2
 
