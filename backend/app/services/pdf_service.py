@@ -214,35 +214,56 @@ class _CoverBand(Flowable):
         self.canv.setFillColor(self.brand_color)
         self.canv.rect(0, 0, self.width, self.band_height, fill=1, stroke=0)
         cx = PAGE_WIDTH / 2
+
+        # --- 1. Logo badge (top-left: 20px from left, 20px from top of band) ---
+        logo_bottom_y = self.band_height - 20
         if self.logo_path:
             try:
-                from reportlab.lib.utils import ImageReader
                 img_reader = ImageReader(self.logo_path)
                 iw, ih = img_reader.getSize()
-                # Badge is already sized correctly (max 48px tall + padding)
-                # Just draw at natural size, capped at 80px height on cover
-                max_draw_h = 80
+                max_draw_h = 56  # badge height including padding
                 scale = min(1.0, max_draw_h / ih)
                 draw_w = int(iw * scale)
                 draw_h = int(ih * scale)
+
+                logo_x = 20
+                logo_y = self.band_height - 20 - draw_h
+
                 self.canv.drawImage(
                     img_reader,
-                    MARGIN + 16,
-                    self.band_height - 16 - draw_h,
+                    logo_x,
+                    logo_y,
                     width=draw_w,
                     height=draw_h,
                     mask='auto',
                     preserveAspectRatio=True,
                 )
+                logo_bottom_y = logo_y
             except Exception as e:
                 logging.warning(f"[pdf_service] drawImage failed: {e}")
-        title_y = self.band_height - 90 if self.logo_path else int(self.band_height * 0.55)
+
+        # --- 2. Company name + Report title (centered in remaining band space) ---
+        # Remaining space: from logo_bottom_y down to 0 (bottom of band)
+        remaining_mid_y = (logo_bottom_y + 0) / 2
+
+        COMPANY_FONT = 'Fraunces-SemiBold'
+        COMPANY_FONT_SIZE = 28
+        TITLE_FONT = 'IBMPlexSans'
+        TITLE_FONT_SIZE = 14
+
+        # Company name: centered, vertically centered in remaining space
+        company_y = remaining_mid_y + COMPANY_FONT_SIZE * 0.3
         self.canv.setFillColor(white)
-        self.canv.setFont('Fraunces-SemiBold', 28)
-        self.canv.drawCentredString(cx, title_y, self.title)
+        self.canv.setFont(COMPANY_FONT, COMPANY_FONT_SIZE)
         if self.company_name:
-            self.canv.setFont('IBMPlexSans', 14)
-            self.canv.drawCentredString(cx, title_y - 28, self.company_name)
+            self.canv.drawCentredString(cx, company_y, self.company_name)
+
+        # Report title: 12px below company name baseline
+        title_y = company_y - COMPANY_FONT_SIZE - 12
+        self.canv.setFillColor(white)
+        self.canv.setFont(TITLE_FONT, TITLE_FONT_SIZE)
+        self.canv.drawCentredString(cx, title_y, self.title)
+
         self.canv.restoreState()
 
 
