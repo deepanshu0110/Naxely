@@ -1,3 +1,4 @@
+import logging
 import os
 import io
 import urllib.request
@@ -215,8 +216,8 @@ class _CoverBand(Flowable):
         if self.logo_path:
             try:
                 self.canv.drawImage(self.logo_path, MARGIN + 24, self.band_height - 72, width=56, height=56, preserveAspectRatio=True)
-            except Exception:
-                pass
+            except Exception as e:
+                logging.warning(f"[pdf_service] drawImage failed: {e}")
         title_y = self.band_height - 90 if self.logo_path else int(self.band_height * 0.55)
         self.canv.setFillColor(white)
         self.canv.setFont('Fraunces-SemiBold', 28)
@@ -405,9 +406,9 @@ def _download_logo(logo_url: str, brand_color_hex: str) -> str | None:
         tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
         img.save(tmp.name, 'PNG')
         tmp.close()
+        logging.info(f"[pdf_service] _download_logo success: tmp={tmp.name} size={len(data)} bytes")
         return tmp.name
     except Exception as e:
-        import logging
         logging.warning(f"[pdf_service] _download_logo failed for {logo_url!r}: {e}")
         return None
 
