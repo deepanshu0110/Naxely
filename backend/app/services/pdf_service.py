@@ -732,26 +732,26 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     # SECTION 4 — Charts
     # ────────────────────────────────────────────────────────────
-    toc_entries.append(('Charts', str(toc_page)))
+    toc_entries.append(('Charts & Visualizations', str(toc_page)))
     toc_page += 1
-    body_story.append(_SectionHeader('Charts', brand_color, content_width))
+    body_story.append(_SectionHeader('Charts & Visualizations', brand_color, content_width))
     body_story.append(Spacer(1, 10))
 
-    for i, chart_item in enumerate(chart_paths[:8]):
-        chart_path, col_name = chart_item if isinstance(chart_item, tuple) else (chart_item, f'Chart {i + 1}')
+    for chart_item in chart_paths:
+        if isinstance(chart_item, tuple):
+            chart_path = chart_item[0]
+        else:
+            chart_path = chart_item
         if not os.path.isfile(chart_path):
             continue
         try:
-            img = PILImage.open(chart_path)
-            w_px, h_px = img.size
-            draw_w = min(content_width, 450)
-            draw_h = draw_w * (h_px / w_px)
-            if draw_h > 280:
-                draw_w = draw_w * (280 / draw_h)
-                draw_h = 280
+            # Each chart: full content width, fixed height 220pt
+            draw_w = content_width
+            draw_h = 220
             chart_img = Image(chart_path, width=draw_w, height=draw_h)
             chart_img.hAlign = 'CENTER'
             body_story.append(chart_img)
+            body_story.append(Spacer(1, 16))
         except Exception:
             continue
     body_story.append(PageBreak())

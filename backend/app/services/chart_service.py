@@ -8,238 +8,204 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import matplotlib.colors as mcolors
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 
-from app.core.design_tokens import PAPER, SLATE, INDIGO, AMBER
+from app.core.design_tokens import PAPER, INDIGO, MINT, AMBER, RED
 
 logger = logging.getLogger(__name__)
 
 FONT_DIR = Path(__file__).resolve().parent.parent / 'static' / 'fonts'
+fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexSans-Regular.ttf'))
+fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexSans-Italic.ttf'))
 fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Regular.ttf'))
 fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Bold.ttf'))
-matplotlib.rcParams['font.family'] = 'IBM Plex Mono'
 
-SECONDARY_COLOR = '#94A3B8'
-GRID_COLOR = SLATE
-SPINE_COLOR = '#D1D5DB'
-TICK_COLOR = '#6B7280'
-LABEL_COLOR = '#374151'
-TITLE_COLOR = '#1F2937'
-_DARK_INDIGO = mcolors.to_hex([max(0, c * 0.75) for c in mcolors.to_rgb(INDIGO)])
+SECONDARY_PALETTE = ['#6366F1', '#0E9F6E', '#F59E0B', '#EF4444']  # INDIGO, MINT, AMBER, RED
 
 CHART_DIR = Path('/tmp/naxely')
 
 
-def _apply_chart_style(fig, ax, brand_color: str) -> None:
-    fig.patch.set_facecolor(PAPER)
-    ax.set_facecolor(PAPER)
+def _apply_chart_style(ax) -> None:
+    """Apply Naxely visual standards to any chart axes."""
+    # Grid: horizontal only, dashed, light
+    ax.yaxis.grid(True, color='#E5E7EB', linewidth=0.6, linestyle='--', zorder=0)
+    ax.xaxis.grid(False)
+    ax.set_axisbelow(True)
+
+    # Spines: hide top/right, style left/bottom
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_color(SPINE_COLOR)
-    ax.spines['bottom'].set_color(SPINE_COLOR)
-    ax.grid(True, axis='y', color=GRID_COLOR, linewidth=0.8, zorder=0)
-    ax.set_axisbelow(True)
-    ax.tick_params(axis='both', labelsize=10, colors=TICK_COLOR)
-    ax.xaxis.label.set_size(12)
-    ax.xaxis.label.set_color(LABEL_COLOR)
-    ax.xaxis.label.set_fontweight('bold')
-    ax.yaxis.label.set_size(12)
-    ax.yaxis.label.set_color(LABEL_COLOR)
-    ax.yaxis.label.set_fontweight('bold')
-    ax.set_title(
-        ax.get_title() or '',
-        fontsize=14, fontweight='bold', color=TITLE_COLOR, pad=12,
-    )
+    ax.spines['left'].set_color('#D1D5DB')
+    ax.spines['left'].set_linewidth(0.8)
+    ax.spines['bottom'].set_color('#D1D5DB')
+    ax.spines['bottom'].set_linewidth(0.8)
+
+    # Tick labels
+    ax.tick_params(colors='#6B7280', labelsize=9)
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontfamily('IBM Plex Mono')
 
 
-def _is_date_column(series: pd.Series) -> bool:
-    if pd.api.types.is_datetime64_any_dtype(series):
-        return True
-    try:
-        pd.to_datetime(series.dropna().head(20))
-        return True
-    except (ValueError, TypeError):
-        return False
-
-
-def _is_categorical_column(series: pd.Series) -> bool:
-    return series.dtype == object or isinstance(series.dtype, pd.CategoricalDtype)
-
-
-def select_chart_type(df: pd.DataFrame, column_name: str, date_column: str | None = None) -> str:
-    if column_name not in df.columns:
-        return 'bar'
-
-    col = df[column_name]
-    numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
-
-    if date_column and date_column in df.columns and pd.api.types.is_numeric_dtype(col):
+def select_chart_type(
+    df: pd.DataFrame,
+    metric_column: str,
+    date_column: str | None = None,
+    dimension_columns: list[str] | None = None,
+) -> str:
+    """
+    Decision tree:
+    1. Date column present -> line chart (time series)
+    2. Dimension column with <=10 unique values -> horizontal bar (grouped by dimension)
+    3. Two or more numeric columns -> scatter (metric vs metric)
+    4. Fallback -> histogram (distribution)
+    """
+    if date_column and date_column in df.columns:
         return 'line'
 
-    if _is_categorical_column(col) and numeric_cols:
-        return 'bar'
+    if dimension_columns:
+        for dim in dimension_columns:
+            if dim in df.columns and df[dim].nunique() <= 10:
+                return 'bar'
 
-    if len(numeric_cols) >= 2 and date_column and date_column in df.columns:
-        return 'multi_line'
+    numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+    if len(numeric_cols) >= 2:
+        return 'scatter'
 
-    if len(numeric_cols) == 2 and not date_column:
-        non_date_numeric = [c for c in numeric_cols if c != date_column]
-        if len(non_date_numeric) >= 2:
-            return 'scatter'
+    return 'histogram'
+
+
+def _generate_single_chart(
+    df: pd.DataFrame,
+    metric_column: str,
+    chart_type: str,
+    date_column: str | None,
+    dimension_columns: list[str],
+    report_id: str,
+    brand_color: str,
+) -> str | None:
+    """Generate one chart PNG. Returns path or None on failure."""
+    import matplotlib.ticker as mticker
+
+    fig, ax = plt.subplots(figsize=(10, 4), dpi=150)
+    fig.patch.set_facecolor(PAPER)
+    ax.set_facecolor(PAPER)
 
     try:
-        total = col.dropna().sum()
-        if abs(total - 100.0) <= 5.0 and col.dropna().between(0, 100).all():
-            return 'pie'
-    except (TypeError, ValueError):
-        pass
+        if chart_type == 'line' and date_column and date_column in df.columns:
+            df_sorted = df.sort_values(date_column)
+            x = pd.to_datetime(df_sorted[date_column])
+            y = df_sorted[metric_column]
+            ax.plot(x, y, color=brand_color, linewidth=2.0,
+                    marker='o', markersize=4,
+                    markerfacecolor='white', markeredgecolor=brand_color,
+                    markeredgewidth=1.5)
+            ax.fill_between(x, y, alpha=0.08, color=brand_color)
+            ax.set_xlabel(date_column, fontsize=10, color='#4B5563',
+                         fontfamily='IBM Plex Sans')
+            ax.set_title(f'{metric_column} Over Time', fontsize=13,
+                        fontweight='bold', color='#14131F', pad=10,
+                        fontfamily='IBM Plex Sans')
 
-    if pd.api.types.is_numeric_dtype(col):
-        return 'histogram'
+        elif chart_type == 'bar' and dimension_columns:
+            dim = dimension_columns[0]
+            grouped = df.groupby(dim)[metric_column].mean().sort_values()
+            ax.barh(grouped.index, grouped.values,
+                    color=brand_color, alpha=0.85, height=0.55)
+            # Value labels at bar end
+            for i, (val, label) in enumerate(zip(grouped.values, grouped.index)):
+                ax.text(val * 1.01, i, f'{val:,.0f}',
+                       va='center', fontsize=9, color='#4B5563',
+                       fontfamily='IBM Plex Mono')
+            ax.set_xlabel(metric_column, fontsize=10, color='#4B5563',
+                         fontfamily='IBM Plex Sans')
+            ax.set_title(f'{metric_column} by {dim}', fontsize=13,
+                        fontweight='bold', color='#14131F', pad=10,
+                        fontfamily='IBM Plex Sans')
 
-    return 'bar'
+        elif chart_type == 'scatter':
+            numeric_cols = [c for c in df.columns
+                           if pd.api.types.is_numeric_dtype(df[c])
+                           and c != metric_column]
+            if not numeric_cols:
+                return None
+            y_col = numeric_cols[0]
+            ax.scatter(df[metric_column], df[y_col],
+                      color=brand_color, alpha=0.7,
+                      edgecolors='white', linewidths=0.5, s=60)
+            ax.set_xlabel(metric_column, fontsize=10, color='#4B5563',
+                         fontfamily='IBM Plex Sans')
+            ax.set_ylabel(y_col, fontsize=10, color='#4B5563',
+                         fontfamily='IBM Plex Sans')
+            ax.set_title(f'{metric_column} vs {y_col}', fontsize=13,
+                        fontweight='bold', color='#14131F', pad=10,
+                        fontfamily='IBM Plex Sans')
 
+        else:  # histogram
+            ax.hist(df[metric_column].dropna(), bins=20,
+                   color=brand_color, alpha=0.85, edgecolor='white')
+            ax.set_xlabel(metric_column, fontsize=10, color='#4B5563',
+                         fontfamily='IBM Plex Sans')
+            ax.set_title(f'{metric_column} Distribution', fontsize=13,
+                        fontweight='bold', color='#14131F', pad=10,
+                        fontfamily='IBM Plex Sans')
 
-def generate_chart(df: pd.DataFrame, column_name: str, chart_type: str,
-                   report_id: str, chart_index: int,
-                   brand_color: str = '#6366F1') -> str:
-    import matplotlib.pyplot as plt
+        # --- Shared styling ---
+        _apply_chart_style(ax)
 
-    output_dir = CHART_DIR / report_id
-    output_dir.mkdir(parents=True, exist_ok=True)
+        # Save
+        out_dir = CHART_DIR / report_id
+        out_dir.mkdir(parents=True, exist_ok=True)
+        safe_col = metric_column.replace(' ', '_').replace('/', '_')
+        path = str(out_dir / f'chart_{safe_col}_{chart_type}.png')
+        fig.savefig(path, bbox_inches='tight', facecolor=fig.get_facecolor())
+        return path
 
-    output_path = output_dir / f'chart_{chart_index}.png'
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    _apply_chart_style(fig, ax, brand_color)
-
-    display_name = column_name.replace('_', ' ').title()
-
-    if chart_type == 'line':
-        date_col = None
-        for c in df.columns:
-            if _is_date_column(df[c]):
-                date_col = c
-                break
-        if date_col:
-            plot_df = df.sort_values(date_col)
-            ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2.5)
-            ax.fill_between(plot_df[date_col], plot_df[column_name], alpha=0.12, color=brand_color)
-            ax.set_xlabel(date_col.replace('_', ' ').title())
-        else:
-            ax.plot(df.index, df[column_name], color=brand_color, linewidth=2.5)
-            ax.fill_between(df.index, df[column_name], alpha=0.12, color=brand_color)
-        ax.set_ylabel(display_name)
-
-    elif chart_type == 'bar':
-        if _is_categorical_column(df[column_name]):
-            counts = df[column_name].value_counts()
-            ax.bar(counts.index.astype(str), counts.values, color=brand_color, edgecolor=_DARK_INDIGO, linewidth=1)
-            ax.set_xlabel(display_name)
-            ax.set_ylabel('Count')
-        else:
-            values = df[column_name].dropna()
-            ax.bar(range(len(values)), values, color=brand_color, edgecolor=_DARK_INDIGO, linewidth=1)
-            ax.set_xlabel('Row')
-            ax.set_ylabel(display_name)
-
-    elif chart_type == 'histogram':
-        ax.hist(df[column_name].dropna(), bins=20, color=brand_color, edgecolor='white')
-        ax.set_xlabel(display_name)
-        ax.set_ylabel('Frequency')
-
-    elif chart_type == 'pie':
-        values = df[column_name].dropna()
-        labels = values.index.astype(str) if values.index.dtype != int else range(len(values))
-        colors = [brand_color] + [c for c in CHART_COLORS if c != brand_color]
-        colors = colors[:len(values)]
-        ax.pie(values, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-        ax.set_aspect('equal')
-
-    elif chart_type == 'scatter':
-        other_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c]) and c != column_name]
-        if other_cols:
-            x_col = other_cols[0]
-            y_col = column_name
-        else:
-            x_col = column_name
-            y_col = column_name
-        ax.scatter(df[x_col], df[y_col], color=brand_color, alpha=0.85, s=90, edgecolor='white', linewidth=1)
-        valid = df[[x_col, y_col]].dropna()
-        if len(valid) >= 5:
-            x_vals = valid[x_col].values.astype(float)
-            y_vals = valid[y_col].values.astype(float)
-            m, b = np.polyfit(x_vals, y_vals, 1)
-            ax.plot(x_vals, m * x_vals + b, color=AMBER, linewidth=1.5)
-        ax.set_xlabel(x_col.replace('_', ' ').title())
-        ax.set_ylabel(y_col.replace('_', ' ').title())
-
-    elif chart_type == 'multi_line':
-        date_col = None
-        for c in df.columns:
-            if _is_date_column(df[c]):
-                date_col = c
-                break
-        if date_col:
-            plot_df = df.sort_values(date_col)
-            ax.plot(plot_df[date_col], plot_df[column_name], color=brand_color, linewidth=2.5)
-            ax.fill_between(plot_df[date_col], plot_df[column_name], alpha=0.12, color=brand_color)
-            ax.set_xlabel(date_col.replace('_', ' ').title())
-            ax.set_ylabel(display_name)
-
-    spines_visible = [s for s in ax.spines if ax.spines[s].get_visible()]
-    first_color = "none"
-    if ax.lines:
-        first_color = ax.lines[0].get_color()
-    elif ax.collections:
-        first_color = str(ax.collections[0].get_facecolor())
-    elif ax.patches:
-        first_color = str(ax.patches[0].get_facecolor())
-    logger.info("CHART DEBUG type=%s spines_visible=%s font=%s color=%s path=%s",
-                chart_type, spines_visible, matplotlib.rcParams['font.family'], first_color, output_path)
-
-    fig.tight_layout()
-    fig.savefig(str(output_path), dpi=150)
-    plt.close(fig)
-
-    return str(output_path)
+    except Exception as e:
+        logger.warning(f'[chart_service] Chart generation failed for {metric_column}: {e}')
+        return None
+    finally:
+        plt.close(fig)
 
 
-def generate_sync(df: pd.DataFrame, report_id: str, config: dict,
-                  brand_color: str = '#6366F1') -> list[tuple[str, str]]:
-    chart_data: list[tuple[str, str]] = []
+def generate_sync(
+    df: pd.DataFrame,
+    report_id: str,
+    config: dict,
+    brand_color: str = '#6366F1',
+) -> list[str]:
+    MAX_CHARTS = 3
 
+    metric_columns = config.get('metric_columns') or [
+        c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
+    ]
     date_column = config.get('date_column')
+    column_config = config.get('column_config', [])
 
-    metric_columns = config.get('metric_columns', [])
-    if not metric_columns:
-        metric_columns = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+    # Identify dimension columns: non-numeric, non-date, <=10 unique values
+    dimension_columns = [
+        c for c in df.columns
+        if c != date_column
+        and not pd.api.types.is_numeric_dtype(df[c])
+        and df[c].nunique() <= 10
+    ]
 
-    metric_columns = metric_columns[:8]
+    chart_paths = []
+    for metric_col in metric_columns[:MAX_CHARTS]:
+        chart_type = select_chart_type(df, metric_col, date_column, dimension_columns)
+        path = _generate_single_chart(
+            df=df,
+            metric_column=metric_col,
+            chart_type=chart_type,
+            date_column=date_column,
+            dimension_columns=dimension_columns,
+            report_id=report_id,
+            brand_color=brand_color,
+        )
+        if path:
+            chart_paths.append((path, metric_col))
 
-    scatter_pairs_seen = set()
-    chart_index = 0
-    for col_name in metric_columns:
-        chart_type = select_chart_type(df, col_name, date_column)
-        if chart_type == 'scatter':
-            other_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c]) and c != col_name]
-            if other_cols:
-                x_col = other_cols[0]
-                y_col = col_name
-            else:
-                x_col = col_name
-                y_col = col_name
-            pair = tuple(sorted([x_col, y_col]))
-            if pair in scatter_pairs_seen:
-                continue
-            scatter_pairs_seen.add(pair)
-        path = generate_chart(df, col_name, chart_type, report_id, chart_index, brand_color)
-        chart_data.append((path, col_name))
-        chart_index += 1
-
-    return chart_data
+    return chart_paths
 
 
 def cleanup_charts(report_id: str) -> None:

@@ -55,8 +55,9 @@ class TestChartService:
             "Category": ["A", "B", "C"],
             "Share": [50.0, 30.0, 20.0],
         })
-        result = select_chart_type(df, "Share")
-        assert result == "pie"
+        # New logic: no date, no dimension_columns passed -> histogram
+        result = select_chart_type(df, "Share", None, None)
+        assert result == "histogram"
 
     def test_select_chart_type_bar(self):
         from app.services.chart_service import select_chart_type
@@ -64,7 +65,8 @@ class TestChartService:
             "Category": ["X", "Y", "Z"],
             "Count": [10, 20, 30],
         })
-        result = select_chart_type(df, "Category")
+        # New logic: dimension column present -> bar
+        result = select_chart_type(df, "Count", None, ["Category"])
         assert result == "bar"
 
     def test_select_chart_type_histogram(self):
