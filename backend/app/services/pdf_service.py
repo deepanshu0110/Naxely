@@ -228,7 +228,6 @@ class _CoverBand(Flowable):
                     width=draw_w,
                     height=max_h,
                     preserveAspectRatio=True,
-                    mask='auto',
                 )
             except Exception as e:
                 logging.warning(f"[pdf_service] drawImage failed: {e}")
@@ -412,8 +411,9 @@ def _download_logo(logo_url: str, brand_color_hex: str) -> str | None:
             data = resp.read()
         img = PILImage.open(io.BytesIO(data))
         img = img.convert('RGBA')
-        # Preserve transparency — do not composite onto white
-        # Save as PNG with alpha channel intact
+        background = PILImage.new('RGBA', img.size, (255, 255, 255, 255))
+        background.paste(img, mask=img.split()[3])
+        img = background.convert('RGB')
         max_h = 120
         if img.height > max_h:
             ratio = max_h / img.height
