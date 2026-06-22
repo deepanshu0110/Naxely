@@ -98,7 +98,7 @@ async def _get_scheduled_report_or_404(
         {"rid": report_id},
     )
     row = result.mappings().first()
-    if not row or row["user_id"] != user_id:
+    if not row or str(row["user_id"]) != user_id:
         raise HTTPException(status_code=404, detail="Scheduled report not found")
     return dict(row)
 
@@ -153,11 +153,18 @@ async def create_scheduled_report(
             "SCHEDULED_REPORT_DIAGNOSTIC upload NOT FOUND in DB for upload_id=%s",
             body.upload_id,
         )
-    if not upload or upload["user_id"] != str(current_user.id):
+    if not upload or str(upload["user_id"]) != str(current_user.id):
         logger.error(
-            "SCHEDULED_REPORT_DIAGNOSTIC rejecting — upload_found=%s, match=%s",
+            "SCHEDULED_REPORT_DIAGNOSTIC rejecting — upload_found=%s, "
+            "upload[user_id]=%r (type=%s), current_user.id=%r (type=%s), "
+            "str(upload[user_id])=%r, str(current_user.id)=%r",
             upload is not None,
-            str(upload["user_id"]) == str(current_user.id) if upload else False,
+            upload["user_id"] if upload else None,
+            type(upload["user_id"]).__name__ if upload else "N/A",
+            current_user.id,
+            type(current_user.id).__name__,
+            str(upload["user_id"]) if upload else None,
+            str(current_user.id),
         )
         raise HTTPException(status_code=404, detail="Upload not found")
 

@@ -393,6 +393,51 @@ class TestScheduledReportCreate:
             await create_scheduled_report(body, current_user=FakeAgencyUser(), db=db)
         assert exc.value.status_code == 404
 
+    @pytest.mark.asyncio
+    async def test_upload_owner_uuid_object_matches_string_user_id(self):
+        """Regression: asyncpg returns UUID columns as uuid.UUID objects from raw
+        text() queries. The ownership check must str() both sides, not compare
+        uuid.UUID directly to str (which always returns False in Python).
+        This test passes a uuid.UUID object as upload[user_id] to simulate what
+        asyncpg returns in production."""
+        import uuid
+        from app.api.routes.scheduled_reports import create_scheduled_report
+
+        uid_obj = uuid.UUID(FakeAgencyUser.id)
+        upload_row = _Row(id="upl-uuid-obj", user_id=uid_obj)
+        insert_row = _Row(
+            id="sr-uuid-ok",
+            user_id=FakeAgencyUser.id,
+            template_id=None,
+            workspace_id=None,
+            name="UUID Object Test",
+            frequency="weekly",
+            next_run_at=_compute_next_run("weekly"),
+            last_run_at=None,
+            recipient_emails=["uuid@test.com"],
+            csv_storage_path="scheduled-sources/sr-uuid-ok.csv",
+            is_active=True,
+            created_at=_compute_next_run("weekly"),
+        )
+        db = _AsyncDB([upload_row, insert_row, MagicMock()])
+
+        body = ScheduledReportCreate(
+            upload_id="upl-uuid-obj",
+            name="UUID Object Test",
+            frequency="weekly",
+            recipient_emails=["uuid@test.com"],
+        )
+        with patch(
+            "app.api.routes.scheduled_reports.copy_upload_to_scheduled_source",
+            return_value="scheduled-sources/sr-uuid-ok.csv",
+        ):
+            result = await create_scheduled_report(body, current_user=FakeAgencyUser(), db=db)
+
+        assert result.id == "sr-uuid-ok"
+        assert result.name == "UUID Object Test"
+        assert result.csv_storage_path == "scheduled-sources/sr-uuid-ok.csv"
+        assert db.committed
+
 
 class TestScheduledReportOwnership:
     @pytest.mark.asyncio
@@ -412,6 +457,80 @@ class TestScheduledReportOwnership:
         db = _AsyncDB([_NotFound()])
         with pytest.raises(HTTPException) as exc:
             await delete_scheduled_report("sr-owned-by-a", current_user=FakeAgencyUserB(), db=db)
+        assert exc.value.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_update_self_with_uuid_user_id_succeeds(self):
+        """Regression: asyncpg returns UUID columns as uuid.UUID objects.
+        _get_scheduled_report_or_404 must str() both sides. This test would
+        have returned 404 with the old uuid.UUID != str comparison."""
+        import uuid
+        from app.api.routes.scheduled_reports import update_scheduled_report
+
+        uid_obj = uuid.UUID(FakeAgencyUser.id)
+        existing = _Row(
+            id="sr-uuid-self",
+            user_id=uid_obj,
+            template_id=None,
+            workspace_id=None,
+            name="UUID Self",
+            frequency="daily",
+            next_run_at=_compute_next_run("daily"),
+            last_run_at=None,
+            recipient_emails=["self@test.com"],
+            csv_storage_path="scheduled-sources/sr-uuid-self.csv",
+            is_active=True,
+            created_at=_compute_next_run("daily"),
+        )
+        updated = _Row(
+            id="sr-uuid-self",
+            user_id=FakeAgencyUser.id,
+            template_id=None,
+            workspace_id=None,
+            name="Updated UUID Self",
+            frequency="weekly",
+            next_run_at=_compute_next_run("weekly"),
+            last_run_at=None,
+            recipient_emails=["self@test.com"],
+            csv_storage_path="scheduled-sources/sr-uuid-self.csv",
+            is_active=True,
+            created_at=_compute_next_run("daily"),
+        )
+        db = _AsyncDB([existing, updated])
+
+        body = ScheduledReportUpdate(name="Updated UUID Self", frequency="weekly")
+        result = await update_scheduled_report("sr-uuid-self", body, current_user=FakeAgencyUser(), db=db)
+        assert result.id == "sr-uuid-self"
+        assert result.name == "Updated UUID Self"
+        assert result.frequency == "weekly"
+        assert db.committed
+
+    @pytest.mark.asyncio
+    async def test_update_other_with_uuid_user_id_returns_404(self):
+        """Same uuid.UUID scenario but with DIFFERENT user — must still 404."""
+        import uuid
+        from app.api.routes.scheduled_reports import update_scheduled_report
+
+        uid_obj = uuid.UUID(FakeAgencyUser.id)
+        existing = _Row(
+            id="sr-uuid-other",
+            user_id=uid_obj,
+            template_id=None,
+            workspace_id=None,
+            name="UUID Other",
+            frequency="daily",
+            next_run_at=_compute_next_run("daily"),
+            last_run_at=None,
+            recipient_emails=["other@test.com"],
+            csv_storage_path="scheduled-sources/sr-uuid-other.csv",
+            is_active=True,
+            created_at=_compute_next_run("daily"),
+        )
+        db = _AsyncDB([existing])
+
+        body = ScheduledReportUpdate(name="Hacked")
+        with pytest.raises(HTTPException) as exc:
+            await update_scheduled_report("sr-uuid-other", body, current_user=FakeAgencyUserB(), db=db)
         assert exc.value.status_code == 404
 
     @pytest.mark.asyncio
