@@ -215,7 +215,7 @@ class _CoverBand(Flowable):
         cx = PAGE_WIDTH / 2
         if self.logo_path:
             try:
-                self.canv.drawImage(self.logo_path, MARGIN + 24, self.band_height - 72, width=56, height=56, preserveAspectRatio=True)
+                self.canv.drawImage(self.logo_path, MARGIN + 24, self.band_height - 72, width=56, height=56, preserveAspectRatio=True, mask='auto')
             except Exception as e:
                 logging.warning(f"[pdf_service] drawImage failed: {e}")
         title_y = self.band_height - 90 if self.logo_path else int(self.band_height * 0.55)
@@ -398,6 +398,8 @@ def _download_logo(logo_url: str, brand_color_hex: str) -> str | None:
             data = resp.read()
         img = PILImage.open(io.BytesIO(data))
         img = img.convert('RGBA')
+        # Preserve transparency — do not composite onto white
+        # Save as PNG with alpha channel intact
         max_h = 120
         if img.height > max_h:
             ratio = max_h / img.height
