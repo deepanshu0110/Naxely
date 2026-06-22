@@ -139,6 +139,26 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload file to storage: {str(e)}")
 
+    scheduled_source_path = f"scheduled-sources/{upload_id}/raw.{file_ext}"
+    try:
+        await _run_sync(
+            _get_supabase().storage.from_("scheduled-sources").upload,
+            scheduled_source_path,
+            content,
+            {"content-type": file.content_type},
+        )
+    except Exception as e:
+        try:
+            await _run_sync(
+                _get_supabase().storage.from_("uploads").remove, [storage_path],
+            )
+        except Exception:
+            pass
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save scheduled-source copy: {str(e)}",
+        )
+
     columns_meta_json = json.dumps(columns_meta)
     expires_at = datetime.utcnow() + timedelta(hours=24)
 
@@ -171,6 +191,12 @@ async def upload_file(
         try:
             await _run_sync(
                 _get_supabase().storage.from_("uploads").remove, [storage_path],
+            )
+        except Exception:
+            pass
+        try:
+            await _run_sync(
+                _get_supabase().storage.from_("scheduled-sources").remove, [scheduled_source_path],
             )
         except Exception:
             pass
