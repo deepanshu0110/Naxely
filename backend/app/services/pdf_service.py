@@ -405,12 +405,19 @@ def _hex_to_reportlab(hex_str: str) -> HexColor:
     return HexColor(hex_str)
 
 
-def _download_logo(logo_url: str) -> str | None:
+def _download_logo(logo_url: str, brand_color_hex: str) -> str | None:
     try:
         req = urllib.request.Request(logo_url, headers={'User-Agent': 'Naxely/1.0'})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = resp.read()
         img = PILImage.open(io.BytesIO(data)).convert('RGBA')
+
+        # Composite transparent areas against the cover background color
+        hex_color = brand_color_hex.lstrip('#')
+        bg_rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        background = PILImage.new('RGB', img.size, bg_rgb)
+        background.paste(img, mask=img.split()[3])
+        img = background
 
         max_h = 120
         if img.height > max_h:
@@ -561,7 +568,7 @@ def build_sync(
     logo_path = None
     logo_signed_url = user_data.get('logo_url')
     if logo_signed_url:
-        logo_path = _download_logo(logo_signed_url)
+        logo_path = _download_logo(logo_signed_url, brand_color)
 
     title = config.get('title', 'Marketing Performance Report')
     company_name = user_data.get('company_name', '')
