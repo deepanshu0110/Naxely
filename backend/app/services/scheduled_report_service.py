@@ -9,7 +9,7 @@ async def copy_upload_to_scheduled_source(
     upload_id: str, scheduled_report_id: str, user_id: str, file_ext: str,
 ) -> str:
     source_path = f"permanent/{user_id}/{upload_id}.{file_ext}"
-    dest_path = f"scheduled-sources/{scheduled_report_id}.csv"
+    dest_path = f"{scheduled_report_id}.csv"
 
     csv_bytes = await _run_sync(
         _get_supabase().storage.from_("uploads").download, source_path,

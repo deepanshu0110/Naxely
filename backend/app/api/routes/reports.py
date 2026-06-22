@@ -69,8 +69,9 @@ class ShareRequest(BaseModel):
 
 
 async def _generate_signed_url(storage_path: str) -> str:
+    relative = storage_path.removeprefix("reports/")
     def _sync():
-        return _get_supabase().storage.from_("reports").create_signed_url(storage_path, 3600)
+        return _get_supabase().storage.from_("reports").create_signed_url(relative, 3600)
     signed = await _run_sync(_sync)
     return signed.get("signedURL", signed.get("signedUrl", ""))
 
@@ -127,7 +128,7 @@ async def upload_file(
     else:
         file_ext = "csv"
 
-    storage_path = f"uploads/{current_user.id}/{upload_id}/raw.{file_ext}"
+    storage_path = f"{current_user.id}/{upload_id}/raw.{file_ext}"
 
     try:
         await _run_sync(
@@ -139,7 +140,7 @@ async def upload_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload file to storage: {str(e)}")
 
-    scheduled_source_path = f"scheduled-sources/{upload_id}/raw.{file_ext}"
+    scheduled_source_path = f"{upload_id}/raw.{file_ext}"
     try:
         await _run_sync(
             _get_supabase().storage.from_("scheduled-sources").upload,

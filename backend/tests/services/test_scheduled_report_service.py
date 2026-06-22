@@ -27,7 +27,7 @@ class TestCopyUploadToScheduledSource:
                 file_ext=self.FILE_EXT,
             )
 
-        assert result == "scheduled-sources/sr-abc-123.csv"
+        assert result == "sr-abc-123.csv"
 
         # Reads from uploads/ bucket with permanent/ path
         mock_storage.storage.from_.assert_any_call("uploads")
@@ -35,7 +35,7 @@ class TestCopyUploadToScheduledSource:
             f"permanent/{self.USER_ID}/upload-123.{self.FILE_EXT}",
         )
         mock_storage.storage.from_.return_value.upload.assert_called_once_with(
-            "scheduled-sources/sr-abc-123.csv",
+            "sr-abc-123.csv",
             fake_csv_bytes,
             {"content-type": "text/csv"},
         )

@@ -81,16 +81,18 @@ class TestUploadCopiesToScheduledSources:
         assert len(upload_calls) == 3, f"Expected 3 upload calls, got {len(upload_calls)}"
 
         path1 = upload_calls[0][0][0]
-        assert path1.startswith("uploads/"), f"First upload should be to uploads/, got {path1}"
+        assert not path1.startswith("uploads/"), (
+            f"First upload path must NOT include bucket prefix, got {path1}"
+        )
 
         path2 = upload_calls[1][0][0]
-        assert path2.startswith("scheduled-sources/"), (
-            f"Second upload should be to scheduled-sources/, got {path2}"
+        assert not path2.startswith("scheduled-sources/"), (
+            f"Second upload path must NOT include bucket prefix, got {path2}"
         )
 
         path3 = upload_calls[2][0][0]
         assert path3.startswith("permanent/"), (
-            f"Third upload should be to permanent/, got {path3}"
+            f"Third upload should start with permanent/, got {path3}"
         )
 
     @pytest.mark.asyncio
@@ -115,8 +117,8 @@ class TestUploadCopiesToScheduledSources:
         upload_calls = mock_storage.storage.from_.return_value.upload.call_args_list
 
         scheduled_path = upload_calls[1][0][0]
-        assert scheduled_path == f"scheduled-sources/{upload_id}/raw.csv", (
-            f"Expected path based on upload_id, got {scheduled_path}"
+        assert scheduled_path == f"{upload_id}/raw.csv", (
+            f"Expected path without bucket prefix, got {scheduled_path}"
         )
 
     @pytest.mark.asyncio
@@ -140,8 +142,8 @@ class TestUploadCopiesToScheduledSources:
         assert result["success"] is True
         assert "upload_id" in result["data"]
         assert "filename" in result["data"]
-        assert result["data"]["file_url"].startswith("uploads/"), (
-            f"file_url must point to uploads/, got {result['data']['file_url']}"
+        assert not result["data"]["file_url"].startswith("uploads/"), (
+            f"file_url must NOT include bucket prefix, got {result['data']['file_url']}"
         )
         assert "row_count" in result["data"]
         assert "column_count" in result["data"]
@@ -254,7 +256,7 @@ class TestCopyUploadToScheduledSourceReadsFromScheduledSources:
                 file_ext=self.FILE_EXT,
             )
 
-        assert result == "scheduled-sources/sr-abc-123.csv"
+        assert result == "sr-abc-123.csv"
 
         from_calls = [
             call for call in mock_storage.storage.method_calls
@@ -293,7 +295,7 @@ class TestFullFlowUploadGenerateCreateSchedule:
         mock_storage.storage.from_.return_value.remove.return_value = None
 
         # Step 2: Simulate Guard 2 — delete the uploads/ copy
-        file_url = f"uploads/user-abc/{upload_id}/raw.csv"
+        file_url = f"user-abc/{upload_id}/raw.csv"
         bucket_ref = mock_storage.storage.from_("uploads")
         await _run_sync(bucket_ref.remove, [file_url])
 
@@ -309,7 +311,7 @@ class TestFullFlowUploadGenerateCreateSchedule:
                 file_ext=self.FILE_EXT,
             )
 
-        assert result == f"scheduled-sources/{scheduled_report_id}.csv"
+        assert result == f"{scheduled_report_id}.csv"
         mock_storage.storage.from_.return_value.download.assert_called_with(
             f"permanent/{self.USER_ID}/{upload_id}.{self.FILE_EXT}",
         )
