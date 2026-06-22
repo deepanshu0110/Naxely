@@ -400,11 +400,9 @@ async def run_scheduled_reports(
             report_data = report_row.mappings().first()
 
             if report_data and report_data["pdf_url"]:
-                pdf_storage_path = report_data["pdf_url"].removeprefix("reports/")
-
                 pdf_bytes = await _run_sync(
                     _get_supabase().storage.from_("reports").download,
-                    pdf_storage_path,
+                    report_data["pdf_url"],
                 )
 
                 import base64
