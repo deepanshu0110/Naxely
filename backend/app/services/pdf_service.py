@@ -228,7 +228,6 @@ class _CoverBand(Flowable):
                     width=draw_w,
                     height=max_h,
                     preserveAspectRatio=True,
-                    mask='auto',
                 )
             except Exception as e:
                 logging.warning(f"[pdf_service] drawImage failed: {e}")
@@ -412,6 +411,16 @@ def _download_logo(logo_url: str, brand_color_hex: str) -> str | None:
             data = resp.read()
         img = PILImage.open(io.BytesIO(data))
         img = img.convert('RGBA')
+
+        # Composite alpha against brand color background so ReportLab
+        # can render the logo without needing mask='auto' (which does
+        # not handle PNG alpha channels and causes drawImage to fail).
+        hex_color = brand_color_hex.lstrip('#')
+        bg_rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        background = PILImage.new('RGB', img.size, bg_rgb)
+        background.paste(img, mask=img.split()[3])
+        img = background
+
         max_h = 120
         if img.height > max_h:
             ratio = max_h / img.height
