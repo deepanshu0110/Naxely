@@ -250,15 +250,17 @@ class _CoverBand(Flowable):
         TITLE_FONT = 'IBMPlexSans'
         TITLE_FONT_SIZE = 14
 
+        band_center_y = self.band_height * 0.5
+
         # Company name: centered, vertically centered in full band
-        company_y = self.band_height * 0.5 + COMPANY_FONT_SIZE * 0.3
+        company_y = band_center_y + COMPANY_FONT_SIZE * 0.3
         self.canv.setFillColor(white)
         self.canv.setFont(COMPANY_FONT, COMPANY_FONT_SIZE)
         if self.company_name:
             self.canv.drawCentredString(cx, company_y, self.company_name)
 
-        # Report title: 12px below company name baseline
-        title_y = company_y - COMPANY_FONT_SIZE - 12
+        # Report title: 8px below band center baseline
+        title_y = band_center_y - COMPANY_FONT_SIZE - 8
         self.canv.setFillColor(white)
         self.canv.setFont(TITLE_FONT, TITLE_FONT_SIZE)
         self.canv.drawCentredString(cx, title_y, self.title)
