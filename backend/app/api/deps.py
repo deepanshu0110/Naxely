@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import Depends, HTTPException, Header
 from sqlalchemy import text
@@ -142,7 +142,7 @@ async def mark_upload_used(upload_id: str, db: AsyncSession) -> None:
 
 
 async def reset_monthly_usage(db: AsyncSession) -> None:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     await db.execute(
         text(
             "UPDATE users SET reports_this_month = 0, "

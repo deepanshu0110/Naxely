@@ -1,7 +1,7 @@
 import uuid
 import json
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional, List, Literal
 
 import pandas as pd
@@ -160,7 +160,7 @@ async def upload_file(
         )
 
     columns_meta_json = json.dumps(columns_meta)
-    expires_at = datetime.utcnow() + timedelta(hours=24)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
 
     try:
         await db.execute(
@@ -622,7 +622,7 @@ async def share_report(
         raise HTTPException(status_code=404, detail="Report not found")
 
     token = secrets.token_urlsafe(48)
-    expires_at = datetime.utcnow() + timedelta(days=body.expires_days)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=body.expires_days)
 
     await db.execute(
         text("""
@@ -684,7 +684,7 @@ async def get_shared_report(
     if not report:
         raise HTTPException(status_code=404, detail="Shared report not found")
 
-    if report.get("share_expires_at") and report["share_expires_at"] < datetime.utcnow():
+    if report.get("share_expires_at") and report["share_expires_at"] < datetime.now(timezone.utc):
         raise HTTPException(status_code=410, detail="Share link has expired")
 
     await db.execute(

@@ -532,31 +532,62 @@ class TestSharedReportIsWhiteLabel:
         assert result["data"]["is_white_label"] is False
 
     @pytest.mark.asyncio
-    async def test_expired_token_still_returns_410(self, row_cls, asyncdb):
+    async def test_future_share_expiry_returns_report(self, row_cls, asyncdb):
+        """tz-aware future share_expires_at does NOT raise 410 — report renders."""
+        from unittest.mock import MagicMock, patch
+        from datetime import datetime, timedelta, timezone
+        from app.api.routes.reports import get_shared_report
+
+        row = row_cls(
+            id="rep-future-004",
+            title="Future Expiry Report",
+            status="completed",
+            template_type="marketing",
+            user_tier="pro",
+            pdf_url="reports/future/report.pdf",
+            share_expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+            ai_summary=None,
+            ai_insights=None,
+            ai_anomalies=None,
+            created_at=datetime(2026, 6, 15, 12, 0, 0, tzinfo=timezone.utc),
+        )
+
+        db = asyncdb([row, MagicMock()])
+
+        with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
+            result = await get_shared_report(share_token="future-token", db=db)
+
+        assert result["success"] is True
+        assert result["data"]["id"] == "rep-future-004"
+        assert result["data"]["is_white_label"] is False
+
+    @pytest.mark.asyncio
+    async def test_past_share_expiry_returns_410(self, row_cls, asyncdb):
+        """tz-aware past share_expires_at returns 410 (not TypeError 500)."""
         from unittest.mock import MagicMock
-        from datetime import datetime, timedelta
+        from datetime import datetime, timedelta, timezone
         from fastapi import HTTPException
         import pytest
         from app.api.routes.reports import get_shared_report
 
         row = row_cls(
-            id="rep-exp-004",
-            title="Expired Report",
+            id="rep-past-005",
+            title="Past Expiry Report",
             status="completed",
             template_type="marketing",
             user_tier="pro",
-            pdf_url="reports/expired/report.pdf",
-            share_expires_at=datetime.utcnow() - timedelta(hours=1),
+            pdf_url="reports/past/report.pdf",
+            share_expires_at=datetime.now(timezone.utc) - timedelta(hours=1),
             ai_summary=None,
             ai_insights=None,
             ai_anomalies=None,
-            created_at=datetime(2026, 4, 1, 12, 0, 0),
+            created_at=datetime(2026, 4, 1, 12, 0, 0, tzinfo=timezone.utc),
         )
 
         db = asyncdb([row])
 
         with pytest.raises(HTTPException) as exc:
-            await get_shared_report(share_token="expired-token", db=db)
+            await get_shared_report(share_token="past-token", db=db)
 
         assert exc.value.status_code == 410
         assert "expired" in exc.value.detail.lower()

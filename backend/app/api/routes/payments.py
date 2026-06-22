@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -390,7 +390,7 @@ async def downgrade_subscription(
             {"uid": str(current_user.id)},
         )
         row = result.mappings().first()
-        effective_date = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.utcnow()
+        effective_date = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.now(timezone.utc)
         month_name = f"{effective_date.strftime('%B')} {effective_date.day}, {effective_date.year}" if hasattr(effective_date, "strftime") else str(effective_date)
 
         return {
@@ -555,7 +555,7 @@ async def cancel_subscription(
         {"uid": str(current_user.id)},
     )
     row = result.mappings().first()
-    access_until = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.utcnow()
+    access_until = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.now(timezone.utc)
 
     access_until_str = access_until.isoformat() + "Z"
     month_name = f"{access_until.strftime('%B')} {access_until.day}, {access_until.year}" if hasattr(access_until, "strftime") else str(access_until)

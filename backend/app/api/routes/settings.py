@@ -1,6 +1,6 @@
 import re
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
@@ -128,7 +128,7 @@ async def update_profile(
     )
     row = result.mappings().first()
 
-    updated_at = row["updated_at"].isoformat() + "Z" if row and row.get("updated_at") else datetime.utcnow().isoformat() + "Z"
+    updated_at = row["updated_at"].isoformat() + "Z" if row and row.get("updated_at") else datetime.now(timezone.utc).isoformat() + "Z"
 
     return {
         "success": True,
@@ -192,7 +192,7 @@ async def save_api_key(
         "data": {
             "provider": body.provider,
             "key_preview": key_preview,
-            "saved_at": datetime.utcnow().isoformat() + "Z",
+            "saved_at": datetime.now(timezone.utc).isoformat() + "Z",
         },
     }
 
