@@ -248,7 +248,7 @@ async def update_branding(
                 detail="Logo file too large. Maximum size is 2MB.",
             )
 
-        storage_path = f"logos/{str(current_user.id)}/logo.{ext}"
+        storage_path = f"{str(current_user.id)}/logo.{ext}"
         try:
             await _run_sync(
                 _get_supabase().storage.from_("logos").upload,

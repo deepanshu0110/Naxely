@@ -164,8 +164,10 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         logo_url = None
         if user_data_row and user_data_row.get("logo_url"):
             try:
+                raw_path = user_data_row["logo_url"]
+                logo_path_clean = raw_path.removeprefix("logos/")
                 def _sync_signed():
-                    return _get_supabase().storage.from_("logos").create_signed_url(user_data_row["logo_url"], 3600)
+                    return _get_supabase().storage.from_("logos").create_signed_url(logo_path_clean, 3600)
                 signed = await _run_sync(_sync_signed)
                 logo_url = signed.get("signedURL", signed.get("signedUrl", ""))
             except Exception:

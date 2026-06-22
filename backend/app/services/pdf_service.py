@@ -406,7 +406,9 @@ def _download_logo(logo_url: str, brand_color_hex: str) -> str | None:
         img.save(tmp.name, 'PNG')
         tmp.close()
         return tmp.name
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.warning(f"[pdf_service] _download_logo failed for {logo_url!r}: {e}")
         return None
 
 
