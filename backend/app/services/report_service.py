@@ -166,6 +166,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             try:
                 raw_path = user_data_row["logo_url"]
                 logo_path_clean = raw_path.removeprefix("logos/")
+                logger.info("_get_logo_signed_url: raw_path=%s clean_path=%s", raw_path, logo_path_clean)
                 def _sync_signed():
                     return _get_supabase().storage.from_("logos").create_signed_url(logo_path_clean, 3600)
                 signed = await _run_sync(_sync_signed)
