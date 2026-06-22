@@ -672,7 +672,12 @@ async def get_shared_report(
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     result = await db.execute(
-        text("SELECT * FROM reports WHERE share_token = :token AND deleted_at IS NULL"),
+        text("""
+            SELECT r.*, u.tier AS user_tier
+            FROM reports r
+            JOIN users u ON r.user_id = u.id
+            WHERE r.share_token = :token AND r.deleted_at IS NULL
+        """),
         {"token": share_token},
     )
     report = result.mappings().first()
@@ -726,5 +731,6 @@ async def get_shared_report(
             "ai_anomalies": ai_anomalies,
             "pdf_url": pdf_url,
             "created_at": report["created_at"].isoformat() if report.get("created_at") else None,
+            "is_white_label": report.get("user_tier") == "agency",
         },
     }

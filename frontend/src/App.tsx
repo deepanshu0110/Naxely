@@ -12,6 +12,7 @@ import Landing from '@/pages/Landing'
 import Settings from '@/pages/Settings'
 import Pricing from '@/pages/Pricing'
 import NotFound from '@/pages/NotFound'
+import SharedReportView from '@/pages/SharedReportView'
 
 function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuthStore()
@@ -52,17 +53,6 @@ function PublicOnlyRoute() {
   return <Outlet />
 }
 
-function SkeletonPage() {
-  return (
-    <div className="flex h-screen items-center justify-center bg-white">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
-        <div className="h-5 w-48 animate-pulse rounded bg-gray-200" />
-      </div>
-    </div>
-  )
-}
-
 function AppRouter() {
   return (
     <Routes>
@@ -72,7 +62,7 @@ function AppRouter() {
         <Route path="/signup" element={<Signup />} />
       </Route>
       <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/share/:token" element={<SkeletonPage />} />
+      <Route path="/share/:token" element={<SharedReportView />} />
       <Route path="/pricing" element={<Pricing />} />
 
       <Route element={<ProtectedRoute />}>

@@ -398,3 +398,165 @@ class TestPydanticModels:
         assert item.include is True
         assert item.display_name is None
         assert item.type is None
+
+
+class TestSharedReportIsWhiteLabel:
+    """GET /share/{token} must return is_white_label matching the report owner's tier."""
+
+    @pytest.fixture
+    def row_cls(self):
+        class _Row:
+            def __init__(self, **kw):
+                self._kw = kw
+            def mappings(self):
+                return self
+            def first(self):
+                return self
+            def __getitem__(self, k):
+                return self._kw.get(k)
+            def get(self, k, default=None):
+                return self._kw.get(k, default)
+        return _Row
+
+    @pytest.fixture
+    def not_found(self):
+        class _NotFound:
+            def mappings(self):
+                return self
+            def first(self):
+                return None
+        return _NotFound()
+
+    @pytest.fixture
+    def asyncdb(self, not_found):
+        class _AsyncDB:
+            def __init__(self, results):
+                self.results = results
+                self.call_count = 0
+                self.executed_queries = []
+            async def execute(self, query, params=None):
+                self.executed_queries.append(str(query))
+                idx = self.call_count
+                self.call_count += 1
+                if idx < len(self.results):
+                    return self.results[idx]
+                return not_found
+            async def commit(self):
+                pass
+            async def rollback(self):
+                pass
+        return _AsyncDB
+
+    @pytest.mark.asyncio
+    async def test_agency_user_share_returns_is_white_label_true(self, row_cls, asyncdb):
+        from unittest.mock import MagicMock, patch
+        from datetime import datetime
+        from app.api.routes.reports import get_shared_report
+
+        row = row_cls(
+            id="rep-agency-001",
+            title="Agency Q3 Report",
+            status="completed",
+            template_type="marketing",
+            user_tier="agency",
+            pdf_url="reports/agency/report.pdf",
+            share_expires_at=None,
+            ai_summary=None,
+            ai_insights=None,
+            ai_anomalies=None,
+            created_at=datetime(2026, 7, 1, 12, 0, 0),
+        )
+
+        db = asyncdb([row, MagicMock()])
+
+        with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
+            result = await get_shared_report(share_token="agency-token", db=db)
+
+        assert result["success"] is True
+        assert result["data"]["is_white_label"] is True
+
+    @pytest.mark.asyncio
+    async def test_pro_user_share_returns_is_white_label_false(self, row_cls, asyncdb):
+        from unittest.mock import MagicMock, patch
+        from datetime import datetime
+        from app.api.routes.reports import get_shared_report
+
+        row = row_cls(
+            id="rep-pro-002",
+            title="Pro Marketing Report",
+            status="completed",
+            template_type="financial",
+            user_tier="pro",
+            pdf_url="reports/pro/report.pdf",
+            share_expires_at=None,
+            ai_summary=None,
+            ai_insights=None,
+            ai_anomalies=None,
+            created_at=datetime(2026, 6, 15, 12, 0, 0),
+        )
+
+        db = asyncdb([row, MagicMock()])
+
+        with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
+            result = await get_shared_report(share_token="pro-token", db=db)
+
+        assert result["success"] is True
+        assert result["data"]["is_white_label"] is False
+
+    @pytest.mark.asyncio
+    async def test_free_user_share_returns_is_white_label_false(self, row_cls, asyncdb):
+        from unittest.mock import MagicMock, patch
+        from datetime import datetime
+        from app.api.routes.reports import get_shared_report
+
+        row = row_cls(
+            id="rep-free-003",
+            title="Free Report",
+            status="completed",
+            template_type="marketing",
+            user_tier="free",
+            pdf_url="reports/free/report.pdf",
+            share_expires_at=None,
+            ai_summary=None,
+            ai_insights=None,
+            ai_anomalies=None,
+            created_at=datetime(2026, 5, 1, 12, 0, 0),
+        )
+
+        db = asyncdb([row, MagicMock()])
+
+        with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
+            result = await get_shared_report(share_token="free-token", db=db)
+
+        assert result["success"] is True
+        assert result["data"]["is_white_label"] is False
+
+    @pytest.mark.asyncio
+    async def test_expired_token_still_returns_410(self, row_cls, asyncdb):
+        from unittest.mock import MagicMock
+        from datetime import datetime, timedelta
+        from fastapi import HTTPException
+        import pytest
+        from app.api.routes.reports import get_shared_report
+
+        row = row_cls(
+            id="rep-exp-004",
+            title="Expired Report",
+            status="completed",
+            template_type="marketing",
+            user_tier="pro",
+            pdf_url="reports/expired/report.pdf",
+            share_expires_at=datetime.utcnow() - timedelta(hours=1),
+            ai_summary=None,
+            ai_insights=None,
+            ai_anomalies=None,
+            created_at=datetime(2026, 4, 1, 12, 0, 0),
+        )
+
+        db = asyncdb([row])
+
+        with pytest.raises(HTTPException) as exc:
+            await get_shared_report(share_token="expired-token", db=db)
+
+        assert exc.value.status_code == 410
+        assert "expired" in exc.value.detail.lower()

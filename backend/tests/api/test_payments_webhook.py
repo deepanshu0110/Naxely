@@ -760,3 +760,140 @@ class TestWebhookUserResolution:
         tier_queries = [q for q in db.executed_queries if "tier = :tier" in q]
         assert len(tier_queries) > 0
         assert db.committed
+
+
+class TestMetadataTierFallback:
+    """metadata.tier must be resolvable from data.metadata.tier or top-level metadata.tier."""
+
+    @pytest.mark.asyncio
+    async def test_tier_from_nested_data_metadata(self):
+        """tier nested under data.metadata resolves even without top-level metadata.tier."""
+        from app.api.routes.payments import dodo_webhook
+
+        payload = {
+            "type": "subscription.created",
+            "metadata": {"user_id": "user-tier-test"},
+            "data": {
+                "product_id": "unknown_product",
+                "metadata": {"tier": "agency"},
+            },
+            "subscription_id": "sub_tier_nested_001",
+        }
+        request = _make_request(payload)
+        db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
+
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
+            with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
+                with patch("app.api.routes.payments.settings.DODO_AGENCY_PRODUCT_ID", "agency_prod_id"):
+                    resp = await dodo_webhook(request=request, db=db)
+
+        assert resp["data"]["status"] == "processed"
+
+        found_tier = None
+        for params in db.executed_params:
+            if params and "tier" in params:
+                found_tier = params["tier"]
+                break
+        assert found_tier == "agency", (
+            f"Expected tier='agency' from data.metadata.tier, got {found_tier!r}"
+        )
+        assert db.committed
+
+    @pytest.mark.asyncio
+    async def test_tier_from_top_level_metadata(self):
+        """tier at top-level metadata only still works (regression)."""
+        from app.api.routes.payments import dodo_webhook
+
+        payload = {
+            "type": "subscription.created",
+            "metadata": {"user_id": "user-tier-test-2", "tier": "agency"},
+            "data": {
+                "product_id": "unknown_product",
+            },
+            "subscription_id": "sub_tier_top_001",
+        }
+        request = _make_request(payload)
+        db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
+
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
+            with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
+                with patch("app.api.routes.payments.settings.DODO_AGENCY_PRODUCT_ID", "agency_prod_id"):
+                    resp = await dodo_webhook(request=request, db=db)
+
+        assert resp["data"]["status"] == "processed"
+
+        found_tier = None
+        for params in db.executed_params:
+            if params and "tier" in params:
+                found_tier = params["tier"]
+                break
+        assert found_tier == "agency", (
+            f"Expected tier='agency' from top-level metadata.tier, got {found_tier!r}"
+        )
+        assert db.committed
+
+    @pytest.mark.asyncio
+    async def test_tier_nested_takes_priority_over_top_level(self):
+        """data.metadata.tier takes priority when both levels exist."""
+        from app.api.routes.payments import dodo_webhook
+
+        payload = {
+            "type": "subscription.created",
+            "metadata": {"user_id": "user-tier-test-3", "tier": "pro"},
+            "data": {
+                "product_id": "unknown_product",
+                "metadata": {"tier": "agency"},
+            },
+            "subscription_id": "sub_tier_priority_001",
+        }
+        request = _make_request(payload)
+        db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
+
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
+            with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
+                with patch("app.api.routes.payments.settings.DODO_AGENCY_PRODUCT_ID", "agency_prod_id"):
+                    resp = await dodo_webhook(request=request, db=db)
+
+        assert resp["data"]["status"] == "processed"
+
+        found_tier = None
+        for params in db.executed_params:
+            if params and "tier" in params:
+                found_tier = params["tier"]
+                break
+        assert found_tier == "agency", (
+            f"Expected tier='agency' from data.metadata.tier priority, got {found_tier!r}"
+        )
+        assert db.committed
+
+    @pytest.mark.asyncio
+    async def test_tier_defaults_to_pro_when_neither_metadata_level_present(self):
+        """When metadata.tier is absent at both levels, new_tier defaults to 'pro'."""
+        from app.api.routes.payments import dodo_webhook
+
+        payload = {
+            "type": "subscription.created",
+            "subscription_id": "sub_default_tier",
+            "product_id": "unknown_product_id",
+            "data": {},
+            "metadata": {"user_id": "user-default-tier"},
+        }
+        request = _make_request(payload)
+        db = _AsyncDB([_NotFound(), MagicMock(), MagicMock()])
+
+        with patch("app.api.routes.payments.settings.DODO_WEBHOOK_SECRET", TEST_WH_SECRET):
+            with patch("app.api.routes.payments.settings.DODO_PRO_PRODUCT_ID", "pro_prod_id"):
+                with patch("app.api.routes.payments.settings.DODO_AGENCY_PRODUCT_ID", "agency_prod_id"):
+                    resp = await dodo_webhook(request=request, db=db)
+
+        assert resp["data"]["status"] == "processed"
+
+        found_tier = None
+        for params in db.executed_params:
+            if params and "tier" in params:
+                found_tier = params["tier"]
+                break
+        assert found_tier == "pro", (
+            f"Expected tier='pro' from default fallback, got {found_tier!r}"
+        )
+        assert db.committed

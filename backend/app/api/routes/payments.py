@@ -239,7 +239,10 @@ async def dodo_webhook(
     elif product_id == settings.DODO_AGENCY_PRODUCT_ID:
         new_tier = "agency"
     else:
-        new_tier = (payload.get("metadata") or {}).get("tier", "pro")
+        new_tier = (
+            (payload.get("data") or {}).get("metadata", {}).get("tier")
+            or (payload.get("metadata") or {}).get("tier", "pro")
+        )
 
     try:
         await db.execute(
