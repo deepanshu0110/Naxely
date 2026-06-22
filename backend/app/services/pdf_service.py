@@ -229,6 +229,7 @@ class _CoverBand(Flowable):
                     height=max_h,
                     preserveAspectRatio=True,
                     mask='auto',
+                )
             except Exception as e:
                 logging.warning(f"[pdf_service] drawImage failed: {e}")
         title_y = self.band_height - 90 if self.logo_path else int(self.band_height * 0.55)
