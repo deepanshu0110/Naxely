@@ -136,7 +136,7 @@ async def create_scheduled_report(
         current_user.id,
     )
     upload_result = await db.execute(
-        text("SELECT id, user_id FROM uploads WHERE id = :uid"),
+        text("SELECT id, user_id, source_type FROM uploads WHERE id = :uid"),
         {"uid": body.upload_id},
     )
     upload = upload_result.mappings().first()
@@ -198,10 +198,14 @@ async def create_scheduled_report(
 
     scheduled_report_id = str(row["id"])
 
+    file_ext = "csv" if upload.get("source_type", "csv") == "csv" else "xlsx"
+
     try:
         storage_path = await copy_upload_to_scheduled_source(
             upload_id=body.upload_id,
             scheduled_report_id=scheduled_report_id,
+            user_id=str(current_user.id),
+            file_ext=file_ext,
         )
         await db.execute(
             text("UPDATE scheduled_reports SET csv_storage_path = :path WHERE id = :rid"),
@@ -327,11 +331,24 @@ async def run_scheduled_reports(
         sched_name = sched["name"]
 
         try:
-            # 1. Download CSV from scheduled-sources
-            csv_bytes = await _run_sync(
-                _get_supabase().storage.from_("scheduled-sources").download,
-                f"{sched_id}.csv",
-            )
+            # 1. Download CSV from storage (permanent path or legacy scheduled-sources)
+            csv_storage_path = sched.get("csv_storage_path")
+            if not csv_storage_path:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Scheduled report has no csv_storage_path — cannot execute.",
+                )
+            if csv_storage_path.startswith("permanent/"):
+                csv_bytes = await _run_sync(
+                    _get_supabase().storage.from_("uploads").download,
+                    csv_storage_path,
+                )
+            else:
+                filename = csv_storage_path.split("/")[-1]
+                csv_bytes = await _run_sync(
+                    _get_supabase().storage.from_("scheduled-sources").download,
+                    filename,
+                )
 
             # 2. Create a new report record
             report_id = str(uuid.uuid4())

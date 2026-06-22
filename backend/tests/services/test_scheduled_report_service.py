@@ -6,8 +6,11 @@ from unittest.mock import patch, MagicMock
 
 
 class TestCopyUploadToScheduledSource:
+    USER_ID = "user-abc"
+    FILE_EXT = "csv"
+
     @pytest.mark.asyncio
-    async def test_copies_csv_from_scheduled_sources(self):
+    async def test_copies_csv_from_permanent_to_scheduled_sources(self):
         from app.services.scheduled_report_service import copy_upload_to_scheduled_source
 
         fake_csv_bytes = b"col1,col2\n1,2\n3,4"
@@ -20,14 +23,16 @@ class TestCopyUploadToScheduledSource:
             result = await copy_upload_to_scheduled_source(
                 upload_id="upload-123",
                 scheduled_report_id="sr-abc-123",
+                user_id=self.USER_ID,
+                file_ext=self.FILE_EXT,
             )
 
         assert result == "scheduled-sources/sr-abc-123.csv"
 
-        # Reads from scheduled-sources/, NOT from uploads/
-        mock_storage.storage.from_.assert_called_with("scheduled-sources")
+        # Reads from uploads/ bucket with permanent/ path
+        mock_storage.storage.from_.assert_any_call("uploads")
         mock_storage.storage.from_.return_value.download.assert_called_once_with(
-            "scheduled-sources/upload-123/raw.csv",
+            f"permanent/{self.USER_ID}/upload-123.{self.FILE_EXT}",
         )
         mock_storage.storage.from_.return_value.upload.assert_called_once_with(
             "scheduled-sources/sr-abc-123.csv",
@@ -49,6 +54,8 @@ class TestCopyUploadToScheduledSource:
                 await copy_upload_to_scheduled_source(
                     upload_id="missing-upload",
                     scheduled_report_id="sr-abc",
+                    user_id=self.USER_ID,
+                    file_ext=self.FILE_EXT,
                 )
 
     @pytest.mark.asyncio
@@ -67,9 +74,11 @@ class TestCopyUploadToScheduledSource:
             await copy_upload_to_scheduled_source(
                 upload_id="upload-123",
                 scheduled_report_id="sr-persist-1",
+                user_id=self.USER_ID,
+                file_ext=self.FILE_EXT,
             )
 
-        # remove() should NOT be called — the CSV in scheduled-sources persists
+        # remove() should NOT be called — the CSV persists
         remove_calls = [
             call for call in mock_storage.storage.method_calls
             if call[0].startswith("from_.return_value.remove")

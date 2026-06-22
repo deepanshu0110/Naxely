@@ -78,7 +78,7 @@ class TestUploadCopiesToScheduledSources:
         assert result["success"] is True
 
         upload_calls = mock_storage.storage.from_.return_value.upload.call_args_list
-        assert len(upload_calls) == 2, f"Expected 2 upload calls, got {len(upload_calls)}"
+        assert len(upload_calls) == 3, f"Expected 3 upload calls, got {len(upload_calls)}"
 
         path1 = upload_calls[0][0][0]
         assert path1.startswith("uploads/"), f"First upload should be to uploads/, got {path1}"
@@ -86,6 +86,11 @@ class TestUploadCopiesToScheduledSources:
         path2 = upload_calls[1][0][0]
         assert path2.startswith("scheduled-sources/"), (
             f"Second upload should be to scheduled-sources/, got {path2}"
+        )
+
+        path3 = upload_calls[2][0][0]
+        assert path3.startswith("permanent/"), (
+            f"Third upload should be to permanent/, got {path3}"
         )
 
     @pytest.mark.asyncio
@@ -228,10 +233,13 @@ class TestOneOffCleanupDoesNotAffectScheduledSources:
 
 
 class TestCopyUploadToScheduledSourceReadsFromScheduledSources:
-    """Test #3: copy_upload_to_scheduled_source reads from scheduled-sources/, not uploads/."""
+    """Test #3: copy_upload_to_scheduled_source reads from uploads/permanent/, not scheduled-sources/."""
+
+    USER_ID = "user-abc"
+    FILE_EXT = "csv"
 
     @pytest.mark.asyncio
-    async def test_reads_from_scheduled_sources_not_uploads(self):
+    async def test_reads_from_permanent_not_scheduled_sources(self):
         from app.services.scheduled_report_service import copy_upload_to_scheduled_source
 
         mock_storage = MagicMock()
@@ -242,6 +250,8 @@ class TestCopyUploadToScheduledSourceReadsFromScheduledSources:
             result = await copy_upload_to_scheduled_source(
                 upload_id="upload-123",
                 scheduled_report_id="sr-abc-123",
+                user_id=self.USER_ID,
+                file_ext=self.FILE_EXT,
             )
 
         assert result == "scheduled-sources/sr-abc-123.csv"
@@ -250,18 +260,21 @@ class TestCopyUploadToScheduledSourceReadsFromScheduledSources:
             call for call in mock_storage.storage.method_calls
             if call[0] == "from_"
         ]
-        scheduled_from = [c for c in from_calls if "scheduled-sources" in str(c.args)]
         uploads_from = [c for c in from_calls if c.args and c.args[0] == "uploads"]
-        assert len(scheduled_from) >= 1, "Must access scheduled-sources/ bucket"
-        assert len(uploads_from) == 0, "Must NOT access uploads/ bucket"
+        scheduled_from = [c for c in from_calls if "scheduled-sources" in str(c.args)]
+        assert len(uploads_from) >= 1, "Must access uploads/ bucket (permanent path)"
+        assert len(scheduled_from) >= 1, "Must access scheduled-sources/ bucket (dest)"
 
         mock_storage.storage.from_.return_value.download.assert_called_once_with(
-            "scheduled-sources/upload-123/raw.csv",
+            f"permanent/{self.USER_ID}/upload-123.{self.FILE_EXT}",
         )
 
 
 class TestFullFlowUploadGenerateCreateSchedule:
     """Test #4: Full e2e flow — upload → generate one-off report → create scheduled report."""
+
+    USER_ID = "user-abc"
+    FILE_EXT = "csv"
 
     @pytest.mark.asyncio
     async def test_full_flow_succeeds(self):
@@ -287,14 +300,16 @@ class TestFullFlowUploadGenerateCreateSchedule:
         remove_calls = [c for c in bucket_ref.method_calls if c[0] == "remove"]
         assert len(remove_calls) >= 1, "Guard 2 should remove uploads/ copy"
 
-        # Step 3: Create scheduled report — must succeed despite uploads/ deletion
+        # Step 3: Create scheduled report — reads from permanent/ (not uploads/raw)
         with patch("app.services.scheduled_report_service._get_supabase", return_value=mock_storage):
             result = await copy_upload_to_scheduled_source(
                 upload_id=upload_id,
                 scheduled_report_id=scheduled_report_id,
+                user_id=self.USER_ID,
+                file_ext=self.FILE_EXT,
             )
 
         assert result == f"scheduled-sources/{scheduled_report_id}.csv"
         mock_storage.storage.from_.return_value.download.assert_called_with(
-            f"scheduled-sources/{upload_id}/raw.csv",
+            f"permanent/{self.USER_ID}/{upload_id}.{self.FILE_EXT}",
         )
