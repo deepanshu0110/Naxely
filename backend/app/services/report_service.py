@@ -171,6 +171,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     return _get_supabase().storage.from_("logos").create_signed_url(logo_path_clean, 3600)
                 signed = await _run_sync(_sync_signed)
                 logo_url = signed.get("signedURL", signed.get("signedUrl", ""))
+                logger.info(f"[report_service] logo signed URL result: raw={raw_path!r} clean={logo_path_clean!r} url={logo_url!r}")
             except Exception:
                 logo_url = None
 
