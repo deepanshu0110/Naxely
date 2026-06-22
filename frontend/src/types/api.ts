@@ -65,6 +65,7 @@ export interface BrandingResponse {
   logo_url: string
   brand_color: string
   company_name: string
+  suggested_colors?: string[]
 }
 
 export interface ProfileResponse {

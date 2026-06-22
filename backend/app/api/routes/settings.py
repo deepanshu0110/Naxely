@@ -37,6 +37,36 @@ MONTHLY_LIMITS = {"free": 3, "pro": None, "agency": None}
 HEX_COLOR_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
 
+async def _get_logo_signed_url(db_path: str | None) -> str | None:
+    if not db_path:
+        return None
+    try:
+        clean = db_path.removeprefix("logos/")
+        def _sync():
+            return _get_supabase().storage.from_("logos").create_signed_url(clean, 3600)
+        signed = await _run_sync(_sync)
+        return signed.get("signedURL", signed.get("signedUrl", ""))
+    except Exception:
+        return None
+
+
+def extract_brand_colors(image_bytes: bytes, n: int = 3) -> list[str]:
+    from PIL import Image
+    import io
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    img = img.resize((150, 150), Image.Resampling.LANCZOS)
+    quantized = img.quantize(colors=n, method=Image.Quantize.FASTOCTREE)
+    palette = quantized.getpalette()
+    colors: list[str] = []
+    for i in range(n):
+        r, g, b = palette[i*3], palette[i*3+1], palette[i*3+2]
+        brightness = (r + g + b) / 3
+        if brightness < 20 or brightness > 235:
+            continue
+        colors.append(f"#{r:02X}{g:02X}{b:02X}")
+    return colors[:n]
+
+
 class ProfileUpdateRequest(BaseModel):
     full_name: str = Field(..., max_length=255)
 
@@ -88,6 +118,7 @@ async def get_profile(
             api_key_preview = f"{provider_prefix}...xxxx"
 
     monthly_limit = MONTHLY_LIMITS.get(row.get("tier", "free"), 3)
+    logo_signed_url = await _get_logo_signed_url(row.get("logo_url"))
 
     return {
         "success": True,
@@ -98,7 +129,7 @@ async def get_profile(
             "ai_provider": row.get("ai_provider"),
             "has_api_key": row.get("encrypted_api_key") is not None,
             "api_key_preview": api_key_preview,
-            "logo_url": row.get("logo_url"),
+            "logo_url": logo_signed_url,
             "brand_color": row.get("brand_color", "#6366F1"),
             "reports_this_month": row.get("reports_this_month", 0),
             "monthly_limit": monthly_limit,
@@ -232,6 +263,7 @@ async def update_branding(
     await check_pro_tier(current_user)
 
     logo_url = None
+    suggested_colors = []
 
     if logo and logo.filename:
         ext = logo.filename.rsplit(".", 1)[-1].lower() if "." in logo.filename else ""
@@ -247,6 +279,8 @@ async def update_branding(
                 status_code=400,
                 detail="Logo file too large. Maximum size is 2MB.",
             )
+
+        suggested_colors = extract_brand_colors(content)
 
         storage_path = f"{str(current_user.id)}/logo.{ext}"
         try:
@@ -299,13 +333,15 @@ async def update_branding(
         {"uid": str(current_user.id)},
     )
     row = result.mappings().first()
+    logo_signed_url = await _get_logo_signed_url(row["logo_url"] if row else logo_url)
 
     return {
         "success": True,
         "data": {
-            "logo_url": row["logo_url"] if row else logo_url,
+            "logo_url": logo_signed_url,
             "brand_color": row["brand_color"] if row else brand_color,
             "company_name": row["company_name"] if row else company_name,
+            "suggested_colors": suggested_colors,
         },
     }
 

@@ -202,6 +202,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(logoUrl)
   const [dragOver, setDragOver] = useState(false)
+  const [suggestedColors, setSuggestedColors] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const {
@@ -253,6 +254,7 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
       setLogoFile(null)
       setValue('brand_color', resp.brand_color, { shouldValidate: true })
       setValue('company_name', resp.company_name, { shouldValidate: true })
+      if (resp.suggested_colors) setSuggestedColors(resp.suggested_colors)
       toast.success('Branding saved')
     } catch {
       toast.error('Failed to save branding')
@@ -292,6 +294,23 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
           onChange={handleFileSelect}
           className="mt-2 text-sm text-gray-500 file:mr-2 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-1 file:text-xs file:font-medium file:text-amber-600 file:transition-colors file:duration-150 file:ease-in-out hover:file:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:text-gray-400 dark:file:bg-amber-900/30 dark:file:text-amber-400"
         />
+        {suggestedColors.length > 0 && (
+          <div className="mt-3">
+            <p className="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">Suggested brand colors</p>
+            <div className="flex gap-2">
+              {suggestedColors.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setValue('brand_color', c, { shouldValidate: true })}
+                  className="h-7 w-7 rounded-full border border-gray-300 shadow-sm transition-transform duration-150 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1"
+                  style={{ backgroundColor: c }}
+                  title={c}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div>
