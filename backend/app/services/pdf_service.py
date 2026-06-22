@@ -201,7 +201,7 @@ class _CoverBand(Flowable):
         self.company_name = company_name
         self.logo_path = logo_path
         self.brand_color = HexColor(brand_color_hex)
-        self.band_height = int(PAGE_HEIGHT * 0.35)
+        self.band_height = int(PAGE_HEIGHT * 0.28)
         self.width = PAGE_WIDTH
         self.height = self.band_height
 
@@ -250,7 +250,7 @@ class _CoverBand(Flowable):
         TITLE_FONT = 'IBMPlexSans'
         TITLE_FONT_SIZE = 14
 
-        band_center_y = self.band_height * 0.5
+        band_center_y = self.band_height * 0.42
 
         # Company name: centered, vertically centered in full band
         company_y = band_center_y + COMPANY_FONT_SIZE * 0.3
