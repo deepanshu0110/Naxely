@@ -38,6 +38,9 @@ class User(Base, TimestampMixin):
     # Preferences
     theme_preference = Column(String(10), default='light')
 
+    # Onboarding
+    has_completed_onboarding = Column(default=False)
+
     # Soft delete
     deleted_at = Column(DateTime(timezone=True))
     

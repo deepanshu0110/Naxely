@@ -294,6 +294,16 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             )
             await db.commit()
 
+        try:
+            async with AsyncSessionLocal() as db2:
+                await db2.execute(
+                    text("UPDATE users SET has_completed_onboarding = TRUE WHERE id = :uid"),
+                    {"uid": str(user_id)},
+                )
+                await db2.commit()
+        except Exception:
+            logger.warning("Failed to set has_completed_onboarding for user %s", user_id)
+
     except Exception as e:
         elapsed = round(time.monotonic() - start_time, 1)
         error_msg = str(e)

@@ -119,6 +119,17 @@ async def startup_migrations():
             except Exception as e:
                 logger.warning("[startup] migration skipped: %s", e)
 
+    onboarding_sql = [
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS has_completed_onboarding BOOLEAN DEFAULT FALSE",
+    ]
+    async with AsyncSessionLocal() as db:
+        for sql in onboarding_sql:
+            try:
+                await db.execute(text(sql))
+                await db.commit()
+            except Exception as e:
+                logger.warning("[startup] migration skipped: %s", e)
+
     if settings.ENVIRONMENT == "development" and os.getenv("RENDER"):
         logger.warning(
             "ENVIRONMENT is 'development' on Render — this should be 'production'. "

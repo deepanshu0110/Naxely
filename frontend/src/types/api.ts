@@ -29,6 +29,7 @@ export interface AuthVerifyResponse {
   theme_preference: string
   reports_this_month: number
   monthly_limit: number | null
+  has_completed_onboarding: boolean
 }
 
 export interface UploadResponse extends UploadResult {}

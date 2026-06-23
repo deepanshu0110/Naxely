@@ -13,4 +13,5 @@ export interface User {
   reports_this_month: number
   monthly_limit: number | null
   theme_preference: string
+  has_completed_onboarding: boolean
 }

@@ -24,7 +24,7 @@ async def verify_auth(
     )
     row = result.mappings().first()
     if not row:
-        return {"id": str(current_user.id), "email": "", "full_name": "", "avatar_url": None, "tier": "free", "tier_expires_at": None, "has_api_key": False, "ai_provider": None, "logo_url": None, "brand_color": "#6366F1", "company_name": None, "reports_this_month": 0, "monthly_limit": 3, "theme_preference": "light"}
+        return {"id": str(current_user.id), "email": "", "full_name": "", "avatar_url": None, "tier": "free", "tier_expires_at": None, "has_api_key": False, "ai_provider": None, "logo_url": None, "brand_color": "#6366F1", "company_name": None, "reports_this_month": 0, "monthly_limit": 3, "theme_preference": "light", "has_completed_onboarding": False}
 
     monthly_limit = MONTHLY_LIMITS.get(row.get("tier", "free"), 3)
 
@@ -43,4 +43,31 @@ async def verify_auth(
         "reports_this_month": row.get("reports_this_month", 0),
         "monthly_limit": monthly_limit,
         "theme_preference": row.get("theme_preference", "light"),
+        "has_completed_onboarding": row.get("has_completed_onboarding", False),
     }
+
+
+@router.post("/auth/complete-onboarding")
+async def complete_onboarding(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    await db.execute(
+        text("UPDATE users SET has_completed_onboarding = TRUE WHERE id = :uid"),
+        {"uid": str(current_user.id)},
+    )
+    await db.commit()
+    return {"success": True}
+
+
+@router.post("/auth/skip-onboarding")
+async def skip_onboarding(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    await db.execute(
+        text("UPDATE users SET has_completed_onboarding = TRUE WHERE id = :uid"),
+        {"uid": str(current_user.id)},
+    )
+    await db.commit()
+    return {"success": True}

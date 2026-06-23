@@ -1,6 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useReportStore } from '@/store/reportStore'
+import { useAuthStore } from '@/store/authStore'
+import WelcomeModal from '@/components/onboarding/WelcomeModal'
 import Sidebar from '@/components/layout/Sidebar'
 import ReportCard from '@/components/dashboard/ReportCard'
 import EmptyState from '@/components/ui/EmptyState'
@@ -10,10 +12,24 @@ import Spinner from '@/components/ui/Spinner'
 export default function Dashboard() {
   const { reports, isLoading, error, fetchReports, deleteReport } = useReportStore()
   const navigate = useNavigate()
+  const user = useAuthStore((s) => s.user)
+  const fetchProfile = useAuthStore((s) => s.fetchProfile)
+  const [showWelcome, setShowWelcome] = useState(false)
 
   useEffect(() => {
     fetchReports()
   }, [fetchReports])
+
+  useEffect(() => {
+    if (user && !user.has_completed_onboarding) {
+      setShowWelcome(true)
+    }
+  }, [user])
+
+  const handleWelcomeClose = () => {
+    setShowWelcome(false)
+    fetchProfile()
+  }
 
   const EmptyIllustration = () => (
     <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,6 +84,7 @@ export default function Dashboard() {
           )}
         </div>
       </main>
+      {showWelcome && <WelcomeModal onClose={handleWelcomeClose} />}
     </div>
   )
 }

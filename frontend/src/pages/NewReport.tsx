@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Sidebar from '@/components/layout/Sidebar'
 import Button from '@/components/ui/Button'
@@ -26,6 +27,15 @@ export default function NewReport() {
   const generateReport = useReportStore((s) => s.generateReport)
   const user = useAuthStore((s) => s.user)
   const { progress, currentStep: statusStep, isPolling, timeoutMessage, startPolling } = useReportStatus()
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.state?.uploadResult) {
+      setUploadResult(location.state.uploadResult as UploadResult)
+      setCurrentStep(2)
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state])
 
   const handleUploadComplete = useCallback((result: UploadResult) => {
     setUploadResult(result)
