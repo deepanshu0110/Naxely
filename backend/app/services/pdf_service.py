@@ -178,19 +178,23 @@ class _InsightCard(Flowable):
         text_width = self._width - 5 - 32
         y = self.height - 16
 
-        f = Frame(x, y - self.kpi_h, text_width, self.kpi_h, showBoundary=0)
+        f = Frame(x, y - self.kpi_h, text_width, self.kpi_h, showBoundary=0,
+                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
         f.addFromList([self.kpi_para], self.canv)
         y -= self.kpi_h + 8
 
-        f = Frame(x, y - self.number_h, text_width, self.number_h, showBoundary=0)
+        f = Frame(x, y - self.number_h, text_width, self.number_h, showBoundary=0,
+                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
         f.addFromList([self.number_para], self.canv)
         y -= self.number_h + 6
 
-        f = Frame(x, y - self.reason_h, text_width, self.reason_h, showBoundary=0)
+        f = Frame(x, y - self.reason_h, text_width, self.reason_h, showBoundary=0,
+                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
         f.addFromList([self.reason_para], self.canv)
         y -= self.reason_h + 6
 
-        f = Frame(x, y - self.action_h, text_width, self.action_h, showBoundary=0)
+        f = Frame(x, y - self.action_h, text_width, self.action_h, showBoundary=0,
+                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
         f.addFromList([self.action_para], self.canv)
 
 
