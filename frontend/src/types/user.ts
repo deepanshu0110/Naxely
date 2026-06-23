@@ -6,7 +6,7 @@ export interface User {
   tier: 'free' | 'pro' | 'agency'
   tier_expires_at: string | null
   has_api_key: boolean
-  ai_provider: 'openai' | 'claude' | 'gemini' | null
+  ai_provider: 'gemini' | 'openai' | 'claude' | 'groq' | 'deepseek' | 'mistral' | 'together' | null
   logo_url: string | null
   brand_color: string | null
   company_name: string | null

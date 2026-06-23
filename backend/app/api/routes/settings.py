@@ -27,6 +27,10 @@ VALID_KEY_PATTERNS = {
     "openai": r"^sk-[a-zA-Z0-9\-_]{20,}$",
     "claude": r"^sk-ant-[a-zA-Z0-9\-_]{20,}$",
     "gemini": r"^(AIza|AQ\.)[a-zA-Z0-9\-_]{30,}$",
+    "groq": r"^gsk_[a-zA-Z0-9\-_]{20,}$",
+    "deepseek": r"^[a-zA-Z0-9\-_]{20,}$",
+    "mistral": r"^[a-zA-Z0-9\-_]{20,}$",
+    "together": r"^[a-zA-Z0-9\-_]{20,}$",
 }
 
 ALLOWED_LOGO_EXTENSIONS = {"png", "jpg", "svg"}
@@ -183,7 +187,7 @@ async def save_api_key(
     if body.provider not in VALID_KEY_PATTERNS:
         raise HTTPException(
             status_code=400,
-            detail="Provider must be 'openai', 'claude', or 'gemini'",
+            detail="Provider must be one of: openai, claude, gemini, groq, deepseek, mistral, together",
         )
 
     pattern = VALID_KEY_PATTERNS[body.provider]

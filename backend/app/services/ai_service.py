@@ -18,8 +18,23 @@ from app.services.data_service import compute_column_stats
 
 logger = logging.getLogger(__name__)
 
+PROVIDER_CONFIG = {
+    "gemini":    {"base_url": None,                              "model": "gemini-2.0-flash"},
+    "openai":    {"base_url": "https://api.openai.com/v1",       "model": "gpt-4o"},
+    "claude":    {"base_url": None,                              "model": "claude-sonnet-4-6"},
+    "groq":      {"base_url": "https://api.groq.com/openai/v1",  "model": "llama-3.1-70b-versatile"},
+    "deepseek":  {"base_url": "https://api.deepseek.com/v1",     "model": "deepseek-chat"},
+    "mistral":   {"base_url": "https://api.mistral.ai/v1",       "model": "mistral-large-latest"},
+}
+
 
 def get_user_api_key(user: User) -> tuple[str, str]:
+    provider = str(user.ai_provider or "gemini")
+    if provider == "gemini":
+        from app.core.config import settings as app_settings
+        server_key = app_settings.GEMINI_API_KEY
+        if server_key:
+            return ("gemini", server_key)
     if not user.encrypted_api_key or not user.api_key_iv:
         raise HTTPException(
             status_code=402,
@@ -32,14 +47,18 @@ def get_user_api_key(user: User) -> tuple[str, str]:
     encrypted = str(user.encrypted_api_key) if not isinstance(user.encrypted_api_key, str) else user.encrypted_api_key
     iv = str(user.api_key_iv) if not isinstance(user.api_key_iv, str) else user.api_key_iv
     plaintext_key = decrypt_api_key(encrypted, iv, master_key)
-    return (str(user.ai_provider or "openai"), plaintext_key)
+    return (provider, plaintext_key)
 
 
 def call_openai(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
-    client = OpenAI(api_key=api_key, timeout=timeout)
+    return call_openai_compat(prompt, system, api_key, timeout, base_url="https://api.openai.com/v1", model="gpt-4o")
+
+
+def call_openai_compat(prompt: str, system: str, api_key: str, timeout: int = 25, base_url: str | None = None, model: str | None = None) -> str:
+    client = OpenAI(api_key=api_key, timeout=timeout, base_url=base_url)
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=model or "gpt-4o",
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": prompt},
@@ -147,6 +166,9 @@ def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int
         return call_claude(prompt, system, api_key, timeout)
     if provider == "gemini":
         return call_gemini(prompt, system, api_key, timeout)
+    cfg = PROVIDER_CONFIG.get(provider)
+    if cfg and cfg.get("base_url"):
+        return call_openai_compat(prompt, system, api_key, timeout, base_url=cfg["base_url"], model=cfg["model"])
     return call_openai(prompt, system, api_key, timeout)
 
 

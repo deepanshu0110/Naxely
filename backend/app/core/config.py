@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     DODO_PRO_PRODUCT_ID: str = ""
     DODO_AGENCY_PRODUCT_ID: str = ""
     DODO_ENVIRONMENT: str = "test_mode"
-    GEMINI_MODEL: str = "gemini-3.5-flash"
+    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_API_KEY: str = ""
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 
     RESEND_API_KEY: str = ""

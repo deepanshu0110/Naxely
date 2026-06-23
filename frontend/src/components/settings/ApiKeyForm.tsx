@@ -10,23 +10,28 @@ import Modal from '@/components/ui/Modal'
 import Badge from '@/components/ui/Badge'
 import type { ApiKeyResponse } from '@/types/api'
 
+const PROVIDERS_NEEDING_KEY = ['openai', 'claude', 'groq', 'deepseek', 'mistral', 'together'] as const
+
 const apiKeySchema = z.object({
-  provider: z.enum(['openai', 'claude', 'gemini'], { required_error: 'Select a provider' }),
-  api_key: z
-    .string()
-    .min(1, 'API key is required')
-    .refine(
-      (val) => val.startsWith('sk-') || val.startsWith('AIza') || val.startsWith('AQ.'),
-      { message: 'OpenAI key starts with "sk-", Claude key starts with "sk-ant-", Gemini key starts with "AIza" or "AQ."' },
-    )
-    .refine((val) => val.length <= 200, { message: 'API key too long (max 200 chars)' }),
+  provider: z.enum(['gemini', 'openai', 'claude', 'groq', 'deepseek', 'mistral', 'together'], { required_error: 'Select a provider' }),
+  api_key: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.provider !== 'gemini') {
+    if (!data.api_key || data.api_key.length === 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'API key is required for this provider', path: ['api_key'] })
+    } else if (data.api_key.length > 200) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'API key too long (max 200 chars)', path: ['api_key'] })
+    }
+  }
 })
 
 type ApiKeyFormValues = z.infer<typeof apiKeySchema>
 
+type AiProvider = 'gemini' | 'openai' | 'claude' | 'groq' | 'deepseek' | 'mistral' | 'together'
+
 interface ApiKeyFormProps {
   hasKey: boolean
-  provider: 'openai' | 'claude' | 'gemini' | null
+  provider: AiProvider | null
   keyPreview: string | null
   tier: string
   onSaved: (data: ApiKeyResponse) => void
@@ -51,10 +56,17 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
 
   const selectedProvider = useWatch({ control, name: 'provider' })
   const placeholder = useMemo(() => {
-    if (selectedProvider === 'openai') return 'sk-proj-...'
-    if (selectedProvider === 'claude') return 'sk-ant-...'
-    return 'AIza... or AQ....'
+    switch (selectedProvider) {
+      case 'openai': return 'sk-proj-...'
+      case 'claude': return 'sk-ant-...'
+      case 'groq': return 'gsk_...'
+      case 'deepseek': return 'sk-...'
+      case 'mistral': return '...'
+      case 'together': return '...'
+      default: return 'No key needed with Gemini'
+    }
   }, [selectedProvider])
+  const needsKey = selectedProvider !== 'gemini'
 
   if (tier === 'free') {
     return (
@@ -92,7 +104,11 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
     }
   }
 
-  const providerLabel = provider === 'openai' ? 'OpenAI' : provider === 'claude' ? 'Claude' : 'Gemini'
+  const providerLabels: Record<string, string> = {
+    gemini: 'Gemini', openai: 'OpenAI', claude: 'Claude',
+    groq: 'Groq', deepseek: 'DeepSeek', mistral: 'Mistral', together: 'Together AI',
+  }
+  const providerLabel = provider ? (providerLabels[provider] ?? provider) : 'None'
   const statusLabel = hasKey
     ? `Connected (${providerLabel})`
     : 'Not configured'
@@ -119,9 +135,13 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
             {...register('provider')}
             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           >
+            <option value="gemini">Gemini (free, default)</option>
+            <option value="groq">Groq (free)</option>
+            <option value="deepseek">DeepSeek</option>
             <option value="openai">OpenAI</option>
             <option value="claude">Claude (Anthropic)</option>
-            <option value="gemini">Gemini (Google)</option>
+            <option value="mistral">Mistral</option>
+            <option value="together">Together AI</option>
           </select>
           {errors.provider && (
             <p className="mt-1 text-xs text-red-500">{errors.provider.message}</p>
@@ -130,15 +150,16 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
 
         <div>
           <label htmlFor="api_key" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-            API Key
+            API Key {!needsKey && <span className="font-normal text-gray-400">(optional — uses server key)</span>}
           </label>
           <input
             id="api_key"
             type="password"
             placeholder={placeholder}
             autoComplete="off"
+            disabled={!needsKey}
             {...register('api_key')}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
           />
           {errors.api_key && (
             <p className="mt-1 text-xs text-red-500">{errors.api_key.message}</p>
@@ -148,17 +169,9 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
         <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3">
           <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
           <p className="text-xs text-blue-700">
-            Your key is encrypted with AES-256 and only used during report generation. It is never stored in plain text.
+            Gemini (free) uses Naxely's server key — no API key needed. Other providers use your own key, encrypted with AES-256.
           </p>
         </div>
-        {selectedProvider === 'gemini' && (
-          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
-            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
-            <p className="text-xs text-amber-700">
-              Gemini's free tier sends submitted prompts to Google to improve their models, unlike OpenAI/Claude paid tiers. Avoid uploading sensitive client data when using Gemini.
-            </p>
-          </div>
-        )}
 
         <div className="flex items-center gap-3">
           <Button type="submit" loading={isSaving}>Save API Key</Button>
