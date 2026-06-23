@@ -1,6 +1,7 @@
 import logging
 import os
 import io
+import time
 import urllib.request
 import tempfile
 from datetime import datetime
@@ -448,10 +449,14 @@ def _hex_to_reportlab(hex_str: str) -> HexColor:
 
 
 def _download_logo(logo_url: str) -> str | None:
+    t0 = time.time()
+    logging.info("[pdf_service] logo download start")
     try:
         req = urllib.request.Request(logo_url, headers={'User-Agent': 'Naxely/1.0'})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = resp.read()
+        elapsed = round(time.time() - t0, 2)
+        logging.info(f"[pdf_service] logo download done: {elapsed:.2f}s")
 
         img = PILImage.open(io.BytesIO(data)).convert('RGBA')
 
