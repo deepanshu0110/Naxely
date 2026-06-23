@@ -208,7 +208,11 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             "company_name": (user_data_row.get("company_name") if user_data_row else None),
         }
 
-        kpis = pdf_service._compute_kpi_data(df_norm, config, ai_content, brand_color)
+        kpis = await loop.run_in_executor(
+            None,
+            pdf_service._compute_kpi_data,
+            df_norm, config, ai_content, brand_color,
+        )
 
         pdf_config = dict(config)
         pdf_config["report_id"] = report_id
