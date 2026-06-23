@@ -77,11 +77,15 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
   const onSubmit = async (data: ApiKeyFormValues) => {
     setIsSaving(true)
     try {
-      const keyResp = await api.post('/settings/api-key', data)
+      const payload = {
+        provider: data.provider,
+        api_key: data.provider === 'gemini' ? null : data.api_key,
+      }
+      const keyResp = await api.post('/settings/api-key', payload)
       const resp = keyResp.data as ApiKeyResponse
       onSaved(resp)
       reset({ provider: data.provider, api_key: '' })
-      toast.success('API key saved')
+      toast.success(data.provider === 'gemini' ? 'Switched to Gemini' : 'API key saved')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to save API key'
       toast.error(msg)
@@ -174,7 +178,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
         </div>
 
         <div className="flex items-center gap-3">
-          <Button type="submit" loading={isSaving}>Save API Key</Button>
+          <Button type="submit" loading={isSaving}>{needsKey ? 'Save API Key' : 'Save Provider'}</Button>
           {hasKey && (
             <Button
               type="button"

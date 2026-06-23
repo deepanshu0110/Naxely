@@ -1,6 +1,8 @@
 import logging
 import os
 import io
+import subprocess
+import sys
 import time
 import urllib.request
 import tempfile
@@ -335,65 +337,72 @@ def _strip_standard_fonts(pdf_path: str) -> None:
     """Remove unused standard PDF fonts from page Resources and their Tf
     operators from content streams, so the font listing is clean.
 
-    ReportLab always registers the 14 standard PDF fonts on every canvas and
-    writes a Tf operator for Helvetica 12pt as the initial graphics state.
-    Since no text is ever rendered with these fonts, both the resource entry
-    and the Tf call can be safely removed.
+    Runs pikepdf in a subprocess with a 25-second timeout to prevent
+    hanging on large PDFs. If it times out or fails, the original PDF
+    is preserved.
     """
+    script = r"""
+import pikepdf
+from pikepdf import parse_content_stream, unparse_content_stream, Operator
+
+try:
+    pdf = pikepdf.open(r"{path}", allow_overwriting_input=True)
+
+    std = {{'/Helvetica', '/Helvetica-Bold', '/Helvetica-Oblique', '/Helvetica-BoldOblique',
+           '/Times-Roman', '/Times-Bold', '/Times-Italic', '/Times-BoldItalic',
+           '/Courier', '/Courier-Bold', '/Courier-Oblique', '/Courier-BoldOblique',
+           '/Symbol', '/ZapfDingbats'}}
+
+    page_std_keys = []
+    for page in pdf.pages:
+        fonts = page.get('/Resources', {{}}).get('/Font', pikepdf.Dictionary())
+        keys = set()
+        for key in fonts:
+            try:
+                if str(fonts[key].get('/BaseFont')) in std:
+                    keys.add(str(key))
+            except Exception:
+                pass
+        page_std_keys.append(keys)
+
+    for page, std_keys in zip(pdf.pages, page_std_keys):
+        if not std_keys:
+            continue
+        fonts = page.get('/Resources', {{}}).get('/Font', pikepdf.Dictionary())
+        for key in list(fonts.keys()):
+            if str(key) in std_keys:
+                del fonts[key]
+        cs = page.get('/Contents')
+        if cs is not None:
+            ops = parse_content_stream(cs)
+            filtered = [(o, op) for o, op in ops
+                        if not (op == Operator('Tf') and str(list(o)[0]) in std_keys)]
+            cs.write(unparse_content_stream(filtered))
+
+    import tempfile, shutil
+    tmp = tempfile.mktemp(suffix='.pdf')
+    pdf.save(tmp)
+    pdf.close()
+    shutil.move(tmp, r"{path}")
+except Exception:
+    import traceback
+    traceback.print_exc()
+    import sys
+    sys.exit(1)
+""".format(path=pdf_path)
     try:
-        import pikepdf
-        from pikepdf import parse_content_stream, unparse_content_stream, Operator
-    except ImportError:
-        return
-    try:
-        pdf = pikepdf.open(pdf_path)
-
-        std = {'/Helvetica', '/Helvetica-Bold', '/Helvetica-Oblique', '/Helvetica-BoldOblique',
-               '/Times-Roman', '/Times-Bold', '/Times-Italic', '/Times-BoldItalic',
-               '/Courier', '/Courier-Bold', '/Courier-Oblique', '/Courier-BoldOblique',
-               '/Symbol', '/ZapfDingbats'}
-
-        # Pass 1: collect standard-font resource keys per page (before any
-        # modifications, since /Font dicts may be shared via indirect refs).
-        page_std_keys = []
-        for page in pdf.pages:
-            fonts = page.get('/Resources', {}).get('/Font', pikepdf.Dictionary())
-            keys = set()
-            for key in fonts:
-                try:
-                    if str(fonts[key].get('/BaseFont')) in std:
-                        keys.add(str(key))
-                except Exception:
-                    pass
-            page_std_keys.append(keys)
-
-        # Pass 2: remove from Resources and content streams
-        for page, std_keys in zip(pdf.pages, page_std_keys):
-            if not std_keys:
-                continue
-
-            # Remove from /Font
-            fonts = page.get('/Resources', {}).get('/Font', pikepdf.Dictionary())
-            for key in list(fonts.keys()):
-                if str(key) in std_keys:
-                    del fonts[key]
-
-            # Remove Tf operators from content stream
-            cs = page.get('/Contents')
-            if cs is not None:
-                ops = parse_content_stream(cs)
-                filtered = [(o, op) for o, op in ops
-                            if not (op == Operator('Tf') and str(list(o)[0]) in std_keys)]
-                cs.write(unparse_content_stream(filtered))
-
-        import tempfile, shutil
-        tmp = tempfile.mktemp(suffix='.pdf')
-        pdf.save(tmp)
-        pdf.close()
-        shutil.move(tmp, pdf_path)
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            timeout=25,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            logging.warning(f"[pdf_service] font strip failed (rc={result.returncode}): {result.stderr[:200]}")
+    except subprocess.TimeoutExpired:
+        logging.warning("[pdf_service] font strip timed out after 25s — keeping original PDF")
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        logging.warning(f"[pdf_service] font strip error: {e}")
 
 
 def _brand_tint(brand_hex, alpha=0.08):

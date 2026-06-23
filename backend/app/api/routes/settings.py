@@ -77,7 +77,7 @@ class ProfileUpdateRequest(BaseModel):
 
 class ApiKeyRequest(BaseModel):
     provider: str
-    api_key: str = Field(..., max_length=200)
+    api_key: Optional[str] = Field(None, max_length=200)
 
 
 class BrandingUpdateRequest(BaseModel):
@@ -188,6 +188,36 @@ async def save_api_key(
         raise HTTPException(
             status_code=400,
             detail="Provider must be one of: openai, claude, gemini, groq, deepseek, mistral, together",
+        )
+
+    # Gemini uses a server-side key — skip key validation, clear stored key
+    if body.provider == "gemini":
+        await db.execute(
+            text("""
+                UPDATE users SET
+                    encrypted_api_key = NULL,
+                    api_key_iv = NULL,
+                    ai_provider = 'gemini',
+                    api_key_preview = NULL,
+                    updated_at = NOW()
+                WHERE id = :uid
+            """),
+            {"uid": str(current_user.id)},
+        )
+        await db.commit()
+        return {
+            "success": True,
+            "data": {
+                "provider": "gemini",
+                "key_preview": None,
+                "saved_at": datetime.now(timezone.utc).isoformat() + "Z",
+            },
+        }
+
+    if not body.api_key:
+        raise HTTPException(
+            status_code=400,
+            detail="API key required for this provider",
         )
 
     pattern = VALID_KEY_PATTERNS[body.provider]
