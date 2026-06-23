@@ -4,6 +4,7 @@ import os
 import time
 import logging
 
+import pandas as pd
 import sentry_sdk
 from fastapi import HTTPException
 from sqlalchemy import text
@@ -221,6 +222,19 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
 
         elapsed = round(time.monotonic() - start_time, 1)
 
+        metric_cols = config.get('metric_columns') or [
+            c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
+        ]
+        trend_pct = 0.0
+        if metric_cols:
+            metric = metric_cols[0]
+            series = pd.to_numeric(df[metric], errors='coerce').dropna()
+            if len(series) >= 2:
+                first = series.iloc[0]
+                last = series.iloc[-1]
+                if first != 0:
+                    trend_pct = round(((last - first) / abs(first)) * 100, 2)
+
         async with AsyncSessionLocal() as db:
             await db.execute(
                 text("""
@@ -233,6 +247,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                         generation_time_seconds = :gen_time,
                         row_count = :row_count,
                         column_count = :col_count,
+                        trend_pct = :trend_pct,
                         error_message = :ai_err
                     WHERE id = :rid
                 """),
@@ -244,6 +259,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     "gen_time": elapsed,
                     "row_count": len(df),
                     "col_count": len(df.columns),
+                    "trend_pct": trend_pct,
                     "ai_err": ai_error,
                     "rid": report_id,
                 },

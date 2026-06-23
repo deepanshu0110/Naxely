@@ -531,6 +531,7 @@ async def list_reports(
             "template_type": row["template_type"],
             "status": row["status"],
             "row_count": row.get("row_count"),
+            "trend_pct": row.get("trend_pct"),
             "created_at": row["created_at"].isoformat() if row.get("created_at") else None,
             "generation_time_seconds": row.get("generation_time_seconds"),
         }
@@ -596,6 +597,7 @@ async def get_report(
         "ai_anomalies": ai_anomalies,
         "row_count": report.get("row_count"),
         "column_count": report.get("column_count"),
+        "trend_pct": report.get("trend_pct"),
         "generation_time_seconds": report.get("generation_time_seconds"),
         "pdf_url": await _generate_signed_url(report["pdf_url"]) if report["status"] == "completed" and report.get("pdf_url") else None,
         "share_token": report.get("share_token"),
