@@ -25,6 +25,8 @@ from app.services.data_service import (
 from app.core.supabase_helpers import _get_supabase, _run_sync
 from app.core.limiter import limiter
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 ALLOWED_MIME_TYPES = ["text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
@@ -72,20 +74,22 @@ class ShareRequest(BaseModel):
 async def _generate_signed_url(storage_path: str) -> str | None:
     def _sync():
         try:
-            return _get_supabase().storage.from_("reports").create_signed_url(
+            result = _get_supabase().storage.from_("reports").create_signed_url(
                 storage_path, 3600
             )
-        except (UnboundLocalError, Exception) as e:
-            logging.warning(f"[reports] signed URL failed for {storage_path}: {e}")
+            return result
+        except UnboundLocalError as e:
+            logger.warning(f"[reports] Supabase SDK UnboundLocalError for {storage_path}: {e}")
+            return None
+        except Exception as e:
+            logger.warning(f"[reports] create_signed_url failed for {storage_path}: {e}")
             return None
 
     try:
         signed = await _run_sync(_sync)
-        if signed and isinstance(signed, dict):
-            return signed.get("signedURL", signed.get("signedUrl", ""))
-        return None
+        return signed.get("signedURL") if signed else None
     except Exception as e:
-        logging.warning(f"[reports] _generate_signed_url error: {e}")
+        logger.warning(f"[reports] _generate_signed_url outer error: {e}")
         return None
 
 

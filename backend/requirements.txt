@@ -37,6 +37,8 @@ alembic==1.13.1
 
 # Supabase Client
 # NOTE: supabase==2.9.1 required — 2.4.0 conflicts with httpx>=0.26
+# storage3 0.8.2 has a known UnboundLocalError at _sync/file_api.py:50
+# when self._client.request() itself raises. Patched in-vendor in venv.
 supabase==2.9.1
 
 # Standard Webhooks (Dodo Payments uses this format)
