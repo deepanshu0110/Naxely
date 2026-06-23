@@ -152,10 +152,10 @@ class _InsightCard(Flowable):
         body_style = ParagraphStyle('InsightBody', fontName='IBMPlexSans', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
         italic_style = ParagraphStyle('InsightItalic', fontName='IBMPlexSans-Italic', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
 
-        self.kpi_para = Paragraph(str(self.insight.get('kpi', '')), title_style)
-        self.number_para = Paragraph('\U0001F4CA ' + self.insight.get('number', ''), mono_style)
-        self.reason_para = Paragraph('\u25B6 ' + self.insight.get('reason', ''), body_style)
-        self.action_para = Paragraph('\u2713 ' + self.insight.get('action', ''), italic_style)
+        self.kpi_para = Paragraph(str(self.insight.get('kpi', '') or ''), title_style)
+        self.number_para = Paragraph('\U0001F4CA ' + str(self.insight.get('number', '') or ''), mono_style)
+        self.reason_para = Paragraph('\u25B6 ' + str(self.insight.get('reason', '') or ''), body_style)
+        self.action_para = Paragraph('\u2713 ' + str(self.insight.get('action', '') or ''), italic_style)
 
         self.kpi_h = self.kpi_para.wrap(text_width, self._width)[1]
         self.number_h = self.number_para.wrap(text_width, self._width)[1]

@@ -278,10 +278,18 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         f'- Every "action" must be specific and executable\n'
         f"- Maximum 5 insights\n"
         f"- trend and trend_pct_change measure different things and may point in different directions — this is expected, not an error. trend reflects the slope across the full period; trend_pct_change reflects only the first-to-last value change. NEVER generate an insight whose finding is that these two fields conflict, are \"contradictory\", indicate a \"calculation error\", need \"review\", \"correction\", or \"clarification\" of methodology. If they diverge, that itself is not insight-worthy — instead look for the REAL underlying business pattern (e.g. an overall upward trend with a recent dip) and only surface it as an insight if it reflects genuine business significance, not a metric-definition mismatch.\n"
-        f"- Return ONLY the JSON array"
+        f"- Return ONLY the JSON array\n"
+        f"- All string values must be non-empty. Never return null or empty string for kpi, number, reason, or action fields."
     )
 
-    required_keys = {"kpi", "number", "reason", "action", "sentiment", "priority"}
+    def _is_valid_insight(item: dict) -> bool:
+        required = {"kpi", "number", "reason", "action"}
+        if not required <= item.keys():
+            return False
+        return all(
+            isinstance(item.get(k), str) and item.get(k, "").strip()
+            for k in required
+        )
 
     try:
         loop = asyncio.get_event_loop()
@@ -296,11 +304,7 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         insights = json.loads(cleaned)
         if not isinstance(insights, list):
             return []
-        valid = []
-        for item in insights[:5]:
-            if isinstance(item, dict) and required_keys.issubset(item.keys()):
-                valid.append(item)
-        return valid
+        return [item for item in insights[:5] if isinstance(item, dict) and _is_valid_insight(item)]
     except Exception:
         return []
 
