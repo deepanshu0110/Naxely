@@ -109,7 +109,10 @@ def _generate_single_chart(
 
         elif chart_type == 'bar' and dimension_columns:
             dim = dimension_columns[0]
-            grouped = df.groupby(dim)[metric_column].mean().sort_values()
+            if any(x in metric_column.lower() for x in ['%', 'percent', 'rate', 'ratio', 'score', 'avg', 'average']):
+                grouped = df.groupby(dim)[metric_column].mean().sort_values()
+            else:
+                grouped = df.groupby(dim)[metric_column].sum().sort_values()
             ax.barh(grouped.index, grouped.values,
                     color=brand_color, alpha=0.85, height=0.55)
             # Value labels at bar end

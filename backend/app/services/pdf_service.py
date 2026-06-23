@@ -18,6 +18,7 @@ from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
+    Frame,
     Spacer,
     Image,
     Table,
@@ -139,7 +140,25 @@ class _InsightCard(Flowable):
             self.border_color = HexColor(RED)
         else:
             self.border_color = HexColor('#6B7280')
-        self.height = 90
+        self._build_paragraphs()
+
+    def _build_paragraphs(self):
+        text_width = self._width - 5 - 32
+        title_style = ParagraphStyle('InsightTitle', fontName='Fraunces-SemiBold', fontSize=11, textColor=HexColor('#111827'), leading=15, wordWrap='LTR')
+        mono_style = ParagraphStyle('InsightMono', fontName='IBMPlexMono-Bold', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
+        body_style = ParagraphStyle('InsightBody', fontName='IBMPlexSans', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
+        italic_style = ParagraphStyle('InsightItalic', fontName='IBMPlexSans-Italic', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
+
+        self.kpi_para = Paragraph(str(self.insight.get('kpi', '')), title_style)
+        self.number_para = Paragraph('\U0001F4CA ' + self.insight.get('number', ''), mono_style)
+        self.reason_para = Paragraph('\u25B6 ' + self.insight.get('reason', ''), body_style)
+        self.action_para = Paragraph('\u2713 ' + self.insight.get('action', ''), italic_style)
+
+        self.kpi_h = self.kpi_para.wrap(text_width, self._width)[1]
+        self.number_h = self.number_para.wrap(text_width, self._width)[1]
+        self.reason_h = self.reason_para.wrap(text_width, self._width)[1]
+        self.action_h = self.action_para.wrap(text_width, self._width)[1]
+        self.height = int(self.kpi_h + 8 + self.number_h + 6 + self.reason_h + 6 + self.action_h + 16)
 
     def wrap(self, availWidth, availHeight):
         return (self._width, self.height)
@@ -153,26 +172,23 @@ class _InsightCard(Flowable):
         self.canv.rect(5, 0, self._width - 5, self.height, fill=0, stroke=1)
 
         x = 16
-        y = self.height - 18
-        self.canv.setFillColor(HexColor('#111827'))
-        self.canv.setFont('Fraunces-SemiBold', 11)
-        self.canv.drawString(x, y, str(self.insight.get('kpi', '')))
+        text_width = self._width - 5 - 32
+        y = self.height - 16
 
-        y -= 18
-        self.canv.setFillColor(HexColor('#374151'))
-        self.canv.setFont('IBMPlexMono-Bold', 9.5)
-        number_text = self.insight.get('number', '')
-        self.canv.drawString(x, y, '\U0001F4CA ' + number_text[:90])
+        f = Frame(x, y - self.kpi_h, text_width, self.kpi_h, showBoundary=0)
+        f.addFromList([self.kpi_para], self.canv)
+        y -= self.kpi_h + 8
 
-        y -= 16
-        self.canv.setFont('IBMPlexSans', 9.5)
-        reason_text = self.insight.get('reason', '')
-        self.canv.drawString(x, y, '\u25B6 ' + reason_text[:90])
+        f = Frame(x, y - self.number_h, text_width, self.number_h, showBoundary=0)
+        f.addFromList([self.number_para], self.canv)
+        y -= self.number_h + 6
 
-        y -= 16
-        self.canv.setFont('IBMPlexSans-Italic', 9.5)
-        action_text = self.insight.get('action', '')
-        self.canv.drawString(x, y, '\u2713 ' + action_text[:90])
+        f = Frame(x, y - self.reason_h, text_width, self.reason_h, showBoundary=0)
+        f.addFromList([self.reason_para], self.canv)
+        y -= self.reason_h + 6
+
+        f = Frame(x, y - self.action_h, text_width, self.action_h, showBoundary=0)
+        f.addFromList([self.action_para], self.canv)
 
 
 class _AnomalyBox(Flowable):

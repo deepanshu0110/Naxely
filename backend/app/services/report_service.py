@@ -106,6 +106,16 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             if column_types.get(col) in ("dimension", "text")
         }
 
+        date_column = next(
+            (col for col in df.columns if col.lower() in ['date', 'datetime', 'timestamp', 'time', 'week', 'month', 'year']),
+            None
+        )
+        if not date_column:
+            stats = data_service.compute_column_stats(df)
+            date_column = stats.get("date_column")
+        config["date_column"] = date_column
+        logger.info(f"[report_service] detected date_column={date_column!r} all_cols={list(df.columns)}")
+
         await update_status(report_id, 'processing', step='charts')
 
         brand_color = (config.get("brand") or {}).get("color") or "#6366F1"
