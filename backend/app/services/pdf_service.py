@@ -753,7 +753,7 @@ def build_sync(
     body_story.append(_SectionHeader('Charts & Visualizations', brand_color, content_width))
     body_story.append(Spacer(1, 10))
 
-    for chart_item in chart_paths:
+    for i, chart_item in enumerate(chart_paths):
         if isinstance(chart_item, tuple):
             chart_path = chart_item[0]
         else:
@@ -761,13 +761,14 @@ def build_sync(
         if not os.path.isfile(chart_path):
             continue
         try:
-            # Each chart: full content width, fixed height 220pt
             draw_w = content_width
             draw_h = 220
             chart_img = Image(chart_path, width=draw_w, height=draw_h)
             chart_img.hAlign = 'CENTER'
             body_story.append(chart_img)
             body_story.append(Spacer(1, 16))
+            if i < len(chart_paths) - 1:
+                body_story.append(PageBreak())
         except Exception:
             continue
     body_story.append(PageBreak())

@@ -94,6 +94,9 @@ def _generate_single_chart(
     try:
         if chart_type == 'line' and date_column and date_column in df.columns:
             df_sorted = df.sort_values(date_column)
+            agg_func = 'mean' if any(x in metric_column.lower()
+                for x in ['%', 'percent', 'rate', 'ratio', 'score']) else 'sum'
+            df_sorted = df_sorted.groupby(date_column)[metric_column].agg(agg_func).reset_index()
             x = pd.to_datetime(df_sorted[date_column])
             y = df_sorted[metric_column]
             ax.plot(x, y, color=brand_color, linewidth=2.0,
