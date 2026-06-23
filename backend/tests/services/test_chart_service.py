@@ -145,3 +145,187 @@ class TestChartService:
             assert os.path.isfile(path), f"Chart file missing: {path}"
             assert path.endswith(".png"), f"Expected PNG, got: {path}"
         chart_service.cleanup_charts("test-valid")
+
+    # ── Shared fixtures ──────────────────────────────────────────────────
+
+    @staticmethod
+    def _full_df():
+        """Matches naxely_scheduled_report_test.csv structure"""
+        return pd.DataFrame({
+            "Date": pd.date_range("2025-11-01", periods=20),
+            "Region": ["North","South","East","West","West"]*4,
+            "Service": ["Training","Audit","Consulting","Dashboard Build","Audit"]*4,
+            "Hours Billed": [5 + i % 14 for i in range(20)],
+            "Revenue": [2000 + i*150 for i in range(20)],
+        })
+
+    @staticmethod
+    def _config():
+        return {"date_column": "Date", "metric_columns": ["Revenue", "Hours Billed"]}
+
+    # ── Chart type selection ─────────────────────────────────────────────
+
+    def test_select_chart_type_line_new(self):
+        df = self._full_df()
+        df["Date"] = pd.to_datetime(df["Date"])
+        assert chart_service.select_chart_type("Date", "Revenue", df) == "line"
+
+    def test_select_chart_type_bar_new(self):
+        df = self._full_df()
+        assert chart_service.select_chart_type("Region", "Revenue", df) == "bar"
+
+    def test_select_chart_type_scatter_new(self):
+        df = self._full_df()
+        assert chart_service.select_chart_type("Hours Billed", "Revenue", df) == "scatter"
+
+    def test_select_chart_type_histogram_new(self):
+        df = pd.DataFrame({"Revenue": [1000,2000,3000,1500,2500,3500]})
+        assert chart_service.select_chart_type("Revenue", "Revenue", df) == "histogram"
+
+    # ── New chart types ──────────────────────────────────────────────────
+
+    def test_area_chart_renders(self):
+        df = self._full_df()
+        df["Date"] = pd.to_datetime(df["Date"])
+        path = chart_service._generate_single_chart(
+            df, "Date", "Revenue", "area", "test-area", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-area")
+
+    def test_donut_chart_renders(self):
+        df = self._full_df()
+        path = chart_service._generate_single_chart(
+            df, "Region", "Revenue", "donut", "test-donut", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-donut")
+
+    def test_lollipop_chart_renders(self):
+        df = self._full_df()
+        path = chart_service._generate_single_chart(
+            df, "Service", "Revenue", "lollipop", "test-lollipop", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-lollipop")
+
+    def test_box_chart_renders(self):
+        df = self._full_df()
+        path = chart_service._generate_single_chart(
+            df, "Region", "Revenue", "box", "test-box", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-box")
+
+    def test_heatmap_chart_renders(self):
+        df = self._full_df()
+        path = chart_service._generate_single_chart(
+            df, "Region", "Service", "heatmap", "test-heatmap", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-heatmap")
+
+    def test_grouped_bar_chart_renders(self):
+        df = self._full_df()
+        path = chart_service._generate_single_chart(
+            df, "Region", "Revenue", "grouped_bar", "test-gbar", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-gbar")
+
+    def test_stacked_bar_chart_renders(self):
+        df = self._full_df()
+        path = chart_service._generate_single_chart(
+            df, "Region", "Revenue", "stacked_bar", "test-sbar", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-sbar")
+
+    def test_combo_chart_renders(self):
+        df = self._full_df()
+        df["Date"] = pd.to_datetime(df["Date"])
+        path = chart_service._generate_single_chart(
+            df, "Date", "Revenue", "combo", "test-combo", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-combo")
+
+    def test_waterfall_chart_renders(self):
+        df = pd.DataFrame({
+            "Stage": ["Q1","Q2","Q3","Q4","Total"],
+            "Revenue": [1000.0, 500.0, -200.0, 800.0, 2100.0]
+        })
+        path = chart_service._generate_single_chart(
+            df, "Stage", "Revenue", "waterfall", "test-waterfall", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-waterfall")
+
+    def test_funnel_chart_renders(self):
+        df = pd.DataFrame({
+            "Stage": ["Leads","Qualified","Proposal","Closed"],
+            "Count": [1000.0, 600.0, 200.0, 80.0]
+        })
+        path = chart_service._generate_single_chart(
+            df, "Stage", "Count", "funnel", "test-funnel", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-funnel")
+
+    def test_bullet_chart_renders(self):
+        df = pd.DataFrame({
+            "Metric": ["Revenue"],
+            "Value": [75000.0],
+            "Target": [100000.0]
+        })
+        path = chart_service._generate_single_chart(
+            df, "Metric", "Value", "bullet", "test-bullet", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-bullet")
+
+    def test_treemap_chart_renders(self):
+        df = pd.DataFrame({
+            "Service": ["Training","Audit","Consulting","Dashboard Build"],
+            "Revenue": [50000.0, 30000.0, 45000.0, 20000.0]
+        })
+        path = chart_service._generate_single_chart(
+            df, "Service", "Revenue", "treemap", "test-treemap", "#0D7377"
+        )
+        assert path is not None and os.path.isfile(path)
+        chart_service.cleanup_charts("test-treemap")
+
+    # ── AI spec passthrough ──────────────────────────────────────────────
+
+    def test_generate_sync_accepts_chart_specs(self):
+        """When chart_specs passed in, use them instead of auto-selecting"""
+        df = self._full_df()
+        df["Date"] = pd.to_datetime(df["Date"])
+        specs = [
+            {"x": "Date", "y": "Revenue", "type": "line", "title": "Revenue Over Time"},
+            {"x": "Region", "y": "Revenue", "type": "bar", "title": "Revenue by Region"},
+        ]
+        paths = chart_service.generate_sync(
+            df, "test-specs", self._config(), "#0D7377", chart_specs=specs
+        )
+        assert len(paths) == 2
+        assert any("line" in p[0] for p in paths)
+        assert any("bar" in p[0] for p in paths)
+        chart_service.cleanup_charts("test-specs")
+
+    def test_generate_sync_falls_back_without_specs(self):
+        """No chart_specs → rule-based selection still works"""
+        df = self._full_df()
+        df["Date"] = pd.to_datetime(df["Date"])
+        paths = chart_service.generate_sync(df, "test-fallback", self._config(), "#0D7377")
+        assert 1 <= len(paths) <= 3
+        for path, metric in paths:
+            assert os.path.isfile(path)
+        chart_service.cleanup_charts("test-fallback")
+
+    def test_max_three_charts_enforced(self):
+        df = self._full_df()
+        df["Date"] = pd.to_datetime(df["Date"])
+        paths = chart_service.generate_sync(df, "test-max3", self._config(), "#0D7377")
+        assert len(paths) <= 3
+        chart_service.cleanup_charts("test-max3")
