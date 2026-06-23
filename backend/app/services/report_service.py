@@ -75,6 +75,39 @@ def _has_ai_sections(config: dict) -> bool:
     return bool(sections & ai_sections)
 
 
+def _process_csv(df: pd.DataFrame, config: dict) -> tuple:
+    column_config = config.get("column_config", [])
+    if column_config:
+        df = data_service.apply_column_config(df, column_config)
+
+    column_types = {}
+    for cc in column_config:
+        if cc.get("include", True):
+            col_name = cc.get("display_name") or cc.get("original_name")
+            col_type = cc.get("type", "dimension")
+            if col_type:
+                column_types[col_name] = col_type
+
+    df_norm = data_service.normalize_for_aggregation(df, column_types)
+
+    config["_raw_null_counts"] = {
+        col: int(df[col].isna().sum())
+        for col in df.columns
+        if column_types.get(col) in ("dimension", "text")
+    }
+
+    date_column = next(
+        (col for col in df.columns if col.lower() in ['date', 'datetime', 'timestamp', 'time', 'week', 'month', 'year']),
+        None
+    )
+    if not date_column:
+        stats = data_service.compute_column_stats(df)
+        date_column = stats.get("date_column")
+    config["date_column"] = date_column
+    logger.info(f"[report_service] detected date_column={date_column!r} all_cols={list(df.columns)}")
+    return df, df_norm
+
+
 async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_bytes: bytes | None = None) -> None:
     start_time = time.monotonic()
 
@@ -95,37 +128,13 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 _get_supabase().storage.from_("uploads").download, file_url,
             )
 
-        df = data_service.parse_csv(csv_bytes)
+        loop = asyncio.get_event_loop()
 
-        column_config = config.get("column_config", [])
-        if column_config:
-            df = data_service.apply_column_config(df, column_config)
-
-        column_types = {}
-        for cc in column_config:
-            if cc.get("include", True):
-                col_name = cc.get("display_name") or cc.get("original_name")
-                col_type = cc.get("type", "dimension")
-                if col_type:
-                    column_types[col_name] = col_type
-
-        df_norm = data_service.normalize_for_aggregation(df, column_types)
-
-        config["_raw_null_counts"] = {
-            col: int(df[col].isna().sum())
-            for col in df.columns
-            if column_types.get(col) in ("dimension", "text")
-        }
-
-        date_column = next(
-            (col for col in df.columns if col.lower() in ['date', 'datetime', 'timestamp', 'time', 'week', 'month', 'year']),
-            None
+        df = await loop.run_in_executor(
+            None, data_service.parse_csv, csv_bytes,
         )
-        if not date_column:
-            stats = data_service.compute_column_stats(df)
-            date_column = stats.get("date_column")
-        config["date_column"] = date_column
-        logger.info(f"[report_service] detected date_column={date_column!r} all_cols={list(df.columns)}")
+
+        df, df_norm = await loop.run_in_executor(None, _process_csv, df, config)
 
         await update_status(report_id, 'processing', step='charts')
 
@@ -134,7 +143,6 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         if user_data_row and user_data_row.get("brand_color"):
             brand_color = user_data_row["brand_color"]
 
-        loop = asyncio.get_event_loop()
         chart_paths = await loop.run_in_executor(
             _CHART_EXECUTOR,
             chart_service.generate_sync,
