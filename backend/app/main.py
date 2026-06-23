@@ -18,6 +18,8 @@ from app.core.exceptions import (
     validation_exception_handler,
     unhandled_exception_handler,
 )
+from app.core.database import AsyncSessionLocal
+from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +106,19 @@ app.include_router(scheduled_reports_router, tags=["scheduled_reports"])
 
 
 @app.on_event("startup")
-async def startup_check():
+async def startup_migrations():
+    migrations = [
+        "ALTER TABLE reports ADD COLUMN IF NOT EXISTS trend_pct FLOAT",
+        "ALTER TABLE reports ADD COLUMN IF NOT EXISTS ai_skipped BOOLEAN DEFAULT FALSE",
+    ]
+    async with AsyncSessionLocal() as db:
+        for sql in migrations:
+            try:
+                await db.execute(text(sql))
+                await db.commit()
+            except Exception as e:
+                logger.warning("[startup] migration skipped: %s", e)
+
     if settings.ENVIRONMENT == "development" and os.getenv("RENDER"):
         logger.warning(
             "ENVIRONMENT is 'development' on Render — this should be 'production'. "
