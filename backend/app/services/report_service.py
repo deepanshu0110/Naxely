@@ -1,4 +1,5 @@
 import asyncio
+import concurrent.futures
 import json
 import os
 import time
@@ -15,6 +16,15 @@ from app.services import data_service, chart_service, ai_service, pdf_service
 from app.api.deps import increment_report_count, mark_upload_used
 
 logger = logging.getLogger(__name__)
+
+_PDF_EXECUTOR = concurrent.futures.ThreadPoolExecutor(
+    max_workers=2,
+    thread_name_prefix="pdf_worker",
+)
+_CHART_EXECUTOR = concurrent.futures.ThreadPoolExecutor(
+    max_workers=2,
+    thread_name_prefix="chart_worker",
+)
 
 STEP_LABELS = {
     'data': 'Parsing data...',
@@ -126,7 +136,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
 
         loop = asyncio.get_event_loop()
         chart_paths = await loop.run_in_executor(
-            None,
+            _CHART_EXECUTOR,
             chart_service.generate_sync,
             df_norm, report_id, config, brand_color,
         )
@@ -206,7 +216,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         pdf_config["_ai_skipped"] = ai_skipped
 
         pdf_path = await loop.run_in_executor(
-            None,
+            _PDF_EXECUTOR,
             pdf_service.build_sync,
             df, chart_paths, ai_content, pdf_config, user_data_dict,
         )
