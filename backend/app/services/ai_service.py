@@ -295,14 +295,17 @@ def detect_anomalies(df: pd.DataFrame) -> list[dict]:
         outlier_mask = z_scores.abs() > 2
         for idx in col_data[outlier_mask].index:
             value = float(df.loc[idx, col_name])
+            z = round(float(z_scores.loc[idx]), 2)
             anomalies.append({
                 "column": str(col_name),
                 "row_index": int(idx),
                 "value": value,
-                "z_score": round(float(z_scores.loc[idx]), 2),
+                "z_score": z,
                 "mean": round(float(mean), 2),
                 "std": round(float(std), 2),
-                "message": f"{str(col_name)} value {value:.2f} is {abs(float(z_scores.loc[idx])):.1f}x the standard deviation from the mean",
+                "deviation": z,
+                "expected": f"{round(mean - 2 * std, 2)} – {round(mean + 2 * std, 2)}",
+                "message": f"{str(col_name)} value {value:.2f} is {abs(z):.1f}x the standard deviation from the mean",
             })
             if len(anomalies) >= 5:
                 return anomalies
