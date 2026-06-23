@@ -166,8 +166,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 except HTTPException as e:
                     ai_error = str(e.detail) if isinstance(e.detail, str) else str(e.detail)
                     logger.warning("AI summary skipped for %s: %s", report_id, ai_error)
-                    if e.status_code == 429:
-                        ai_skipped = True
+                    ai_skipped = True
 
                 try:
                     insights = await ai_service.generate_nra_insights(df_norm, config, user_obj)
@@ -176,8 +175,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     msg = str(e.detail) if isinstance(e.detail, str) else str(e.detail)
                     ai_error = ai_error or msg
                     logger.warning("AI insights skipped for %s: %s", report_id, msg)
-                    if e.status_code == 429:
-                        ai_skipped = True
+                    ai_skipped = True
 
                 anomalies = ai_service.detect_anomalies(df_norm)
                 ai_content["anomalies"] = anomalies

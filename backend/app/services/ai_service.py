@@ -7,7 +7,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from fastapi import HTTPException
-from openai import OpenAI, APITimeoutError, AuthenticationError as OpenAIAuthError, RateLimitError as OpenAIRateLimitError
+from openai import OpenAI, APITimeoutError, AuthenticationError as OpenAIAuthError, RateLimitError as OpenAIRateLimitError, BadRequestError as OpenAIBadRequestError
 from anthropic import Anthropic, APITimeoutError as AnthropicTimeoutError, AuthenticationError as AnthropicAuthError, RateLimitError as AnthropicRateLimitError
 import requests
 
@@ -22,7 +22,7 @@ PROVIDER_CONFIG = {
     "gemini":    {"base_url": None,                              "model": "gemini-2.0-flash"},
     "openai":    {"base_url": "https://api.openai.com/v1",       "model": "gpt-4o"},
     "claude":    {"base_url": None,                              "model": "claude-sonnet-4-6"},
-    "groq":      {"base_url": "https://api.groq.com/openai/v1",  "model": "llama-3.1-70b-versatile"},
+    "groq":      {"base_url": "https://api.groq.com/openai/v1",  "model": "llama-3.3-70b-versatile"},
     "deepseek":  {"base_url": "https://api.deepseek.com/v1",     "model": "deepseek-chat"},
     "mistral":   {"base_url": "https://api.mistral.ai/v1",       "model": "mistral-large-latest"},
 }
@@ -70,6 +70,10 @@ def call_openai_compat(prompt: str, system: str, api_key: str, timeout: int = 25
         raise HTTPException(status_code=400, detail="Invalid API key — please update in Settings")
     except OpenAIRateLimitError:
         raise HTTPException(status_code=429, detail="AI rate limit — try again in 60 seconds")
+    except OpenAIBadRequestError as e:
+        detail = str(e.response.json().get("error", {}).get("message", str(e))) if e.response else str(e)
+        logger.error("OpenAI call 400: %s", detail)
+        raise HTTPException(status_code=400, detail=f"AI request failed: {detail[:200]}")
     except APITimeoutError:
         raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
     except Exception as e:
