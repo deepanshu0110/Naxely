@@ -777,15 +777,22 @@ def build_sync(
     # SECTION 5 — AI Insight Cards
     # ────────────────────────────────────────────────────────────
     insights = ai_content.get('insights') or []
-    if 'insights' in config.get('sections', []) and insights:
+    ai_skipped = config.get('_ai_skipped', False)
+    if 'insights' in config.get('sections', []):
         toc_entries.append(('AI Insights', str(toc_page)))
         toc_page += 1
         body_story.append(_SectionHeader('AI Insights', brand_color, content_width))
         body_story.append(Spacer(1, 10))
-        for ins in insights[:5]:
-            card = _InsightCard(ins, width=content_width)
-            body_story.append(card)
-            body_story.append(Spacer(1, 8))
+        if ai_skipped:
+            body_story.append(Paragraph(
+                "⚠️ AI insights were rate-limited during generation. Regenerate this report to include them.",
+                body_style,
+            ))
+        elif insights:
+            for ins in insights[:5]:
+                card = _InsightCard(ins, width=content_width)
+                body_story.append(card)
+                body_story.append(Spacer(1, 8))
         body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
@@ -861,15 +868,21 @@ def build_sync(
     body_story.append(_SectionHeader('Recommendations', brand_color, content_width))
     body_story.append(Spacer(1, 10))
 
-    all_insights = ai_content.get('insights') or []
-    actions = [ins.get('action', '') for ins in all_insights if ins.get('action')]
-
-    if actions:
-        for idx, action in enumerate(actions, 1):
-            body_story.append(_RecommendationCard(idx, action, brand_color, content_width))
-            body_story.append(Spacer(1, 8))
+    if ai_skipped:
+        body_story.append(Paragraph(
+            "⚠️ Recommendations were rate-limited during generation. Regenerate this report to include them.",
+            body_style,
+        ))
     else:
-        body_story.append(Paragraph('No recommendations available.', body_style))
+        all_insights = ai_content.get('insights') or []
+        actions = [ins.get('action', '') for ins in all_insights if ins.get('action')]
+
+        if actions:
+            for idx, action in enumerate(actions, 1):
+                body_story.append(_RecommendationCard(idx, action, brand_color, content_width))
+                body_story.append(Spacer(1, 8))
+        else:
+            body_story.append(Paragraph('No recommendations available.', body_style))
     body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────

@@ -141,6 +141,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
 
         ai_content: dict = {"summary": None, "insights": [], "anomalies": [], "trends": []}
         ai_error: str | None = None
+        ai_skipped = False
 
         if _has_ai_sections(config):
             user_obj = _make_user_proxy(user_data_row or {})
@@ -155,6 +156,8 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 except HTTPException as e:
                     ai_error = str(e.detail) if isinstance(e.detail, str) else str(e.detail)
                     logger.warning("AI summary skipped for %s: %s", report_id, ai_error)
+                    if e.status_code == 429:
+                        ai_skipped = True
 
                 try:
                     insights = await ai_service.generate_nra_insights(df_norm, config, user_obj)
@@ -163,6 +166,8 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     msg = str(e.detail) if isinstance(e.detail, str) else str(e.detail)
                     ai_error = ai_error or msg
                     logger.warning("AI insights skipped for %s: %s", report_id, msg)
+                    if e.status_code == 429:
+                        ai_skipped = True
 
                 anomalies = ai_service.detect_anomalies(df_norm)
                 ai_content["anomalies"] = anomalies
@@ -198,6 +203,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         pdf_config = dict(config)
         pdf_config["report_id"] = report_id
         pdf_config["_precomputed_kpis"] = kpis
+        pdf_config["_ai_skipped"] = ai_skipped
 
         pdf_path = await loop.run_in_executor(
             None,
@@ -248,6 +254,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                         row_count = :row_count,
                         column_count = :col_count,
                         trend_pct = :trend_pct,
+                        ai_skipped = :ai_skipped,
                         error_message = :ai_err
                     WHERE id = :rid
                 """),
@@ -260,6 +267,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     "row_count": len(df),
                     "col_count": len(df.columns),
                     "trend_pct": trend_pct,
+                    "ai_skipped": ai_skipped,
                     "ai_err": ai_error,
                     "rid": report_id,
                 },

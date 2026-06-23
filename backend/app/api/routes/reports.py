@@ -604,9 +604,61 @@ async def get_report(
         "share_view_count": report.get("share_view_count", 0),
         "created_at": report["created_at"].isoformat() if report.get("created_at") else None,
         "error_message": report.get("error_message"),
+        "ai_skipped": report.get("ai_skipped", False),
     }
 
     return {"success": True, "data": data}
+
+
+@router.post("/reports/{report_id}/retry")
+async def retry_report(
+    report_id: str,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    result = await db.execute(
+        text("SELECT * FROM reports WHERE id = :rid AND deleted_at IS NULL AND user_id = :uid"),
+        {"rid": report_id, "uid": str(current_user.id)},
+    )
+    report = result.mappings().first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    if report["status"] != "failed":
+        raise HTTPException(status_code=400, detail="Only failed reports can be retried")
+
+    config_raw = report.get("config", {})
+    if isinstance(config_raw, str):
+        config_raw = json.loads(config_raw)
+
+    await db.execute(
+        text("""
+            UPDATE reports SET
+                status = 'pending',
+                error_message = NULL,
+                generation_time_seconds = NULL,
+                updated_at = NOW()
+            WHERE id = :rid
+        """),
+        {"rid": report_id},
+    )
+    await db.commit()
+
+    background_tasks.add_task(
+        run_report_pipeline,
+        report_id=report_id,
+        user_id=str(current_user.id),
+        config=config_raw,
+    )
+
+    return {
+        "success": True,
+        "data": {
+            "report_id": report_id,
+            "status": "processing",
+            "poll_url": f"/reports/{report_id}/status",
+        },
+    }
 
 
 @router.delete("/reports/{report_id}")

@@ -13,6 +13,7 @@ export interface Report {
   created_at: string
   generation_time_seconds?: number
   error_message?: string | null
+  ai_skipped?: boolean
 }
 
 export interface AIInsight {

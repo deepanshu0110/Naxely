@@ -12,6 +12,7 @@ import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import Modal from '@/components/ui/Modal'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/store/authStore'
+import { useReportStore } from '@/store/reportStore'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useCountUp } from '@/hooks/useCountUp'
 import type { Report } from '@/types/report'
@@ -21,12 +22,14 @@ export default function ReportView() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const isPro = user?.tier === 'pro' || user?.tier === 'agency'
+  const deleteReport = useReportStore((s) => s.deleteReport)
 
   const [report, setReport] = useState<Report | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [retrying, setRetrying] = useState(false)
   const reducedMotion = useReducedMotion()
   const displayGenTime = useCountUp(
     report?.generation_time_seconds != null ? Math.round(report.generation_time_seconds) : null,
@@ -53,13 +56,26 @@ export default function ReportView() {
     if (!id) return
     setDeleting(true)
     try {
-      await api.delete(`/reports/${id}`)
+      await deleteReport(id)
       navigate('/dashboard')
     } catch {
       toast.error('Failed to delete report')
     } finally {
       setDeleting(false)
       setConfirmDelete(false)
+    }
+  }
+
+  const handleRetry = async () => {
+    if (!id) return
+    setRetrying(true)
+    try {
+      await api.post(`/reports/${id}/retry`)
+      navigate('/dashboard')
+    } catch {
+      toast.error('Failed to retry report generation')
+    } finally {
+      setRetrying(false)
     }
   }
 
@@ -155,7 +171,25 @@ export default function ReportView() {
 
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto bg-slate p-4 dark:bg-darkBg">
-            {report.pdf_url ? (
+            {report.status === 'failed' ? (
+              <div className="flex h-full flex-col items-center justify-center gap-4 p-6">
+                <AlertTriangle className="h-12 w-12 text-red-400" />
+                <div className="text-center">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Report generation failed</h2>
+                  {report.error_message && (
+                    <p className="mt-2 max-w-md text-sm text-gray-500 dark:text-gray-400">
+                      {report.error_message}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                    Your column mapping and settings are preserved.
+                  </p>
+                </div>
+                <Button size="sm" loading={retrying} onClick={handleRetry}>
+                  Try Again
+                </Button>
+              </div>
+            ) : report.pdf_url ? (
               <iframe
                 src={report.pdf_url}
                 title="Report PDF"
@@ -170,7 +204,21 @@ export default function ReportView() {
 
           <div className="w-96 overflow-y-auto border-l border-gray-200 bg-paper p-6 dark:border-gray-700 dark:bg-darkBg">
             <div className="space-y-6">
-              {report.error_message && (
+              {report.ai_skipped && (
+                <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-800 dark:bg-orange-900/30">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-orange-600 dark:text-orange-400" />
+                    <div className="flex-1 text-sm text-orange-800 dark:text-orange-200">
+                      <p className="font-medium">AI insights were rate-limited.</p>
+                      <p className="mt-1 text-xs text-orange-600 dark:text-orange-400">
+                        Upload the same CSV and generate a new report to retry.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {report.status !== 'failed' && report.error_message && (
                 <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
