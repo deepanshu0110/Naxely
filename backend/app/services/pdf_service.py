@@ -574,6 +574,7 @@ def build_sync(
     user_data: dict,
 ) -> str:
     report_id = config.get('report_id', 'unknown')
+    logging.info(f"[pdf_service] build_sync started — report_id={report_id}")
     brand_color = user_data.get('brand_color', BRAND_COLOR_DEFAULT)
     content_width = PAGE_WIDTH - 2 * MARGIN
 
@@ -952,6 +953,7 @@ def build_sync(
     story.extend(body_story)
 
     doc.build(story, onFirstPage=on_page, onLaterPages=on_page)
+    logging.info(f"[pdf_service] build_sync completed — report_id={report_id}")
 
     _strip_standard_fonts(pdf_path)
 

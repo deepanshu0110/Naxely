@@ -1,5 +1,6 @@
 import uuid
 import json
+import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional, List, Literal
@@ -68,11 +69,24 @@ class ShareRequest(BaseModel):
     password: Optional[str] = None
 
 
-async def _generate_signed_url(storage_path: str) -> str:
+async def _generate_signed_url(storage_path: str) -> str | None:
     def _sync():
-        return _get_supabase().storage.from_("reports").create_signed_url(storage_path, 3600)
-    signed = await _run_sync(_sync)
-    return signed.get("signedURL", signed.get("signedUrl", ""))
+        try:
+            return _get_supabase().storage.from_("reports").create_signed_url(
+                storage_path, 3600
+            )
+        except (UnboundLocalError, Exception) as e:
+            logging.warning(f"[reports] signed URL failed for {storage_path}: {e}")
+            return None
+
+    try:
+        signed = await _run_sync(_sync)
+        if signed and isinstance(signed, dict):
+            return signed.get("signedURL", signed.get("signedUrl", ""))
+        return None
+    except Exception as e:
+        logging.warning(f"[reports] _generate_signed_url error: {e}")
+        return None
 
 
 AI_SECTIONS = {"executive_summary", "insights", "anomalies", "trends"}
