@@ -66,7 +66,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
       default: return 'No key needed with Gemini'
     }
   }, [selectedProvider])
-  const needsKey = selectedProvider !== 'gemini'
+  const needsKey = PROVIDERS_NEEDING_KEY.includes(selectedProvider as typeof PROVIDERS_NEEDING_KEY[number])
 
   if (tier === 'free') {
     return (
