@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Sidebar from '@/components/layout/Sidebar'
 import Button from '@/components/ui/Button'
