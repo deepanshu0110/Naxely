@@ -1,4 +1,5 @@
 import uuid
+import asyncio
 import json
 import logging
 import os
@@ -17,6 +18,7 @@ from pydantic import BaseModel, Field
 from app.api.deps import get_current_user, require_pro_or_above, require_byok, require_agency, check_report_limit
 from app.api.routes.settings import _get_logo_signed_url
 from app.core.database import get_db
+from app.services import sheets_service
 from app.core.config import settings
 from app.models.user import User
 from app.services.report_service import run_report_pipeline
@@ -114,6 +116,139 @@ async def _generate_signed_url(storage_path: str) -> str | None:
         return None
 
 
+async def _store_csv_upload(
+    db: AsyncSession,
+    user_id: str,
+    csv_bytes: bytes,
+    source_type: str,
+    filename: str,
+    df: pd.DataFrame,
+    upload_id: str | None = None,
+    file_ext: str = "csv",
+    content_type: str = "text/csv",
+    extra_meta: dict | None = None,
+) -> dict:
+    """Store CSV bytes to Supabase Storage and insert into uploads table.
+
+    Mirrors the exact storage paths used by upload_file():
+    - uploads/{user_id}/{upload_id}/raw.{ext}
+    - scheduled-sources/{upload_id}/raw.{ext}
+    - uploads/permanent/{user_id}/{upload_id}.{ext}
+
+    Returns dict with keys: id, file_url, columns
+    """
+    if upload_id is None:
+        upload_id = str(uuid.uuid4())
+
+    storage_path = f"{user_id}/{upload_id}/raw.{file_ext}"
+
+    try:
+        await _run_sync(
+            _get_supabase().storage.from_("uploads").upload,
+            storage_path,
+            csv_bytes,
+            {"content-type": content_type},
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload file to storage: {str(e)}")
+
+    scheduled_source_path = f"{upload_id}/raw.{file_ext}"
+    try:
+        await _run_sync(
+            _get_supabase().storage.from_("scheduled-sources").upload,
+            scheduled_source_path,
+            csv_bytes,
+            {"content-type": content_type},
+        )
+    except Exception as e:
+        try:
+            await _run_sync(
+                _get_supabase().storage.from_("uploads").remove, [storage_path],
+            )
+        except Exception:
+            pass
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save scheduled-source copy: {str(e)}",
+        )
+
+    permanent_path = f"permanent/{user_id}/{upload_id}.{file_ext}"
+    try:
+        await _run_sync(
+            _get_supabase().storage.from_("uploads").upload,
+            permanent_path,
+            csv_bytes,
+            {"content-type": content_type},
+        )
+    except Exception as e:
+        try:
+            await _run_sync(
+                _get_supabase().storage.from_("uploads").remove, [storage_path],
+            )
+        except Exception:
+            pass
+        try:
+            await _run_sync(
+                _get_supabase().storage.from_("scheduled-sources").remove, [scheduled_source_path],
+            )
+        except Exception:
+            pass
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save permanent copy: {str(e)}",
+        )
+
+    columns_meta = detect_column_types(df)
+    columns_meta_json = json.dumps(columns_meta)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
+
+    try:
+        await db.execute(
+            text("""
+                INSERT INTO uploads (
+                    id, user_id, filename, file_url, file_size_bytes, source_type,
+                    row_count, column_count, columns_meta, expires_at, used, created_at
+                ) VALUES (
+                    :id, :user_id, :filename, :file_url, :file_size_bytes, :source_type,
+                    :row_count, :column_count, :columns_meta, :expires_at, FALSE, NOW()
+                )
+            """),
+            {
+                "id": upload_id,
+                "user_id": user_id,
+                "filename": filename,
+                "file_url": storage_path,
+                "file_size_bytes": len(csv_bytes),
+                "source_type": source_type,
+                "row_count": len(df),
+                "column_count": len(df.columns),
+                "columns_meta": columns_meta_json,
+                "expires_at": expires_at,
+            },
+        )
+        await db.commit()
+    except Exception as e:
+        try:
+            await _run_sync(
+                _get_supabase().storage.from_("uploads").remove, [storage_path],
+            )
+        except Exception:
+            pass
+        try:
+            await _run_sync(
+                _get_supabase().storage.from_("scheduled-sources").remove, [scheduled_source_path],
+            )
+        except Exception:
+            pass
+        raise HTTPException(status_code=500, detail=f"Failed to save upload metadata: {str(e)}")
+
+    return {
+        "id": upload_id,
+        "file_url": storage_path,
+        "columns": columns_meta,
+    }
+
+
 AI_SECTIONS = {"executive_summary", "insights", "anomalies", "trends"}
 
 
@@ -157,115 +292,28 @@ async def upload_file(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    columns_meta = detect_column_types(df)
-
-    upload_id = str(uuid.uuid4())
-
     if file.content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         file_ext = "xlsx"
+        content_type = file.content_type
     else:
         file_ext = "csv"
+        content_type = "text/csv"
 
-    storage_path = f"{current_user.id}/{upload_id}/raw.{file_ext}"
+    source_type = "csv" if file_ext == "csv" else "xlsx"
 
-    try:
-        await _run_sync(
-            _get_supabase().storage.from_("uploads").upload,
-            storage_path,
-            content,
-            {"content-type": file.content_type},
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to upload file to storage: {str(e)}")
-
-    scheduled_source_path = f"{upload_id}/raw.{file_ext}"
-    try:
-        await _run_sync(
-            _get_supabase().storage.from_("scheduled-sources").upload,
-            scheduled_source_path,
-            content,
-            {"content-type": file.content_type},
-        )
-    except Exception as e:
-        try:
-            await _run_sync(
-                _get_supabase().storage.from_("uploads").remove, [storage_path],
-            )
-        except Exception:
-            pass
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to save scheduled-source copy: {str(e)}",
-        )
-
-    permanent_path = f"permanent/{current_user.id}/{upload_id}.{file_ext}"
-    try:
-        await _run_sync(
-            _get_supabase().storage.from_("uploads").upload,
-            permanent_path,
-            content,
-            {"content-type": file.content_type},
-        )
-    except Exception as e:
-        try:
-            await _run_sync(
-                _get_supabase().storage.from_("uploads").remove, [storage_path],
-            )
-        except Exception:
-            pass
-        try:
-            await _run_sync(
-                _get_supabase().storage.from_("scheduled-sources").remove, [scheduled_source_path],
-            )
-        except Exception:
-            pass
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to save permanent copy: {str(e)}",
-        )
-
-    columns_meta_json = json.dumps(columns_meta)
-    expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
-
-    try:
-        await db.execute(
-            text("""
-                INSERT INTO uploads (
-                    id, user_id, filename, file_url, file_size_bytes, source_type,
-                    row_count, column_count, columns_meta, expires_at, used, created_at
-                ) VALUES (
-                    :id, :user_id, :filename, :file_url, :file_size_bytes, :source_type,
-                    :row_count, :column_count, :columns_meta, :expires_at, FALSE, NOW()
-                )
-            """),
-            {
-                "id": upload_id,
-                "user_id": str(current_user.id),
-                "filename": file.filename,
-                "file_url": storage_path,
-                "file_size_bytes": len(content),
-                "source_type": "csv" if file_ext == "csv" else "xlsx",
-                "row_count": len(df),
-                "column_count": len(df.columns),
-                "columns_meta": columns_meta_json,
-                "expires_at": expires_at,
-            },
-        )
-        await db.commit()
-    except Exception as e:
-        try:
-            await _run_sync(
-                _get_supabase().storage.from_("uploads").remove, [storage_path],
-            )
-        except Exception:
-            pass
-        try:
-            await _run_sync(
-                _get_supabase().storage.from_("scheduled-sources").remove, [scheduled_source_path],
-            )
-        except Exception:
-            pass
-        raise HTTPException(status_code=500, detail=f"Failed to save upload metadata: {str(e)}")
+    upload_record = await _store_csv_upload(
+        db=db,
+        user_id=str(current_user.id),
+        csv_bytes=content,
+        source_type=source_type,
+        filename=file.filename,
+        df=df,
+        file_ext=file_ext,
+        content_type=content_type,
+    )
+    upload_id = upload_record["id"]
+    storage_path = upload_record["file_url"]
+    columns_meta = upload_record["columns"]
 
     preview_rows = []
     for _, row in df.head(5).iterrows():
@@ -298,14 +346,102 @@ async def upload_sheets(
     current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
+    """
+    Ingest a Google Sheet as a report data source.
+    Returns an upload_id identical to POST /reports/upload.
+    The report generation pipeline is then identical for both sources.
 
+    The user must share their sheet with the Naxely service account email
+    (shown in the frontend). Viewer access is sufficient.
+    """
     sheets_url = sheets_data.get("sheets_url")
     if not sheets_url:
         raise HTTPException(status_code=400, detail="sheets_url is required")
     if not sheets_url.startswith("https://docs.google.com/spreadsheets/"):
-        raise HTTPException(status_code=400, detail="Invalid URL. Must be a Google Sheets URL.")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid URL. Must be a Google Sheets URL "
+                   "(https://docs.google.com/spreadsheets/d/...)"
+        )
 
-    raise HTTPException(status_code=501, detail="Google Sheets integration coming soon")
+    try:
+        sheet_id = sheets_service.extract_sheet_id(sheets_url)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        creds = sheets_service.build_credentials(settings.GOOGLE_SERVICE_ACCOUNT_JSON)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=503,
+            detail="Google Sheets integration is not configured on this server.",
+        )
+
+    try:
+        loop = asyncio.get_event_loop()
+        df = await loop.run_in_executor(
+            None, lambda: sheets_service.fetch_sheet_as_df(sheet_id, creds)
+        )
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+
+    import io as _io
+    csv_bytes = df.to_csv(index=False).encode("utf-8")
+
+    filename = f"Google Sheet - {sheet_id}.csv"
+
+    upload_record = await _store_csv_upload(
+        db=db,
+        user_id=str(current_user.id),
+        csv_bytes=csv_bytes,
+        source_type="sheets",
+        filename=filename,
+        df=df,
+    )
+
+    preview_rows = []
+    for _, row in df.head(5).iterrows():
+        preview_row: Dict[str, Optional[str]] = {}
+        for col in df.columns:
+            val = row[col]
+            if pd.isna(val):
+                preview_row[str(col)] = None
+            else:
+                preview_row[str(col)] = str(val)
+        preview_rows.append(preview_row)
+
+    return {
+        "success": True,
+        "data": {
+            "upload_id": upload_record["id"],
+            "filename": filename,
+            "file_url": upload_record["file_url"],
+            "row_count": len(df),
+            "column_count": len(df.columns),
+            "columns": upload_record["columns"],
+            "preview_rows": preview_rows,
+            "source_type": "sheets",
+            "sheets_url": sheets_url,
+        },
+    }
+
+
+@router.get("/reports/sheets-config")
+async def get_sheets_config(
+    current_user: User = Depends(require_pro_or_above),
+) -> Dict[str, Any]:
+    """Return the service account email users must share their sheet with."""
+    email = sheets_service.get_service_account_email(
+        settings.GOOGLE_SERVICE_ACCOUNT_JSON
+    )
+    return {
+        "configured": bool(email),
+        "service_account_email": email or None,
+    }
 
 
 SAMPLE_CSV_PATH = Path(__file__).resolve().parent.parent.parent / "static" / "samples" / "agency_billable_hours.csv"

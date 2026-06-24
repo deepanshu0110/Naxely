@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Sidebar from '@/components/layout/Sidebar'
@@ -8,6 +8,7 @@ import ColumnMapper from '@/components/report/ColumnMapper'
 import ReportConfigForm from '@/components/report/ReportConfig'
 import GeneratingLoader from '@/components/report/GeneratingLoader'
 import ChartCustomizer from '@/components/report/ChartCustomizer'
+import api from '@/lib/axios'
 import { useReportStatus } from '@/hooks/useReportStatus'
 import { useReportStore } from '@/store/reportStore'
 import { useAuthStore } from '@/store/authStore'
@@ -25,6 +26,12 @@ export default function NewReport() {
   const [reportDateRange, setReportDateRange] = useState<{ from: string; to: string } | undefined>(undefined)
   const [chartSpecs, setChartSpecs] = useState<ChartSpec[]>([])
   const [generating, setGenerating] = useState(false)
+  const [sourceType, setSourceType] = useState<'csv' | 'sheets'>('csv')
+  const [sheetsUrl, setSheetsUrl] = useState('')
+  const [sheetsConnecting, setSheetsConnecting] = useState(false)
+  const [serviceAccountEmail, setServiceAccountEmail] = useState<string | null>(null)
+  const [sheetsConfigLoading, setSheetsConfigLoading] = useState(false)
+  const sheetsConfigFetched = useRef(false)
 
   const generateReport = useReportStore((s) => s.generateReport)
   const user = useAuthStore((s) => s.user)
@@ -38,6 +45,35 @@ export default function NewReport() {
       window.history.replaceState({}, document.title)
     }
   }, [location.state])
+
+  useEffect(() => {
+    if (sourceType !== 'sheets' || sheetsConfigFetched.current) return
+    sheetsConfigFetched.current = true
+    setSheetsConfigLoading(true)
+    api.get<{ service_account_email: string }>('/reports/sheets-config')
+      .then(({ data }) => setServiceAccountEmail(data.service_account_email))
+      .catch(() => setServiceAccountEmail(null))
+      .finally(() => setSheetsConfigLoading(false))
+  }, [sourceType])
+
+  const handleSheetsConnect = useCallback(async () => {
+    if (!sheetsUrl.trim()) return
+    setSheetsConnecting(true)
+    try {
+      const { data } = await api.post<UploadResult>('/reports/upload-sheets', { url: sheetsUrl.trim() })
+      setUploadResult(data)
+      setCurrentStep(2)
+      toast.success('Sheet imported successfully')
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response: { data: { detail?: string } } }).response?.data?.detail ?? 'Failed to import sheet'
+          : 'Failed to import sheet'
+      toast.error(msg)
+    } finally {
+      setSheetsConnecting(false)
+    }
+  }, [sheetsUrl])
 
   const handleUploadComplete = useCallback((result: UploadResult) => {
     setUploadResult(result)
@@ -165,7 +201,71 @@ export default function NewReport() {
             {currentStep === 1 && (
               <div>
                 <h2 className="mb-4 text-lg font-semibold text-ink dark:text-gray-100">Upload Data</h2>
-                <FileUpload onUploadComplete={handleUploadComplete} />
+
+                <div className="mb-6 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setSourceType('csv'); setUploadResult(null) }}
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                      sourceType === 'csv'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300'
+                    }`}
+                  >
+                    CSV / Excel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setSourceType('sheets'); setUploadResult(null) }}
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                      sourceType === 'sheets'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300'
+                    }`}
+                  >
+                    Google Sheets
+                  </button>
+                </div>
+
+                {sourceType === 'csv' ? (
+                  <FileUpload onUploadComplete={handleUploadComplete} />
+                ) : (
+                  <div className="space-y-4">
+                    {sheetsConfigLoading ? (
+                      <p className="text-sm text-gray-400">Loading configuration...</p>
+                    ) : serviceAccountEmail ? (
+                      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
+                        Share your Google Sheet with{' '}
+                        <code className="break-all font-medium">{serviceAccountEmail}</code>
+                      </div>
+                    ) : (
+                      <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+                        Sheets connector not configured. Contact support.
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Google Sheets URL
+                      </label>
+                      <input
+                        type="text"
+                        value={sheetsUrl}
+                        onChange={(e) => setSheetsUrl(e.target.value)}
+                        placeholder="https://docs.google.com/spreadsheets/d/..."
+                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-amber-400 focus:ring-2 focus:ring-amber-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                      />
+                    </div>
+
+                    <Button
+                      onClick={handleSheetsConnect}
+                      disabled={!sheetsUrl.trim() || !serviceAccountEmail}
+                      loading={sheetsConnecting}
+                    >
+                      Connect & Upload
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
