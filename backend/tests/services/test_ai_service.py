@@ -299,7 +299,8 @@ class TestGetUserApiKey:
         assert provider == "groq"
         assert key == "gsk_testkey"
 
-    def test_pro_user_no_key_gets_server_gemini(self):
+    def test_pro_user_no_key_returns_none(self):
+        """Pro user with no stored key now gets (None, None, None) — no server fallback."""
         from app.services.ai_service import get_user_api_key
         from unittest.mock import MagicMock
         user = MagicMock()
@@ -308,5 +309,5 @@ class TestGetUserApiKey:
         user.encrypted_api_key = None
         user.api_key_iv = None
         provider, key, base_url = get_user_api_key(user)
-        assert provider == "gemini"
-        assert key is not None
+        assert provider is None
+        assert key is None

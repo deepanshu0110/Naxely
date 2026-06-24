@@ -54,20 +54,10 @@ def get_user_api_key(user: User) -> tuple[str | None, str | None, str | None]:
         getattr(user, 'api_key_iv', None)
     )
 
-    if tier == 'free' and not has_stored_key:
+    if not has_stored_key:
         return None, None, None
 
-    if tier == 'free' and has_stored_key:
-        return _get_user_provider_config(user)
-
-    if has_stored_key:
-        return _get_user_provider_config(user)
-
-    return (
-        "gemini",
-        settings.GEMINI_API_KEY,
-        "https://generativelanguage.googleapis.com/v1beta/openai/"
-    )
+    return _get_user_provider_config(user)
 
 
 def call_openai(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:

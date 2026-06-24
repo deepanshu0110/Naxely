@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Briefcase, MessageCircle, BarChart3, BookOpen, Lock } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Briefcase, MessageCircle, BarChart3, BookOpen } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
 interface ReportConfigData {
@@ -31,13 +30,14 @@ const freeSections = [
 const proSections = [
   { id: 'executive_summary', label: 'Executive Summary', free: false },
   { id: 'insights', label: 'AI Insights', free: false },
-  { id: 'anomaly_detection', label: 'Anomaly Detection', free: false },
+  { id: 'anomalies', label: 'Anomaly Detection', free: false },
+  { id: 'trends', label: 'Trends', free: false },
 ]
 
 export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) {
   const user = useAuthStore((s) => s.user)
   const isPro = user?.tier === 'pro' || user?.tier === 'agency'
-  const hasApiKey = user?.has_api_key ?? false
+  const isAiLocked = user?.tier === 'free' && !user?.has_api_key
 
   const [title, setTitle] = useState('')
   const [dateFrom, setDateFrom] = useState('')
@@ -146,33 +146,35 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
                 <span className="ml-auto text-xs text-green-600">✅</span>
               </label>
           ))}
-          {proSections.map((s) =>
-            isPro || hasApiKey ? (
-            <label key={s.id} className={`flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800`}>
-                <input
-                  type="checkbox"
-                  checked={sections.includes(s.id)}
-                  onChange={() => toggleSection(s.id)}
-                  className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600"
-                />
-                <span className="text-sm text-gray-700">{s.label}</span>
+          {proSections.map((s) => (
+            <label
+              key={s.id}
+              className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${
+                isAiLocked
+                  ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50 dark:border-gray-700 dark:bg-gray-800'
+                  : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={sections.includes(s.id)}
+                onChange={() => !isAiLocked && toggleSection(s.id)}
+                disabled={isAiLocked}
+                className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600"
+              />
+              <span className={`text-sm ${isAiLocked ? 'text-gray-400' : 'text-gray-700'}`}>{s.label}</span>
+              {isAiLocked ? (
+                <a
+                  href="/settings?tab=api-key"
+                  className="ml-auto text-xs text-amber-600 underline hover:no-underline"
+                >
+                  Add API key to unlock
+                </a>
+              ) : (
                 <span className="ml-auto text-xs text-green-600">✅</span>
-              </label>
-            ) : (
-              <div key={s.id} className="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
-                <div className="flex items-center gap-3 opacity-70">
-                  <Lock className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm text-gray-500">{s.label}</span>
-                </div>
-                <p className="mt-1 text-xs text-amber-600">
-                  <Link to="/settings?tab=api-key" className="underline hover:no-underline">
-                    Add your own API key in Settings
-                  </Link>
-                  {' '}to enable AI
-                </p>
-              </div>
-            ),
-          )}
+              )}
+            </label>
+          ))}
         </div>
       </div>
     </div>
