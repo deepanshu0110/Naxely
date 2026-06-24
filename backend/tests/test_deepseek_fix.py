@@ -44,7 +44,7 @@ class TestDeepSeekErrorHandling:
         mock_user.encrypted_api_key = "encrypted"
         mock_user.api_key_iv = "iv"
 
-        with patch("app.services.ai_service.get_user_api_key", return_value=("deepseek", "sk-test")):
+        with patch("app.services.ai_service.get_user_api_key", return_value=("deepseek", "sk-test", None)):
             with patch("app.services.ai_service.call_openai_compat", return_value=None):
                 summary = asyncio.run(generate_summary(df, config, mock_user))
 

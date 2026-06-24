@@ -69,12 +69,10 @@ class TestRequireByok:
         result = deps.require_byok(current_user=user)
         assert result is user
 
-    def test_free_user_with_key_blocked(self):
+    def test_free_user_with_key_allowed(self):
         user = _user('free', encrypted_api_key='sekret', api_key_iv='iv')
-        with pytest.raises(HTTPException) as exc:
-            deps.require_byok(current_user=user)
-        assert exc.value.status_code == 403
-        assert exc.value.detail['code'] == 'UPGRADE_REQUIRED'
+        result = deps.require_byok(current_user=user)
+        assert result is user
 
     def test_pro_user_with_key_allowed(self):
         user = _user('pro', encrypted_api_key='sekret', api_key_iv='iv')

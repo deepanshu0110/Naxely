@@ -217,6 +217,47 @@ class _InsightCard(Flowable):
         self.canv.drawString(text_x, y - self.PAD_TOP - 52, action_text)
 
 
+class _AISkippedCard(Flowable):
+    """Placeholder card shown when AI insights were skipped (free user, no API key)."""
+    CARD_H = 80
+    ACCENT_W = 4
+    PAD_LEFT = 14
+    PAD_TOP = 12
+
+    _CARD_BG = HexColor('#F3F2F8')
+    _AMBER = HexColor('#F59E0B')
+    _INK = HexColor('#14131F')
+    _GRAY = HexColor('#6B7280')
+
+    def __init__(self, width=None):
+        Flowable.__init__(self)
+        self._width = width or (PAGE_WIDTH - 2 * MARGIN)
+
+    def wrap(self, availWidth, availHeight):
+        return (self._width, self.CARD_H)
+
+    def draw(self):
+        w = self._width
+        y = self.CARD_H
+
+        self.canv.setFillColor(self._CARD_BG)
+        self.canv.roundRect(0, 0, w, self.CARD_H, radius=4, fill=1, stroke=0)
+
+        self.canv.setFillColor(self._AMBER)
+        self.canv.roundRect(0, 0, self.ACCENT_W, self.CARD_H, radius=2, fill=1, stroke=0)
+
+        text_x = self.ACCENT_W + self.PAD_LEFT
+
+        self.canv.setFillColor(self._INK)
+        self.canv.setFont('IBMPlexSans-Bold', 9.5)
+        self.canv.drawString(text_x, y - self.PAD_TOP - 9, "AI insights require an API key")
+
+        self.canv.setFillColor(self._GRAY)
+        self.canv.setFont('IBMPlexSans', 8)
+        self.canv.drawString(text_x, y - self.PAD_TOP - 24, "Add your own API key in Settings \u2192 API Key to enable AI")
+        self.canv.drawString(text_x, y - self.PAD_TOP - 36, "insights, or upgrade to Pro at naxely.com/billing")
+
+
 class _AnomalyBox(Flowable):
     def __init__(self, message, width=None):
         Flowable.__init__(self)
@@ -904,10 +945,8 @@ def build_sync(
         body_story.append(_SectionHeader('AI Insights', brand_color, content_width))
         body_story.append(Spacer(1, 10))
         if ai_skipped:
-            body_story.append(Paragraph(
-                "⚠️ AI insights were rate-limited during generation. Regenerate this report to include them.",
-                body_style,
-            ))
+            body_story.append(_AISkippedCard(width=content_width))
+            body_story.append(Spacer(1, 10))
         elif insights:
             for ins in insights[:5]:
                 card = _InsightCard(ins, width=content_width)
@@ -956,10 +995,8 @@ def build_sync(
     body_story.append(Spacer(1, 10))
 
     if ai_skipped:
-        body_story.append(Paragraph(
-            "⚠️ Recommendations were rate-limited during generation. Regenerate this report to include them.",
-            body_style,
-        ))
+        body_story.append(_AISkippedCard(width=content_width))
+        body_story.append(Spacer(1, 10))
     else:
         all_insights = ai_content.get('insights') or []
         actions = [ins.get('action', '') for ins in all_insights if ins.get('action')]

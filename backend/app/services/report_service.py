@@ -149,7 +149,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         else:
             try:
                 _chart_user = _make_user_proxy(user_data_row or {})
-                _provider, _api_key = ai_service.get_user_api_key(_chart_user)
+                _provider, _api_key, _ = ai_service.get_user_api_key(_chart_user)
                 chart_specs = chart_service.select_charts_with_ai(
                     df=df_norm,
                     config=config,
@@ -180,9 +180,12 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
 
         if _has_ai_sections(config):
             user_obj = _make_user_proxy(user_data_row or {})
-            has_key = bool(user_data_row and user_data_row.get("encrypted_api_key"))
+            _provider, _api_key, _ = ai_service.get_user_api_key(user_obj)
 
-            if has_key:
+            if _api_key is None:
+                ai_skipped = True
+                config["_ai_skipped"] = True
+            else:
                 await update_status(report_id, 'processing', step='ai')
 
                 try:

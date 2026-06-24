@@ -188,20 +188,6 @@ def require_agency(current_user: User = Depends(get_current_user)) -> User:
 
 
 def require_byok(current_user: User = Depends(get_current_user)) -> User:
-    user_tier = (getattr(current_user, 'tier', None) or 'free').lower()
-    has_key = bool(
-        getattr(current_user, 'encrypted_api_key', None) and
-        getattr(current_user, 'api_key_iv', None)
-    )
-    if user_tier == 'free' and has_key:
-        raise HTTPException(
-            status_code=403,
-            detail={
-                "code": "UPGRADE_REQUIRED",
-                "message": "BYOK API keys require a Pro or Agency plan.",
-                "current_tier": user_tier,
-            }
-        )
     return current_user
 
 

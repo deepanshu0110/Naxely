@@ -25,29 +25,26 @@ def _user(
 
 class TestGetUserApiKeyTierCheck:
     """
-    Defense-in-depth: get_user_api_key() must return server Gemini for Free
-    users even if they have a stored BYOK key.
-
-    These target Phase 3 Fix 4.
+    get_user_api_key() gating rules:
+    - Free user + no key → (None, None, None) — AI skipped
+    - Free user + stored key → their own provider config (BYOK)
+    - Pro/Agency + stored key → their own provider config
+    - Pro/Agency + no key → server Gemini fallback
     """
 
-    def test_free_user_with_stored_key_returns_gemini(self):
+    def test_free_user_with_stored_key_uses_own_key(self):
         """
-        MUST FAIL before Phase 3 Fix 4.
-        Currently returns ("openai", "sk-stolen") — does NOT check tier.
-        After fix: returns ("gemini", GEMINI_API_KEY).
+        Free user with a stored BYOK key gets their own provider config.
         """
         from app.services.ai_service import get_user_api_key
-        import app.services.ai_service as ai_svc
 
         free = _user("free", encrypted_api_key=b"ekey", api_key_iv=b"eiv")
 
         with patch("app.services.ai_service.decrypt_api_key", return_value="sk-stolen"):
-            with patch.object(ai_svc.settings, "GEMINI_API_KEY", "test-gemini-key"):
-                provider, key = get_user_api_key(free)
+            provider, key, _ = get_user_api_key(free)
 
-        assert provider == "gemini"
-        assert key == "test-gemini-key"
+        assert provider == "openai"
+        assert key == "sk-stolen"
 
     def test_pro_user_with_stored_key_uses_own_key(self):
         """
@@ -59,44 +56,34 @@ class TestGetUserApiKeyTierCheck:
         pro = _user("pro", encrypted_api_key=b"ekey", api_key_iv=b"eiv")
 
         with patch("app.services.ai_service.decrypt_api_key", return_value="sk-pro-key"):
-            provider, key = get_user_api_key(pro)
+            provider, key, _ = get_user_api_key(pro)
 
         assert provider == "openai"
         assert key == "sk-pro-key"
 
-    def test_free_user_with_gemini_provider_still_gets_gemini(self):
+    def test_free_user_with_no_key_returns_none(self):
         """
-        Free user who chose Gemini provider still gets server Gemini.
-        Should pass before and after fix.
+        Free user with no stored key gets (None, None, None) — AI skipped.
         """
         from app.services.ai_service import get_user_api_key
-        import app.services.ai_service as ai_svc
 
         free = _user("free", ai_provider="gemini")
+        provider, key, base_url = get_user_api_key(free)
 
-        with patch.object(ai_svc.settings, "GEMINI_API_KEY", "server-gemini-key"):
-            provider, key = get_user_api_key(free)
+        assert provider is None
+        assert key is None
 
-        assert provider == "gemini"
-        assert key == "server-gemini-key"
-
-    def test_free_user_without_key_gets_gemini_after_fix(self):
+    def test_free_user_without_stored_key_returns_none(self):
         """
-        BEFORE Fix 4: Free user with no stored key and non-gemini provider
-        raises HTTPException(402).
-        AFTER Fix 4: Returns server Gemini instead (graceful fallback).
-        This test expects the post-fix behavior.
+        Free user with no stored key (any provider) returns (None, None, None).
         """
         from app.services.ai_service import get_user_api_key
-        import app.services.ai_service as ai_svc
 
         free = _user("free")
+        provider, key, base_url = get_user_api_key(free)
 
-        with patch.object(ai_svc.settings, "GEMINI_API_KEY", "test-gemini-key"):
-            provider, key = get_user_api_key(free)
-
-        assert provider == "gemini"
-        assert key == "test-gemini-key"
+        assert provider is None
+        assert key is None
 
 
 class TestByokDepDirect:
@@ -106,14 +93,12 @@ class TestByokDepDirect:
     No TestClient needed — call the dep function directly.
     """
 
-    def test_require_byok_blocks_free_user_with_key(self):
+    def test_require_byok_allows_free_user_with_key(self):
         from app.api.deps import require_byok
 
         free = _user("free", encrypted_api_key=b"key", api_key_iv=b"iv")
-        with pytest.raises(HTTPException) as exc:
-            require_byok(current_user=free)
-        assert exc.value.status_code == 403
-        assert exc.value.detail["code"] == "UPGRADE_REQUIRED"
+        result = require_byok(current_user=free)
+        assert result is free
 
     def test_require_byok_allows_free_user_without_key(self):
         from app.api.deps import require_byok

@@ -68,12 +68,6 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
   }, [selectedProvider])
   const needsKey = PROVIDERS_NEEDING_KEY.includes(selectedProvider as typeof PROVIDERS_NEEDING_KEY[number])
 
-  if (tier === 'free') {
-    return (
-      <UpgradePromptInline feature="AI API key management" tier="Pro" />
-    )
-  }
-
   const onSubmit = async (data: ApiKeyFormValues) => {
     setIsSaving(true)
     try {
@@ -170,10 +164,10 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, tier, onSaved
           )}
         </div>
 
-        <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3">
-          <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" />
-          <p className="text-xs text-blue-700">
-            Gemini (free) uses Naxely's server key — no API key needed. Other providers use your own key, encrypted with AES-256.
+        <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
+          <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
+          <p className="text-xs text-amber-700">
+            Free users can bring their own API key to unlock AI features. Pro users also get free access to the server Gemini key.
           </p>
         </div>
 

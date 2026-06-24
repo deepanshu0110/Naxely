@@ -270,3 +270,43 @@ class TestDeepSeekValidation:
             validate_api_key(provider="deepseek", api_key="sk-abc123")
         call_kwargs = mock_call.call_args
         assert "api.deepseek.com" in str(call_kwargs)
+
+
+class TestGetUserApiKey:
+    def test_free_user_no_key_returns_none(self):
+        from app.services.ai_service import get_user_api_key
+        from unittest.mock import MagicMock
+        user = MagicMock()
+        user.subscription_tier = "free"
+        user.tier = "free"
+        user.encrypted_api_key = None
+        user.api_key_iv = None
+        provider, key, base_url = get_user_api_key(user)
+        assert provider is None
+        assert key is None
+
+    def test_free_user_with_key_gets_byok(self):
+        from app.services.ai_service import get_user_api_key
+        from unittest.mock import MagicMock, patch
+        user = MagicMock()
+        user.subscription_tier = "free"
+        user.tier = "free"
+        user.encrypted_api_key = b"encrypted"
+        user.api_key_iv = b"iv"
+        user.ai_provider = "groq"
+        with patch("app.services.ai_service.decrypt_api_key", return_value="gsk_testkey"):
+            provider, key, base_url = get_user_api_key(user)
+        assert provider == "groq"
+        assert key == "gsk_testkey"
+
+    def test_pro_user_no_key_gets_server_gemini(self):
+        from app.services.ai_service import get_user_api_key
+        from unittest.mock import MagicMock
+        user = MagicMock()
+        user.subscription_tier = "pro"
+        user.tier = "pro"
+        user.encrypted_api_key = None
+        user.api_key_iv = None
+        provider, key, base_url = get_user_api_key(user)
+        assert provider == "gemini"
+        assert key is not None

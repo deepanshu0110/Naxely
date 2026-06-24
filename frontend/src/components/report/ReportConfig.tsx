@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Briefcase, MessageCircle, BarChart3, BookOpen } from 'lucide-react'
+import { Briefcase, MessageCircle, BarChart3, BookOpen, Lock } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import UpgradePrompt from '@/components/ui/UpgradePrompt'
 
@@ -37,6 +38,7 @@ const proSections = [
 export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) {
   const user = useAuthStore((s) => s.user)
   const isPro = user?.tier === 'pro' || user?.tier === 'agency'
+  const hasApiKey = user?.has_api_key ?? false
 
   const [title, setTitle] = useState('')
   const [dateFrom, setDateFrom] = useState('')
@@ -146,8 +148,8 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
               </label>
           ))}
           {proSections.map((s) =>
-            isPro ? (
-            <label key={s.id} className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
+            isPro || hasApiKey ? (
+            <label key={s.id} className={`flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800`}>
                 <input
                   type="checkbox"
                   checked={sections.includes(s.id)}
@@ -158,8 +160,17 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
                 <span className="ml-auto text-xs text-green-600">✅</span>
               </label>
             ) : (
-              <div key={s.id} className="pointer-events-none opacity-70 dark:opacity-50">
-                <UpgradePrompt feature={s.label} />
+              <div key={s.id} className="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex items-center gap-3 opacity-70">
+                  <Lock className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm text-gray-500">{s.label}</span>
+                </div>
+                <p className="mt-1 text-xs text-amber-600">
+                  <Link to="/settings?tab=api-key" className="underline hover:no-underline">
+                    Add your own API key in Settings
+                  </Link>
+                  {' '}to enable AI
+                </p>
               </div>
             ),
           )}

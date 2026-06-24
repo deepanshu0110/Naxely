@@ -28,36 +28,46 @@ PROVIDER_CONFIG = {
 }
 
 
-def get_user_api_key(user: User) -> tuple[str, str]:
-    # Free tier always gets server Gemini regardless of stored key.
-    # This is defense-in-depth — route-level deps are the primary gate.
+def _get_user_provider_config(user) -> tuple[str, str, str | None]:
+    provider = str(getattr(user, 'ai_provider', None) or "gemini")
+    cfg = PROVIDER_CONFIG.get(provider, {})
+    base_url = cfg.get("base_url")
+
+    if provider == "gemini":
+        return ("gemini", settings.GEMINI_API_KEY, base_url)
+
+    master_key = get_master_key()
+    encrypted = str(user.encrypted_api_key) if not isinstance(user.encrypted_api_key, str) else user.encrypted_api_key
+    iv = str(user.api_key_iv) if not isinstance(user.api_key_iv, str) else user.api_key_iv
+    plaintext_key = decrypt_api_key(encrypted, iv, master_key)
+    return (provider, plaintext_key, base_url)
+
+
+def get_user_api_key(user: User) -> tuple[str | None, str | None, str | None]:
     tier = (
         getattr(user, 'subscription_tier', None)
         or getattr(user, 'tier', None)
         or 'free'
     ).lower()
-    if tier == 'free':
-        return ("gemini", settings.GEMINI_API_KEY)
+    has_stored_key = bool(
+        getattr(user, 'encrypted_api_key', None) and
+        getattr(user, 'api_key_iv', None)
+    )
 
-    provider = str(user.ai_provider or "gemini")
-    if provider == "gemini":
-        from app.core.config import settings as app_settings
-        server_key = app_settings.GEMINI_API_KEY
-        if server_key:
-            return ("gemini", server_key)
-    if not user.encrypted_api_key or not user.api_key_iv:
-        raise HTTPException(
-            status_code=402,
-            detail={
-                "code": "API_KEY_REQUIRED",
-                "message": "Add your API key in Settings to use AI features",
-            },
-        )
-    master_key = get_master_key()
-    encrypted = str(user.encrypted_api_key) if not isinstance(user.encrypted_api_key, str) else user.encrypted_api_key
-    iv = str(user.api_key_iv) if not isinstance(user.api_key_iv, str) else user.api_key_iv
-    plaintext_key = decrypt_api_key(encrypted, iv, master_key)
-    return (provider, plaintext_key)
+    if tier == 'free' and not has_stored_key:
+        return None, None, None
+
+    if tier == 'free' and has_stored_key:
+        return _get_user_provider_config(user)
+
+    if has_stored_key:
+        return _get_user_provider_config(user)
+
+    return (
+        "gemini",
+        settings.GEMINI_API_KEY,
+        "https://generativelanguage.googleapis.com/v1beta/openai/"
+    )
 
 
 def call_openai(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
@@ -288,8 +298,10 @@ def _build_column_stats(df: pd.DataFrame, null_counts_override: dict | None = No
 
 async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Optional[str]:
     try:
-        provider, api_key = get_user_api_key(user)
+        provider, api_key, _ = get_user_api_key(user)
     except HTTPException:
+        return None
+    if api_key is None:
         return None
 
     column_stats = _build_column_stats(df, null_counts_override=config.get("_raw_null_counts"))
@@ -338,8 +350,10 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
 
 async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> list[dict]:
     try:
-        provider, api_key = get_user_api_key(user)
+        provider, api_key, _ = get_user_api_key(user)
     except HTTPException:
+        return []
+    if api_key is None:
         return []
 
     column_stats = _build_column_stats(df, null_counts_override=config.get("_raw_null_counts"))
