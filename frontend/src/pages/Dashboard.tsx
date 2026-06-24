@@ -112,14 +112,18 @@ export default function Dashboard() {
                   <span className="flex-1 text-sm font-medium text-white dark:text-ink">
                     {selectedIds.size} selected
                   </span>
-                  <Button variant="ghost" size="sm" onClick={selectAll}
-                    className="text-gray-400 hover:text-white dark:hover:text-ink">
+                  <button
+                    onClick={selectAll}
+                    className="text-sm text-gray-300 underline underline-offset-2 transition hover:text-white dark:text-gray-600 dark:hover:text-ink"
+                  >
                     Select all ({reports.length})
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={clearSelection}
-                    className="text-gray-400 hover:text-white dark:hover:text-ink">
+                  </button>
+                  <button
+                    onClick={clearSelection}
+                    className="text-sm text-gray-300 underline underline-offset-2 transition hover:text-white dark:text-gray-600 dark:hover:text-ink"
+                  >
                     Clear
-                  </Button>
+                  </button>
                   <Button variant="danger" size="sm" onClick={() => setShowBulkConfirm(true)}>
                     Delete {selectedIds.size}
                   </Button>
