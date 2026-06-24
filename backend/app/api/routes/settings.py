@@ -528,11 +528,11 @@ async def list_api_keys(
     rows = result.mappings().all()
     return [
         {
-            "id": r["id"],
+            "id": str(r["id"]),
             "name": r["name"],
             "key_display": f"{r['key_prefix']}...{r['key_suffix']}",
-            "created_at": r["created_at"].isoformat() + "Z" if r.get("created_at") else None,
-            "last_used_at": r["last_used_at"].isoformat() + "Z" if r.get("last_used_at") else None,
+            "created_at": r["created_at"].isoformat() if r["created_at"] else None,
+            "last_used_at": r["last_used_at"].isoformat() if r["last_used_at"] else None,
             "revoked": r["revoked_at"] is not None,
         }
         for r in rows
@@ -549,9 +549,9 @@ async def revoke_api_key(
         text("""
             UPDATE api_keys
             SET revoked_at = NOW()
-            WHERE id = CAST(:id AS uuid) AND user_id = CAST(:uid AS uuid) AND revoked_at IS NULL
+            WHERE id::text = :id AND user_id::text = :uid AND revoked_at IS NULL
         """),
-        {"id": key_id, "uid": str(current_user.id)},
+        {"id": str(key_id), "uid": str(current_user.id)},
     )
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="API key not found or already revoked")
