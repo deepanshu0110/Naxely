@@ -14,7 +14,7 @@ import Badge from '@/components/ui/Badge'
 import Modal from '@/components/ui/Modal'
 import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import ApiKeyForm from '@/components/settings/ApiKeyForm'
-import { Upload, Palette, AlertTriangle } from 'lucide-react'
+import { Upload, Palette, AlertTriangle, Key, Copy, Check, Clock, XCircle } from 'lucide-react'
 import type { ProfileResponse, BrandingResponse, CheckoutResponse, SubscriptionResponse } from '@/types/api'
 
 const profileSchema = z.object({
@@ -27,19 +27,21 @@ const profileSchema = z.object({
 
 type ProfileForm = z.infer<typeof profileSchema>
 
+interface ApiKey {
+  id: string
+  name: string
+  key_display: string
+  created_at: string
+  last_used_at: string | null
+  revoked: boolean
+}
+
 const brandingSchema = z.object({
   brand_color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be a valid hex colour'),
   company_name: z.string().max(255, 'Company name too long').optional(),
 })
 
 type BrandingForm = z.infer<typeof brandingSchema>
-
-const TABS = [
-  { id: 'profile', label: 'Profile' },
-  { id: 'api-key', label: 'API Key' },
-  { id: 'branding', label: 'Branding' },
-  { id: 'billing', label: 'Billing' },
-]
 
 export default function Settings() {
   const { user, fetchProfile } = useAuthStore()
@@ -68,6 +70,15 @@ export default function Settings() {
 
   const tier = profile?.tier ?? user?.tier ?? 'free'
   const isProOrAbove = tier === 'pro' || tier === 'agency'
+  const isAgency = tier === 'agency'
+
+  const TABS = [
+    { id: 'profile', label: 'Profile' },
+    { id: 'api-key', label: 'API Key' },
+    ...(isAgency ? [{ id: 'api-keys', label: 'API Keys' }] : []),
+    { id: 'branding', label: 'Branding' },
+    { id: 'billing', label: 'Billing' },
+  ]
 
   if (loading) return <SettingsSkeleton />
   if (error) {
@@ -103,6 +114,7 @@ export default function Settings() {
                 onDeleted={() => fetchSettings()}
               />
             )}
+            {activeTab === 'api-keys' && <ApiKeysTab />}
             {activeTab === 'branding' && (
               isProOrAbove ? (
                 <BrandingTab
@@ -656,6 +668,165 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
           </Modal>
         </div>
       </div>
+    </div>
+  )
+}
+
+function ApiKeysTab() {
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
+  const [showKeyModal, setShowKeyModal] = useState(false)
+  const [newKeyName, setNewKeyName] = useState('')
+  const [newKey, setNewKey] = useState('')
+  const [keyLoading, setKeyLoading] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    api.get('/settings/api-keys').then(r => setApiKeys(r.data)).catch(() => {})
+  }, [])
+
+  const handleGenerate = async () => {
+    if (!newKeyName.trim()) return
+    setKeyLoading(true)
+    try {
+      const resp = await api.post('/settings/api-keys', { name: newKeyName.trim() })
+      setNewKey(resp.data.key)
+      setApiKeys(prev => [{
+        id: resp.data.id,
+        name: resp.data.name,
+        key_display: `${resp.data.key_prefix}...${resp.data.key_suffix}`,
+        created_at: resp.data.created_at,
+        last_used_at: null,
+        revoked: false,
+      }, ...prev])
+    } catch {
+      toast.error('Failed to generate API key')
+    } finally {
+      setKeyLoading(false)
+    }
+  }
+
+  const handleRevoke = async (keyId: string) => {
+    try {
+      await api.delete(`/settings/api-keys/${keyId}`)
+      setApiKeys(prev => prev.filter(k => k.id !== keyId))
+      toast.success('API key revoked')
+    } catch {
+      toast.error('Failed to revoke API key')
+    }
+  }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(newKey)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const formatDate = (d: string) => {
+    try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
+    catch { return d }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-body font-medium text-gray-700 dark:text-gray-300">Programmatic Access</h3>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            API keys allow you to generate reports programmatically via the Naxely API.
+          </p>
+        </div>
+        <Button size="sm" onClick={() => { setNewKey(''); setNewKeyName(''); setShowKeyModal(true) }}>
+          <Key className="mr-1.5 h-4 w-4" />
+          Generate New Key
+        </Button>
+      </div>
+
+      {apiKeys.length === 0 ? (
+        <div className="flex flex-col items-center py-12 text-center">
+          <Key className="mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">No API keys yet</h4>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Generate one to get started with the Naxely API.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {apiKeys.map((k) => (
+            <Card key={k.id} padding="p-4">
+              <div className="flex items-center justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">{k.name}</h4>
+                    {k.revoked && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                        <XCircle className="h-3 w-3" />
+                        Revoked
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-0.5 font-mono text-xs text-gray-500 dark:text-gray-400">{k.key_display}</p>
+                  <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      Created {formatDate(k.created_at)}
+                    </span>
+                    <span>
+                      Last used {k.last_used_at ? formatDate(k.last_used_at) : 'Never'}
+                    </span>
+                  </div>
+                </div>
+                {!k.revoked && (
+                  <Button variant="danger" size="sm" onClick={() => handleRevoke(k.id)}>
+                    Revoke
+                  </Button>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <Modal isOpen={showKeyModal} onClose={() => setShowKeyModal(false)} title="Generate API Key">
+        {newKey ? (
+          <div className="space-y-4">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/30">
+              <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                ⚠ Save this key — it will not be shown again.
+              </p>
+            </div>
+            <div className="rounded-md border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
+              <code className="break-all font-mono text-sm text-gray-900 dark:text-gray-100">{newKey}</code>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={handleCopy}>
+                {copied ? <><Check className="mr-1.5 h-4 w-4" /> Copied</> : <><Copy className="mr-1.5 h-4 w-4" /> Copy</>}
+              </Button>
+              <Button onClick={() => setShowKeyModal(false)}>Done</Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="key_name" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Key Name
+              </label>
+              <input
+                id="key_name"
+                type="text"
+                value={newKeyName}
+                onChange={(e) => setNewKeyName(e.target.value)}
+                placeholder="e.g. CI integration"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleGenerate() }}
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button variant="ghost" onClick={() => setShowKeyModal(false)}>Cancel</Button>
+              <Button loading={keyLoading} disabled={!newKeyName.trim()} onClick={handleGenerate}>
+                Generate
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }
