@@ -496,6 +496,7 @@ async def create_api_key(
             "suffix": key_suffix,
         },
     )
+    await db.commit()
     row = result.mappings().first()
 
     created_at = row["created_at"].isoformat() + "Z" if row.get("created_at") else datetime.now(timezone.utc).isoformat() + "Z"
