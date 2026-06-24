@@ -476,7 +476,7 @@ async def create_api_key(
 
     count_result = await db.execute(
         text("SELECT COUNT(*) FROM api_keys WHERE user_id = :uid AND revoked_at IS NULL"),
-        {"uid": current_user.id},
+        {"uid": str(current_user.id)},
     )
     count = count_result.scalar()
     if count >= 10:
@@ -489,7 +489,7 @@ async def create_api_key(
             RETURNING id, created_at
         """),
         {
-            "uid": current_user.id,
+            "uid": str(current_user.id),
             "name": name,
             "hash": key_hash,
             "prefix": key_prefix,
@@ -523,7 +523,7 @@ async def list_api_keys(
             WHERE user_id = :uid
             ORDER BY created_at DESC
         """),
-        {"uid": current_user.id},
+        {"uid": str(current_user.id)},
     )
     rows = result.mappings().all()
     return [

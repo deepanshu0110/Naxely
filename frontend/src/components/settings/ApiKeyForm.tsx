@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal'
 import Badge from '@/components/ui/Badge'
 import type { ApiKeyResponse } from '@/types/api'
 
-const PROVIDERS_NEEDING_KEY = ['openai', 'claude', 'groq', 'deepseek', 'mistral', 'together'] as const
+const PROVIDERS_NEEDING_KEY = ['openai', 'claude', 'groq', 'deepseek', 'mistral', 'together', 'gemini'] as const
 
 const apiKeySchema = z.object({
   provider: z.enum(['gemini', 'openai', 'claude', 'groq', 'deepseek', 'mistral', 'together'], { required_error: 'Select a provider' }),
@@ -63,7 +63,8 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
       case 'deepseek': return 'sk-...'
       case 'mistral': return '...'
       case 'together': return '...'
-      default: return 'No key needed with Gemini'
+      case 'gemini': return 'AIza...'
+      default: return ''
     }
   }, [selectedProvider])
   const needsKey = PROVIDERS_NEEDING_KEY.includes(selectedProvider as typeof PROVIDERS_NEEDING_KEY[number])
@@ -148,7 +149,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
 
         <div>
           <label htmlFor="api_key" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-            API Key {!needsKey && <span className="font-normal text-gray-400">(optional — uses server key)</span>}
+            API Key
           </label>
           <input
             id="api_key"
