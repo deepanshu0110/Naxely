@@ -638,10 +638,11 @@ async def preview_charts(
 
     chart_specs = None
     try:
+        user_result = await db.execute(
+            text("SELECT * FROM users WHERE id = :uid"), {"uid": str(current_user.id)}
+        )
         user_obj = _make_user_proxy(
-            dict(await db.execute(
-                text("SELECT * FROM users WHERE id = :uid"), {"uid": str(current_user.id)}
-            ).mappings().first() or {})
+            dict(user_result.mappings().first() or {})
         )
         provider, api_key = ai_service_mod.get_user_api_key(user_obj)
         chart_specs = chart_service_mod.select_charts_with_ai(
