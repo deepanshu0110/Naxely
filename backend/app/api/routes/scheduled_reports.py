@@ -350,7 +350,16 @@ async def _run_all_scheduled_reports() -> None:
                     config = config_raw
 
                 config.setdefault("template_type", "professional")
-                config.setdefault("sections", ["kpi_overview", "charts"])
+                config.setdefault("sections", [
+                    "kpi_overview",
+                    "charts",
+                    "executive_summary",
+                    "insights",
+                    "anomalies",
+                    "trends",
+                    "recommendations",
+                    "data_table",
+                ])
 
                 await db.execute(
                     text("""
