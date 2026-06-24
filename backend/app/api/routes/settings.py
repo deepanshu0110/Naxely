@@ -8,7 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, check_pro_tier
+from app.api.deps import get_current_user, require_pro_or_above
 from app.core.database import get_db
 from app.models.user import User
 from app.utils.encryption import get_master_key, encrypt_api_key
@@ -179,10 +179,9 @@ async def update_profile(
 async def save_api_key(
     request: FastAPIRequest,
     body: ApiKeyRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     if body.provider not in VALID_KEY_PATTERNS:
         raise HTTPException(
@@ -264,10 +263,9 @@ async def save_api_key(
 
 @router.delete("/api-key")
 async def delete_api_key(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     await db.execute(
         text("""
@@ -291,10 +289,9 @@ async def update_branding(
     brand_color: str = Form(None),
     company_name: str = Form(None),
     logo: UploadFile = File(None),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     logo_url = None
     suggested_colors = []

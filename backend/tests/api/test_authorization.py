@@ -334,8 +334,7 @@ class TestTemplateOwnership:
 
         db = _AsyncDB([template_row, MagicMock(), template_row])
         body = TemplateUpdateRequest(name="Updated Name")
-        with patch("app.api.routes.templates.check_pro_tier"):
-            result = await update_template("template-owned-by-a", body, current_user=FakeUserA(), db=db)
+        result = await update_template("template-owned-by-a", body, current_user=FakeUserA(), db=db)
         assert result["success"] is True
 
     @pytest.mark.asyncio
@@ -345,8 +344,7 @@ class TestTemplateOwnership:
         template_row = _Row(id="template-owned-by-a", user_id=FakeUserA.id)
 
         db = _AsyncDB([template_row, MagicMock()])
-        with patch("app.api.routes.templates.check_pro_tier"):
-            result = await delete_template("template-owned-by-a", current_user=FakeUserA(), db=db)
+        result = await delete_template("template-owned-by-a", current_user=FakeUserA(), db=db)
         assert result["success"] is True
 
 
@@ -366,15 +364,14 @@ class FakeFreeUser:
 class TestTemplateDeleteProGate:
     @pytest.mark.asyncio
     async def test_free_user_cannot_delete_template(self):
-        from app.api.routes.templates import delete_template
+        from app.api.deps import require_pro_or_above
 
-        db = _AsyncDB([_NotFound()])
         with pytest.raises(HTTPException) as exc:
-            await delete_template("any-template", current_user=FakeFreeUser(), db=db)
-        assert exc.value.status_code == 402
+            require_pro_or_above(current_user=FakeFreeUser())
+        assert exc.value.status_code == 403
         detail = exc.value.detail
         if isinstance(detail, dict):
-            assert detail["code"] == "PRO_REQUIRED"
+            assert detail["code"] == "UPGRADE_REQUIRED"
 
     @pytest.mark.asyncio
     async def test_pro_user_can_delete_own_template(self):
@@ -398,15 +395,14 @@ class TestTemplateDeleteProGate:
 class TestApiKeyDeleteProGate:
     @pytest.mark.asyncio
     async def test_free_user_cannot_delete_api_key(self):
-        from app.api.routes.settings import delete_api_key
+        from app.api.deps import require_pro_or_above
 
-        db = _AsyncDB()
         with pytest.raises(HTTPException) as exc:
-            await delete_api_key(current_user=FakeFreeUser(), db=db)
-        assert exc.value.status_code == 402
+            require_pro_or_above(current_user=FakeFreeUser())
+        assert exc.value.status_code == 403
         detail = exc.value.detail
         if isinstance(detail, dict):
-            assert detail["code"] == "PRO_REQUIRED"
+            assert detail["code"] == "UPGRADE_REQUIRED"
 
     @pytest.mark.asyncio
     async def test_pro_user_can_delete_api_key(self):

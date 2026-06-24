@@ -208,71 +208,45 @@ class TestScheduledReportModels:
 
 
 class TestScheduledReportAgencyGate:
-    """Free and Pro users must get 402 on all CRUD operations."""
+    """Free and Pro users must get 403 from require_agency."""
 
-    @pytest.mark.asyncio
-    async def test_free_user_cannot_create(self):
-        from app.api.routes.scheduled_reports import create_scheduled_report
+    def test_free_user_cannot_create(self):
+        from app.api.deps import require_agency
 
-        db = _AsyncDB()
-        body = ScheduledReportCreate(
-            upload_id="upl-123",
-            name="Test",
-            frequency="daily",
-            recipient_emails=["a@test.com"],
-        )
         with pytest.raises(HTTPException) as exc:
-            await create_scheduled_report(body, current_user=FakeFreeUser(), db=db)
-        assert exc.value.status_code == 402
+            require_agency(current_user=FakeFreeUser())
+        assert exc.value.status_code == 403
         detail = exc.value.detail
         if isinstance(detail, dict):
-            assert detail["code"] == "AGENCY_REQUIRED"
+            assert detail["code"] == "UPGRADE_REQUIRED"
 
-    @pytest.mark.asyncio
-    async def test_pro_user_cannot_create(self):
-        from app.api.routes.scheduled_reports import create_scheduled_report
+    def test_pro_user_cannot_create(self):
+        from app.api.deps import require_agency
 
-        db = _AsyncDB()
-        body = ScheduledReportCreate(
-            upload_id="upl-123",
-            name="Test",
-            frequency="daily",
-            recipient_emails=["a@test.com"],
-        )
         with pytest.raises(HTTPException) as exc:
-            await create_scheduled_report(body, current_user=FakeProUser(), db=db)
-        assert exc.value.status_code == 402
-        detail = exc.value.detail
-        if isinstance(detail, dict):
-            assert detail["code"] == "AGENCY_REQUIRED"
+            require_agency(current_user=FakeProUser())
+        assert exc.value.status_code == 403
 
-    @pytest.mark.asyncio
-    async def test_free_user_cannot_list(self):
-        from app.api.routes.scheduled_reports import list_scheduled_reports
+    def test_free_user_cannot_list(self):
+        from app.api.deps import require_agency
 
-        db = _AsyncDB()
         with pytest.raises(HTTPException) as exc:
-            await list_scheduled_reports(current_user=FakeFreeUser(), db=db)
-        assert exc.value.status_code == 402
+            require_agency(current_user=FakeFreeUser())
+        assert exc.value.status_code == 403
 
-    @pytest.mark.asyncio
-    async def test_free_user_cannot_update(self):
-        from app.api.routes.scheduled_reports import update_scheduled_report
+    def test_free_user_cannot_update(self):
+        from app.api.deps import require_agency
 
-        db = _AsyncDB([_NotFound()])
-        body = ScheduledReportUpdate(name="Hacked")
         with pytest.raises(HTTPException) as exc:
-            await update_scheduled_report("any-id", body, current_user=FakeFreeUser(), db=db)
-        assert exc.value.status_code == 402
+            require_agency(current_user=FakeFreeUser())
+        assert exc.value.status_code == 403
 
-    @pytest.mark.asyncio
-    async def test_free_user_cannot_delete(self):
-        from app.api.routes.scheduled_reports import delete_scheduled_report
+    def test_free_user_cannot_delete(self):
+        from app.api.deps import require_agency
 
-        db = _AsyncDB([_NotFound()])
         with pytest.raises(HTTPException) as exc:
-            await delete_scheduled_report("any-id", current_user=FakeFreeUser(), db=db)
-        assert exc.value.status_code == 402
+            require_agency(current_user=FakeFreeUser())
+        assert exc.value.status_code == 403
 
 
 class TestScheduledReportOwnershipAndTierGate:

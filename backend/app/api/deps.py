@@ -101,28 +101,45 @@ async def check_report_limit(current_user: User = Depends(get_current_user)) -> 
             )
 
 
-async def check_pro_tier(current_user: User = Depends(get_current_user)) -> None:
-    if current_user.tier not in ("pro", "agency"):
+def _check_tier(user: User, allowed_tiers: set, required: str) -> User:
+    user_tier = (getattr(user, 'tier', None) or 'free').lower()
+    if user_tier not in allowed_tiers:
         raise HTTPException(
-            status_code=402,
+            status_code=403,
             detail={
-                "code": "PRO_REQUIRED",
-                "message": "This feature requires a Pro subscription.",
-                "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
-            },
+                "code": "UPGRADE_REQUIRED",
+                "message": f"This feature requires a {required.title()} plan.",
+                "current_tier": user_tier,
+                "required_tier": required,
+            }
         )
+    return user
 
 
-async def check_agency_tier(current_user: User = Depends(get_current_user)) -> None:
-    if current_user.tier != "agency":
+def require_pro_or_above(current_user: User = Depends(get_current_user)) -> User:
+    return _check_tier(current_user, {'pro', 'agency'}, 'pro')
+
+
+def require_agency(current_user: User = Depends(get_current_user)) -> User:
+    return _check_tier(current_user, {'agency'}, 'agency')
+
+
+def require_byok(current_user: User = Depends(get_current_user)) -> User:
+    user_tier = (getattr(current_user, 'tier', None) or 'free').lower()
+    has_key = bool(
+        getattr(current_user, 'encrypted_api_key', None) and
+        getattr(current_user, 'api_key_iv', None)
+    )
+    if user_tier == 'free' and has_key:
         raise HTTPException(
-            status_code=402,
+            status_code=403,
             detail={
-                "code": "AGENCY_REQUIRED",
-                "message": "This feature requires an Agency subscription.",
-                "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
-            },
+                "code": "UPGRADE_REQUIRED",
+                "message": "BYOK API keys require a Pro or Agency plan.",
+                "current_tier": user_tier,
+            }
         )
+    return current_user
 
 
 async def increment_report_count(user_id: str, db: AsyncSession) -> None:

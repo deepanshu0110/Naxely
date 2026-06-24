@@ -9,7 +9,7 @@ from pydantic import BaseModel, field_validator
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, check_agency_tier
+from app.api.deps import require_agency
 from app.core.config import settings
 from app.core.database import get_db
 from app.models.user import User
@@ -123,11 +123,9 @@ def _row_to_response(row: dict) -> ScheduledReportResponse:
 @router.post("/scheduled-reports", response_model=ScheduledReportResponse)
 async def create_scheduled_report(
     body: ScheduledReportCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_agency),
     db: AsyncSession = Depends(get_db),
 ):
-    await check_agency_tier(current_user)
-
     logger.info(
         "SCHEDULED_REPORT_DIAGNOSTIC create attempt — upload_id=%s, user_id=%s (type=%s), user.id=%s",
         body.upload_id,
@@ -223,10 +221,9 @@ async def create_scheduled_report(
 
 @router.get("/scheduled-reports", response_model=list[ScheduledReportResponse])
 async def list_scheduled_reports(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_agency),
     db: AsyncSession = Depends(get_db),
 ):
-    await check_agency_tier(current_user)
     result = await db.execute(
         text("""
             SELECT * FROM scheduled_reports
@@ -243,10 +240,9 @@ async def list_scheduled_reports(
 async def update_scheduled_report(
     report_id: str,
     body: ScheduledReportUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_agency),
     db: AsyncSession = Depends(get_db),
 ):
-    await check_agency_tier(current_user)
     existing = await _get_scheduled_report_or_404(report_id, str(current_user.id), db)
 
     updates: dict[str, object] = {}
@@ -286,10 +282,9 @@ async def update_scheduled_report(
 @router.delete("/scheduled-reports/{report_id}")
 async def delete_scheduled_report(
     report_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_agency),
     db: AsyncSession = Depends(get_db),
 ):
-    await check_agency_tier(current_user)
     await _get_scheduled_report_or_404(report_id, str(current_user.id), db)
 
     await db.execute(

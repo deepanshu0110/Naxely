@@ -170,51 +170,54 @@ class TestCheckReportLimit:
 class TestCheckProTier:
     @pytest.mark.asyncio
     async def test_pro_tier_passes(self):
-        from app.api.deps import check_pro_tier
+        from app.api.deps import require_pro_or_above
         from app.models.user import User
 
         user = User()
         user.tier = "pro"
-        await check_pro_tier(current_user=user)
+        result = require_pro_or_above(current_user=user)
+        assert result is user
 
     @pytest.mark.asyncio
     async def test_agency_tier_passes(self):
-        from app.api.deps import check_pro_tier
+        from app.api.deps import require_pro_or_above
         from app.models.user import User
 
         user = User()
         user.tier = "agency"
-        await check_pro_tier(current_user=user)
+        result = require_pro_or_above(current_user=user)
+        assert result is user
 
     @pytest.mark.asyncio
     async def test_free_tier_fails(self):
-        from app.api.deps import check_pro_tier
+        from app.api.deps import require_pro_or_above
         from app.models.user import User
 
         user = User()
         user.tier = "free"
         with pytest.raises(HTTPException) as exc:
-            await check_pro_tier(current_user=user)
-        assert exc.value.status_code == 402
+            require_pro_or_above(current_user=user)
+        assert exc.value.status_code == 403
 
 
 class TestCheckAgencyTier:
     @pytest.mark.asyncio
     async def test_agency_tier_passes(self):
-        from app.api.deps import check_agency_tier
+        from app.api.deps import require_agency
         from app.models.user import User
 
         user = User()
         user.tier = "agency"
-        await check_agency_tier(current_user=user)
+        result = require_agency(current_user=user)
+        assert result is user
 
     @pytest.mark.asyncio
     async def test_free_tier_fails(self):
-        from app.api.deps import check_agency_tier
+        from app.api.deps import require_agency
         from app.models.user import User
 
         user = User()
         user.tier = "free"
         with pytest.raises(HTTPException) as exc:
-            await check_agency_tier(current_user=user)
-        assert exc.value.status_code == 402
+            require_agency(current_user=user)
+        assert exc.value.status_code == 403

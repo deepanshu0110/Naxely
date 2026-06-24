@@ -6,7 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, check_pro_tier
+from app.api.deps import require_pro_or_above
 from app.core.database import get_db
 from app.models.user import User
 
@@ -26,10 +26,9 @@ class TemplateUpdateRequest(BaseModel):
 
 @router.get("/templates")
 async def list_templates(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     result = await db.execute(
         text("SELECT * FROM templates WHERE user_id = :uid ORDER BY created_at DESC"),
@@ -53,10 +52,9 @@ async def list_templates(
 @router.post("/templates")
 async def create_template(
     body: TemplateCreateRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     name = body.name.strip()[:255]
     if not name:
@@ -97,10 +95,9 @@ async def create_template(
 async def update_template(
     template_id: str,
     body: TemplateUpdateRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     result = await db.execute(
         text("SELECT * FROM templates WHERE id = :tid AND user_id = :uid"),
@@ -158,10 +155,9 @@ async def update_template(
 @router.delete("/templates/{template_id}")
 async def delete_template(
     template_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     result = await db.execute(
         text("SELECT * FROM templates WHERE id = :tid AND user_id = :uid"),

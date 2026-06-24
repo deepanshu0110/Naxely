@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, check_pro_tier, check_report_limit
+from app.api.deps import get_current_user, require_pro_or_above, check_report_limit
 from app.core.database import get_db
 from app.core.config import settings
 from app.models.user import User
@@ -276,18 +276,9 @@ async def upload_file(
 @router.post("/reports/upload-sheets")
 async def upload_sheets(
     sheets_data: Dict[str, str],
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    if current_user.tier not in ("pro", "agency"):
-        raise HTTPException(
-            status_code=402,
-            detail={
-                "code": "PRO_REQUIRED",
-                "message": "This feature requires a Pro subscription.",
-                "upgrade_url": f"{settings.FRONTEND_BASE_URL}/pricing",
-            },
-        )
 
     sheets_url = sheets_data.get("sheets_url")
     if not sheets_url:
@@ -489,7 +480,7 @@ async def generate_report(
         raise HTTPException(status_code=404, detail="Upload not found")
 
     if _has_ai_sections(body.sections):
-        await check_pro_tier(current_user)
+        require_pro_or_above(current_user)
 
     existing = await db.execute(
         text("""
@@ -848,10 +839,9 @@ async def delete_report(
 async def share_report(
     report_id: str,
     body: ShareRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_pro_tier(current_user)
 
     result = await db.execute(
         text("SELECT * FROM reports WHERE id = :rid AND deleted_at IS NULL AND user_id = :uid"),
@@ -886,7 +876,7 @@ async def share_report(
 @router.delete("/reports/{report_id}/share")
 async def revoke_share(
     report_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_pro_or_above),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     result = await db.execute(
