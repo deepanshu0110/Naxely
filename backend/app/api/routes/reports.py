@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
 from app.api.deps import get_current_user, require_pro_or_above, require_byok, require_agency, check_report_limit
+from app.api.routes.settings import _get_logo_signed_url
 from app.core.database import get_db
 from app.core.config import settings
 from app.models.user import User
@@ -747,10 +748,12 @@ async def export_report_pptx(
         {"uid": str(current_user.id)},
     )
     user_row_data = user_row.mappings().first()
+    raw_logo_path = (user_row_data.get("logo_url") if user_row_data else None)
+    logo_signed_url = await _get_logo_signed_url(raw_logo_path) if raw_logo_path else None
     user_data = {
         "brand_color": (user_row_data.get("brand_color") if user_row_data else None) or "#0E9F6E",
         "company_name": (user_row_data.get("company_name") if user_row_data else None),
-        "logo_url": (user_row_data.get("logo_url") if user_row_data else None),
+        "logo_url": logo_signed_url,
         "tier": "agency",
     }
 

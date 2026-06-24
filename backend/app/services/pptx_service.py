@@ -251,7 +251,7 @@ def generate_pptx(
                       font_size=16, color=COLOR_GRAY)
 
     kpis = config.get("_precomputed_kpis") or []
-    if kpis and ("key_metrics" in sections or not sections):
+    if kpis:
         _build_kpi_slide(prs, kpis, brand_color)
 
     if chart_paths and ("charts" in sections or not sections):
