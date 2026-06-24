@@ -549,7 +549,7 @@ async def revoke_api_key(
         text("""
             UPDATE api_keys
             SET revoked_at = NOW()
-            WHERE id = :id::uuid AND user_id = :uid::uuid AND revoked_at IS NULL
+            WHERE id = CAST(:id AS uuid) AND user_id = CAST(:uid AS uuid) AND revoked_at IS NULL
         """),
         {"id": key_id, "uid": str(current_user.id)},
     )
