@@ -119,70 +119,102 @@ class _KPIRow(Flowable):
 
 
 class _InsightCard(Flowable):
+    """Styled insight card: accent bar, priority badge, KPI, number, reason, action."""
+
+    CARD_H = 72
+    ACCENT_W = 4
+    PAD_LEFT = 14
+    PAD_TOP = 10
+    PAD_RIGHT = 8
+    BADGE_W = 36
+    BADGE_H = 14
+
+    _CARD_BG = HexColor('#F3F2F8')
+    _MINT = HexColor('#0E9F6E')
+    _RED = HexColor('#EF4444')
+    _AMBER = HexColor('#F59E0B')
+    _INK = HexColor('#14131F')
+    _GRAY = HexColor('#6B7280')
+    _WHITE = HexColor('#FFFFFF')
+
+    _SENTIMENT_COLORS = {
+        'positive': _MINT,
+        'negative': _RED,
+        'neutral': _GRAY,
+    }
+    _PRIORITY_COLORS = {
+        'high': _RED,
+        'medium': _AMBER,
+        'low': _MINT,
+    }
+
     def __init__(self, insight, width=None):
         Flowable.__init__(self)
         self.insight = insight
         self._width = width or (PAGE_WIDTH - 2 * MARGIN)
-        sentiment = insight.get('sentiment', 'neutral')
-        if sentiment == 'positive':
-            self.border_color = HexColor(MINT)
-        elif sentiment == 'negative':
-            self.border_color = HexColor(RED)
-        else:
-            self.border_color = HexColor('#6B7280')
-        self._build_paragraphs()
-
-    def _build_paragraphs(self):
-        text_width = self._width - 5 - 32
-        title_style = ParagraphStyle('InsightTitle', fontName='Fraunces-SemiBold', fontSize=11, textColor=HexColor('#111827'), leading=15, wordWrap='LTR')
-        mono_style = ParagraphStyle('InsightMono', fontName='IBMPlexMono-Bold', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
-        body_style = ParagraphStyle('InsightBody', fontName='IBMPlexSans', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
-        italic_style = ParagraphStyle('InsightItalic', fontName='IBMPlexSans-Italic', fontSize=9.5, textColor=HexColor('#374151'), leading=14, wordWrap='LTR')
-
-        self.kpi_para = Paragraph(str(self.insight.get('kpi', '') or ''), title_style)
-        self.number_para = Paragraph('\U0001F4CA ' + str(self.insight.get('number', '') or ''), mono_style)
-        self.reason_para = Paragraph('\u25B6 ' + str(self.insight.get('reason', '') or ''), body_style)
-        self.action_para = Paragraph('\u2713 ' + str(self.insight.get('action', '') or ''), italic_style)
-
-        self.kpi_h = self.kpi_para.wrap(text_width, self._width)[1]
-        self.number_h = self.number_para.wrap(text_width, self._width)[1]
-        self.reason_h = self.reason_para.wrap(text_width, self._width)[1]
-        self.action_h = self.action_para.wrap(text_width, self._width)[1]
-        self.height = int(self.kpi_h + 8 + self.number_h + 6 + self.reason_h + 6 + self.action_h + 16)
 
     def wrap(self, availWidth, availHeight):
-        return (self._width, self.height)
+        return (self._width, self.CARD_H)
 
     def draw(self):
-        self.canv.setFillColor(self.border_color)
-        self.canv.rect(0, 0, 5, self.height, fill=1, stroke=0)
-        self.canv.setFillColor(white)
-        self.canv.rect(5, 0, self._width - 5, self.height, fill=1, stroke=0)
-        self.canv.setStrokeColor(HexColor('#E5E7EB'))
-        self.canv.rect(5, 0, self._width - 5, self.height, fill=0, stroke=1)
+        ins = self.insight
+        kpi = str(ins.get('kpi', '') or '')
+        number = str(ins.get('number', '') or '')
+        reason = str(ins.get('reason', '') or '')
+        action = str(ins.get('action', '') or '')
+        sentiment = str(ins.get('sentiment', 'neutral')).lower()
+        priority = str(ins.get('priority', 'medium')).lower()
 
-        x = 16
-        text_width = self._width - 5 - 32
-        y = self.height - 16
+        accent_color = self._SENTIMENT_COLORS.get(sentiment, self._GRAY)
+        priority_color = self._PRIORITY_COLORS.get(priority, self._AMBER)
+        w = self._width
+        y = self.CARD_H
 
-        f = Frame(x, y - self.kpi_h, text_width, self.kpi_h, showBoundary=0,
-                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-        f.addFromList([self.kpi_para], self.canv)
-        y -= self.kpi_h + 8
+        # Card background
+        self.canv.setFillColor(self._CARD_BG)
+        self.canv.roundRect(0, 0, w, self.CARD_H, radius=4, fill=1, stroke=0)
 
-        f = Frame(x, y - self.number_h, text_width, self.number_h, showBoundary=0,
-                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-        f.addFromList([self.number_para], self.canv)
-        y -= self.number_h + 6
+        # Left accent bar
+        self.canv.setFillColor(accent_color)
+        self.canv.roundRect(0, 0, self.ACCENT_W, self.CARD_H, radius=2, fill=1, stroke=0)
 
-        f = Frame(x, y - self.reason_h, text_width, self.reason_h, showBoundary=0,
-                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-        f.addFromList([self.reason_para], self.canv)
-        y -= self.reason_h + 6
+        # Priority badge (top right)
+        badge_x = w - self.BADGE_W - self.PAD_RIGHT
+        badge_y = y - self.PAD_TOP - self.BADGE_H
+        self.canv.setFillColor(priority_color)
+        self.canv.roundRect(badge_x, badge_y, self.BADGE_W, self.BADGE_H, radius=7, fill=1, stroke=0)
+        self.canv.setFillColor(self._WHITE)
+        self.canv.setFont('IBMPlexSans-Bold', 6.5)
+        self.canv.drawCentredString(badge_x + self.BADGE_W / 2, badge_y + 4, priority.upper())
 
-        f = Frame(x, y - self.action_h, text_width, self.action_h, showBoundary=0,
-                  leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
-        f.addFromList([self.action_para], self.canv)
+        # Text content
+        text_x = self.ACCENT_W + self.PAD_LEFT
+        max_chars = int((w - self.ACCENT_W - self.PAD_LEFT - self.BADGE_W - self.PAD_RIGHT - 10) / 4.5)
+
+        # KPI name
+        self.canv.setFillColor(self._INK)
+        self.canv.setFont('IBMPlexSans-Bold', 9.5)
+        self.canv.drawString(text_x, y - self.PAD_TOP - 9, kpi)
+
+        # Number
+        self.canv.setFillColor(self._INK)
+        self.canv.setFont('IBMPlexMono-Bold', 13)
+        self.canv.drawString(text_x, y - self.PAD_TOP - 24, number)
+
+        # Reason
+        self.canv.setFillColor(self._GRAY)
+        self.canv.setFont('IBMPlexSans', 8)
+        truncated = reason[:max_chars] + '\u2026' if len(reason) > max_chars else reason
+        self.canv.drawString(text_x, y - self.PAD_TOP - 38, truncated)
+
+        # Action
+        self.canv.setFillColor(self._MINT)
+        self.canv.setFont('IBMPlexSans', 8)
+        max_action = int((w - self.ACCENT_W - self.PAD_LEFT - self.PAD_RIGHT) / 4.5)
+        action_text = '\u2713 ' + action
+        if len(action_text) > max_action:
+            action_text = action_text[:max_action] + '\u2026'
+        self.canv.drawString(text_x, y - self.PAD_TOP - 52, action_text)
 
 
 class _AnomalyBox(Flowable):
@@ -880,7 +912,7 @@ def build_sync(
             for ins in insights[:5]:
                 card = _InsightCard(ins, width=content_width)
                 body_story.append(card)
-                body_story.append(Spacer(1, 8))
+                body_story.append(Spacer(1, 10))
         body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
