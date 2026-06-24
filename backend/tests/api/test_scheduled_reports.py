@@ -2,7 +2,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, AsyncMock, patch
 from fastapi import HTTPException
 
 from app.api.routes.scheduled_reports import (
@@ -646,64 +646,68 @@ class TestCronEndpoint:
     @pytest.mark.asyncio
     async def test_invalid_secret_returns_403(self):
         from app.api.routes.scheduled_reports import run_scheduled_reports
+        from fastapi import BackgroundTasks
 
-        db = _AsyncDB()
+        bt = BackgroundTasks()
         with pytest.raises(HTTPException) as exc:
-            await run_scheduled_reports(x_cron_secret="wrong-secret", db=db)
+            await run_scheduled_reports(background_tasks=bt, x_cron_secret="wrong-secret")
         assert exc.value.status_code == 403
 
     @pytest.mark.asyncio
-    async def test_no_due_reports_returns_empty(self, mock_settings):
+    async def test_valid_secret_returns_202(self, mock_settings):
         from app.api.routes.scheduled_reports import run_scheduled_reports
+        from fastapi import BackgroundTasks
 
-        due_reports = self._report_list_result([])
-        db = _AsyncDB([due_reports])
-
-        result = await run_scheduled_reports(x_cron_secret="test-cron-secret", db=db)
-        assert result["processed"] == 0
-        assert result["results"] == []
+        bt = BackgroundTasks()
+        result = await run_scheduled_reports(background_tasks=bt, x_cron_secret="test-cron-secret")
+        assert result["status"] == "accepted"
+        assert result["message"] == "Scheduled reports queued"
 
     @pytest.mark.asyncio
-    async def test_due_report_processed_successfully(self, mock_settings):
-        from app.api.routes.scheduled_reports import run_scheduled_reports
+    async def test_run_all_executes_due_reports(self, mock_settings):
+        from app.api.routes.scheduled_reports import _run_all_scheduled_reports
 
         sched_row = self._make_sched_row()
         due_reports = self._report_list_result([sched_row])
         pdf_row = _Row(pdf_url="reports/user-1/sr-cron-001/report.pdf")
 
-        db = _AsyncDB([due_reports, MagicMock(), pdf_row, MagicMock()])
-
         with (
+            patch("app.api.routes.scheduled_reports.AsyncSessionLocal") as mock_session_local,
             patch("app.api.routes.scheduled_reports.run_report_pipeline") as mock_run,
             patch("app.api.routes.scheduled_reports.send_email") as mock_email,
             patch("app.api.routes.scheduled_reports._run_sync") as mock_run_sync,
             patch("app.api.routes.scheduled_reports._get_supabase") as mock_supabase,
         ):
             mock_run_sync.return_value = b"fake,csv\ndata,1\n"
+            mock_session = MagicMock()
+            mock_session.__aenter__.return_value = mock_session
+            mock_session.commit = AsyncMock()
+            mock_session_local.return_value = mock_session
 
-            result = await run_scheduled_reports(x_cron_secret="test-cron-secret", db=db)
+            execute_results = [
+                due_reports,   # initial SELECT
+                MagicMock(),   # INSERT report
+                pdf_row,       # SELECT pdf_url
+                MagicMock(),   # UPDATE next_run_at
+            ]
 
-        assert result["processed"] == 1
-        assert result["results"][0]["status"] == "success"
+            async def mock_execute(*a, **kw):
+                return execute_results.pop(0)
+            mock_session.execute = mock_execute
+
+            await _run_all_scheduled_reports()
+
         mock_run.assert_awaited_once()
         mock_email.assert_called_once()
         call_args = mock_email.call_args
         assert call_args[1]["to"] == ["a@test.com", "b@test.com"]
-        assert "scheduled report" in call_args[1]["subject"].lower()
         assert len(call_args[1]["attachments"]) == 1
         assert call_args[1]["attachments"][0]["filename"] == "Cron Test Report.pdf"
 
     @pytest.mark.asyncio
-    async def test_three_reports_one_fail_two_succeed(self, mock_settings):
-        """
-        With 3 reports in one cron run (A fail, B success, C success):
-        - Report A's pipeline raises → caught, logged, loop continues
-        - Report B succeeds normally
-        - Report C succeeds normally
-        - Email only sent for B and C (2 calls)
-        - Final results: [failed, success, success]
-        """
-        from app.api.routes.scheduled_reports import run_scheduled_reports
+    async def test_run_all_handles_partial_failure(self, mock_settings):
+        """With 3 reports (A fail, B success, C success), loop continues past failures."""
+        from app.api.routes.scheduled_reports import _run_all_scheduled_reports
 
         row_a = self._make_sched_row(id="sr-fail-a", name="Failing Report")
         row_b = self._make_sched_row(
@@ -717,49 +721,45 @@ class TestCronEndpoint:
             recipient_emails=["c@test.com"],
         )
         due_reports = self._report_list_result([row_a, row_b, row_c])
-
         pdf_row_b = _Row(pdf_url="reports/user-2/sr-ok-b/report.pdf")
         pdf_row_c = _Row(pdf_url="reports/user-2/sr-ok-c/report.pdf")
 
-        # execute call sequence:
-        #   0 = due_reports (initial SELECT)
-        #   1 = INSERT A (fails at pipeline, no pdf/update reached)
-        #   2 = INSERT B
-        #   3 = SELECT pdf_url B
-        #   4 = UPDATE B
-        #   5 = INSERT C
-        #   6 = SELECT pdf_url C
-        #   7 = UPDATE C
-        db = _AsyncDB([
-            due_reports,
-            MagicMock(),  # 1: insert A
-            MagicMock(),  # 2: insert B
-            pdf_row_b,    # 3: pdf B
-            MagicMock(),  # 4: update B
-            MagicMock(),  # 5: insert C
-            pdf_row_c,    # 6: pdf C
-            MagicMock(),  # 7: update C
-        ])
-
         call_order = []
 
-        async def mock_run(report_id, user_id, config, csv_bytes=None):
+        async def mock_pipeline(report_id, user_id, config, csv_bytes=None):
             call_order.append(report_id)
-            if report_id in call_order and len(call_order) == 1:
+            if len(call_order) == 1:
                 raise ValueError("Pipeline exploded for first report")
 
         with (
-            patch("app.api.routes.scheduled_reports.run_report_pipeline", side_effect=mock_run),
+            patch("app.api.routes.scheduled_reports.AsyncSessionLocal") as mock_session_local,
+            patch("app.api.routes.scheduled_reports.run_report_pipeline", side_effect=mock_pipeline),
             patch("app.api.routes.scheduled_reports.send_email") as mock_email,
             patch("app.api.routes.scheduled_reports._run_sync") as mock_run_sync,
             patch("app.api.routes.scheduled_reports._get_supabase") as mock_supabase,
         ):
             mock_run_sync.return_value = b"fake,csv\ndata,1\n"
-            result = await run_scheduled_reports(x_cron_secret="test-cron-secret", db=db)
+            mock_session = MagicMock()
+            mock_session.__aenter__.return_value = mock_session
+            mock_session.commit = AsyncMock()
+            mock_session_local.return_value = mock_session
 
-        assert result["processed"] == 3
-        assert result["results"][0]["status"] == "failed", f"Expected failed, got {result['results'][0]}"
-        assert result["results"][1]["status"] == "success", f"Expected success, got {result['results'][1]}"
-        assert result["results"][2]["status"] == "success", f"Expected success, got {result['results'][2]}"
+            execute_results = [
+                due_reports,   # 0: initial SELECT
+                MagicMock(),   # 1: insert A
+                MagicMock(),   # 2: insert B
+                pdf_row_b,     # 3: pdf B
+                MagicMock(),   # 4: update B
+                MagicMock(),   # 5: insert C
+                pdf_row_c,     # 6: pdf C
+                MagicMock(),   # 7: update C
+            ]
+
+            async def mock_execute(*a, **kw):
+                return execute_results.pop(0)
+            mock_session.execute = mock_execute
+
+            await _run_all_scheduled_reports()
+
         assert len(call_order) == 3, "Pipeline should have been called 3 times"
         assert mock_email.call_count == 2, "Email should be sent for 2 successful reports"

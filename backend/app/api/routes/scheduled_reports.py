@@ -4,14 +4,14 @@ import logging
 import uuid
 from datetime import datetime, timezone, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
 from pydantic import BaseModel, field_validator
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import require_agency
 from app.core.config import settings
-from app.core.database import get_db
+from app.core.database import AsyncSessionLocal, get_db
 from app.models.user import User
 from app.services.email_service import send_email
 from app.services.report_service import run_report_pipeline, _get_supabase, _run_sync
@@ -299,143 +299,140 @@ async def delete_scheduled_report(
 # ── Internal: cron-triggered execution ──────────────────────────────
 
 
-@router.post("/internal/scheduled-reports/run")
+async def _run_all_scheduled_reports() -> None:
+    """Runs all due scheduled reports. Called in background from the cron endpoint."""
+    async with AsyncSessionLocal() as db:
+        now = datetime.now(timezone.utc)
+        result = await db.execute(
+            text("""
+                SELECT * FROM scheduled_reports
+                WHERE next_run_at <= :now AND is_active = TRUE
+                ORDER BY next_run_at ASC
+            """),
+            {"now": now},
+        )
+        rows = result.mappings().all()
+
+        for row in rows:
+            sched = dict(row)
+            sched_id = str(sched["id"])
+            user_id = str(sched["user_id"])
+            sched_name = sched["name"]
+
+            try:
+                # 1. Download CSV from storage (permanent path or legacy scheduled-sources)
+                csv_storage_path = sched.get("csv_storage_path")
+                if not csv_storage_path:
+                    logger.error("Scheduled report %s has no csv_storage_path — skipping", sched_id)
+                    continue
+                if csv_storage_path.startswith("permanent/"):
+                    csv_bytes = await _run_sync(
+                        _get_supabase().storage.from_("uploads").download,
+                        csv_storage_path,
+                    )
+                else:
+                    filename = csv_storage_path.split("/")[-1]
+                    csv_bytes = await _run_sync(
+                        _get_supabase().storage.from_("scheduled-sources").download,
+                        filename,
+                    )
+
+                # 2. Create a new report record
+                report_id = str(uuid.uuid4())
+
+                config_raw = sched.get("config_json") or "{}"
+                if isinstance(config_raw, str):
+                    try:
+                        config = json.loads(config_raw)
+                    except (json.JSONDecodeError, TypeError):
+                        config = {}
+                else:
+                    config = config_raw
+
+                config.setdefault("template_type", "professional")
+                config.setdefault("sections", ["kpi_overview", "charts"])
+
+                await db.execute(
+                    text("""
+                        INSERT INTO reports
+                            (id, user_id, title, template_type, status, source_type,
+                             source_filename, config, created_at, updated_at)
+                        VALUES (:id, :uid, :title, :template, 'pending', 'csv',
+                                :filename, :config, NOW(), NOW())
+                    """),
+                    {
+                        "id": report_id,
+                        "uid": user_id,
+                        "title": sched_name,
+                        "template": config.get("template_type", "professional"),
+                        "filename": f"scheduled/{sched_id}.csv",
+                        "config": json.dumps(config),
+                    },
+                )
+                await db.commit()
+
+                # 3. Run the report pipeline
+                await run_report_pipeline(
+                    report_id=report_id,
+                    user_id=user_id,
+                    config=config,
+                    csv_bytes=csv_bytes,
+                )
+
+                # 4. Fetch the completed report to get PDF storage path
+                report_row = await db.execute(
+                    text("SELECT pdf_url FROM reports WHERE id = :rid"),
+                    {"rid": report_id},
+                )
+                report_data = report_row.mappings().first()
+
+                if report_data and report_data["pdf_url"]:
+                    pdf_bytes = await _run_sync(
+                        _get_supabase().storage.from_("reports").download,
+                        report_data["pdf_url"],
+                    )
+
+                    pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
+
+                    # 5. Email PDF to all recipients
+                    recipients = list(sched.get("recipient_emails", []))
+                    if recipients:
+                        send_email(
+                            to=recipients,
+                            subject=f"{sched_name} — Your scheduled report",
+                            html=(
+                                f"<p>Your scheduled report <strong>{sched_name}</strong> "
+                                f"is ready.</p><p>The report PDF is attached.</p>"
+                            ),
+                            attachments=[{
+                                "filename": f"{sched_name}.pdf",
+                                "content": pdf_b64,
+                            }],
+                        )
+
+                # 6. Update next_run_at
+                next_run = _compute_next_run(sched["frequency"])
+                await db.execute(
+                    text("""
+                        UPDATE scheduled_reports
+                        SET last_run_at = :now, next_run_at = :next
+                        WHERE id = :rid
+                    """),
+                    {"now": now, "next": next_run, "rid": sched_id},
+                )
+                await db.commit()
+
+            except Exception as e:
+                logger.error("Failed to process scheduled report %s: %s", sched_id, e)
+
+
+@router.post("/internal/scheduled-reports/run", status_code=202)
 async def run_scheduled_reports(
+    background_tasks: BackgroundTasks,
     x_cron_secret: str = Header(...),
-    db: AsyncSession = Depends(get_db),
 ):
     if x_cron_secret != settings.CRON_SECRET:
         raise HTTPException(status_code=403, detail="Invalid cron secret")
 
-    now = datetime.now(timezone.utc)
-    result = await db.execute(
-        text("""
-            SELECT * FROM scheduled_reports
-            WHERE next_run_at <= :now AND is_active = TRUE
-            ORDER BY next_run_at ASC
-        """),
-        {"now": now},
-    )
-    rows = result.mappings().all()
-
-    processed: list[dict] = []
-
-    for row in rows:
-        sched = dict(row)
-        sched_id = str(sched["id"])
-        user_id = str(sched["user_id"])
-        sched_name = sched["name"]
-
-        try:
-            # 1. Download CSV from storage (permanent path or legacy scheduled-sources)
-            csv_storage_path = sched.get("csv_storage_path")
-            if not csv_storage_path:
-                raise HTTPException(
-                    status_code=500,
-                    detail="Scheduled report has no csv_storage_path — cannot execute.",
-                )
-            if csv_storage_path.startswith("permanent/"):
-                csv_bytes = await _run_sync(
-                    _get_supabase().storage.from_("uploads").download,
-                    csv_storage_path,
-                )
-            else:
-                filename = csv_storage_path.split("/")[-1]
-                csv_bytes = await _run_sync(
-                    _get_supabase().storage.from_("scheduled-sources").download,
-                    filename,
-                )
-
-            # 2. Create a new report record
-            report_id = str(uuid.uuid4())
-
-            config_raw = sched.get("config_json") or "{}"
-            if isinstance(config_raw, str):
-                try:
-                    config = json.loads(config_raw)
-                except (json.JSONDecodeError, TypeError):
-                    config = {}
-            else:
-                config = config_raw
-
-            config.setdefault("template_type", "professional")
-            config.setdefault("sections", ["kpi_overview", "charts"])
-
-            await db.execute(
-                text("""
-                    INSERT INTO reports
-                        (id, user_id, title, template_type, status, source_type,
-                         source_filename, config, created_at, updated_at)
-                    VALUES (:id, :uid, :title, :template, 'pending', 'csv',
-                            :filename, :config, NOW(), NOW())
-                """),
-                {
-                    "id": report_id,
-                    "uid": user_id,
-                    "title": sched_name,
-                    "template": config.get("template_type", "professional"),
-                    "filename": f"scheduled/{sched_id}.csv",
-                    "config": json.dumps(config),
-                },
-            )
-            await db.commit()
-
-            # 3. Run the report pipeline
-            await run_report_pipeline(
-                report_id=report_id,
-                user_id=user_id,
-                config=config,
-                csv_bytes=csv_bytes,
-            )
-
-            # 4. Fetch the completed report to get PDF storage path
-            report_row = await db.execute(
-                text("SELECT pdf_url FROM reports WHERE id = :rid"),
-                {"rid": report_id},
-            )
-            report_data = report_row.mappings().first()
-
-            if report_data and report_data["pdf_url"]:
-                pdf_bytes = await _run_sync(
-                    _get_supabase().storage.from_("reports").download,
-                    report_data["pdf_url"],
-                )
-
-                import base64
-                pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
-
-                # 5. Email PDF to all recipients
-                recipients = list(sched.get("recipient_emails", []))
-                if recipients:
-                    send_email(
-                        to=recipients,
-                        subject=f"{sched_name} — Your scheduled report",
-                        html=(
-                            f"<p>Your scheduled report <strong>{sched_name}</strong> "
-                            f"is ready.</p><p>The report PDF is attached.</p>"
-                        ),
-                        attachments=[{
-                            "filename": f"{sched_name}.pdf",
-                            "content": pdf_b64,
-                        }],
-                    )
-
-            # 6. Update next_run_at
-            next_run = _compute_next_run(sched["frequency"])
-            await db.execute(
-                text("""
-                    UPDATE scheduled_reports
-                    SET last_run_at = :now, next_run_at = :next
-                    WHERE id = :rid
-                """),
-                {"now": now, "next": next_run, "rid": sched_id},
-            )
-            await db.commit()
-
-            processed.append({"id": sched_id, "status": "success"})
-
-        except Exception as e:
-            logger.error("Failed to process scheduled report %s: %s", sched_id, e)
-            processed.append({"id": sched_id, "status": "failed", "error": str(e)})
-
-    return {"processed": len(processed), "results": processed}
+    background_tasks.add_task(_run_all_scheduled_reports)
+    return {"status": "accepted", "message": "Scheduled reports queued"}
