@@ -47,7 +47,7 @@ async def verify_auth(
     }
 
 
-@router.post("/auth/complete-onboarding")
+@router.post("/complete-onboarding")
 async def complete_onboarding(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -60,7 +60,7 @@ async def complete_onboarding(
     return {"success": True}
 
 
-@router.post("/auth/skip-onboarding")
+@router.post("/skip-onboarding")
 async def skip_onboarding(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
