@@ -60,7 +60,7 @@ export default function NewReport() {
     if (!sheetsUrl.trim()) return
     setSheetsConnecting(true)
     try {
-      const { data } = await api.post<UploadResult>('/reports/upload-sheets', { url: sheetsUrl.trim() })
+      const { data } = await api.post<UploadResult>('/reports/upload-sheets', { sheets_url: sheetsUrl.trim() })
       setUploadResult(data)
       setCurrentStep(2)
       toast.success('Sheet imported successfully')
