@@ -708,12 +708,28 @@ function ApiKeysTab() {
   const handleRevoke = async (keyId: string) => {
     try {
       await api.delete(`/settings/api-keys/${keyId}`)
-      setApiKeys(prev => prev.filter(k => k.id !== keyId))
+      setApiKeys(prev => prev.map(k => k.id === keyId ? { ...k, revoked: true } : k))
       toast.success('API key revoked')
     } catch {
       toast.error('Failed to revoke API key')
     }
   }
+
+  const handleDeleteKey = async (keyId: string) => {
+    if (!confirm('Permanently delete this revoked key?')) return
+    try {
+      await api.delete(`/settings/api-keys/${keyId}/permanent`)
+      setApiKeys(prev => prev.filter(k => k.id !== keyId))
+      toast.success('Key deleted')
+    } catch {
+      toast.error('Failed to delete key')
+    }
+  }
+
+  const sortedKeys = [...apiKeys].sort((a, b) => {
+    if (a.revoked !== b.revoked) return a.revoked ? 1 : -1
+    return 0
+  })
 
   const handleCopy = () => {
     navigator.clipboard.writeText(newKey)
@@ -744,8 +760,8 @@ function ApiKeysTab() {
         </div>
       ) : (
         <div className="space-y-3">
-          {apiKeys.map((k) => (
-            <Card key={k.id} padding="p-4">
+          {sortedKeys.map((k) => (
+            <Card key={k.id} padding="p-4" className={k.revoked ? 'opacity-50' : ''}>
               <div className="flex items-center justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -772,7 +788,16 @@ function ApiKeysTab() {
                     </span>
                   </div>
                 </div>
-                {!k.revoked && (
+                {k.revoked ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => handleDeleteKey(k.id)}
+                  >
+                    Delete
+                  </Button>
+                ) : (
                   <Button variant="danger" size="sm" onClick={() => handleRevoke(k.id)}>
                     Revoke
                   </Button>

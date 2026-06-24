@@ -558,3 +558,17 @@ async def revoke_api_key(
         raise HTTPException(status_code=404, detail="API key not found or already revoked")
     await db.commit()
     return {"success": True, "message": "API key revoked"}
+
+
+@router.delete("/api-keys/{key_id}/permanent")
+async def delete_api_key_permanent(
+    key_id: str,
+    current_user: User = Depends(require_agency),
+    db: AsyncSession = Depends(get_db),
+):
+    await db.execute(
+        text("DELETE FROM api_keys WHERE id::text = :id AND user_id::text = :uid"),
+        {"id": str(key_id), "uid": str(current_user.id)},
+    )
+    await db.commit()
+    return {"success": True}
