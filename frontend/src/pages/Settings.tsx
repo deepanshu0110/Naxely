@@ -761,7 +761,7 @@ function ApiKeysTab() {
                   <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      Created {k.created_at ? new Date(k.created_at).toLocaleDateString() : 'Unknown'}
+                      Created {k.created_at ? new Date(k.created_at).toLocaleDateString('en-IN') : '—'}
                     </span>
                     <span>
                       Last used {k.last_used_at ? new Date(k.last_used_at).toLocaleDateString() : 'Never'}
