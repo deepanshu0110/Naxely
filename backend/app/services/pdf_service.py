@@ -496,16 +496,15 @@ def _download_logo(logo_url: str) -> str | None:
         return None
 
 
-def _format_number(val) -> str:
-    if isinstance(val, float):
-        if abs(val) >= 1_000_000:
-            return f'{val/1_000_000:.1f}M'
-        if abs(val) >= 1_000:
-            return f'{val/1_000:.1f}K'
-        if val == int(val):
-            return str(int(val))
+def _fmt_kpi_value(val: float) -> str:
+    """Format KPI display value with K/M suffix and comma separator."""
+    if abs(val) >= 1_000_000:
+        return f'{val/1_000_000:.1f}M'
+    if abs(val) >= 1_000:
+        return f'{val/1_000:.1f}K'
+    if isinstance(val, float) and val != int(val):
         return f'{val:.2f}'
-    return str(val)
+    return f'{int(val):,}'
 
 
 def _add_watermark(canvas, doc):
@@ -651,7 +650,7 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         trend_pct = _compute_trend_percentage(series)
         kpis.append({
             'name': f'{prefix} ' + col.replace('_', ' ').title(),
-            'value': _format_number(kpi_value) + ('%' if is_pct else ''),
+            'value': _fmt_kpi_value(kpi_value) + ('%' if is_pct else ''),
             'trend': trend,
             'trend_pct': trend_pct,
         })

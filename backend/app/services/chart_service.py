@@ -12,6 +12,7 @@ import pandas as pd
 import squarify
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 
 from app.core.design_tokens import PAPER, INDIGO, MINT, AMBER, RED
 
@@ -34,6 +35,15 @@ def _lighten(hex_color: str, factor: float) -> str:
     g = int(g + (255 - g) * factor * 0.6)
     b = int(b + (255 - b) * factor * 0.6)
     return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def _fmt_axis(val: float) -> str:
+    """Format axis tick values as K/M without scientific notation."""
+    if abs(val) >= 1_000_000:
+        return f'{val/1_000_000:.1f}M'
+    if abs(val) >= 1_000:
+        return f'{val/1_000:.0f}K'
+    return f'{val:.0f}'
 
 
 CHART_DIR = Path('/tmp/naxely')
@@ -248,20 +258,26 @@ def _generate_single_chart(
 
     try:
         if chart_type == 'line':
-            df_sorted = df.sort_values(x_col)
+            df_sorted = df.sort_values(x_col).copy()
+            df_sorted[x_col] = pd.to_datetime(df_sorted[x_col])
+
             agg_func = 'mean' if any(x in y_col.lower()
-                for x in ['%', 'percent', 'rate', 'ratio', 'score']) else 'sum'
-            df_plot = df_sorted.groupby(x_col)[y_col].agg(agg_func).reset_index()
-            if len(df_plot) > 60:
-                df_plot[x_col] = pd.to_datetime(df_plot[x_col])
+                for x in ['%', 'percent', 'rate', 'ratio', 'score', 'pct']) else 'sum'
+
+            unique_dates = df_sorted[x_col].nunique()
+            if unique_dates > 60:
                 df_plot = (
-                    df_plot.set_index(x_col)
-                    .resample('W')[y_col]
+                    df_sorted.set_index(x_col)[y_col]
+                    .resample('W')
                     .agg(agg_func)
                     .reset_index()
                 )
+            else:
+                df_plot = df_sorted.groupby(x_col)[y_col].agg(agg_func).reset_index()
+
             x = pd.to_datetime(df_plot[x_col])
             y = df_plot[y_col]
+
             ax.plot(x, y, color=brand_color, linewidth=2.0,
                     marker='o', markersize=4,
                     markerfacecolor='white', markeredgecolor=brand_color,
@@ -272,6 +288,10 @@ def _generate_single_chart(
             ax.set_title(f'{y_col} Over Time', fontsize=13,
                         fontweight='bold', color='#14131F', pad=10,
                         fontfamily='IBM Plex Sans')
+
+            ax.yaxis.set_major_formatter(
+                mticker.FuncFormatter(lambda val, _: _fmt_axis(val))
+            )
 
         elif chart_type == 'bar':
             grouped = df.groupby(x_col)[y_col].mean().sort_values(ascending=True)

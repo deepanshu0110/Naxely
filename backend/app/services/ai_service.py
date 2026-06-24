@@ -176,6 +176,22 @@ def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int
     return call_openai(prompt, system, api_key, timeout)
 
 
+def _round_stats(entry: dict) -> dict:
+    """Round all float values in a column stats entry to 2 decimal places."""
+    rounded = {}
+    for k, v in entry.items():
+        if isinstance(v, float):
+            rounded[k] = round(v, 2)
+        elif isinstance(v, dict):
+            rounded[k] = {
+                dk: round(dv, 2) if isinstance(dv, float) else dv
+                for dk, dv in v.items()
+            }
+        else:
+            rounded[k] = v
+    return rounded
+
+
 def _build_column_stats(df: pd.DataFrame, null_counts_override: dict | None = None) -> dict:
     stats = compute_column_stats(df)
     columns_out = []
@@ -192,7 +208,7 @@ def _build_column_stats(df: pd.DataFrame, null_counts_override: dict | None = No
             "null_count": (null_counts_override or {}).get(col["name"], col["null_count"]),
             "row_count": col["row_count"],
         }
-        columns_out.append(entry)
+        columns_out.append(_round_stats(entry))
     return {
         "columns": columns_out,
         "date_column": stats["date_column"],
