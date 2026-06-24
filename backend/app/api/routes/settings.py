@@ -549,9 +549,9 @@ async def revoke_api_key(
         text("""
             UPDATE api_keys
             SET revoked_at = NOW()
-            WHERE id = :id AND user_id = :uid AND revoked_at IS NULL
+            WHERE id = :id::uuid AND user_id = :uid::uuid AND revoked_at IS NULL
         """),
-        {"id": key_id, "uid": current_user.id},
+        {"id": key_id, "uid": str(current_user.id)},
     )
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="API key not found or already revoked")
