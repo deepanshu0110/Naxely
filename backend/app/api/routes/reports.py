@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, require_pro_or_above, require_byok, check_report_limit
+from app.api.deps import get_current_user, require_pro_or_above, require_byok, require_agency, check_report_limit
 from app.core.database import get_db
 from app.core.config import settings
 from app.models.user import User
@@ -717,6 +717,122 @@ async def get_report_status(
             "steps_remaining": steps_remaining,
         },
     }
+
+
+@router.get("/reports/{report_id}/export/pptx")
+async def export_report_pptx(
+    report_id: str,
+    current_user: User = Depends(require_agency),
+    db: AsyncSession = Depends(get_db),
+):
+    import asyncio
+    import io as _io
+    from fastapi.responses import Response
+    from app.services.pptx_service import generate_pptx
+    from app.services.chart_service import generate_sync as generate_charts
+    from app.services.pdf_service import _compute_kpi_data
+    from app.services.report_service import get_upload
+
+    result = await db.execute(
+        text("SELECT * FROM reports WHERE id = :rid AND deleted_at IS NULL AND user_id = :uid"),
+        {"rid": report_id, "uid": str(current_user.id)},
+    )
+    report = result.mappings().first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    report = dict(report)
+
+    user_row = await db.execute(
+        text("SELECT brand_color, company_name, logo_url, tier FROM users WHERE id = :uid"),
+        {"uid": str(current_user.id)},
+    )
+    user_row_data = user_row.mappings().first()
+    user_data = {
+        "brand_color": (user_row_data.get("brand_color") if user_row_data else None) or "#0E9F6E",
+        "company_name": (user_row_data.get("company_name") if user_row_data else None),
+        "logo_url": (user_row_data.get("logo_url") if user_row_data else None),
+        "tier": "agency",
+    }
+
+    config = report.get("config") or {}
+    if isinstance(config, str):
+        try:
+            config = json.loads(config)
+        except Exception:
+            config = {}
+    upload_id = config.get("upload_id")
+    if not upload_id:
+        raise HTTPException(status_code=422, detail="Report has no associated CSV upload")
+
+    upload = await get_upload(upload_id)
+    if not upload:
+        raise HTTPException(status_code=422, detail="Original CSV not found in storage")
+    file_url = upload["file_url"]
+
+    csv_bytes = await _run_sync(
+        _get_supabase().storage.from_("uploads").download, file_url,
+    )
+
+    import pandas as pd
+    df = pd.read_csv(_io.BytesIO(csv_bytes))
+
+    df_norm = df.copy()
+    for col in df_norm.select_dtypes(include=["object"]).columns:
+        df_norm[col] = pd.to_numeric(df_norm[col], errors="ignore")
+
+    brand_color = user_data["brand_color"]
+    ai_content = {
+        "summary": report.get("ai_summary"),
+        "insights": report.get("ai_insights") or [],
+        "anomalies": report.get("ai_anomalies") or [],
+        "trends": [],
+    }
+
+    try:
+        kpis = _compute_kpi_data(df_norm, config, ai_content, brand_color)
+    except Exception:
+        kpis = []
+    config["_precomputed_kpis"] = kpis
+    config["_ai_skipped"] = report.get("ai_skipped", False)
+    config["report_id"] = report_id
+
+    loop = asyncio.get_event_loop()
+    try:
+        chart_paths = await loop.run_in_executor(
+            None,
+            lambda: generate_charts(df_norm, report_id + "_pptx", config, brand_color),
+        )
+    except Exception:
+        logger.warning(f"[pptx_export] chart regeneration failed, continuing without charts")
+        chart_paths = []
+
+    pptx_bytes = await loop.run_in_executor(
+        None,
+        lambda: generate_pptx(df, chart_paths, ai_content, config, user_data),
+    )
+
+    try:
+        storage_path = f"pptx/{current_user.id}/{report_id}.pptx"
+        await _run_sync(
+            _get_supabase().storage.from_("reports").upload,
+            storage_path,
+            pptx_bytes,
+            {"content-type": "application/vnd.openxmlformats-officedocument.presentationml.presentation"},
+        )
+        await db.execute(
+            text("UPDATE reports SET ppt_url = :url WHERE id = :rid"),
+            {"url": storage_path, "rid": report_id},
+        )
+        await db.commit()
+    except Exception as e:
+        logger.warning(f"[pptx_export] failed to store ppt_url: {e}")
+
+    filename = f"naxely_report_{report_id[:8]}.pptx"
+    return Response(
+        content=pptx_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @router.get("/reports")

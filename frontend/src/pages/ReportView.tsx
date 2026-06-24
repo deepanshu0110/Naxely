@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { Download, Share2, Trash2, Clock, FileText, AlertTriangle, X } from 'lucide-react'
+import { Download, Share2, Trash2, Clock, FileText, AlertTriangle, X, Presentation } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Sidebar from '@/components/layout/Sidebar'
 import Badge from '@/components/ui/Badge'
@@ -30,6 +30,7 @@ export default function ReportView() {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [retrying, setRetrying] = useState(false)
+  const [pptxLoading, setPptxLoading] = useState(false)
   const reducedMotion = useReducedMotion()
   const displayGenTime = useCountUp(
     report?.generation_time_seconds != null ? Math.round(report.generation_time_seconds) : null,
@@ -91,6 +92,30 @@ export default function ReportView() {
     }
   }
 
+  const handlePptxExport = async () => {
+    if (!id) return
+    setPptxLoading(true)
+    try {
+      const response = await api.get(`/reports/${id}/export/pptx`, {
+        responseType: 'blob',
+      })
+      const blob = response.data
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `naxely_report_${id.slice(0, 8)}.pptx`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      toast.success('PowerPoint exported successfully')
+    } catch {
+      toast.error('Export failed. Please try again.')
+    } finally {
+      setPptxLoading(false)
+    }
+  }
+
   const handleRevokeShare = async () => {
     if (!id) return
     try {
@@ -148,6 +173,15 @@ export default function ReportView() {
                   <Download className="mr-1.5 h-4 w-4" /> Download PDF
                 </Button>
               </a>
+            )}
+            {user?.tier === 'agency' ? (
+              <Button variant="outline" size="sm" onClick={handlePptxExport} loading={pptxLoading}>
+                <Presentation className="mr-1.5 h-4 w-4" /> Export as PowerPoint
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled title="Agency plan required">
+                <Presentation className="mr-1.5 h-4 w-4" /> Export as PowerPoint
+              </Button>
             )}
             {isPro && report.share_token ? (
               <div className="flex items-center gap-2">
