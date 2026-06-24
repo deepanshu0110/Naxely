@@ -351,6 +351,8 @@ def _generate_single_chart(
                 patch.set_alpha(0.55)
             ax.set_xlabel(x_col, fontsize=10, color='#4B5563', fontfamily='IBM Plex Sans')
             ax.set_ylabel(y_col, fontsize=10, color='#4B5563', fontfamily='IBM Plex Sans')
+            plt.xticks(rotation=45, ha='right', fontsize=7, fontfamily='IBM Plex Sans')
+            plt.tight_layout()
             ax.set_title(f'{y_col} Distribution by {x_col}', fontsize=13,
                         fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
