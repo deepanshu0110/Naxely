@@ -134,8 +134,8 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
             {...register('provider')}
             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
           >
-            <option value="gemini">Gemini (free, default)</option>
-            <option value="groq">Groq (free)</option>
+            <option value="gemini">Gemini</option>
+            <option value="groq">Groq</option>
             <option value="deepseek">DeepSeek</option>
             <option value="openai">OpenAI</option>
             <option value="claude">Claude (Anthropic)</option>
