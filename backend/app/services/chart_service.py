@@ -251,9 +251,17 @@ def _generate_single_chart(
             df_sorted = df.sort_values(x_col)
             agg_func = 'mean' if any(x in y_col.lower()
                 for x in ['%', 'percent', 'rate', 'ratio', 'score']) else 'sum'
-            df_sorted = df_sorted.groupby(x_col)[y_col].agg(agg_func).reset_index()
-            x = pd.to_datetime(df_sorted[x_col])
-            y = df_sorted[y_col]
+            df_plot = df_sorted.groupby(x_col)[y_col].agg(agg_func).reset_index()
+            if len(df_plot) > 60:
+                df_plot[x_col] = pd.to_datetime(df_plot[x_col])
+                df_plot = (
+                    df_plot.set_index(x_col)
+                    .resample('W')[y_col]
+                    .agg(agg_func)
+                    .reset_index()
+                )
+            x = pd.to_datetime(df_plot[x_col])
+            y = df_plot[y_col]
             ax.plot(x, y, color=brand_color, linewidth=2.0,
                     marker='o', markersize=4,
                     markerfacecolor='white', markeredgecolor=brand_color,

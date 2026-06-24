@@ -114,7 +114,7 @@ class _KPIRow(Flowable):
             trend_marker = '+' if trend_pct >= 0 else '-'
             self.canv.setFont('IBMPlexSans', 11)
             self.canv.setFillColor(HexColor(trend_color))
-            self.canv.drawString(x + 16, y + 16, f"{trend_marker} {trend_pct:+.1f}% recent")
+            self.canv.drawString(x + 16, y + 16, f"{trend_marker} {abs(trend_pct):.1f}% recent")
 
 
 class _InsightCard(Flowable):
@@ -535,6 +535,16 @@ def _on_page(canvas, doc, add_watermark=False, is_white_label=False, company_nam
     canvas.restoreState()
 
 
+def _is_percentage_col(col_name: str, series: pd.Series) -> bool:
+    name_hints = any(x in col_name.lower() for x in ['%', 'percent', 'rate', 'ratio'])
+    value_hints = (
+        pd.api.types.is_numeric_dtype(series)
+        and series.dropna().between(0, 100).all()
+        and series.max() <= 100
+    )
+    return name_hints or value_hints
+
+
 def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_color_hex: str) -> list[dict]:
     if config.get("_precomputed_kpis"):
         return config["_precomputed_kpis"]
@@ -553,12 +563,14 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         series = _try_clean_numeric(df[col]).dropna()
         if len(series) == 0:
             continue
-        total = series.sum()
+        is_pct = _is_percentage_col(col, df[col])
+        kpi_value = series.mean() if is_pct else series.sum()
+        prefix = 'Avg' if is_pct else 'Total'
         trend = _compute_trend(series)
         trend_pct = _compute_trend_percentage(series)
         kpis.append({
-            'name': 'Total ' + col.replace('_', ' ').title(),
-            'value': _format_number(total),
+            'name': f'{prefix} ' + col.replace('_', ' ').title(),
+            'value': _format_number(kpi_value) + ('%' if is_pct else ''),
             'trend': trend,
             'trend_pct': trend_pct,
         })
