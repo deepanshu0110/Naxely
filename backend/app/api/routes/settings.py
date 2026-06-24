@@ -499,9 +499,7 @@ async def create_api_key(
     await db.commit()
     row = result.mappings().first()
 
-    logger.info(f"api_key created_at type={type(row.get('created_at'))} value={row.get('created_at')}")
-
-    created_at = row["created_at"].isoformat() + "Z" if row.get("created_at") else datetime.now(timezone.utc).isoformat() + "Z"
+    created_at = row["created_at"].isoformat() if row.get("created_at") else None
 
     return {
         "id": row["id"],
@@ -534,7 +532,7 @@ async def list_api_keys(
             "id": str(r["id"]),
             "name": r["name"],
             "key_display": f"{r['key_prefix']}...{r['key_suffix']}",
-            "created_at": r["created_at"].isoformat() + "Z" if r["created_at"] else None,
+            "created_at": r["created_at"].isoformat() if r["created_at"] else None,
             "last_used_at": r["last_used_at"].isoformat() if r["last_used_at"] else None,
             "revoked": r["revoked_at"] is not None,
         }
