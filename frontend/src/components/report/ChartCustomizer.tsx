@@ -38,11 +38,11 @@ export default function ChartCustomizer({ uploadId, columnConfig, onSpecsChange 
       setLoading(true)
       setError(null)
       try {
-        const data = await api.post<{ chart_specs: ChartSpec[] }>('/reports/preview-charts', {
+        const res = await api.post<{ chart_specs: ChartSpec[] }>('/reports/preview-charts', {
           upload_id: uploadId,
           column_config: columnConfig,
         })
-        const fetched = data.chart_specs || []
+        const fetched = res.data.chart_specs || []
         setSpecs(fetched)
         onSpecsChange(fetched)
       } catch {
