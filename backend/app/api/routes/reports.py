@@ -793,6 +793,7 @@ async def export_report_pptx(
         kpis = _compute_kpi_data(df_norm, config, ai_content, brand_color)
     except Exception:
         kpis = []
+    logger.info(f"pptx export kpis: {kpis}  metric_columns={config.get('metric_columns')}  _precomputed_kpis={config.get('_precomputed_kpis')}")
     config["_precomputed_kpis"] = kpis
     config["_ai_skipped"] = report.get("ai_skipped", False)
     config["report_id"] = report_id
@@ -806,6 +807,13 @@ async def export_report_pptx(
     except Exception:
         logger.warning(f"[pptx_export] chart regeneration failed, continuing without charts")
         chart_paths = []
+
+    seen = set()
+    chart_paths = [
+        p for p in chart_paths
+        if (key := p[1] if isinstance(p, tuple) else p) not in seen
+        and not seen.add(key)
+    ]
 
     pptx_bytes = await loop.run_in_executor(
         None,
