@@ -42,6 +42,7 @@ pdfmetrics.registerFont(TTFont('Fraunces-Medium', str(FONT_DIR / 'Fraunces-Mediu
 pdfmetrics.registerFont(TTFont('Fraunces-SemiBold', str(FONT_DIR / 'Fraunces-SemiBold.ttf')))
 pdfmetrics.registerFont(TTFont('IBMPlexSans', str(FONT_DIR / 'IBMPlexSans-Regular.ttf')))
 pdfmetrics.registerFont(TTFont('IBMPlexSans-Italic', str(FONT_DIR / 'IBMPlexSans-Italic.ttf')))
+pdfmetrics.registerFont(TTFont('IBMPlexSans-Bold', str(FONT_DIR / 'IBMPlexSans-Regular.ttf')))
 pdfmetrics.registerFont(TTFont('IBMPlexMono', str(FONT_DIR / 'IBMPlexMono-Regular.ttf')))
 pdfmetrics.registerFont(TTFont('IBMPlexMono-Bold', str(FONT_DIR / 'IBMPlexMono-Bold.ttf')))
 pdfmetrics.registerFontFamily('Fraunces', normal='Fraunces-Medium', bold='Fraunces-SemiBold')
@@ -78,57 +79,42 @@ class _SectionHeader(Flowable):
         self.canv.drawString(12, 9, self.text)
 
 
-class _KPICard(Flowable):
-    def __init__(self, name, value_str, trend, trend_pct, brand_color_hex, width=None, highlight=False):
+class _KPIRow(Flowable):
+    def __init__(self, kpis, content_width, brand_color_hex):
         Flowable.__init__(self)
-        self.name = name
-        self.value_str = value_str
-        self.trend = trend
-        self.trend_pct = trend_pct
-        self.highlight = highlight
+        self.kpis = kpis
         self.brand_color_hex = brand_color_hex
-        self.brand_color = HexColor(brand_color_hex)
-        self._width = width or (PAGE_WIDTH - 2 * MARGIN)
-        self.height = 94 if highlight else 74
+        self.gap = 16
+        self.card_width = (content_width - self.gap) / 2
+        self.card_height = 100
+        self._width = content_width
+        self.height = self.card_height
 
     def wrap(self, availWidth, availHeight):
         return (self._width, self.height)
 
     def draw(self):
-        card_h = 84 if self.highlight else 64
-        bg = _brand_tint(self.brand_color_hex) if self.highlight else HexColor('#F9FAFB')
-        self.canv.setFillColor(bg)
-        self.canv.roundRect(0, 0, self._width, card_h, 6, fill=1, stroke=0)
-        self.canv.setFillColor(HexColor('#374151'))
-        self.canv.setFont('IBMPlexSans', 9)
-        self.canv.drawString(12, card_h - 18, self.name)
-        self.canv.setFillColor(self.brand_color)
-        val_size = 26 if self.highlight else 22
-        self.canv.setFont('IBMPlexMono-Bold', val_size)
-        self.canv.drawString(12, card_h - 46 if self.highlight else 18, self.value_str)
-        arrow_x = self._width - 12
-        arrow_y = card_h - 40 if self.highlight else 24
-        s = 7
-        if self.trend_pct >= 0:
-            color = HexColor(MINT)
-            p = self.canv.beginPath()
-            p.moveTo(arrow_x - s, arrow_y - s)
-            p.lineTo(arrow_x + s, arrow_y - s)
-            p.lineTo(arrow_x, arrow_y + s)
-            p.close()
-        else:
-            color = HexColor(RED)
-            p = self.canv.beginPath()
-            p.moveTo(arrow_x - s, arrow_y + s)
-            p.lineTo(arrow_x + s, arrow_y + s)
-            p.lineTo(arrow_x, arrow_y - s)
-            p.close()
-        self.canv.setFillColor(color)
-        self.canv.drawPath(p, fill=1, stroke=0)
-        self.canv.setFillColor(HexColor('#6B7280'))
-        self.canv.setFont('IBMPlexMono', 7.5)
-        pct_label = f'recent: {self.trend_pct:+.1f}%'
-        self.canv.drawRightString(self._width - 12, 6, pct_label)
+        for i, kpi in enumerate(self.kpis):
+            x = i * (self.card_width + self.gap)
+            y = 0
+            # Card background
+            self.canv.setFillColor(HexColor('#F3F2F8'))
+            self.canv.roundRect(x, y, self.card_width, self.card_height, 6, fill=1, stroke=0)
+            # Label
+            self.canv.setFont('IBMPlexSans', 10)
+            self.canv.setFillColor(HexColor('#6B7280'))
+            self.canv.drawString(x + 16, y + self.card_height - 24, kpi['name'])
+            # Value
+            self.canv.setFont('IBMPlexSans-Bold', 28)
+            self.canv.setFillColor(HexColor('#14131F'))
+            self.canv.drawString(x + 16, y + self.card_height - 56, kpi['value'])
+            # Trend
+            trend_pct = kpi.get('trend_pct', 0)
+            trend_color = '#0E9F6E' if trend_pct >= 0 else '#EF4444'
+            trend_marker = '+' if trend_pct >= 0 else '-'
+            self.canv.setFont('IBMPlexSans', 11)
+            self.canv.setFillColor(HexColor(trend_color))
+            self.canv.drawString(x + 16, y + 16, f"{trend_marker} {trend_pct:+.1f}% recent")
 
 
 class _InsightCard(Flowable):
@@ -749,19 +735,10 @@ def build_sync(
     body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
     body_story.append(Spacer(1, 10))
 
-    for kpi in kpis:
-        is_hero = hero is not None and kpi['name'] == hero['name']
-        card = _KPICard(
-            name=kpi['name'],
-            value_str=kpi['value'],
-            trend=kpi['trend'],
-            trend_pct=kpi.get('trend_pct', 0),
-            brand_color_hex=brand_color,
-            width=content_width,
-            highlight=is_hero,
-        )
-        body_story.append(card)
-        body_story.append(Spacer(1, 8))
+    for i in range(0, len(kpis), 2):
+        row_kpis = kpis[i:i+2]
+        body_story.append(_KPIRow(row_kpis, content_width, brand_color))
+        body_story.append(Spacer(1, 12))
     body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────

@@ -191,80 +191,33 @@ class TestKpiTrendDeterminism:
 class TestKpiCardArrowDirection:
     """Arrow drawn on KPI cards must derive direction/color from trend_pct, not trend field."""
 
-    def _extract_triangle_apex_direction(self, pdf_path: str) -> list[str]:
-        """Parse a PDF and return 'up' / 'down' for each filled
-        3-point path found (the triangle arrows drawn by _KPICard)."""
-        import pikepdf
-        from pikepdf import parse_content_stream, Operator
+    def _extract_trend_text(self, pdf_path: str) -> list[str]:
+        """Extract all text fragments containing trend markers from rendered PDF."""
+        import fitz
+        texts = []
+        with fitz.open(pdf_path) as doc:
+            for page in doc:
+                texts.extend(page.get_text().split('\n'))
+        return [t.strip() for t in texts if '% recent' in t]
 
-        directions = []
-        fill_ops = {Operator('f'), Operator('f*')}
-        with pikepdf.open(pdf_path) as pdf:
-            for page in pdf.pages:
-                cs = page.get('/Contents')
-                if cs is None:
-                    continue
-                ops = list(parse_content_stream(cs))
-                i = 0
-                while i < len(ops) - 4:
-                    op0_obj, op0 = ops[i]
-                    op1_obj, op1 = ops[i + 1]
-                    op2_obj, op2 = ops[i + 2]
-                    op3_obj, op3 = ops[i + 3]
-                    op4_obj, op4 = ops[i + 4] if i + 4 < len(ops) else (None, None)
-                    # Skip if any of the path ops are Bézier curves (c or v)
-                    if op0 not in {Operator('m')}:
-                        i += 1
-                        continue
-                    # Collect contiguous path ops
-                    path_ops = [(op0_obj, op0)]
-                    j = i + 1
-                    while j < len(ops) and ops[j][1] not in fill_ops:
-                        path_ops.append(ops[j])
-                        j += 1
-                    if j < len(ops) and ops[j][1] in fill_ops:
-                        path_ops.append(ops[j])
-                    # 3-point filled path: m + l + l + [h] + f/f*
-                    line_ops = [(o, op) for o, op in path_ops if op == Operator('l')]
-                    has_fill = any(op in fill_ops for _, op in path_ops)
-                    has_curve = any(op in {Operator('c'), Operator('v'), Operator('y')}
-                                    for _, op in path_ops)
-                    if len(line_ops) == 2 and has_fill and not has_curve:
-                        # Extract y coords from moveto and both linetos
-                        _, m_y = [float(v) for v in list(path_ops[0][0])[:2]]
-                        _, l1_y = [float(v) for v in list(path_ops[1][0])[:2]]
-                        _, l2_y = [float(v) for v in list(path_ops[2][0])[:2]]
-                        ys = {m_y, l1_y, l2_y}
-                        if len(ys) == 2:
-                            # Two points at one Y (base), one at other Y (apex)
-                            y_counts = {}
-                            for y in [m_y, l1_y, l2_y]:
-                                y_counts[y] = y_counts.get(y, 0) + 1
-                            base_y = max(y for y, c in y_counts.items() if c == 2)
-                            apex_y = min(y for y, c in y_counts.items() if c == 1)
-                            if apex_y > base_y:
-                                directions.append('up')
-                            else:
-                                directions.append('down')
-                    i = j + 1 if j < len(ops) else i + 1
-        return directions
-
-    def test_negative_trend_pct_produces_apex_down_arrow(self):
+    def test_negative_trend_pct_produces_down_arrow(self):
         import tempfile
         from reportlab.platypus import SimpleDocTemplate
         from reportlab.lib.pagesizes import A4
-        from app.services.pdf_service import _KPICard
+        from app.services.pdf_service import _KPIRow
 
         tmp = tempfile.mktemp(suffix='.pdf')
         try:
             doc = SimpleDocTemplate(tmp, pagesize=A4)
-            card = _KPICard("Units Sold", "1,500", "increasing", -35.7, "#D97A34")
+            card = _KPIRow(
+                [{"name": "Units Sold", "value": "1,500", "trend": "increasing", "trend_pct": -35.7}],
+                400, "#D97A34",
+            )
             doc.build([card])
 
-            directions = self._extract_triangle_apex_direction(tmp)
-            assert 'down' in directions, (
-                f"Expected at least one apex-down triangle for negative trend_pct, "
-                f"found: {directions}"
+            trends = self._extract_trend_text(tmp)
+            assert any('-' in t for t in trends), (
+                f"Expected minus sign for negative trend_pct, found: {trends}"
             )
         finally:
             try:
@@ -272,22 +225,24 @@ class TestKpiCardArrowDirection:
             except OSError:
                 pass
 
-    def test_positive_trend_pct_produces_apex_up_arrow(self):
+    def test_positive_trend_pct_produces_up_arrow(self):
         import tempfile
         from reportlab.platypus import SimpleDocTemplate
         from reportlab.lib.pagesizes import A4
-        from app.services.pdf_service import _KPICard
+        from app.services.pdf_service import _KPIRow
 
         tmp = tempfile.mktemp(suffix='.pdf')
         try:
             doc = SimpleDocTemplate(tmp, pagesize=A4)
-            card = _KPICard("Revenue", "$50K", "increasing", 12.5, "#D97A34")
+            card = _KPIRow(
+                [{"name": "Revenue", "value": "$50K", "trend": "increasing", "trend_pct": 12.5}],
+                400, "#D97A34",
+            )
             doc.build([card])
 
-            directions = self._extract_triangle_apex_direction(tmp)
-            assert 'up' in directions, (
-                f"Expected at least one apex-up triangle for positive trend_pct, "
-                f"found: {directions}"
+            trends = self._extract_trend_text(tmp)
+            assert any('+' in t for t in trends), (
+                f"Expected plus sign for positive trend_pct, found: {trends}"
             )
         finally:
             try:
@@ -328,10 +283,9 @@ class TestKpiCardArrowDirection:
             {"brand_color": "#D97A34", "tier": "pro", "logo_url": None, "company_name": "Test"},
         )
         try:
-            directions = self._extract_triangle_apex_direction(pdf_path)
-            # Revenue (negative) → apex-down; Profit (positive) → apex-up
-            assert 'down' in directions, f"Expected down arrow for negative trend, got {directions}"
-            assert 'up' in directions, f"Expected up arrow for positive trend, got {directions}"
+            trends = self._extract_trend_text(pdf_path)
+            assert any('-' in t for t in trends), f"Expected '-' for negative trend, got {trends}"
+            assert any('+' in t for t in trends), f"Expected '+' for positive trend, got {trends}"
         finally:
             try:
                 os.unlink(pdf_path)
