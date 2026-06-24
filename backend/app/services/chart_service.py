@@ -265,10 +265,19 @@ def _generate_single_chart(
                 for x in ['%', 'percent', 'rate', 'ratio', 'score', 'pct']) else 'sum'
 
             unique_dates = df_sorted[x_col].nunique()
-            if unique_dates > 60:
+            date_range_days = (df_sorted[x_col].max() - df_sorted[x_col].min()).days
+
+            if date_range_days > 365:
+                resample_freq = 'ME'
+            elif unique_dates > 60:
+                resample_freq = 'W'
+            else:
+                resample_freq = None
+
+            if resample_freq:
                 df_plot = (
                     df_sorted.set_index(x_col)[y_col]
-                    .resample('W')
+                    .resample(resample_freq)
                     .agg(agg_func)
                     .reset_index()
                 )
