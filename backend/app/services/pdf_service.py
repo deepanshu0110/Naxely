@@ -16,6 +16,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
 from reportlab.lib.colors import HexColor, white, Color
+from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.platypus import (
@@ -536,13 +537,93 @@ def _on_page(canvas, doc, add_watermark=False, is_white_label=False, company_nam
 
 
 def _is_percentage_col(col_name: str, series: pd.Series) -> bool:
-    name_hints = any(x in col_name.lower() for x in ['%', 'percent', 'rate', 'ratio'])
-    value_hints = (
-        pd.api.types.is_numeric_dtype(series)
-        and series.dropna().between(0, 100).all()
-        and series.max() <= 100
+    name_hints = any(x in col_name.lower()
+                     for x in ['%', 'percent', 'rate', 'ratio', 'pct'])
+    return name_hints
+
+
+def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) -> Table:
+    def _hex_to_color(hex_str):
+        hex_str = hex_str.lstrip('#')
+        r, g, b = tuple(int(hex_str[i:i+2], 16) / 255.0 for i in (0, 2, 4))
+        return colors.Color(r, g, b)
+
+    brand = _hex_to_color(brand_color)
+    even_row = _hex_to_color('#F3F2F8')
+    odd_row = _hex_to_color('#FAFAFC')
+    border = _hex_to_color('#E5E7EB')
+    ink = _hex_to_color('#14131F')
+
+    numeric_cols = set(
+        c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
     )
-    return name_hints or value_hints
+    date_cols = set(
+        c for c in df.columns if pd.api.types.is_datetime64_any_dtype(df[c])
+    )
+
+    MAX_CELL_CHARS = 18
+    def _fmt(val, col):
+        if pd.isna(val):
+            return ''
+        if col in numeric_cols:
+            if isinstance(val, float):
+                return f'{val:,.2f}' if val != int(val) else f'{int(val):,}'
+            return f'{val:,}'
+        text = str(val)
+        return text[:MAX_CELL_CHARS] + '\u2026' if len(text) > MAX_CELL_CHARS else text
+
+    headers = list(df.columns)
+    rows = [[_fmt(row[col], col) for col in df.columns]
+            for _, row in df.iterrows()]
+    data = [headers] + rows
+
+    MIN_W, MAX_W = 40, 120
+    col_widths = []
+    for col in df.columns:
+        sample = df[col].dropna().astype(str).head(20)
+        max_len = max(len(col), sample.str.len().max() if len(sample) else 0)
+        w = min(MAX_W, max(MIN_W, max_len * 5.5))
+        col_widths.append(w)
+
+    total = sum(col_widths)
+    if total > content_width:
+        scale = content_width / total
+        col_widths = [w * scale for w in col_widths]
+
+    table = Table(data, colWidths=col_widths, repeatRows=1)
+
+    style_cmds = [
+        ('BACKGROUND', (0, 0), (-1, 0), brand),
+        ('TEXTCOLOR', (0, 0), (-1, 0), white),
+        ('FONTNAME', (0, 0), (-1, 0), 'IBMPlexSans-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
+        ('FONTSIZE', (0, 1), (-1, -1), 7.5),
+        ('TEXTCOLOR', (0, 1), (-1, -1), ink),
+        ('ROWHEIGHT', (0, 0), (-1, -1), 18),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+        ('LINEBELOW', (0, 0), (-1, -1), 0.5, border),
+        ('GRID', (0, 0), (-1, -1), 0, white),
+    ]
+
+    for i in range(1, len(data)):
+        bg = even_row if i % 2 == 0 else odd_row
+        style_cmds.append(('BACKGROUND', (0, i), (-1, i), bg))
+
+    for j, col in enumerate(df.columns):
+        if col in numeric_cols:
+            style_cmds.append(('ALIGN', (j, 1), (j, -1), 'RIGHT'))
+        elif col in date_cols:
+            style_cmds.append(('ALIGN', (j, 1), (j, -1), 'CENTER'))
+        else:
+            style_cmds.append(('ALIGN', (j, 1), (j, -1), 'LEFT'))
+        style_cmds.append(('ALIGN', (j, 0), (j, 0), 'CENTER'))
+
+    table.setStyle(TableStyle(style_cmds))
+    return table
 
 
 def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_color_hex: str) -> list[dict]:
@@ -831,40 +912,7 @@ def build_sync(
     if len(display_df) > 50:
         display_df = display_df.head(50)
 
-    table_data = []
-    header_row = [str(c) for c in display_df.columns]
-    table_data.append(header_row)
-    for _, row in display_df.iterrows():
-        table_data.append([str(v) if pd.notna(v) else '' for v in row])
-
-    col_count = len(header_row)
-    col_width = min(content_width / max(col_count, 1), 120)
-    col_widths = [col_width] * col_count
-
-    data_table = Table(table_data, colWidths=col_widths, repeatRows=1)
-
-    table_style_commands = [
-        ('BACKGROUND', (0, 0), (-1, 0), HexColor(brand_color)),
-        ('TEXTCOLOR', (0, 0), (-1, 0), white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Fraunces-SemiBold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 8),
-        ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
-        ('FONTSIZE', (0, 1), (-1, -1), 7),
-        ('GRID', (0, 0), (-1, -1), 0.5, HexColor(GRID_LINE)),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('LEFTPADDING', (0, 0), (-1, -1), 4),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 4),
-        ('TOPPADDING', (0, 0), (-1, -1), 3),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-    ]
-
-    for row_idx in range(1, len(table_data)):
-        if row_idx % 2 == 0:
-            table_style_commands.append(
-                ('BACKGROUND', (0, row_idx), (-1, row_idx), HexColor(ROW_ALT_COLOR))
-            )
-
-    data_table.setStyle(TableStyle(table_style_commands))
+    data_table = _build_data_table(display_df, brand_color, content_width)
     body_story.append(data_table)
     body_story.append(PageBreak())
 
