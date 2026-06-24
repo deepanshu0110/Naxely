@@ -36,7 +36,7 @@ PRIORITY_COLOR = {
     "low": COLOR_MINT,
 }
 
-TREND_ARROW = {"up": "\u2191", "down": "\u2193", "neutral": "\u2192"}
+TREND_ARROW = {"up": "\u2191", "increasing": "\u2191", "down": "\u2193", "decreasing": "\u2193", "neutral": "\u2192"}
 
 
 def _hex_to_rgb(hex_color: str) -> RGBColor:
@@ -141,7 +141,7 @@ def _build_kpi_slide(prs, kpis, brand_color):
             top = MARGIN + TITLE_H + Inches(0.3) + row * (CARD_H + ROW_GAP)
 
             trend = kpi.get("trend", "neutral")
-            card_color = COLOR_MINT if trend == "up" else COLOR_RED if trend == "down" else COLOR_AMBER
+            card_color = COLOR_MINT if trend in ("up", "increasing") else COLOR_RED if trend in ("down", "decreasing") else COLOR_AMBER
 
             _add_rect(slide, left, top, CARD_W, CARD_H, fill_color=RGBColor(0xF3, 0xF2, 0xF8))
             _add_rect(slide, left, top, ACCENT_W, CARD_H, fill_color=card_color)
