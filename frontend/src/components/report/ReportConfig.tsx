@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Briefcase, MessageCircle, BarChart3, BookOpen, Lock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
-import UpgradePrompt from '@/components/ui/UpgradePrompt'
 
 interface ReportConfigData {
   title: string
