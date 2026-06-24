@@ -64,7 +64,7 @@ app.add_middleware(
     allow_origins=_resolve_origins(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
-    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-API-Key"],
 )
 
 
@@ -93,7 +93,7 @@ app.add_exception_handler(StarletteHTTPException, http_exception_handler)  # typ
 app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore[arg-type]
 app.add_exception_handler(Exception, unhandled_exception_handler)
 
-from app.api.routes import auth, reports, settings as settings_router, payments, health, templates  # noqa: E402
+from app.api.routes import auth, reports, settings as settings_router, payments, health, templates, v1 as v1_router  # noqa: E402
 from app.api.routes.scheduled_reports import router as scheduled_reports_router  # noqa: E402
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -103,6 +103,7 @@ app.include_router(payments.router, prefix="/payments", tags=["payments"])
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(templates.router, tags=["templates"])
 app.include_router(scheduled_reports_router, tags=["scheduled_reports"])
+app.include_router(v1_router.router)
 
 
 @app.on_event("startup")

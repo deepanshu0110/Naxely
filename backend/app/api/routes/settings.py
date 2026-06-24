@@ -8,7 +8,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, require_pro_or_above, require_byok
+from app.api.deps import get_current_user, require_pro_or_above, require_byok, require_agency
+from app.services.api_key_service import generate_api_key as _generate_api_key
 from app.core.database import get_db
 from app.models.user import User
 from app.utils.encryption import get_master_key, encrypt_api_key
@@ -457,3 +458,102 @@ async def delete_account(
     await db.commit()
 
     return {"success": True, "data": {"deleted": True}}
+
+
+@router.post("/api-keys", status_code=201)
+async def create_api_key(
+    body: dict,
+    current_user: User = Depends(require_agency),
+    db: AsyncSession = Depends(get_db),
+):
+    name = (body.get("name") or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Key name is required")
+    if len(name) > 100:
+        raise HTTPException(status_code=400, detail="Key name must be under 100 characters")
+
+    raw_key, key_prefix, key_suffix, key_hash = _generate_api_key()
+
+    count_result = await db.execute(
+        text("SELECT COUNT(*) FROM api_keys WHERE user_id = :uid AND revoked_at IS NULL"),
+        {"uid": str(current_user.id)},
+    )
+    count = count_result.scalar()
+    if count >= 10:
+        raise HTTPException(status_code=400, detail="Maximum of 10 active API keys allowed")
+
+    result = await db.execute(
+        text("""
+            INSERT INTO api_keys (user_id, name, key_hash, key_prefix, key_suffix)
+            VALUES (:uid, :name, :hash, :prefix, :suffix)
+            RETURNING id, created_at
+        """),
+        {
+            "uid": str(current_user.id),
+            "name": name,
+            "hash": key_hash,
+            "prefix": key_prefix,
+            "suffix": key_suffix,
+        },
+    )
+    row = result.mappings().first()
+
+    created_at = row["created_at"].isoformat() + "Z" if row.get("created_at") else datetime.now(timezone.utc).isoformat() + "Z"
+
+    return {
+        "id": row["id"],
+        "name": name,
+        "key": raw_key,
+        "key_prefix": key_prefix,
+        "key_suffix": key_suffix,
+        "created_at": created_at,
+        "message": "Save this key now. It will not be shown again.",
+    }
+
+
+@router.get("/api-keys")
+async def list_api_keys(
+    current_user: User = Depends(require_agency),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        text("""
+            SELECT id, name, key_prefix, key_suffix, created_at, last_used_at, revoked_at
+            FROM api_keys
+            WHERE user_id = :uid
+            ORDER BY created_at DESC
+        """),
+        {"uid": str(current_user.id)},
+    )
+    rows = result.mappings().all()
+    return [
+        {
+            "id": r["id"],
+            "name": r["name"],
+            "key_display": f"{r['key_prefix']}...{r['key_suffix']}",
+            "created_at": r["created_at"].isoformat() + "Z" if r.get("created_at") else None,
+            "last_used_at": r["last_used_at"].isoformat() + "Z" if r.get("last_used_at") else None,
+            "revoked": r["revoked_at"] is not None,
+        }
+        for r in rows
+    ]
+
+
+@router.delete("/api-keys/{key_id}")
+async def revoke_api_key(
+    key_id: str,
+    current_user: User = Depends(require_agency),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        text("""
+            UPDATE api_keys
+            SET revoked_at = NOW()
+            WHERE id = :id AND user_id = :uid AND revoked_at IS NULL
+        """),
+        {"id": key_id, "uid": str(current_user.id)},
+    )
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="API key not found or already revoked")
+    await db.commit()
+    return {"success": True, "message": "API key revoked"}

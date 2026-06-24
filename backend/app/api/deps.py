@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timezone
 
-from fastapi import Depends, HTTPException, Header
+from fastapi import Depends, HTTPException, Header, Request
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +9,7 @@ from app.core.security import verify_supabase_jwt
 from app.core.database import get_db
 from app.core.config import settings
 from app.models.user import User
+from app.services.api_key_service import hash_key
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +87,68 @@ async def get_current_user(
     for key, value in row.items():
         setattr(user, key, value)
     return user
+
+
+async def get_api_user(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    raw_key = request.headers.get("X-API-Key")
+    if not raw_key:
+        raise HTTPException(
+            status_code=401,
+            detail="API key required. Pass X-API-Key header.",
+            headers={"WWW-Authenticate": "ApiKey"}
+        )
+
+    if not raw_key.startswith("nax_") or len(raw_key) != 36:
+        raise HTTPException(status_code=401, detail="Invalid API key format.")
+
+    key_hash_val = hash_key(raw_key)
+
+    result = await db.execute(
+        text("""
+            SELECT ak.id, ak.user_id, ak.revoked_at, u.tier
+            FROM api_keys ak
+            JOIN users u ON u.id = ak.user_id
+            WHERE ak.key_hash = :hash
+        """),
+        {"hash": key_hash_val},
+    )
+    row = result.mappings().first()
+
+    if not row:
+        raise HTTPException(status_code=401, detail="Invalid API key.")
+
+    if row["revoked_at"] is not None:
+        raise HTTPException(status_code=401, detail="API key has been revoked.")
+
+    tier = (row["tier"] or "free").lower()
+    if tier != "agency":
+        raise HTTPException(
+            status_code=403,
+            detail="API access requires Agency plan."
+        )
+
+    try:
+        await db.execute(
+            text("UPDATE api_keys SET last_used_at = NOW() WHERE id = :id"),
+            {"id": row["id"]},
+        )
+        await db.commit()
+    except Exception:
+        pass
+
+    user_result = await db.execute(
+        text("SELECT * FROM users WHERE id = :uid AND deleted_at IS NULL"),
+        {"uid": row["user_id"]},
+    )
+    user_row = user_result.mappings().first()
+    if not user_row:
+        raise HTTPException(status_code=401, detail="User not found.")
+
+    from app.services.report_service import _make_user_proxy
+    return _make_user_proxy(dict(user_row))
 
 
 async def check_report_limit(current_user: User = Depends(get_current_user)) -> None:
