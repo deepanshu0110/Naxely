@@ -14,6 +14,7 @@ interface ReportStore {
   fetchReports: (offset?: number, limit?: number) => Promise<void>
   uploadFile: (file: File) => Promise<UploadResult>
   generateReport: (config: ReportConfig) => Promise<string>
+  bulkDeleteReports: (ids: string[]) => Promise<void>
   pollStatus: (reportId: string) => Promise<GenerationStatus>
   deleteReport: (reportId: string) => Promise<void>
 }
@@ -92,6 +93,14 @@ export const useReportStore = create<ReportStore>((set, get) => ({
     set((state) => ({
       reports: state.reports.filter((r) => r.id !== reportId),
       total: state.total - 1,
+    }))
+  },
+
+  bulkDeleteReports: async (ids: string[]) => {
+    await api.post('/reports/bulk-delete', { report_ids: ids })
+    set((state) => ({
+      reports: state.reports.filter((r) => !ids.includes(r.id)),
+      total: state.total - ids.length,
     }))
   },
 }))

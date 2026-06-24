@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { useReportStore } from '@/store/reportStore'
 import { useAuthStore } from '@/store/authStore'
 import WelcomeModal from '@/components/onboarding/WelcomeModal'
@@ -8,13 +9,17 @@ import ReportCard from '@/components/dashboard/ReportCard'
 import EmptyState from '@/components/ui/EmptyState'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
+import Modal from '@/components/ui/Modal'
 
 export default function Dashboard() {
-  const { reports, isLoading, error, fetchReports, deleteReport } = useReportStore()
+  const { reports, isLoading, error, fetchReports, deleteReport, bulkDeleteReports } = useReportStore()
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const fetchProfile = useAuthStore((s) => s.fetchProfile)
   const [showWelcome, setShowWelcome] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleting, setBulkDeleting] = useState(false)
+  const [showBulkConfirm, setShowBulkConfirm] = useState(false)
 
   useEffect(() => {
     fetchReports()
@@ -29,6 +34,31 @@ export default function Dashboard() {
   const handleWelcomeClose = () => {
     setShowWelcome(false)
     fetchProfile()
+  }
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }, [])
+
+  const selectAll = useCallback(() => setSelectedIds(new Set(reports.map((r) => r.id))), [reports])
+  const clearSelection = useCallback(() => setSelectedIds(new Set()), [])
+
+  const handleBulkDelete = async () => {
+    setBulkDeleting(true)
+    try {
+      await bulkDeleteReports(Array.from(selectedIds))
+      clearSelection()
+      setShowBulkConfirm(false)
+      toast.success(`Deleted ${selectedIds.size} report${selectedIds.size !== 1 ? 's' : ''}`)
+    } catch {
+      toast.error('Failed to delete reports')
+    } finally {
+      setBulkDeleting(false)
+    }
   }
 
   const EmptyIllustration = () => (
@@ -76,12 +106,57 @@ export default function Dashboard() {
               }
             />
           ) : (
-            <div className="space-y-3">
-              {reports.map((report) => (
-                <ReportCard key={report.id} report={report} onDelete={deleteReport} />
-              ))}
+            <div>
+              {selectedIds.size > 0 && (
+                <div className="mb-4 flex items-center gap-3 rounded-xl bg-ink px-4 py-3 dark:bg-gray-100">
+                  <span className="flex-1 text-sm font-medium text-white dark:text-ink">
+                    {selectedIds.size} selected
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={selectAll}
+                    className="text-gray-400 hover:text-white dark:hover:text-ink">
+                    Select all ({reports.length})
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={clearSelection}
+                    className="text-gray-400 hover:text-white dark:hover:text-ink">
+                    Clear
+                  </Button>
+                  <Button variant="danger" size="sm" onClick={() => setShowBulkConfirm(true)}>
+                    Delete {selectedIds.size}
+                  </Button>
+                </div>
+              )}
+              <div className="space-y-3">
+                {reports.map((report) => (
+                  <ReportCard
+                    key={report.id}
+                    report={report}
+                    onDelete={deleteReport}
+                    isSelected={selectedIds.has(report.id)}
+                    onToggleSelect={toggleSelect}
+                  />
+                ))}
+              </div>
             </div>
           )}
+
+          <Modal
+            isOpen={showBulkConfirm}
+            onClose={() => setShowBulkConfirm(false)}
+            title={`Delete ${selectedIds.size} report${selectedIds.size !== 1 ? 's' : ''}?`}
+          >
+            <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+              This will permanently delete {selectedIds.size} report{selectedIds.size !== 1 ? 's' : ''}
+              and their PDFs. This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => setShowBulkConfirm(false)}>
+                Cancel
+              </Button>
+              <Button variant="danger" className="flex-1" onClick={handleBulkDelete} loading={bulkDeleting}>
+                Delete
+              </Button>
+            </div>
+          </Modal>
         </div>
       </main>
       {showWelcome && <WelcomeModal onClose={handleWelcomeClose} />}

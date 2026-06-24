@@ -32,7 +32,14 @@ const statusLabel = (status: Report['status']) => {
   }
 }
 
-export default function ReportCard({ report, onDelete }: { report: Report; onDelete: (id: string) => void }) {
+interface ReportCardProps {
+  report: Report
+  onDelete: (id: string) => void
+  isSelected?: boolean
+  onToggleSelect?: (id: string) => void
+}
+
+export default function ReportCard({ report, onDelete, isSelected, onToggleSelect }: ReportCardProps) {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -56,9 +63,24 @@ export default function ReportCard({ report, onDelete }: { report: Report; onDel
   return (
     <>
       <div
-        className="flex cursor-pointer items-center gap-4 rounded-xl border border-amber-200/40 bg-paper p-4 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md dark:border-amber-900/40 dark:bg-darkBg"
+        className={`relative flex cursor-pointer items-center gap-4 rounded-xl border bg-paper p-4 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md dark:bg-darkBg ${
+          isSelected
+            ? 'border-amber-500 ring-2 ring-amber-500/30 dark:border-amber-400'
+            : 'border-amber-200/40 dark:border-amber-900/40'
+        }`}
         onClick={() => navigate(`/report/${report.id}`)}
       >
+        {onToggleSelect && (
+          <div className="absolute left-3 top-3 z-10">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(report.id)}
+              onClick={(e) => e.stopPropagation()}
+              className="h-4 w-4 cursor-pointer accent-amber-500"
+            />
+          </div>
+        )}
         {/* Icon thumbnail */}
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-500/10">
           <FileText className="h-5 w-5 text-amber-500" />

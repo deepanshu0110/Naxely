@@ -59,6 +59,13 @@ export interface ColumnConfig {
   include: boolean
 }
 
+export interface ChartSpec {
+  x: string
+  y: string
+  type: string
+  title: string
+}
+
 export interface ReportConfig {
   upload_id: string
   title: string
@@ -69,6 +76,7 @@ export interface ReportConfig {
   column_config: ColumnConfig[]
   brand?: { company_name: string; prepared_by: string }
   workspace_id?: string | null
+  chart_specs?: ChartSpec[]
 }
 
 export interface GenerationStatus {

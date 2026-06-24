@@ -6,6 +6,9 @@ from app.api.routes.reports import (
     ColumnConfigItem,
     DateRange,
     BrandConfig,
+    ChartSpecOverride,
+    PreviewChartsRequest,
+    BulkDeleteRequest,
 )
 
 
@@ -591,3 +594,85 @@ class TestSharedReportIsWhiteLabel:
 
         assert exc.value.status_code == 410
         assert "expired" in exc.value.detail.lower()
+
+
+class TestChartSpecOverride:
+    def test_chart_spec_override_fields(self):
+        spec = ChartSpecOverride(x="Date", y="Revenue", type="area", title="Revenue Area")
+        assert spec.x == "Date"
+        assert spec.y == "Revenue"
+        assert spec.type == "area"
+        assert spec.title == "Revenue Area"
+
+    def test_report_generate_request_with_chart_specs(self):
+        req = ReportGenerateRequest(
+            upload_id="test-uuid",
+            title="Chart Spec Test",
+            sections=["charts"],
+            chart_specs=[
+                ChartSpecOverride(x="Date", y="Revenue", type="bar", title="Rev by Date"),
+                ChartSpecOverride(x="Month", y="Users", type="line", title="Users over Time"),
+            ],
+        )
+        assert len(req.chart_specs) == 2
+        assert req.chart_specs[0].type == "bar"
+        assert req.chart_specs[1].x == "Month"
+
+    def test_chart_specs_defaults_to_none(self):
+        req = ReportGenerateRequest(upload_id="u", title="No Specs")
+        assert req.chart_specs is None
+
+    def test_preview_charts_request_model(self):
+        req = PreviewChartsRequest(
+            upload_id="upload-123",
+            column_config=[
+                ColumnConfigItem(original_name="col_a", type="date", include=True),
+            ],
+        )
+        assert req.upload_id == "upload-123"
+        assert len(req.column_config) == 1
+        assert req.column_config[0].original_name == "col_a"
+
+    def test_preview_charts_request_column_config_defaults(self):
+        req = PreviewChartsRequest(upload_id="upload-123")
+        assert req.column_config is None
+
+
+class TestBulkDelete:
+    def test_bulk_delete_request_model(self):
+        req = BulkDeleteRequest(report_ids=["id-1", "id-2"])
+        assert len(req.report_ids) == 2
+        assert req.report_ids == ["id-1", "id-2"]
+
+    def test_bulk_delete_request_empty_list(self):
+        req = BulkDeleteRequest(report_ids=[])
+        assert req.report_ids == []
+
+    def test_bulk_delete_request_max_50_rejected(self):
+        import uuid
+        import json
+        from unittest.mock import MagicMock, patch, AsyncMock
+        from starlette.requests import Request
+        from fastapi import HTTPException
+        from app.api.routes.reports import bulk_delete_reports
+        from app.models.user import User
+
+        user = User()
+        user.id = "bulk-test-user"
+        user.tier = "pro"
+        user.is_active = True
+
+        body = BulkDeleteRequest(report_ids=[str(uuid.uuid4()) for _ in range(51)])
+
+        db = MagicMock()
+
+        with pytest.raises(HTTPException) as exc:
+            import asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                loop.run_until_complete(bulk_delete_reports(body=body, current_user=user, db=db))
+            finally:
+                loop.close()
+        assert exc.value.status_code == 400
+        assert "50" in exc.value.detail

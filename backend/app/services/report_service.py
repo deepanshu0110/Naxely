@@ -143,19 +143,22 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         if user_data_row and user_data_row.get("brand_color"):
             brand_color = user_data_row["brand_color"]
 
-        chart_specs = None
-        try:
-            _chart_user = _make_user_proxy(user_data_row or {})
-            _provider, _api_key = ai_service.get_user_api_key(_chart_user)
-            chart_specs = chart_service.select_charts_with_ai(
-                df=df_norm,
-                config=config,
-                provider=_provider,
-                api_key=_api_key,
-                max_charts=3,
-            )
-        except Exception as e:
-            logger.warning(f"[report_service] AI chart selection skipped: {e}")
+        chart_specs = config.get("chart_specs_override")
+        if chart_specs:
+            logger.info(f"[report_service] using user chart overrides: {[s['type'] for s in chart_specs]}")
+        else:
+            try:
+                _chart_user = _make_user_proxy(user_data_row or {})
+                _provider, _api_key = ai_service.get_user_api_key(_chart_user)
+                chart_specs = chart_service.select_charts_with_ai(
+                    df=df_norm,
+                    config=config,
+                    provider=_provider,
+                    api_key=_api_key,
+                    max_charts=3,
+                )
+            except Exception as e:
+                logger.warning(f"[report_service] AI chart selection skipped: {e}")
 
         chart_paths = await loop.run_in_executor(
             _CHART_EXECUTOR,

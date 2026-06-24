@@ -7,12 +7,13 @@ import FileUpload from '@/components/report/FileUpload'
 import ColumnMapper from '@/components/report/ColumnMapper'
 import ReportConfigForm from '@/components/report/ReportConfig'
 import GeneratingLoader from '@/components/report/GeneratingLoader'
+import ChartCustomizer from '@/components/report/ChartCustomizer'
 import { useReportStatus } from '@/hooks/useReportStatus'
 import { useReportStore } from '@/store/reportStore'
 import { useAuthStore } from '@/store/authStore'
-import type { UploadResult, ColumnConfig, ReportConfig as ReportConfigType } from '@/types/report'
+import type { UploadResult, ColumnConfig, ChartSpec, ReportConfig as ReportConfigType } from '@/types/report'
 
-const STEP_LABELS = ['Upload', 'Map', 'Configure', 'Generate']
+const STEP_LABELS = ['Upload', 'Map', 'Configure', 'Charts', 'Generate']
 
 export default function NewReport() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -22,6 +23,7 @@ export default function NewReport() {
   const [reportTone, setReportTone] = useState('professional')
   const [reportSections, setReportSections] = useState<string[]>(['charts', 'kpi_overview', 'data_table'])
   const [reportDateRange, setReportDateRange] = useState<{ from: string; to: string } | undefined>(undefined)
+  const [chartSpecs, setChartSpecs] = useState<ChartSpec[]>([])
   const [generating, setGenerating] = useState(false)
 
   const generateReport = useReportStore((s) => s.generateReport)
@@ -66,6 +68,8 @@ export default function NewReport() {
         return columnConfig.some((c) => c.include)
       case 3:
         return reportTitle.trim().length > 0
+      case 4:
+        return true
       default:
         return false
     }
@@ -84,6 +88,7 @@ export default function NewReport() {
       date_range: reportDateRange,
       column_config: columnConfig,
       workspace_id: null,
+      chart_specs: chartSpecs.length > 0 ? chartSpecs : undefined,
     }
 
     if (user?.tier !== 'free') {
@@ -95,7 +100,7 @@ export default function NewReport() {
 
     try {
       const id = await generateReport(payload)
-      setCurrentStep(4)
+      setCurrentStep(5)
       startPolling(id)
     } catch {
       toast.error('Failed to generate report')
@@ -178,6 +183,17 @@ export default function NewReport() {
               </div>
             )}
 
+            {currentStep === 4 && uploadResult && (
+              <div>
+                <h2 className="mb-4 text-lg font-semibold text-ink dark:text-gray-100">Customize Charts</h2>
+                <ChartCustomizer
+                  uploadId={uploadResult.upload_id}
+                  columnConfig={columnConfig}
+                  onSpecsChange={setChartSpecs}
+                />
+              </div>
+            )}
+
             <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
               <Button
                 variant="outline"
@@ -186,11 +202,11 @@ export default function NewReport() {
               >
                 Back
               </Button>
-              {currentStep < 3 ? (
+              {currentStep < 4 ? (
                 <Button onClick={() => setCurrentStep((s) => s + 1)} disabled={!canProceed()}>
                   Next
                 </Button>
-              ) : currentStep === 3 ? (
+              ) : currentStep === 4 ? (
                 <Button onClick={handleGenerate} disabled={!canProceed()} loading={generating}>
                   Generate Report
                 </Button>

@@ -19,6 +19,11 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.models.user import User
 from app.services.report_service import run_report_pipeline
+from app.services import data_service
+from app.services import ai_service as ai_service_mod
+from app.services import chart_service as chart_service_mod
+from app.services.report_service import _make_user_proxy, _process_csv
+
 from app.services.data_service import (
     parse_csv, validate_csv, validate_for_injection,
     detect_column_types,
@@ -54,6 +59,18 @@ class BrandConfig(BaseModel):
     logo_url: Optional[str] = None
 
 
+class PreviewChartsRequest(BaseModel):
+    upload_id: str
+    column_config: Optional[List[ColumnConfigItem]] = None
+
+
+class ChartSpecOverride(BaseModel):
+    x: str
+    y: str
+    type: str
+    title: str
+
+
 class ReportGenerateRequest(BaseModel):
     upload_id: str
     title: str
@@ -64,6 +81,7 @@ class ReportGenerateRequest(BaseModel):
     column_config: List[ColumnConfigItem] = []
     brand: Optional[BrandConfig] = None
     workspace_id: Optional[str] = None
+    chart_specs: Optional[List[ChartSpecOverride]] = None
 
     model_config = {"populate_by_name": True}
 
@@ -460,6 +478,57 @@ async def list_uploads(
     }
 
 
+@router.post("/reports/preview-charts")
+async def preview_charts(
+    body: PreviewChartsRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    result = await db.execute(
+        text("SELECT * FROM uploads WHERE id = :uid AND user_id = :owner"),
+        {"uid": body.upload_id, "owner": str(current_user.id)},
+    )
+    upload = result.mappings().first()
+    if not upload:
+        raise HTTPException(status_code=404, detail="Upload not found")
+
+    csv_bytes = await _run_sync(
+        _get_supabase().storage.from_("uploads").download, upload["file_url"],
+    )
+    df = parse_csv(csv_bytes)
+    config = {"column_config": [c.model_dump() for c in body.column_config] if body.column_config else []}
+    df, df_norm = _process_csv(df, config)
+
+    chart_specs = None
+    try:
+        user_obj = _make_user_proxy(
+            dict(await db.execute(
+                text("SELECT * FROM users WHERE id = :uid"), {"uid": str(current_user.id)}
+            ).mappings().first() or {})
+        )
+        provider, api_key = ai_service_mod.get_user_api_key(user_obj)
+        chart_specs = chart_service_mod.select_charts_with_ai(
+            df=df_norm, config=config, provider=provider, api_key=api_key, max_charts=3,
+        )
+    except Exception:
+        logger.warning("[preview_charts] AI chart selection failed, using rule-based fallback")
+
+    if not chart_specs:
+        metric_columns = [c for c in df_norm.columns if pd.api.types.is_numeric_dtype(df_norm[c])]
+        date_column = config.get("date_column")
+        dimension_columns = [
+            c for c in df_norm.columns
+            if c != date_column and not pd.api.types.is_numeric_dtype(df_norm[c]) and df_norm[c].nunique() <= 10
+        ]
+        pairs = chart_service_mod._select_chart_pairs(df_norm, date_column, metric_columns, dimension_columns, 3)
+        chart_specs = [
+            {"x": x, "y": y, "type": chart_service_mod.select_chart_type(x, y, df_norm), "title": f"{y} by {x}"}
+            for x, y in pairs
+        ]
+
+    return {"chart_specs": chart_specs}
+
+
 @router.post("/reports/generate")
 @limiter.limit("10/minute")
 async def generate_report(
@@ -509,6 +578,9 @@ async def generate_report(
 
     config_json = body.model_dump(by_alias=True)
     config_json["upload_id"] = body.upload_id
+
+    if body.chart_specs:
+        config_json["chart_specs_override"] = [s.model_dump() for s in body.chart_specs]
 
     try:
         await db.execute(
@@ -810,6 +882,55 @@ async def retry_report(
             "poll_url": f"/reports/{report_id}/status",
         },
     }
+
+
+class BulkDeleteRequest(BaseModel):
+    report_ids: List[str]
+
+
+@router.post("/reports/bulk-delete")
+async def bulk_delete_reports(
+    body: BulkDeleteRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    if not body.report_ids:
+        return {"deleted": 0}
+
+    if len(body.report_ids) > 50:
+        raise HTTPException(status_code=400, detail="Max 50 reports per bulk delete")
+
+    result = await db.execute(
+        text("""
+            SELECT id, pdf_url FROM reports
+            WHERE id = ANY(:ids) AND user_id = :uid
+        """),
+        {"ids": body.report_ids, "uid": str(current_user.id)},
+    )
+    rows = result.mappings().all()
+
+    if not rows:
+        return {"deleted": 0}
+
+    for row in rows:
+        if row.get("pdf_url"):
+            try:
+                await _run_sync(
+                    _get_supabase().storage.from_("reports").remove,
+                    [row["pdf_url"]],
+                )
+            except Exception:
+                pass
+
+    deleted_ids = [str(row["id"]) for row in rows]
+    await db.execute(
+        text("DELETE FROM reports WHERE id = ANY(:ids) AND user_id = :uid"),
+        {"ids": deleted_ids, "uid": str(current_user.id)},
+    )
+    await db.commit()
+
+    logger.info(f"[bulk_delete] user={current_user.id} deleted {len(deleted_ids)} reports")
+    return {"deleted": len(deleted_ids), "ids": deleted_ids}
 
 
 @router.delete("/reports/{report_id}")
