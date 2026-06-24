@@ -36,7 +36,7 @@ PRIORITY_COLOR = {
     "low": COLOR_MINT,
 }
 
-TREND_ARROW = {"up": "\u2191", "increasing": "\u2191", "down": "\u2193", "decreasing": "\u2193", "neutral": "\u2192"}
+TREND_ARROW = {"up": "\u2191", "increasing": "\u2191", "down": "\u2193", "decreasing": "\u2193", "neutral": "\u2192", "flat": "\u2192", "stable": "\u2192"}
 
 
 def _hex_to_rgb(hex_color: str) -> RGBColor:
