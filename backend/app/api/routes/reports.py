@@ -767,10 +767,11 @@ async def export_report_pptx(
     upload = await get_upload(upload_id)
     if not upload:
         raise HTTPException(status_code=422, detail="Original CSV not found in storage")
-    file_url = upload["file_url"]
+    file_ext = "csv" if upload.get("source_type") != "xlsx" else "xlsx"
+    permanent_path = f"permanent/{current_user.id}/{upload_id}.{file_ext}"
 
     csv_bytes = await _run_sync(
-        _get_supabase().storage.from_("uploads").download, file_url,
+        _get_supabase().storage.from_("uploads").download, permanent_path,
     )
 
     import pandas as pd
