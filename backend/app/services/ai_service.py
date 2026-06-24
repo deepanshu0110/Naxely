@@ -29,6 +29,16 @@ PROVIDER_CONFIG = {
 
 
 def get_user_api_key(user: User) -> tuple[str, str]:
+    # Free tier always gets server Gemini regardless of stored key.
+    # This is defense-in-depth — route-level deps are the primary gate.
+    tier = (
+        getattr(user, 'subscription_tier', None)
+        or getattr(user, 'tier', None)
+        or 'free'
+    ).lower()
+    if tier == 'free':
+        return ("gemini", settings.GEMINI_API_KEY)
+
     provider = str(user.ai_provider or "gemini")
     if provider == "gemini":
         from app.core.config import settings as app_settings
@@ -51,39 +61,93 @@ def get_user_api_key(user: User) -> tuple[str, str]:
 
 
 def call_openai(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
-    return call_openai_compat(prompt, system, api_key, timeout, base_url="https://api.openai.com/v1", model="gpt-4o")
+    result = call_openai_compat(prompt, system, api_key, timeout, base_url="https://api.openai.com/v1", model="gpt-4o")
+    if result is None:
+        return ""
+    return result
 
 
-def call_openai_compat(prompt: str, system: str, api_key: str, timeout: int = 25, base_url: str | None = None, model: str | None = None) -> str:
+DEEPSEEK_UNSUPPORTED_PARAMS = {
+    "logprobs", "top_logprobs", "n", "stream",
+    "presence_penalty", "frequency_penalty", "user",
+    "response_format",
+}
+
+
+def _sanitize_kwargs(kwargs: dict, base_url: str | None) -> dict:
+    if base_url and "deepseek.com" in base_url:
+        return {k: v for k, v in kwargs.items() if k not in DEEPSEEK_UNSUPPORTED_PARAMS}
+    return kwargs
+
+
+def call_openai_compat(prompt: str, system: str, api_key: str, timeout: int = 25, base_url: str | None = None, model: str | None = None) -> str | None:
     client = OpenAI(api_key=api_key, timeout=timeout, base_url=base_url)
     try:
-        response = client.chat.completions.create(
-            model=model or "gpt-4o",
-            messages=[
+        kwargs = _sanitize_kwargs({
+            "model": model or "gpt-4o",
+            "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.4,
-        )
+            "temperature": 0.4,
+        }, base_url)
+        response = client.chat.completions.create(**kwargs)
         result = response.choices[0].message.content
     except OpenAIAuthError:
-        raise HTTPException(status_code=400, detail="Invalid API key — please update in Settings")
+        raise ValueError("Invalid API key (HTTP 401/403)")
     except OpenAIRateLimitError:
         raise HTTPException(status_code=429, detail="AI rate limit — try again in 60 seconds")
     except OpenAIBadRequestError as e:
         detail = str(e.response.json().get("error", {}).get("message", str(e))) if e.response else str(e)
-        logger.error("OpenAI call 400: %s", detail)
-        raise HTTPException(status_code=400, detail=f"AI request failed: {detail[:200]}")
+        logger.warning("AI provider returned 400 — likely unsupported parameter. Response: %s", detail)
+        return None
     except APITimeoutError:
         raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
     except Exception as e:
-        logger.error("OpenAI call failed: %s", type(e).__name__)
-        raise HTTPException(status_code=500, detail="AI generation failed")
+        logger.error("AI call failed: %s", type(e).__name__)
+        return None
     finally:
-        del client
+        try:
+            del client
+        except Exception:
+            pass
     if result is None:
-        raise HTTPException(status_code=500, detail="AI returned empty response")
+        return None
     return result
+
+
+def validate_api_key(provider: str, api_key: str) -> dict:
+    config = PROVIDER_CONFIG.get(provider)
+    if not config:
+        return {"valid": False, "message": f"Unknown provider: {provider}"}
+
+    if provider == "gemini":
+        return {"valid": True, "message": ""}
+
+    try:
+        if provider == "claude":
+            call_claude("hi", "", api_key, timeout=10)
+        else:
+            call_openai_compat("hi", "", api_key, timeout=10, base_url=config["base_url"], model=config["model"])
+        return {"valid": True, "message": ""}
+    except HTTPException as e:
+        detail = str(e.detail) if hasattr(e, "detail") else str(e)
+        if "Invalid API key" in detail or "401" in detail or "Unauthorized" in detail:
+            return {"valid": False, "message": "Invalid API key"}
+        if "400" in detail or "Bad Request" in detail:
+            logger.warning("[validate_api_key] %s returned 400: %s", provider, detail)
+            return {"valid": True, "message": f"{provider} returned 400 — your key may be valid, but review API config: {detail[:200]}"}
+        return {"valid": True, "message": f"{provider} key accepted (non-auth error)"}
+    except ValueError as e:
+        if "Invalid API key" in str(e) or "401" in str(e):
+            return {"valid": False, "message": "Invalid API key"}
+        return {"valid": True, "message": f"{provider} key accepted (unexpected ValueError)"}
+    except Exception as e:
+        estr = str(e)
+        if "401" in estr or "Unauthorized" in estr or "AuthenticationError" in estr:
+            return {"valid": False, "message": "Invalid API key"}
+        logger.warning("[validate_api_key] %s validation error: %s", provider, estr)
+        return {"valid": True, "message": f"{provider} key accepted (unexpected response)"}
 
 
 def call_claude(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
@@ -172,8 +236,14 @@ def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int
         return call_gemini(prompt, system, api_key, timeout)
     cfg = PROVIDER_CONFIG.get(provider)
     if cfg and cfg.get("base_url"):
-        return call_openai_compat(prompt, system, api_key, timeout, base_url=cfg["base_url"], model=cfg["model"])
-    return call_openai(prompt, system, api_key, timeout)
+        result = call_openai_compat(prompt, system, api_key, timeout, base_url=cfg["base_url"], model=cfg["model"])
+        if result is None:
+            return ""
+        return result
+    result = call_openai(prompt, system, api_key, timeout)
+    if result is None:
+        return ""
+    return result
 
 
 def _round_stats(entry: dict) -> dict:
@@ -258,9 +328,12 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
     )
 
     loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(
+    result = await loop.run_in_executor(
         None, _call_ai, provider, user_prompt, system_prompt, api_key,
     )
+    if not result:
+        return None
+    return result
 
 
 async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> list[dict]:

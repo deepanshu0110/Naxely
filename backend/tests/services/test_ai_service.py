@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 import pytest
 import pandas as pd
 import numpy as np
+from unittest.mock import patch
 
 
 class TestAnomalyDetection:
@@ -229,3 +230,43 @@ class TestBuildColumnStats:
         assert rev["mean"] is not None
         assert rev["min"] is not None
         assert rev["max"] is not None
+
+
+class TestDeepSeekValidation:
+    def test_deepseek_valid_key_passes_validation(self):
+        from app.services.ai_service import validate_api_key
+        with patch("app.services.ai_service.call_openai_compat") as mock_call:
+            mock_call.return_value = {"choices": [{"message": {"content": "ok"}}]}
+            result = validate_api_key(provider="deepseek", api_key="sk-abc123validkey")
+        assert result["valid"] is True
+
+    def test_deepseek_400_from_api_treated_as_valid_key(self):
+        from app.services.ai_service import validate_api_key
+        with patch("app.services.ai_service.call_openai_compat") as mock_call:
+            mock_call.side_effect = Exception("400 Bad Request")
+            result = validate_api_key(provider="deepseek", api_key="sk-abc123validkey")
+        assert result["valid"] is True
+        assert "message" in result
+
+    def test_deepseek_401_treated_as_invalid_key(self):
+        from app.services.ai_service import validate_api_key
+        with patch("app.services.ai_service.call_openai_compat") as mock_call:
+            mock_call.side_effect = Exception("401 Unauthorized")
+            result = validate_api_key(provider="deepseek", api_key="sk-wrongkey")
+        assert result["valid"] is False
+
+    def test_deepseek_uses_correct_model_for_validation(self):
+        from app.services.ai_service import validate_api_key
+        with patch("app.services.ai_service.call_openai_compat") as mock_call:
+            mock_call.return_value = {"choices": [{"message": {"content": "ok"}}]}
+            validate_api_key(provider="deepseek", api_key="sk-abc123")
+        call_kwargs = mock_call.call_args
+        assert "deepseek-chat" in str(call_kwargs)
+
+    def test_deepseek_base_url_correct(self):
+        from app.services.ai_service import validate_api_key
+        with patch("app.services.ai_service.call_openai_compat") as mock_call:
+            mock_call.return_value = {"choices": [{"message": {"content": "ok"}}]}
+            validate_api_key(provider="deepseek", api_key="sk-abc123")
+        call_kwargs = mock_call.call_args
+        assert "api.deepseek.com" in str(call_kwargs)

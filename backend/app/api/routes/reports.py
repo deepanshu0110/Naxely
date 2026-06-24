@@ -14,7 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, require_pro_or_above, check_report_limit
+from app.api.deps import get_current_user, require_pro_or_above, require_byok, check_report_limit
 from app.core.database import get_db
 from app.core.config import settings
 from app.models.user import User
@@ -481,7 +481,7 @@ async def list_uploads(
 @router.post("/reports/preview-charts")
 async def preview_charts(
     body: PreviewChartsRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_byok),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     result = await db.execute(
@@ -837,7 +837,7 @@ async def get_report(
 async def retry_report(
     report_id: str,
     background_tasks: BackgroundTasks,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_byok),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     result = await db.execute(

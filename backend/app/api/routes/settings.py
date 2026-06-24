@@ -8,7 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, require_pro_or_above
+from app.api.deps import get_current_user, require_pro_or_above, require_byok
 from app.core.database import get_db
 from app.models.user import User
 from app.utils.encryption import get_master_key, encrypt_api_key
@@ -179,7 +179,7 @@ async def update_profile(
 async def save_api_key(
     request: FastAPIRequest,
     body: ApiKeyRequest,
-    current_user: User = Depends(require_pro_or_above),
+    current_user: User = Depends(require_byok),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
 
