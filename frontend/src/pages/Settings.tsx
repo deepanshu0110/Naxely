@@ -721,11 +721,6 @@ function ApiKeysTab() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const formatDate = (d: string) => {
-    try { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
-    catch { return d }
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -766,10 +761,10 @@ function ApiKeysTab() {
                   <div className="mt-1.5 flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      Created {formatDate(k.created_at)}
+                      Created {k.created_at ? new Date(k.created_at).toLocaleDateString() : 'Unknown'}
                     </span>
                     <span>
-                      Last used {k.last_used_at ? formatDate(k.last_used_at) : 'Never'}
+                      Last used {k.last_used_at ? new Date(k.last_used_at).toLocaleDateString() : 'Never'}
                     </span>
                   </div>
                 </div>
