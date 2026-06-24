@@ -476,7 +476,7 @@ async def create_api_key(
 
     count_result = await db.execute(
         text("SELECT COUNT(*) FROM api_keys WHERE user_id = :uid AND revoked_at IS NULL"),
-        {"uid": str(current_user.id)},
+        {"uid": current_user.id},
     )
     count = count_result.scalar()
     if count >= 10:
@@ -489,7 +489,7 @@ async def create_api_key(
             RETURNING id, created_at
         """),
         {
-            "uid": str(current_user.id),
+            "uid": current_user.id,
             "name": name,
             "hash": key_hash,
             "prefix": key_prefix,
@@ -523,7 +523,7 @@ async def list_api_keys(
             WHERE user_id = :uid
             ORDER BY created_at DESC
         """),
-        {"uid": str(current_user.id)},
+        {"uid": current_user.id},
     )
     rows = result.mappings().all()
     return [
@@ -551,7 +551,7 @@ async def revoke_api_key(
             SET revoked_at = NOW()
             WHERE id = :id AND user_id = :uid AND revoked_at IS NULL
         """),
-        {"id": key_id, "uid": str(current_user.id)},
+        {"id": key_id, "uid": current_user.id},
     )
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="API key not found or already revoked")
