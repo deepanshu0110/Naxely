@@ -268,6 +268,8 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
 
         elapsed = round(time.monotonic() - start_time, 1)
 
+        print("DEBUG config keys:", list(config.keys()))
+        print("DEBUG date_column value:", config.get("date_column"))
         metric_cols = config.get('metric_columns') or [
             c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
         ]
@@ -314,6 +316,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                                         ((last_m - first_m) / abs(first_m)) * 100, 2
                                     )
                                     _trend_set = True
+                                    print("DEBUG trend_pct monthly branch reached, trend_pct=", trend_pct)
                 except Exception:
                     pass
 

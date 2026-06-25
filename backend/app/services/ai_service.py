@@ -478,6 +478,7 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         insights = json.loads(cleaned)
         if not isinstance(insights, list):
             return []
+        print("DEBUG raw insights kpi values:", [c.get("kpi") for c in insights])
         insights = _dedup_insights_by_kpi(insights)
         return [item for item in insights[:5] if isinstance(item, dict) and _is_valid_insight(item)]
     except Exception:
