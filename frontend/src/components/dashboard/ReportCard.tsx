@@ -3,33 +3,25 @@ import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { FileText, MoreHorizontal, Download, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import Badge from '@/components/ui/Badge'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
+import Badge from '@/components/ui/Badge'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useCountUp } from '@/hooks/useCountUp'
 import type { Report } from '@/types/report'
 
 const statusVariant = (status: Report['status']) => {
   switch (status) {
-    case 'completed':
-      return 'success'
-    case 'processing':
-      return 'warning'
-    case 'failed':
-      return 'error'
+    case 'completed': return 'success' as const
+    case 'processing': return 'warning' as const
+    case 'failed': return 'error' as const
   }
 }
 
-const statusLabel = (status: Report['status']) => {
-  switch (status) {
-    case 'completed':
-      return 'Done'
-    case 'processing':
-      return 'Generating'
-    case 'failed':
-      return 'Failed'
-  }
+const statusLabel: Record<Report['status'], string> = {
+  completed: 'Done',
+  processing: 'Generating',
+  failed: 'Failed',
 }
 
 interface ReportCardProps {
@@ -63,7 +55,7 @@ export default function ReportCard({ report, onDelete, isSelected, onToggleSelec
   return (
     <>
       <div
-        className={`relative flex cursor-pointer items-center gap-4 rounded-xl border bg-paper p-4 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md dark:bg-darkBg ${
+        className={`group relative flex cursor-pointer items-center gap-4 rounded-xl border bg-paper p-4 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md dark:bg-darkBg ${
           isSelected
             ? 'border-amber-500 ring-2 ring-amber-500/30 dark:border-amber-400'
             : 'border-amber-200/40 dark:border-amber-900/40'
@@ -71,7 +63,11 @@ export default function ReportCard({ report, onDelete, isSelected, onToggleSelec
         onClick={() => navigate(`/report/${report.id}`)}
       >
         {onToggleSelect && (
-          <div className="absolute left-3 top-3 z-10">
+          <div
+            className={`absolute left-3 top-3 z-10 transition-opacity duration-150 ${
+              isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            }`}
+          >
             <input
               type="checkbox"
               checked={isSelected}
@@ -81,44 +77,37 @@ export default function ReportCard({ report, onDelete, isSelected, onToggleSelec
             />
           </div>
         )}
-        {/* Icon thumbnail */}
+
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-500/10">
           <FileText className="h-5 w-5 text-amber-500" />
         </div>
 
-        {/* Title + date */}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-ink dark:text-gray-100" title={report.title}>
+          <p className="truncate font-display text-sm font-semibold text-ink dark:text-gray-100" title={report.title}>
             {report.title}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {format(new Date(report.created_at), 'MMM d, yyyy')}
-          </p>
+          <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <span>{format(new Date(report.created_at), 'MMM d, yyyy')}</span>
+            <span className="text-gray-300 dark:text-gray-600">·</span>
+            <span className="font-mono tabular-nums">{displayRowCount}</span>
+            <span>rows</span>
+          </div>
         </div>
 
-        {/* Row count — hidden on mobile */}
-        <div className="hidden flex-shrink-0 text-right sm:block">
-          <p className="font-mono tabular-nums text-sm text-ink dark:text-gray-100">{displayRowCount}</p>
-          <p className="text-[10px] text-gray-400 dark:text-gray-500">rows</p>
-        </div>
+        <Badge variant={statusVariant(report.status)} text={statusLabel[report.status]} />
 
-        {/* Status badge */}
-        <Badge variant={statusVariant(report.status)} text={statusLabel(report.status)} />
-
-        {/* Download — always visible */}
         {report.pdf_url && (
           <a
             href={report.pdf_url}
             download
             onClick={(e) => e.stopPropagation()}
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md text-gray-400 transition-colors duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-gray-300 opacity-0 transition-all duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
             title="Download PDF"
           >
-            <Download className="h-4 w-4" />
+            <Download className="h-3.5 w-3.5" />
           </a>
         )}
 
-        {/* 3-dot menu — View + Delete only */}
         <div className="relative flex-shrink-0">
           <button
             onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen) }}
