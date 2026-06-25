@@ -515,7 +515,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
               plan="pro"
               loading={isCreatingCheckout === 'pro'}
               price="$29/month"
-              features={['Unlimited reports', 'AI Executive Summary', 'NRA Insight Cards', 'Anomaly Detection', 'Custom branding (logo + colour)', 'No watermark', 'Google Sheets connector', 'Shareable links']}
+              features={['Unlimited reports', 'AI Executive Summary', 'NRA Insight Cards', 'Anomaly Detection', '16 chart types', 'Custom branding (logo + colour)', 'No watermark', 'Google Sheets connector', 'Scheduled reports', 'Shareable links', 'BYOK AI key']}
               cta="Upgrade to Pro"
               onUpgrade={handleUpgrade}
             />
@@ -524,7 +524,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
             plan="agency"
             loading={isCreatingCheckout === 'agency'}
             price="$79/month"
-            features={['Everything in Pro', 'Full white-label reports — every trace of Naxely branding removed', 'Priority support — direct, fast responses from the founder']}
+            features={['Everything in Pro', 'PowerPoint export', 'Programmatic API access', 'Full white-label reports — every trace of Naxely branding removed', 'Priority support — direct, fast responses from the founder']}
             cta="Upgrade to Agency"
             onUpgrade={handleUpgrade}
           />

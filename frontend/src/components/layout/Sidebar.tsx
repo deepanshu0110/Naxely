@@ -151,7 +151,7 @@ export default function Sidebar() {
         <div className="mx-3 mb-3 space-y-3">
           <div className="rounded-lg bg-slate px-3 py-3 dark:bg-gray-700/50">
             <p className="mb-1.5 text-xs text-gray-600 dark:text-gray-400">
-              {user?.reports_this_month ?? 0} of {user?.monthly_limit ?? 3} reports used
+              {Math.min(user?.reports_this_month ?? 0, user?.monthly_limit ?? 3)} of {user?.monthly_limit ?? 3} reports used
             </p>
             <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-600">
               <div
