@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Pause, Play, Trash2, Edit3, Plus, AlertCircle, Upload, X } from 'lucide-react'
 import Sidebar from '@/components/layout/Sidebar'
 import EmptyState from '@/components/ui/EmptyState'
+import { NaxelyMark } from '@/components/ui/NaxelyMark'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
 import Badge from '@/components/ui/Badge'
@@ -251,17 +252,6 @@ export default function ScheduledReports() {
     )
   }
 
-  const EmptyIllustration = () => (
-    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="60" cy="50" r="20" stroke="#D97A34" strokeWidth="1.5" />
-      <line x1="60" y1="60" x2="60" y2="80" stroke="#D97A34" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="50" y1="72" x2="70" y2="72" stroke="#D97A34" strokeWidth="1.5" strokeLinecap="round" />
-      <rect x="25" y="82" width="70" height="26" rx="3" stroke="#D97A34" strokeWidth="1.5" />
-      <line x1="35" y1="92" x2="50" y2="92" stroke="#D97A34" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="60" y1="92" x2="85" y2="92" stroke="#D97A34" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  )
-
   return (
     <div className="flex h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
@@ -289,7 +279,7 @@ export default function ScheduledReports() {
             </div>
           ) : reports.length === 0 ? (
             <EmptyState
-              illustration={<EmptyIllustration />}
+              illustration={<NaxelyMark size={48} />}
               title="No scheduled reports"
               description="Set up recurring reports to automatically generate and email PDFs to your clients on a daily, weekly, or monthly cadence."
               action={

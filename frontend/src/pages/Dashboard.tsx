@@ -7,6 +7,7 @@ import WelcomeModal from '@/components/onboarding/WelcomeModal'
 import Sidebar from '@/components/layout/Sidebar'
 import ReportCard from '@/components/dashboard/ReportCard'
 import EmptyState from '@/components/ui/EmptyState'
+import { NaxelyMark } from '@/components/ui/NaxelyMark'
 import Button from '@/components/ui/Button'
 import Spinner from '@/components/ui/Spinner'
 import Modal from '@/components/ui/Modal'
@@ -61,20 +62,6 @@ export default function Dashboard() {
     }
   }
 
-  const EmptyIllustration = () => (
-    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="18" y="22" width="72" height="62" rx="5" stroke="#D97A34" stroke-width="1.5" />
-      <line x1="30" y1="36" x2="68" y2="36" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
-      <line x1="30" y1="44" x2="78" y2="44" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
-      <line x1="30" y1="51" x2="72" y2="51" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
-      <rect x="32" y="68" width="8" height="8" rx="1" stroke="#D97A34" stroke-width="1.5" />
-      <rect x="46" y="58" width="8" height="18" rx="1" stroke="#D97A34" stroke-width="1.5" />
-      <rect x="60" y="48" width="8" height="28" rx="1" stroke="#D97A34" stroke-width="1.5" />
-      <circle cx="88" cy="34" r="13" stroke="#D97A34" stroke-width="1.5" />
-      <line x1="97" y1="43" x2="106" y2="52" stroke="#D97A34" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  )
-
   return (
     <div className="flex h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
@@ -98,7 +85,7 @@ export default function Dashboard() {
             </div>
           ) : reports.length === 0 ? (
             <EmptyState
-              illustration={<EmptyIllustration />}
+              illustration={<NaxelyMark size={48} />}
               title="No reports yet"
               description="Upload a CSV to generate your first client-ready PDF report in minutes."
               action={
