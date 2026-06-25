@@ -4,10 +4,8 @@ import {
   Settings,
   Download,
   Sparkles,
-  Lightbulb,
   BarChart3,
   Palette,
-  DownloadCloud,
   Link2,
   Star,
 } from 'lucide-react'
@@ -31,39 +29,6 @@ const stepped = [
     num: '3',
     icon: Download,
     title: 'Download a professional PDF in under 2 minutes',
-  },
-]
-
-const features = [
-  {
-    icon: Sparkles,
-    title: 'AI Executive Summary',
-    desc: 'Get a plain-English summary of your data, written by AI in seconds.',
-  },
-  {
-    icon: Lightbulb,
-    title: 'NRA Insight Cards',
-    desc: 'Number + Reason + Action cards for every KPI your data reveals.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Auto Chart Generation',
-    desc: 'Bar, line, and pie charts auto-selected based on your data types.',
-  },
-  {
-    icon: Palette,
-    title: 'Custom Branding',
-    desc: 'Add your logo and brand colour for professional, white-label reports.',
-  },
-  {
-    icon: DownloadCloud,
-    title: 'One-Click PDF Export',
-    desc: 'Download a polished, client-ready PDF with a single click.',
-  },
-  {
-    icon: Link2,
-    title: 'Google Sheets Connector',
-    desc: 'Paste a Sheets URL and Naxely pulls your data automatically.',
   },
 ]
 
@@ -251,10 +216,11 @@ export default function Landing() {
   const { isAuthenticated } = useAuthStore();
 
   const { ref: howItWorksRef, inView: howItWorksInView } = useInView();
-  const { ref: featuresRef, inView: featuresInView } = useInView();
   const { ref: pricingRef, inView: pricingInView } = useInView();
   const { ref: testimonialsRef, inView: testimonialsInView } = useInView();
   const { ref: finalCtaRef, inView: finalCtaInView } = useInView();
+  const { ref: featureHeaderRef, inView: featureHeaderInView } = useInView();
+  const { ref: bentoRef, inView: bentoInView } = useInView();
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -411,47 +377,303 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Features Grid (bento) ── */}
-      <section
-        ref={featuresRef}
-        id="features"
-        className={`px-6 py-20 ${featuresInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
-        style={{ animationDelay: '0ms' }}
-      >
-        <div className="mx-auto max-w-5xl">
-          <h2 className="font-display mb-4 text-center text-3xl font-bold text-ink dark:text-gray-100">
-            Everything you need to turn data into reports
-          </h2>
-          <p className="mb-16 text-center text-gray-500 dark:text-gray-400">
-            Six capabilities, one seamless flow — from upload to polished PDF.
-          </p>
-          <div className="grid gap-4 lg:grid-cols-3">
-            {features.map((f, i) => (
-              <div
-                key={f.title}
-                className={`rounded-xl border border-amber-200/20 dark:border-amber-900/50 bg-paper dark:bg-darkBg shadow-sm ${
-                  i === 0 ? 'lg:col-span-2 lg:row-span-2 p-6' : 'p-5'
-                }`}
-              >
-                <div className="mb-3 flex items-start justify-between">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-500/10">
-                    <f.icon className="h-5 w-5 text-amber-500" />
-                  </div>
-                  {i === 5 && (
-                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase text-gray-500 dark:bg-gray-700 dark:text-gray-400">
-                      Coming Soon
-                    </span>
-                  )}
-                </div>
-                <h3 className="font-display mb-1 text-base font-semibold text-ink dark:text-gray-100">
-                  {f.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                  {f.desc}
-                </p>
-              </div>
-            ))}
+      {/* ── Features Bento ── */}
+      <section id="features" className="py-24 px-6 md:px-12 lg:px-20">
+        <div className="max-w-7xl mx-auto">
+
+          {/* Section header */}
+          <div
+            ref={featureHeaderRef}
+            className={`text-center mb-16 transition-all duration-500
+              ${featureHeaderInView
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-4'
+              }`}
+          >
+            <p className="text-amber-600 dark:text-amber-400
+              text-xs font-medium tracking-widest uppercase mb-3">
+              Everything you need
+            </p>
+            <h2 className="font-display text-4xl font-semibold
+              text-ink dark:text-paper">
+              From raw data to client-ready PDF
+            </h2>
           </div>
+
+          {/* Bento grid */}
+          <div
+            ref={bentoRef}
+            className={`grid grid-cols-1 lg:grid-cols-3 gap-4 auto-rows-auto
+              transition-all duration-700
+              ${bentoInView
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-6'
+              }`}
+          >
+
+            {/* ── Card 1: CSV → PDF (hero, wide) lg:col-span-2 ── */}
+            <div className="relative overflow-hidden rounded-2xl p-7
+              bg-white dark:bg-[#1e1c18]
+              border border-black/5 dark:border-white/5
+              hover:border-amber-500/30 dark:hover:border-amber-500/25
+              transition-colors duration-300
+              lg:col-span-2">
+
+              {/* Top accent bar */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500 rounded-t-2xl" />
+
+              <div className="flex items-start justify-between mb-6">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/15
+                  flex items-center justify-center">
+                  <Upload className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <span className="text-xs font-mono text-amber-600 dark:text-amber-400
+                  bg-amber-500/8 dark:bg-amber-500/12 px-2.5 py-1 rounded-full">
+                  Core feature
+                </span>
+              </div>
+
+              <h3 className="font-display text-2xl font-semibold
+                text-ink dark:text-paper mb-3">
+                Upload a CSV.<br />Get a branded PDF.
+              </h3>
+              <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed max-w-md mb-8">
+                Drop in any CSV or connect a Google Sheet and Naxely generates a
+                fully branded, client-ready PDF report in under 60 seconds — with
+                charts, KPI cards, and AI-written insights included.
+              </p>
+
+              {/* Pipeline visual */}
+              <div className="flex items-center gap-3">
+                {[
+                  { label: 'CSV Upload', emoji: '📄' },
+                  { label: 'AI Analysis', emoji: '✦' },
+                  { label: 'PDF Report', emoji: '📊' },
+                ].map((step, i) => (
+                  <div key={step.label} className="flex items-center gap-3">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="w-10 h-10 rounded-lg
+                        bg-amber-500/10 dark:bg-amber-500/15
+                        flex items-center justify-center text-lg">
+                        {step.emoji}
+                      </div>
+                      <span className="text-[10px] font-mono text-ink/40 dark:text-paper/30">
+                        {step.label}
+                      </span>
+                    </div>
+                    {i < 2 && (
+                      <div className="w-8 h-px bg-amber-500/30 mb-4 flex-shrink-0" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Card 2: AI Insights (tall, right) lg:col-span-1 lg:row-span-2 ── */}
+            <div className="relative overflow-hidden rounded-2xl p-7
+              bg-white dark:bg-[#1e1c18]
+              border border-black/5 dark:border-white/5
+              hover:border-amber-500/30 dark:hover:border-amber-500/25
+              transition-colors duration-300
+              lg:col-span-1 lg:row-span-2">
+
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/15
+                flex items-center justify-center mb-6">
+                <Sparkles className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+
+              <h3 className="font-display text-xl font-semibold
+                text-ink dark:text-paper mb-3">
+                AI insights, auto-written
+              </h3>
+              <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed mb-8">
+                Naxely identifies trends, flags anomalies, and writes plain-English
+                insights for every metric — ready to share with clients, no editing needed.
+              </p>
+
+              {/* Sample insight cards */}
+              <div className="space-y-3">
+                {[
+                  {
+                    label: 'HIGH',
+                    text: 'Revenue up 33.9% — strongest month in Q2',
+                    color: 'text-amber-600 dark:text-amber-400',
+                    bg: 'bg-amber-500/8 dark:bg-amber-500/12',
+                  },
+                  {
+                    label: 'MEDIUM',
+                    text: 'Units Sold trending flat over the last 30 days',
+                    color: 'text-ink/50 dark:text-paper/40',
+                    bg: 'bg-black/4 dark:bg-white/5',
+                  },
+                  {
+                    label: 'FLAG',
+                    text: 'Anomaly: Revenue spike 2.1× std deviation',
+                    color: 'text-red-500 dark:text-red-400',
+                    bg: 'bg-red-500/6 dark:bg-red-500/10',
+                  },
+                ].map((insight) => (
+                  <div key={insight.label} className={`rounded-xl p-3.5 ${insight.bg}`}>
+                    <span className={`text-[9px] font-mono font-semibold ${insight.color} block mb-1`}>
+                      {insight.label}
+                    </span>
+                    <p className="text-[11px] text-ink/65 dark:text-paper/55 leading-snug">
+                      {insight.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Card 3: 16 Chart Types (small) ── */}
+            <div className="relative overflow-hidden rounded-2xl p-7
+              bg-white dark:bg-[#1e1c18]
+              border border-black/5 dark:border-white/5
+              hover:border-amber-500/30 dark:hover:border-amber-500/25
+              transition-colors duration-300">
+
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/15
+                flex items-center justify-center mb-5">
+                <BarChart3 className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+
+              <h3 className="font-display text-xl font-semibold
+                text-ink dark:text-paper mb-2">
+                16 chart types
+              </h3>
+              <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed mb-5">
+                Line, bar, scatter, pie, heatmap, waterfall, and more.
+                AI picks the right chart for your data automatically.
+              </p>
+
+              {/* Chart type icon grid */}
+              <div className="grid grid-cols-4 gap-1.5">
+                {['▦','▤','◉','▲','▬','◈','▩','◐'].map((glyph, i) => (
+                  <div key={i}
+                    className="aspect-square rounded-lg
+                      bg-amber-500/8 dark:bg-amber-500/12
+                      flex items-center justify-center
+                      text-amber-600 dark:text-amber-400 text-sm">
+                    {glyph}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Card 4: Scheduled Reports (small) ── */}
+            <div className="relative overflow-hidden rounded-2xl p-7
+              bg-white dark:bg-[#1e1c18]
+              border border-black/5 dark:border-white/5
+              hover:border-amber-500/30 dark:hover:border-amber-500/25
+              transition-colors duration-300">
+
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/15
+                flex items-center justify-center mb-5">
+                <Download className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+
+              <h3 className="font-display text-xl font-semibold
+                text-ink dark:text-paper mb-2">
+                Scheduled delivery
+              </h3>
+              <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed mb-5">
+                Set it once. Naxely emails your client a fresh PDF daily,
+                weekly, or monthly — automatically.
+              </p>
+
+              {/* Cadence pills */}
+              <div className="flex flex-wrap gap-2">
+                {['Daily', 'Weekly', 'Monthly'].map((cadence) => (
+                  <span key={cadence}
+                    className="text-xs font-mono
+                      bg-amber-500/8 dark:bg-amber-500/12
+                      text-amber-700 dark:text-amber-400
+                      px-3 py-1 rounded-full border border-amber-500/15">
+                    {cadence}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Card 5: Brand Customization (wide) lg:col-span-2 ── */}
+            <div className="relative overflow-hidden rounded-2xl p-7
+              bg-white dark:bg-[#1e1c18]
+              border border-black/5 dark:border-white/5
+              hover:border-amber-500/30 dark:hover:border-amber-500/25
+              transition-colors duration-300
+              lg:col-span-2">
+
+              <div className="flex items-start gap-5">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/15
+                  flex items-center justify-center flex-shrink-0">
+                  <Palette className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-display text-xl font-semibold
+                    text-ink dark:text-paper mb-2">
+                    Fully branded — your logo, your colors
+                  </h3>
+                  <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed mb-5">
+                    Upload your logo, set your brand color, add your company name.
+                    Every PDF looks like it came from your studio, not a SaaS tool.
+                    Agency accounts get full white-label — no Naxely branding anywhere.
+                  </p>
+
+                  {/* Color swatch row */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-ink/35 dark:text-paper/25 font-mono">
+                      Brand color
+                    </span>
+                    <div className="flex gap-2">
+                      {['#D97A34','#6366F1','#0E9F6E','#EF4444','#14131F'].map((hex) => (
+                        <div
+                          key={hex}
+                          className="w-6 h-6 rounded-full
+                            border-2 border-white dark:border-[#1e1c18]
+                            shadow-sm hover:scale-110 transition-transform cursor-default"
+                          style={{ backgroundColor: hex }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-ink/25 dark:text-paper/20 font-mono">
+                      + any custom hex
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Card 6: Google Sheets (with Live badge) ── */}
+            <div className="relative overflow-hidden rounded-2xl p-7
+              bg-white dark:bg-[#1e1c18]
+              border border-black/5 dark:border-white/5
+              hover:border-amber-500/30 dark:hover:border-amber-500/25
+              transition-colors duration-300">
+
+              <div className="flex items-start justify-between mb-5">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/15
+                  flex items-center justify-center">
+                  <Link2 className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                {/* Live badge */}
+                <span className="text-xs font-mono text-ink/40 dark:text-paper/30
+                  bg-black/5 dark:bg-white/8
+                  px-2.5 py-1 rounded-full border border-black/8 dark:border-white/10">
+                  Live
+                </span>
+              </div>
+
+              <h3 className="font-display text-xl font-semibold
+                text-ink dark:text-paper mb-2">
+                Connect Google Sheets
+              </h3>
+              <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed">
+                Paste a Sheet URL and Naxely reads it directly.
+                No CSV export needed — your data stays where it already lives.
+              </p>
+            </div>
+
+          </div>{/* end bento grid */}
         </div>
       </section>
 
