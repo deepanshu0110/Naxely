@@ -153,7 +153,7 @@ export default function ReportView() {
   }
 
   return (
-    <div className="flex h-screen bg-slate dark:bg-darkBg">
+    <div className="flex flex-col lg:flex-row h-screen bg-slate dark:bg-darkBg">
       <Sidebar />
       <main className="flex flex-1 flex-col overflow-hidden">
         <header className="flex items-center justify-between border-b border-gray-200 bg-paper px-6 py-4 dark:border-gray-700 dark:bg-darkBg">
@@ -231,7 +231,7 @@ export default function ReportView() {
             )}
           </div>
 
-          <div className="w-96 overflow-y-auto border-l border-gray-200 bg-paper p-6 dark:border-gray-700 dark:bg-darkBg">
+          <div className="hidden lg:flex lg:w-96 overflow-y-auto border-l border-gray-200 bg-paper p-6 dark:border-gray-700 dark:bg-darkBg">
             <div className="space-y-6">
               {report.ai_skipped && (
                 <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-800 dark:bg-orange-900/30">
