@@ -14,6 +14,7 @@ import {
 import Navbar from '@/components/layout/Navbar'
 import { NaxelyMark } from '@/components/ui/NaxelyMark'
 import { useAuthStore } from '@/store/authStore'
+import { useInView } from '@/hooks/useInView'
 
 const stepped = [
   {
@@ -212,9 +213,15 @@ function PDFMockupCard() {
       <div className="px-6 pt-4">
         <div className="flex items-end gap-[3px] h-10">
           {[35,52,41,68,45,72,58,80,63,88,71,95].map((h, i) => (
-            <div key={i}
-              className="flex-1 rounded-[2px] bg-amber-500/65 dark:bg-amber-500/55"
-              style={{ height: `${h}%` }}
+            <div
+              key={i}
+              className="flex-1 rounded-[2px] bg-amber-500/65 dark:bg-amber-500/55 nax-bar-grow"
+              style={{
+                height: `${h}%`,
+                transformOrigin: 'bottom',
+                animation: `nax-grow-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both`,
+                animationDelay: `${400 + i * 40}ms`,
+              }}
             />
           ))}
         </div>
@@ -243,6 +250,12 @@ function PDFMockupCard() {
 export default function Landing() {
   const { isAuthenticated } = useAuthStore();
 
+  const { ref: howItWorksRef, inView: howItWorksInView } = useInView();
+  const { ref: featuresRef, inView: featuresInView } = useInView();
+  const { ref: pricingRef, inView: pricingInView } = useInView();
+  const { ref: testimonialsRef, inView: testimonialsInView } = useInView();
+  const { ref: finalCtaRef, inView: finalCtaInView } = useInView();
+
   return (
     <div className="min-h-screen bg-paper text-ink">
       <Navbar />
@@ -262,13 +275,15 @@ export default function Landing() {
           {/* Left column — copy */}
           <div className="flex-1 text-center lg:text-left">
 
-            {/* Eyebrow tag */}
+            {/* Eyebrow tag — appears first */}
             <div className="inline-flex items-center gap-2 mb-6
               bg-amber-500/10 dark:bg-amber-500/15
               text-amber-700 dark:text-amber-400
               text-xs font-medium tracking-widest uppercase
               px-3 py-1.5 rounded-full
-              border border-amber-500/20 dark:border-amber-500/25">
+              border border-amber-500/20 dark:border-amber-500/25
+              nax-animate-fade-up"
+              style={{ animationDelay: '0ms' }}>
               <NaxelyMark size={11} color="currentColor" />
               CSV → Branded PDF in under 60 seconds
             </div>
@@ -276,7 +291,9 @@ export default function Landing() {
             {/* H1 */}
             <h1 className="font-display text-5xl lg:text-[3.5rem] font-semibold
               text-ink dark:text-paper
-              leading-[1.1] tracking-tight mb-6">
+              leading-[1.1] tracking-tight mb-6
+              nax-animate-fade-up"
+              style={{ animationDelay: '80ms' }}>
               Turn raw data into{' '}
               <span className="text-amber-600 dark:text-amber-400">
                 client-ready reports
@@ -286,7 +303,9 @@ export default function Landing() {
 
             {/* Subheadline */}
             <p className="text-ink/60 dark:text-paper/50 text-lg leading-relaxed
-              max-w-lg mx-auto lg:mx-0 mb-10">
+              max-w-lg mx-auto lg:mx-0 mb-10
+              nax-animate-fade-up"
+              style={{ animationDelay: '160ms' }}>
               Upload a CSV or connect Google Sheets. Naxely generates a branded PDF
               with AI insights, charts, and recommendations in under a minute.
               No design skills needed.
@@ -294,7 +313,9 @@ export default function Landing() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center
-              justify-center lg:justify-start gap-4 mb-10">
+              justify-center lg:justify-start gap-4 mb-10
+              nax-animate-fade-up"
+              style={{ animationDelay: '240ms' }}>
               {isAuthenticated ? (
                 <Link to="/dashboard"
                   className="bg-amber-500 hover:bg-amber-600 text-white
@@ -305,10 +326,23 @@ export default function Landing() {
               ) : (
                 <>
                   <Link to="/signup"
-                    className="bg-amber-500 hover:bg-amber-600 text-white
-                      font-medium px-7 py-3 rounded-lg transition-colors text-base
-                      inline-block">
-                    Generate your first report — free
+                    className="
+                      relative overflow-hidden
+                      bg-amber-500 hover:bg-amber-600
+                      text-white font-medium px-7 py-3 rounded-lg
+                      transition-colors text-base inline-block
+                      group
+                    ">
+                    <span className="relative z-10">
+                      Generate your first report — free
+                    </span>
+                    {/* Shimmer layer */}
+                    <span className="
+                      absolute inset-0
+                      bg-gradient-to-r from-transparent via-white/20 to-transparent
+                      -translate-x-full group-hover:translate-x-full
+                      transition-transform duration-700 ease-in-out
+                    " />
                   </Link>
                   <Link to="/login"
                     className="text-ink/60 dark:text-paper/50
@@ -324,7 +358,9 @@ export default function Landing() {
             <div className="flex flex-wrap items-center
               justify-center lg:justify-start
               gap-x-6 gap-y-2
-              text-sm text-ink/35 dark:text-paper/25">
+              text-sm text-ink/35 dark:text-paper/25
+              nax-animate-fade-up"
+              style={{ animationDelay: '320ms' }}>
               <span>✓ No credit card required</span>
               <span>✓ Free tier available</span>
               <span>✓ PDF ready in under 60s</span>
@@ -334,14 +370,25 @@ export default function Landing() {
 
           {/* Right column — PDF mockup */}
           <div className="hidden lg:flex flex-1 justify-center items-center">
-            <PDFMockupCard />
+            <div className="nax-animate-float">
+              <PDFMockupCard />
+            </div>
           </div>
 
         </div>
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how-it-works" className="bg-slate px-6 py-20" style={{ backgroundImage: 'radial-gradient(circle, #D97A3411 1px, transparent 1px)', backgroundSize: '28px 28px' }}>
+      <section
+        ref={howItWorksRef}
+        id="how-it-works"
+        className={`bg-slate px-6 py-20 ${howItWorksInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
+        style={{
+          backgroundImage: 'radial-gradient(circle, #D97A3411 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+          animationDelay: '0ms',
+        }}
+      >
         <div className="mx-auto max-w-5xl">
           <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             How it works
@@ -365,7 +412,12 @@ export default function Landing() {
       </section>
 
       {/* ── Features Grid (bento) ── */}
-      <section id="features" className="px-6 py-20">
+      <section
+        ref={featuresRef}
+        id="features"
+        className={`px-6 py-20 ${featuresInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
+        style={{ animationDelay: '0ms' }}
+      >
         <div className="mx-auto max-w-5xl">
           <h2 className="font-display mb-4 text-center text-3xl font-bold text-ink dark:text-gray-100">
             Everything you need to turn data into reports
@@ -404,7 +456,12 @@ export default function Landing() {
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" className="bg-slate px-6 py-20">
+      <section
+        ref={pricingRef}
+        id="pricing"
+        className={`bg-slate px-6 py-20 ${pricingInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
+        style={{ animationDelay: '0ms' }}
+      >
         <div className="mx-auto max-w-5xl">
           <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             Pricing
@@ -461,7 +518,11 @@ export default function Landing() {
       </section>
 
       {/* ── Testimonials ── */}
-      <section className="px-6 py-20">
+      <section
+        ref={testimonialsRef}
+        className={`px-6 py-20 ${testimonialsInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
+        style={{ animationDelay: '0ms' }}
+      >
         <div className="mx-auto max-w-5xl">
           <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
             What our users say
@@ -498,7 +559,11 @@ export default function Landing() {
       </section>
 
       {/* ── Final CTA Banner ── */}
-      <section className="bg-gray-900 px-6 py-20">
+      <section
+        ref={finalCtaRef}
+        className={`bg-gray-900 px-6 py-20 ${finalCtaInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
+        style={{ animationDelay: '0ms' }}
+      >
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl font-bold text-white">
             Ready to stop spending hours on reports?

@@ -27,3 +27,59 @@ body {
 html.dark #root::before {
   content: none;
 }
+
+/* ============================================================
+   Landing page motion keyframes
+   All respect prefers-reduced-motion (see wrapper below)
+   ============================================================ */
+
+@keyframes nax-fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes nax-float {
+  0%, 100% { transform: translateY(0px);   }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes nax-grow-up {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+@keyframes nax-shimmer {
+  from { background-position: -200% center; }
+  to   { background-position:  200% center; }
+}
+
+/* Scroll-triggered fade-in */
+@keyframes nax-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Utility classes */
+.nax-animate-fade-up {
+  animation: nax-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.nax-animate-float {
+  animation: nax-float 4s ease-in-out infinite;
+}
+
+.nax-animate-fade-in {
+  animation: nax-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Reduced motion: disable ALL nax animations */
+@media (prefers-reduced-motion: reduce) {
+  .nax-animate-fade-up,
+  .nax-animate-float,
+  .nax-animate-fade-in,
+  .nax-bar-grow {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
