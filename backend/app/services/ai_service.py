@@ -415,6 +415,50 @@ def _dedup_insights_by_kpi(insights: list[dict]) -> list[dict]:
     return deduped
 
 
+async def generate_recommendations(df: pd.DataFrame, config: dict, user: User) -> list[str]:
+    try:
+        provider, api_key, _ = get_user_api_key(user)
+    except HTTPException:
+        return []
+    if api_key is None:
+        return []
+
+    column_stats = _build_column_stats(df, null_counts_override=config.get("_raw_null_counts"))
+    metric_cols = [c for c in column_stats["columns"] if c["type"] == "metric"]
+    kpi_stats_json = json.dumps(metric_cols, default=str)
+
+    system_prompt = (
+        "You are a senior business consultant generating actionable recommendations. "
+        "Return ONLY valid JSON. No preamble, no explanation."
+    )
+
+    user_prompt = (
+        f"Based on this data, generate 5 specific, actionable business recommendations:\n\n"
+        f"{kpi_stats_json}\n\n"
+        f"Return a JSON array of exactly 5 strings, where each string is one complete "
+        f"recommendation sentence. Each recommendation must:\n"
+        f"- Start with a specific verb (e.g., Increase, Reduce, Implement, Launch, Optimize)\n"
+        f"- Reference a specific metric or data point\n"
+        f"- Be concrete and executable\n"
+        f"- Be 1-2 sentences maximum\n\n"
+        f"Return ONLY the JSON array. No markdown, no explanation."
+    )
+
+    loop = asyncio.get_event_loop()
+    raw = await loop.run_in_executor(
+        None, _call_ai, provider, user_prompt, system_prompt, api_key,
+    )
+
+    try:
+        cleaned = raw.strip().lstrip("```json").rstrip("```").strip()
+        recs = json.loads(cleaned)
+        if not isinstance(recs, list):
+            return []
+        return [str(r).strip() for r in recs[:5] if isinstance(r, str) and r.strip()]
+    except Exception:
+        return []
+
+
 async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> list[dict]:
     try:
         provider, api_key, _ = get_user_api_key(user)
@@ -478,7 +522,6 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         insights = json.loads(cleaned)
         if not isinstance(insights, list):
             return []
-        print("DEBUG raw insights kpi values:", [c.get("kpi") for c in insights])
         insights = _dedup_insights_by_kpi(insights)
         return [item for item in insights[:5] if isinstance(item, dict) and _is_valid_insight(item)]
     except Exception:

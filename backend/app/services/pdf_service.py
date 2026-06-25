@@ -1124,12 +1124,11 @@ def build_sync(
         body_story.append(_AISkippedCard(width=content_width))
         body_story.append(Spacer(1, 10))
     else:
-        all_insights = ai_content.get('insights') or []
-        actions = [ins.get('action', '') for ins in all_insights if ins.get('action')]
+        recommendations = ai_content.get('recommendations') or []
 
-        if actions:
-            for idx, action in enumerate(actions, 1):
-                body_story.append(_RecommendationCard(idx, action, brand_color, content_width))
+        if recommendations:
+            for idx, rec in enumerate(recommendations, 1):
+                body_story.append(_RecommendationCard(idx, rec, brand_color, content_width))
                 body_story.append(Spacer(1, 8))
         else:
             body_story.append(Paragraph('No recommendations available.', body_style))

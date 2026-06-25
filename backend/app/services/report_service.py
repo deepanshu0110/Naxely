@@ -174,7 +174,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             except Exception:
                 logger.warning("Failed to delete CSV from storage: %s", file_url)
 
-        ai_content: dict = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        ai_content: dict = {"summary": None, "insights": [], "recommendations": [], "anomalies": [], "trends": []}
         ai_error: str | None = None
         ai_skipped = False
 
@@ -204,6 +204,12 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     ai_error = ai_error or msg
                     logger.warning("AI insights skipped for %s: %s", report_id, msg)
                     ai_skipped = True
+
+                try:
+                    recommendations = await ai_service.generate_recommendations(df_norm, config, user_obj)
+                    ai_content["recommendations"] = recommendations
+                except HTTPException as e:
+                    logger.warning("AI recommendations skipped for %s: %s", report_id, str(e.detail if isinstance(e.detail, str) else e.detail))
 
                 anomalies = ai_service.detect_anomalies(df_norm)
                 ai_content["anomalies"] = anomalies
@@ -268,8 +274,6 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
 
         elapsed = round(time.monotonic() - start_time, 1)
 
-        print("DEBUG config keys:", list(config.keys()))
-        print("DEBUG date_column value:", config.get("date_column"))
         metric_cols = config.get('metric_columns') or [
             c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
         ]
@@ -316,7 +320,6 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                                         ((last_m - first_m) / abs(first_m)) * 100, 2
                                     )
                                     _trend_set = True
-                                    print("DEBUG trend_pct monthly branch reached, trend_pct=", trend_pct)
                 except Exception:
                     pass
 
