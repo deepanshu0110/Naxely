@@ -4,6 +4,7 @@ import { CloudUpload, FileText, X } from 'lucide-react'
 import Spinner from '@/components/ui/Spinner'
 import { useReportStore } from '@/store/reportStore'
 import type { UploadResult } from '@/types/report'
+import toast from 'react-hot-toast'
 
 interface FileUploadProps {
   onUploadComplete: (result: UploadResult) => void
@@ -42,7 +43,20 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
     },
     maxFiles: 1,
+    maxSize: 10 * 1024 * 1024,
     disabled: uploading || !!uploadResult,
+    onDropRejected(rejectedFiles) {
+      const errors = rejectedFiles[0]?.errors ?? []
+      const fileTypeRejected = errors.some(e => e.code === 'file-invalid-type')
+      const fileTooLarge = errors.some(e => e.code === 'file-too-large')
+      if (fileTooLarge) {
+        toast.error('File too large. Maximum size is 10MB.')
+      } else if (fileTypeRejected) {
+        toast.error('Invalid file type. Please upload a CSV or Excel (.xlsx) file.')
+      } else {
+        toast.error(errors[0]?.message ?? 'Invalid file.')
+      }
+    },
   })
 
   const reset = () => {
