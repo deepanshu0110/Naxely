@@ -27,7 +27,12 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
         setUploadResult(result)
         onUploadComplete(result)
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Upload failed. Please try again.'
+        const status = (err as any)?.response?.status
+        if (status === 402 || status === 401) {
+          return
+        }
+        const apiMessage = (err as any)?.response?.data?.message
+        const msg = apiMessage ?? (err instanceof Error ? err.message : 'Upload failed. Please try again.')
         setError(msg)
       } finally {
         setUploading(false)
