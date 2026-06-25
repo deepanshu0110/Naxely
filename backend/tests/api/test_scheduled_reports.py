@@ -659,9 +659,11 @@ class TestCronEndpoint:
         from fastapi import BackgroundTasks
 
         bt = BackgroundTasks()
+        import json
         result = await run_scheduled_reports(background_tasks=bt, x_cron_secret="test-cron-secret")
-        assert result["status"] == "accepted"
-        assert result["message"] == "Scheduled reports queued"
+        body = json.loads(result.body)
+        assert body["status"] == "accepted"
+        assert result.status_code == 202
 
     @pytest.mark.asyncio
     async def test_run_all_executes_due_reports(self, mock_settings):

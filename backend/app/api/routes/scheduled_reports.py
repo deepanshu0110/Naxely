@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, field_validator
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -449,4 +450,4 @@ async def run_scheduled_reports(
         raise HTTPException(status_code=403, detail="Invalid cron secret")
 
     background_tasks.add_task(_run_all_scheduled_reports)
-    return {"status": "accepted", "message": "Scheduled reports queued"}
+    return JSONResponse({"status": "accepted"}, status_code=202)
