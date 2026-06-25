@@ -1,4 +1,5 @@
 import pytest
+import pandas as pd
 from unittest.mock import patch, AsyncMock
 from app.services.report_service import _has_ai_sections, _make_user_proxy
 from app.models.user import User
@@ -228,3 +229,56 @@ class TestRunReportPipelineDefaultPath:
         assert len(remove_calls) >= 1, (
             "storage.remove should have been called via _run_sync in default path"
         )
+
+
+# ── Fix 1: Trend % Monthly Aggregation Tests ─────────────────────────────────
+
+@pytest.fixture
+def compute_trend_pct_fn():
+    """Fixture that mirrors the monthly-aggregate trend logic from report_service.py."""
+    from app.services.data_service import _compute_trend_percentage
+
+    def _compute(df: pd.DataFrame, metric_col: str, date_col: str | None = None) -> float:
+        series = pd.to_numeric(df[metric_col], errors='coerce').dropna()
+        return _compute_trend_percentage(series, df, date_col)
+
+    return _compute
+
+
+def test_trend_pct_uses_monthly_aggregates_not_row_level(compute_trend_pct_fn):
+    """
+    Row-level: last row revenue = 14609 (high), first row = 6325 → +131%
+    Monthly-aggregate: 2025-01 sum ~3.3M, 2026-11 sum ~3.1M → ~-7%
+    Must return the monthly version.
+    """
+    dates = pd.date_range("2025-01-01", "2026-11-30", freq="D")
+    revenue = [10_000.0] * len(dates)
+    revenue[0] = 6325.0
+    revenue[-1] = 14609.0
+
+    df = pd.DataFrame({"Date": dates, "Revenue": revenue})
+    result = compute_trend_pct_fn(df, metric_col="Revenue", date_col="Date")
+
+    assert abs(result) < 10, (
+        f"Expected near-flat monthly trend, got {result}%. "
+        "Row-level comparison is still being used."
+    )
+
+
+def test_trend_pct_excludes_incomplete_last_month(compute_trend_pct_fn):
+    """
+    If last month has only 1 row (vs ~30 expected), it must be excluded
+    from the trend calculation.
+    """
+    dates = pd.date_range("2025-01-01", "2026-11-30", freq="D")
+    stub = pd.DataFrame({"Date": ["2026-12-01"], "Revenue": [999_999.0]})
+    df = pd.concat([
+        pd.DataFrame({"Date": dates.strftime("%Y-%m-%d"), "Revenue": [10_000.0] * len(dates)}),
+        stub
+    ]).reset_index(drop=True)
+
+    result = compute_trend_pct_fn(df, metric_col="Revenue", date_col="Date")
+
+    assert abs(result) < 10, (
+        f"Incomplete last bucket was not excluded. Got trend={result}%"
+    )

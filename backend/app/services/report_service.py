@@ -275,7 +275,49 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         if metric_cols:
             metric = metric_cols[0]
             series = pd.to_numeric(df[metric], errors='coerce').dropna()
-            if len(series) >= 2:
+            date_col = config.get("date_column")
+
+            _trend_set = False
+            if date_col and date_col in df.columns:
+                try:
+                    dates = pd.to_datetime(df[date_col], errors='coerce')
+                    temp = pd.DataFrame({
+                        '_date': dates,
+                        '_metric': series.reindex(dates.index)
+                    }).dropna()
+
+                    if len(temp) >= 2:
+                        monthly = (
+                            temp.set_index('_date')['_metric']
+                            .resample('MS')
+                            .sum()
+                            .dropna()
+                        )
+
+                        if len(monthly) >= 2:
+                            raw_counts = (
+                                temp.set_index('_date')
+                                .resample('MS')['_metric']
+                                .count()
+                            )
+                            median_count = raw_counts.iloc[:-1].median()
+                            last_count   = raw_counts.iloc[-1]
+
+                            if median_count > 0 and last_count < 0.20 * median_count:
+                                monthly = monthly.iloc[:-1]
+
+                            if len(monthly) >= 2:
+                                first_m = monthly.iloc[0]
+                                last_m  = monthly.iloc[-1]
+                                if first_m != 0:
+                                    trend_pct = round(
+                                        ((last_m - first_m) / abs(first_m)) * 100, 2
+                                    )
+                                    _trend_set = True
+                except Exception:
+                    pass
+
+            if not _trend_set and len(series) >= 2:
                 first = series.iloc[0]
                 last = series.iloc[-1]
                 if first != 0:

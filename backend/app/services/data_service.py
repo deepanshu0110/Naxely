@@ -187,7 +187,13 @@ def compute_column_stats(df: pd.DataFrame) -> Dict[str, Any]:
     columns_stats = []
     date_column = None
     date_range = None
-    
+
+    # Detect date column before processing stats
+    for col_name in df.columns:
+        if _detect_column_type(df[col_name], col_name) == "date":
+            date_column = col_name
+            break
+
     for col_name in df.columns:
         col_data = df[col_name]
         
@@ -201,8 +207,6 @@ def compute_column_stats(df: pd.DataFrame) -> Dict[str, Any]:
         
         # For date columns, track date range
         if stats["type"] == "date":
-            date_column = col_name
-            # Convert to datetime and get range
             try:
                 date_series = pd.to_datetime(col_data.dropna())
                 if len(date_series) > 0:
@@ -225,7 +229,7 @@ def compute_column_stats(df: pd.DataFrame) -> Dict[str, Any]:
                     "max": float(numeric_data_clean.max()),
                     "latest_value": float(numeric_data_clean.iloc[-1]),
                     "trend": _compute_trend(numeric_data_clean),
-                    "trend_pct_change": _compute_trend_percentage(numeric_data_clean)
+                    "trend_pct_change": _compute_trend_percentage(numeric_data_clean, df, date_column)
                 })
         
         columns_stats.append(stats)
@@ -391,16 +395,57 @@ def _compute_trend(data: pd.Series) -> str:
         return "flat"
 
 
-def _compute_trend_percentage(data: pd.Series) -> float:
+def _compute_trend_percentage(
+    data: pd.Series, df: pd.DataFrame | None = None, date_col: str | None = None
+) -> float:
     """
     Compute percentage change from first to last value.
+    Uses monthly-aggregate trend when a date column is available.
     
     Args:
         data: Numeric series
+        df: Full DataFrame (for date-based aggregation)
+        date_col: Date column name in df
         
     Returns:
         float: Percentage change
     """
+    if date_col and df is not None and date_col in df.columns:
+        try:
+            dates = pd.to_datetime(df[date_col], errors='coerce')
+            temp = pd.DataFrame({
+                '_date': dates,
+                '_metric': data.reindex(dates.index)
+            }).dropna()
+
+            if len(temp) >= 2:
+                monthly = (
+                    temp.set_index('_date')['_metric']
+                    .resample('MS')
+                    .sum()
+                    .dropna()
+                )
+
+                if len(monthly) >= 2:
+                    raw_counts = (
+                        temp.set_index('_date')
+                        .resample('MS')['_metric']
+                        .count()
+                    )
+                    median_count = raw_counts.iloc[:-1].median()
+                    last_count   = raw_counts.iloc[-1]
+
+                    if median_count > 0 and last_count < 0.20 * median_count:
+                        monthly = monthly.iloc[:-1]
+
+                    if len(monthly) >= 2:
+                        first_m = monthly.iloc[0]
+                        last_m  = monthly.iloc[-1]
+                        if first_m != 0:
+                            return ((last_m - first_m) / abs(first_m)) * 100
+        except Exception:
+            pass
+
     if len(data) < 2:
         return 0.0
     

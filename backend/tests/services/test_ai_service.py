@@ -311,3 +311,34 @@ class TestGetUserApiKey:
         provider, key, base_url = get_user_api_key(user)
         assert provider is None
         assert key is None
+
+
+# ── Fix 2: Insight Card Dedup Tests ────────────────────────────────────────────
+
+class TestDedupInsightsByKpi:
+    def test_dedup_insights_removes_duplicate_kpi(self):
+        from app.services.ai_service import _dedup_insights_by_kpi
+
+        cards = [
+            {"kpi": "Units Sold", "priority": "high",   "number": "105",   "reason": "a", "action": "b", "sentiment": "positive"},
+            {"kpi": "Revenue",    "priority": "high",   "number": "14609", "reason": "c", "action": "d", "sentiment": "positive"},
+            {"kpi": "Units Sold", "priority": "medium", "number": "75.24", "reason": "e", "action": "f", "sentiment": "neutral"},
+            {"kpi": "Units Sold", "priority": "medium", "number": "149",   "reason": "g", "action": "h", "sentiment": "positive"},
+        ]
+        result = _dedup_insights_by_kpi(cards)
+        kpis = [c["kpi"] for c in result]
+
+        assert kpis.count("Units Sold") == 1, "Duplicate Units Sold cards not removed"
+        assert kpis.count("Revenue") == 1
+        assert len(result) == 2
+
+    def test_dedup_insights_keeps_first_occurrence(self):
+        from app.services.ai_service import _dedup_insights_by_kpi
+
+        cards = [
+            {"kpi": "Revenue", "priority": "high",   "number": "14609", "reason": "a", "action": "b", "sentiment": "positive"},
+            {"kpi": "Revenue", "priority": "low",    "number": "12572", "reason": "c", "action": "d", "sentiment": "neutral"},
+        ]
+        result = _dedup_insights_by_kpi(cards)
+        assert len(result) == 1
+        assert result[0]["priority"] == "high"  # first card (highest priority) kept

@@ -399,6 +399,22 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
     return result
 
 
+def _dedup_insights_by_kpi(insights: list[dict]) -> list[dict]:
+    """
+    Keep only the first (highest-priority) insight per unique kpi.
+    The LLM is prompted for priority ordering so first-occurrence
+    is the most important card for that metric.
+    """
+    seen: set[str] = set()
+    deduped: list[dict] = []
+    for card in insights:
+        kpi_key = card.get("kpi", "").strip().lower()
+        if kpi_key and kpi_key not in seen:
+            seen.add(kpi_key)
+            deduped.append(card)
+    return deduped
+
+
 async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> list[dict]:
     try:
         provider, api_key, _ = get_user_api_key(user)
@@ -432,6 +448,10 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         f'- Every "action" must be specific and executable\n'
         f"- Maximum 5 insights\n"
         f"- trend and trend_pct_change measure different things and may point in different directions — this is expected, not an error. trend reflects the slope across the full period; trend_pct_change reflects only the first-to-last value change. NEVER generate an insight whose finding is that these two fields conflict, are \"contradictory\", indicate a \"calculation error\", need \"review\", \"correction\", or \"clarification\" of methodology. If they diverge, that itself is not insight-worthy — instead look for the REAL underlying business pattern (e.g. an overall upward trend with a recent dip) and only surface it as an insight if it reflects genuine business significance, not a metric-definition mismatch.\n"
+        f"- Each \"kpi\" value must be unique — do NOT generate two insights for the same metric.\n"
+        f"- Do not create multiple insights for \"Units Sold\" or \"Revenue\" variants.\n"
+        f"- Vary priority: include at least one \"high\", one \"medium\", one \"low\".\n"
+        f"- Choose the single most actionable insight per metric column.\n"
         f"- Return ONLY the JSON array\n"
         f"- All string values must be non-empty. Never return null or empty string for kpi, number, reason, or action fields."
     )
@@ -458,6 +478,7 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         insights = json.loads(cleaned)
         if not isinstance(insights, list):
             return []
+        insights = _dedup_insights_by_kpi(insights)
         return [item for item in insights[:5] if isinstance(item, dict) and _is_valid_insight(item)]
     except Exception:
         return []
