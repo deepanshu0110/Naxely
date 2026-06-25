@@ -379,6 +379,7 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
         f"6. VOICE: Active voice only. Third person.\n"
         f"7. ENDING: Final sentence must be one specific action the business should take.\n"
         f"8. FORMAT: Return plain text only. No headers, no bullets, no markdown.\n"
+        f"9. DIVERSITY: Do not repeat the same percentage value more than once across all four parts.\n"
     )
 
     loop = asyncio.get_event_loop()

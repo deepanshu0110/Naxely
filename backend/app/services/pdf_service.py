@@ -838,7 +838,8 @@ def build_sync(
     story.append(Spacer(1, int(PAGE_HEIGHT * 0.20)))
 
     kpis = _compute_kpi_data(df, config, ai_content, brand_color)
-    hero = max(kpis, key=lambda k: abs(k.get('trend_pct', 0))) if kpis else None
+    revenue_kpis = [k for k in kpis if 'revenue' in k.get('name', '').lower()]
+    hero = max(revenue_kpis or kpis, key=lambda k: abs(k.get('trend_pct', 0))) if kpis else None
 
     if hero:
         trend_pct = hero['trend_pct']
