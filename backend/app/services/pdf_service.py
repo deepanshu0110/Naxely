@@ -129,7 +129,7 @@ class _InsightCard(Flowable):
     BADGE_W = 36
     BADGE_H = 14
 
-    _CARD_BG = HexColor('#F3F2F8')
+    _CARD_BG = HexColor('#F7F2E9')
     _MINT = HexColor('#0E9F6E')
     _RED = HexColor('#EF4444')
     _AMBER = HexColor('#F59E0B')
@@ -137,11 +137,6 @@ class _InsightCard(Flowable):
     _GRAY = HexColor('#6B7280')
     _WHITE = HexColor('#FFFFFF')
 
-    _SENTIMENT_COLORS = {
-        'positive': _MINT,
-        'negative': _RED,
-        'neutral': _GRAY,
-    }
     _PRIORITY_COLORS = {
         'high': _RED,
         'medium': _AMBER,
@@ -165,7 +160,6 @@ class _InsightCard(Flowable):
         sentiment = str(ins.get('sentiment', 'neutral')).lower()
         priority = str(ins.get('priority', 'medium')).lower()
 
-        accent_color = self._SENTIMENT_COLORS.get(sentiment, self._GRAY)
         priority_color = self._PRIORITY_COLORS.get(priority, self._AMBER)
         w = self._width
         y = self.CARD_H
@@ -174,8 +168,8 @@ class _InsightCard(Flowable):
         self.canv.setFillColor(self._CARD_BG)
         self.canv.roundRect(0, 0, w, self.CARD_H, radius=4, fill=1, stroke=0)
 
-        # Left accent bar
-        self.canv.setFillColor(accent_color)
+        # Left accent bar — color by priority
+        self.canv.setFillColor(priority_color)
         self.canv.roundRect(0, 0, self.ACCENT_W, self.CARD_H, radius=2, fill=1, stroke=0)
 
         # Priority badge (top right)
@@ -269,12 +263,14 @@ class _AnomalyBox(Flowable):
         return (self._width, self.height)
 
     def draw(self):
-        self.canv.setFillColor(HexColor(ANOMALY_BG_COLOR))
+        self.canv.setFillColor(HexColor('#FEF2F2'))
         self.canv.roundRect(0, 0, self._width, 22, 4, fill=1, stroke=0)
-        self.canv.setFillColor(HexColor('#92400E'))
+        self.canv.setFillColor(HexColor(RED))
+        self.canv.roundRect(0, 0, 3, 22, 1.5, fill=1, stroke=0)
+        self.canv.setFillColor(HexColor('#991B1B'))
         self.canv.setFont('IBMPlexSans', 9.5)
         display = '\u26A0\uFE0F ' + self.message[:120]
-        self.canv.drawString(10, 6, display)
+        self.canv.drawString(14, 6, display)
 
 
 class _CoverBand(Flowable):
@@ -481,7 +477,7 @@ class _RecommendationCard(Flowable):
         self.text_width = self._full_width - self.text_x - 12
         self.rec_style = ParagraphStyle(
             'RecCardText', fontName='IBMPlexSans', fontSize=10,
-            textColor=HexColor('#374151'), leading=14,
+            textColor=HexColor('#14131F'), leading=14,
             spaceBefore=0, spaceAfter=0,
         )
         self.para = Paragraph(text, self.rec_style)
@@ -494,6 +490,8 @@ class _RecommendationCard(Flowable):
 
     def draw(self):
         tint = _brand_tint(self.brand_color_hex)
+        self.canv.setFillColor(self.brand_color)
+        self.canv.roundRect(0, 0, 3, self.height, 1.5, fill=1, stroke=0)
         self.canv.setFillColor(tint)
         self.canv.roundRect(0, 0, self._full_width, self.height, 6, fill=1, stroke=0)
         bs, bx = self.badge_size, self.badge_x
@@ -1114,10 +1112,41 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     story.append(_SectionHeader('Table of Contents', brand_color, content_width))
     story.append(Spacer(1, 12))
+
+    toc_rows = []
     for label, pg in toc_entries:
-        dots = '.' * max(2, 60 - len(label) - len(pg))
-        line = f'{label}  {dots}  {pg}'
-        story.append(Paragraph(line, toc_h1_style))
+        toc_rows.append([
+            Paragraph(label, ParagraphStyle(
+                'TOCLabel',
+                fontName='IBMPlexSans',
+                fontSize=10,
+                textColor=HexColor('#14131F'),
+                leading=16,
+            )),
+            Paragraph(pg, ParagraphStyle(
+                'TOCPage',
+                fontName='IBMPlexMono',
+                fontSize=9,
+                textColor=HexColor(brand_color),
+                alignment=TA_RIGHT,
+                leading=16,
+            )),
+        ])
+
+    col_w = content_width
+    toc_table = Table(
+        toc_rows,
+        colWidths=[col_w * 0.85, col_w * 0.15],
+    )
+    toc_table.setStyle(TableStyle([
+        ('VALIGN',       (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING',  (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ('TOPPADDING',   (0, 0), (-1, -1), 5),
+        ('BOTTOMPADDING',(0, 0), (-1, -1), 5),
+        ('LINEBELOW', (0, 0), (-1, -2), 0.4, HexColor(GRID_LINE)),
+    ]))
+    story.append(toc_table)
     story.append(PageBreak())
 
     story.extend(body_story)
