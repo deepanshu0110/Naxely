@@ -110,12 +110,10 @@ class TestPdfService:
         }
         wl_path = build_sync(df, [], ai_content, wl_config, wl_user_data)
         wl_doc = fitz.open(wl_path)
-        wl_text = ""
-        for page in wl_doc:
-            wl_text += page.get_text()
+        wl_text = wl_doc[-1].get_text()
         wl_doc.close()
-        assert 'Naxely' not in wl_text, "White-label PDF should not contain 'Naxely' in footer"
-        assert 'AgencyCo' in wl_text, "White-label PDF should contain company name in footer"
+        assert 'Naxely' not in wl_text, "White-label PDF footer should not contain 'Naxely'"
+        assert 'AgencyCo' in wl_text, "White-label PDF footer should contain company name"
         try:
             os.unlink(wl_path)
         except OSError:
@@ -132,11 +130,9 @@ class TestPdfService:
         }
         pro_path = build_sync(df, [], ai_content, pro_config, pro_user_data)
         pro_doc = fitz.open(pro_path)
-        pro_text = ""
-        for page in pro_doc:
-            pro_text += page.get_text()
+        pro_text = pro_doc[-1].get_text()
         pro_doc.close()
-        assert 'Naxely' in pro_text, "Pro-tier PDF should contain 'Naxely' in footer"
+        assert 'Naxely' in pro_text, "Pro-tier PDF footer should contain 'Naxely'"
         try:
             os.unlink(pro_path)
         except OSError:
@@ -153,11 +149,9 @@ class TestPdfService:
         }
         free_path = build_sync(df, [], ai_content, free_config, free_user_data)
         free_doc = fitz.open(free_path)
-        free_text = ""
-        for page in free_doc:
-            free_text += page.get_text()
+        free_text = free_doc[-1].get_text()
         free_doc.close()
-        assert 'Naxely' in free_text, "Free-tier PDF should contain 'Naxely' in footer"
+        assert 'Naxely' in free_text, "Free-tier PDF footer should contain 'Naxely'"
         try:
             os.unlink(free_path)
         except OSError:

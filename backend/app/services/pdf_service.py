@@ -18,7 +18,7 @@ from reportlab.lib.utils import ImageReader
 from reportlab.lib.colors import HexColor, white, Color
 from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT, TA_RIGHT
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -278,15 +278,14 @@ class _AnomalyBox(Flowable):
 
 
 class _CoverBand(Flowable):
-    def __init__(self, title, company_name, logo_path, brand_color_hex):
+    def __init__(self, company_name, logo_path, brand_color_hex):
         Flowable.__init__(self)
-        self.title = title
         self.company_name = company_name
         self.logo_path = logo_path
         self.brand_color = HexColor(brand_color_hex)
-        self.band_height = int(PAGE_HEIGHT * 0.28)
+        self.brand_color_hex = brand_color_hex
         self.width = PAGE_WIDTH
-        self.height = self.band_height
+        self.height = 72
 
     def wrap(self, availWidth, availHeight):
         return (self.width, self.height)
@@ -294,59 +293,47 @@ class _CoverBand(Flowable):
     def draw(self):
         self.canv.saveState()
         self.canv.translate(-MARGIN, 0)
-        self.canv.setFillColor(self.brand_color)
-        self.canv.rect(0, 0, self.width, self.band_height, fill=1, stroke=0)
-        cx = PAGE_WIDTH / 2
 
-        # --- 1. Logo badge (top-left: 20px from left, 20px from top of band) ---
-        logo_bottom_y = self.band_height - 20
+        self.canv.setFillColor(HexColor('#FFFFFF'))
+        self.canv.rect(0, -PAGE_HEIGHT, PAGE_WIDTH, PAGE_HEIGHT * 2, fill=1, stroke=0)
+
+        glyph_x = 40
+        glyph_y = 28
+        bar_w = 3.5
+        gap = 2.0
+        heights = [8, 11, 15, 20]
+        self.canv.setFillColor(self.brand_color)
+        for i, h in enumerate(heights):
+            bx = glyph_x + i * (bar_w + gap)
+            self.canv.roundRect(bx, glyph_y, bar_w, h, 1, fill=1, stroke=0)
+
+        wordmark_x = glyph_x + 4 * (bar_w + gap) + 6
+        self.canv.setFont('IBMPlexSans', 9)
+        self.canv.setFillColor(HexColor('#888580'))
+        self.canv.drawString(wordmark_x, glyph_y + 3, 'Naxely')
+
+        right_x = PAGE_WIDTH - 40
+        if self.company_name:
+            self.canv.setFont('IBMPlexSans', 9)
+            self.canv.setFillColor(HexColor('#888580'))
+            self.canv.drawRightString(right_x, glyph_y + 10, self.company_name)
+
         if self.logo_path:
             try:
                 img_reader = ImageReader(self.logo_path)
                 iw, ih = img_reader.getSize()
-                max_draw_h = 56  # badge height including padding
-                scale = min(1.0, max_draw_h / ih)
-                draw_w = int(iw * scale)
-                draw_h = int(ih * scale)
-
-                logo_x = 20
-                logo_y = self.band_height - 20 - draw_h
-
+                scale = min(36 / ih, 110 / iw)
+                draw_w = iw * scale
+                draw_h = ih * scale
+                logo_x = right_x - draw_w
+                logo_y = glyph_y + 10 - draw_h - (16 if self.company_name else 0)
                 self.canv.drawImage(
-                    img_reader,
-                    logo_x,
-                    logo_y,
-                    width=draw_w,
-                    height=draw_h,
-                    mask='auto',
-                    preserveAspectRatio=True,
+                    img_reader, logo_x, logo_y,
+                    width=draw_w, height=draw_h,
+                    mask='auto', preserveAspectRatio=True,
                 )
-                logo_bottom_y = logo_y
             except Exception as e:
-                logging.warning(f"[pdf_service] drawImage failed: {e}")
-
-        # --- 2. Company name + Report title (centered in full band) ---
-        # Center vertically in the full band, not just space below logo
-
-        COMPANY_FONT = 'Fraunces-SemiBold'
-        COMPANY_FONT_SIZE = 28
-        TITLE_FONT = 'IBMPlexSans'
-        TITLE_FONT_SIZE = 14
-
-        band_center_y = self.band_height * 0.42
-
-        # Company name: centered, vertically centered in full band
-        company_y = band_center_y + COMPANY_FONT_SIZE * 0.3
-        self.canv.setFillColor(white)
-        self.canv.setFont(COMPANY_FONT, COMPANY_FONT_SIZE)
-        if self.company_name:
-            self.canv.drawCentredString(cx, company_y, self.company_name)
-
-        # Report title: 8px below band center baseline
-        title_y = band_center_y - COMPANY_FONT_SIZE - 8
-        self.canv.setFillColor(white)
-        self.canv.setFont(TITLE_FONT, TITLE_FONT_SIZE)
-        self.canv.drawCentredString(cx, title_y, self.title)
+                logging.warning(f'[pdf_service] logo drawImage failed: {e}')
 
         self.canv.restoreState()
 
@@ -379,20 +366,20 @@ class _CoverMotif(Flowable):
 
 
 class _CoverRule(Flowable):
-    """Thin horizontal rule separating hero area from metadata."""
-    def __init__(self, grid_color_hex):
+    """Horizontal rule — brand color, heavier weight."""
+    def __init__(self, brand_color_hex):
         Flowable.__init__(self)
-        self.grid_color = HexColor(grid_color_hex)
+        self.brand_color = HexColor(brand_color_hex)
         self._width = PAGE_WIDTH - 2 * MARGIN
-        self.height = 20  # spacing only; the rule is vertically centred
+        self.height = 20
 
     def wrap(self, availWidth, availHeight):
         return (self._width, self.height)
 
     def draw(self):
         self.canv.saveState()
-        self.canv.setStrokeColor(self.grid_color)
-        self.canv.setLineWidth(0.5)
+        self.canv.setStrokeColor(self.brand_color)
+        self.canv.setLineWidth(1.2)
         self.canv.line(0, self.height / 2, self._width, self.height / 2)
         self.canv.restoreState()
 
@@ -753,6 +740,16 @@ def build_sync(
     def on_page(canvas, doc):
         _on_page(canvas, doc, add_watermark=is_free, is_white_label=is_white_label, company_name=company_name)
 
+    def on_first_page(canvas, doc):
+        canvas.saveState()
+        bar_h = 8
+        brand = HexColor(brand_color)
+        canvas.setFillColor(brand)
+        canvas.rect(0, PAGE_HEIGHT - bar_h, PAGE_WIDTH, bar_h, fill=1, stroke=0)
+        canvas.rect(0, 0, PAGE_WIDTH, bar_h, fill=1, stroke=0)
+        canvas.restoreState()
+        _on_page(canvas, doc, add_watermark=is_free, is_white_label=is_white_label, company_name=company_name)
+
     doc = SimpleDocTemplate(
         pdf_path,
         pagesize=A4,
@@ -800,10 +797,11 @@ def build_sync(
     company_name = user_data.get('company_name', '')
 
     story.append(_CoverBand(
-        title=title, company_name=company_name,
-        logo_path=logo_path, brand_color_hex=brand_color,
+        company_name=company_name,
+        logo_path=logo_path,
+        brand_color_hex=brand_color,
     ))
-    story.append(_CoverMotif(brand_color))
+    story.append(Spacer(1, int(PAGE_HEIGHT * 0.20)))
 
     kpis = _compute_kpi_data(df, config, ai_content, brand_color)
     hero = max(kpis, key=lambda k: abs(k.get('trend_pct', 0))) if kpis else None
@@ -862,23 +860,73 @@ def build_sync(
                 self.canv.drawPath(p, fill=1, stroke=0)
         story.append(_CoverHeroStat(hero, sign, trend_pct, arrow_color_hex, brand_color))
 
-    story.append(_CoverRule(GRID_LINE))
+    story.append(Spacer(1, 24))
+    story.append(_CoverRule(brand_color))
 
-    info_style = ParagraphStyle(
-        'CoverInfo', fontName='IBMPlexSans',
-        fontSize=10, textColor=HexColor('#6B7280'),
-        alignment=TA_CENTER, spaceAfter=4,
+    title_style = ParagraphStyle(
+        'CoverTitle',
+        fontName='Fraunces-SemiBold',
+        fontSize=26,
+        textColor=HexColor('#14131F'),
+        alignment=TA_LEFT,
+        leading=32,
+        spaceAfter=8,
     )
+    story.append(Paragraph(title or 'Data Analysis Report', title_style))
+
+    subtitle_style = ParagraphStyle(
+        'CoverSubtitle',
+        fontName='IBMPlexSans',
+        fontSize=11,
+        textColor=HexColor('#888580'),
+        alignment=TA_LEFT,
+        spaceAfter=24,
+    )
+    subtitle_text = company_name if company_name else 'Data Analysis Report'
+    story.append(Paragraph(subtitle_text, subtitle_style))
+
+    meta_style = ParagraphStyle(
+        'CoverMeta',
+        fontName='IBMPlexMono',
+        fontSize=9,
+        textColor=HexColor('#888580'),
+        leading=13,
+    )
+    meta_style_right = ParagraphStyle(
+        'CoverMetaRight',
+        fontName='IBMPlexMono',
+        fontSize=9,
+        textColor=HexColor('#888580'),
+        leading=13,
+        alignment=TA_RIGHT,
+    )
+
     date_from = config.get('date_from', 'N/A')
     date_to = config.get('date_to', 'N/A')
+    date_text = ''
     if date_from and date_to and date_from != 'N/A':
-        story.append(Paragraph(f'From {date_from} to {date_to}', info_style))
+        date_text = f'{date_from}  \u2013  {date_to}'
+
     prepared_by = (config.get('brand') or {}).get('prepared_by', '')
+    right_text = ''
     if prepared_by:
-        story.append(Paragraph(f'Prepared by: {prepared_by}', info_style))
-    story.append(Paragraph(
-        f'Prepared on: {datetime.now().strftime("%B %d, %Y")}', info_style,
-    ))
+        right_text = f'Prepared by {prepared_by}'
+    else:
+        right_text = datetime.now().strftime('%B %d, %Y')
+
+    col_w = (PAGE_WIDTH - 2 * MARGIN) / 2
+    meta_table = Table(
+        [[Paragraph(date_text, meta_style), Paragraph(right_text, meta_style_right)]],
+        colWidths=[col_w, col_w],
+    )
+    meta_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ('TOPPADDING', (0, 0), (-1, -1), 0),
+    ]))
+    story.append(meta_table)
     story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
@@ -1070,7 +1118,7 @@ def build_sync(
 
     story.extend(body_story)
 
-    doc.build(story, onFirstPage=on_page, onLaterPages=on_page)
+    doc.build(story, onFirstPage=on_first_page, onLaterPages=on_page)
     logging.info(f"[pdf_service] build_sync completed — report_id={report_id}")
 
     _strip_standard_fonts(pdf_path)
