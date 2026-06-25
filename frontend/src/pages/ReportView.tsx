@@ -273,12 +273,27 @@ export default function ReportView() {
                 <span className="font-mono tabular-nums">{displayRowCount}</span> rows
               </div>
 
-              {isPro && report.ai_summary && (
-                <div className="rounded-lg border border-gray-200 bg-slate p-4 dark:border-gray-700 dark:bg-gray-700/50">
-                  <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">AI Summary</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{report.ai_summary}</p>
-                </div>
-              )}
+              {isPro && report.ai_summary && (() => {
+                const text = report.ai_summary.trim();
+                const firstDot = text.indexOf('.');
+                const lead = firstDot > 30 ? text.slice(0, firstDot + 1) : text;
+                const body = firstDot > 30 ? text.slice(firstDot + 1).trim() : '';
+                return (
+                  <div className="rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#1e1c18] p-5">
+                    <h3 className="mb-3 text-xs font-medium tracking-widest uppercase text-amber-600 dark:text-amber-400">
+                      AI Summary
+                    </h3>
+                    <p className="font-display text-[15px] font-semibold text-ink dark:text-paper leading-snug mb-3">
+                      {lead}
+                    </p>
+                    {body && (
+                      <p className="text-sm text-ink/60 dark:text-paper/50 leading-relaxed">
+                        {body}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               {isPro && report.ai_insights && report.ai_insights.length > 0 && (
                 <div>

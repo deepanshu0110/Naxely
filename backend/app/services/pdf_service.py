@@ -252,6 +252,37 @@ class _AISkippedCard(Flowable):
         self.canv.drawString(text_x, y - self.PAD_TOP - 36, "insights, or upgrade to Pro at naxely.com/billing")
 
 
+class _StatStrip(Flowable):
+    """Inline key metric stats band — shown below lead sentence in Executive Summary."""
+    def __init__(self, stat_text, brand_color_hex, width=None):
+        Flowable.__init__(self)
+        self.stat_text = stat_text
+        self.brand_color = HexColor(brand_color_hex)
+        self.brand_color_hex = brand_color_hex
+        self._width = width or (PAGE_WIDTH - 2 * MARGIN)
+        self.height = 28
+
+    def wrap(self, availWidth, availHeight):
+        return (self._width, self.height)
+
+    def draw(self):
+        c = self.canv
+        c.saveState()
+
+        tint = _brand_tint(self.brand_color_hex)
+        c.setFillColor(tint)
+        c.roundRect(0, 0, self._width, self.height, 4, fill=1, stroke=0)
+
+        c.setFillColor(self.brand_color)
+        c.roundRect(0, 0, 3, self.height, 1.5, fill=1, stroke=0)
+
+        c.setFillColor(HexColor('#14131F'))
+        c.setFont('IBMPlexMono', 9)
+        c.drawString(12, 10, self.stat_text)
+
+        c.restoreState()
+
+
 class _AnomalyBox(Flowable):
     def __init__(self, message, width=None):
         Flowable.__init__(self)
@@ -764,7 +795,7 @@ def build_sync(
         'BodyText2',
         fontName='IBMPlexSans',
         fontSize=10,
-        textColor=HexColor('#374151'),
+        textColor=HexColor('#14131F'),
         alignment=TA_JUSTIFY,
         spaceAfter=8,
         leading=14,
@@ -939,7 +970,50 @@ def build_sync(
         toc_page += 1
         body_story.append(_SectionHeader('Executive Summary', brand_color, content_width))
         body_story.append(Spacer(1, 10))
-        body_story.append(Paragraph(ai_content['summary'], body_style))
+
+        summary_text = ai_content['summary'].strip()
+        if summary_text:
+            first_dot = summary_text.find('.')
+            if first_dot > 30:
+                lead = summary_text[:first_dot + 1].strip()
+                body_remainder = summary_text[first_dot + 1:].strip()
+            else:
+                lead = summary_text
+                body_remainder = ''
+
+            # Lead sentence — Fraunces-Medium, 13pt, ink
+            lead_style = ParagraphStyle(
+                'SummaryLead',
+                fontName='Fraunces-Medium',
+                fontSize=13,
+                textColor=HexColor('#14131F'),
+                leading=19,
+                spaceAfter=10,
+            )
+            body_story.append(Paragraph(lead, lead_style))
+
+            # Key stat strip — top 3 KPIs by absolute trend magnitude
+            _kpis_for_strip = [k for k in (kpis or []) if k.get('trend_pct') is not None]
+            _kpis_for_strip = sorted(
+                _kpis_for_strip,
+                key=lambda k: abs(k.get('trend_pct', 0)),
+                reverse=True,
+            )[:3]
+
+            if _kpis_for_strip:
+                stat_parts = []
+                for k in _kpis_for_strip:
+                    pct = k.get('trend_pct', 0) or 0
+                    sign = '+' if pct >= 0 else ''
+                    stat_parts.append(f"{k['name']}  {sign}{pct:.1f}%")
+                stat_text = '     \u00b7     '.join(stat_parts)
+                body_story.append(_StatStrip(stat_text, brand_color, content_width))
+                body_story.append(Spacer(1, 10))
+
+            # Body prose — remaining text after lead sentence
+            if body_remainder:
+                body_story.append(Paragraph(body_remainder, body_style))
+
         body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────

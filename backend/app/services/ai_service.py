@@ -295,38 +295,84 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
         return None
 
     column_stats = _build_column_stats(df, null_counts_override=config.get("_raw_null_counts"))
-    column_stats_json = json.dumps(column_stats, default=str)
 
     metric_cols = [c for c in column_stats["columns"] if c["type"] == "metric"]
-    if metric_cols:
-        top_kpi = max(metric_cols, key=lambda c: c.get("trend_pct_change", 0) or 0)["name"]
-        bottom_kpi = min(metric_cols, key=lambda c: c.get("trend_pct_change", 0) or 0)["name"]
-    else:
-        top_kpi = "N/A"
-        bottom_kpi = "N/A"
+
+    # Build human-readable metrics context for the AI prompt
+    def _fmt_val(v):
+        if v is None:
+            return 'N/A'
+        if isinstance(v, float) and v == int(v):
+            return str(int(v))
+        return f'{v:,.2f}' if isinstance(v, float) else str(v)
+
+    metric_lines = []
+    for col in metric_cols[:6]:
+        name = col.get('name', '')
+        mean_v = col.get('mean')
+        latest_v = col.get('latest_value')
+        trend_pct = col.get('trend_pct_change', 0) or 0
+        sign = '+' if trend_pct >= 0 else ''
+        metric_lines.append(
+            f"  {name}: mean={_fmt_val(mean_v)}, "
+            f"latest={_fmt_val(latest_v)}, "
+            f"trend={sign}{trend_pct:.1f}%"
+        )
+    metrics_context = '\n'.join(metric_lines) if metric_lines else '  No numeric metrics found.'
+
+    top_col = max(metric_cols, key=lambda c: c.get('trend_pct_change') or 0) \
+              if metric_cols else None
+    bottom_col = min(metric_cols, key=lambda c: c.get('trend_pct_change') or 0) \
+                 if metric_cols else None
+
+    top_kpi_detail = (
+        f"{top_col['name']} "
+        f"(latest={_fmt_val(top_col.get('latest_value'))}, "
+        f"trend={'+' if (top_col.get('trend_pct_change') or 0) >= 0 else ''}"
+        f"{(top_col.get('trend_pct_change') or 0):.1f}%)"
+    ) if top_col else 'N/A'
+
+    bottom_kpi_detail = (
+        f"{bottom_col['name']} "
+        f"(latest={_fmt_val(bottom_col.get('latest_value'))}, "
+        f"trend={'+' if (bottom_col.get('trend_pct_change') or 0) >= 0 else ''}"
+        f"{(bottom_col.get('trend_pct_change') or 0):.1f}%)"
+    ) if bottom_col else 'N/A'
 
     date_range = column_stats.get("date_range", {})
     tone = config.get("tone", "Professional")
 
     system_prompt = (
-        "You are a professional business analyst writing executive summaries for client reports.\n"
-        "Write concisely and authoritatively. Never fabricate numbers — only reference data provided."
+        "You are a senior business analyst writing a brief executive summary for a client-facing report. "
+        "Your writing is direct, specific, and data-driven. "
+        "You never fabricate numbers — every figure you mention must come from the data provided. "
+        "You never use filler language or vague qualifiers."
     )
 
     user_prompt = (
-        f"Write an executive summary for a {tone} marketing performance report.\n\n"
-        f"Dataset statistics:\n{column_stats_json}\n\n"
-        f"Key findings:\n"
-        f"- Best performing metric: {top_kpi}\n"
-        f"- Worst performing metric: {bottom_kpi}\n"
-        f"- Date range: {date_range.get('from', 'N/A')} to {date_range.get('to', 'N/A')}\n"
-        f"- Total rows: {len(df)}\n\n"
-        f"Requirements:\n"
-        f"- Exactly 150-250 words\n"
-        f"- Third person (\"Revenue increased...\" not \"Your revenue...\")\n"
-        f"- Mention: top performer, biggest concern, one recommended action\n"
-        f"- Tone: {tone}\n"
-        f"- Return ONLY the summary text, no headers or bullets"
+        f"Write an executive summary for a data analysis report.\n\n"
+        f"REPORT CONTEXT:\n"
+        f"Date range: {date_range.get('from', 'N/A')} to {date_range.get('to', 'N/A')}\n"
+        f"Total records: {len(df)}\n"
+        f"Tone: {tone}\n\n"
+        f"METRIC DATA (use these exact values — do not round or estimate):\n"
+        f"{metrics_context}\n\n"
+        f"Top performing metric: {top_kpi_detail}\n"
+        f"Biggest concern: {bottom_kpi_detail}\n\n"
+        f"STRICT WRITING RULES — violating any rule means the output is rejected:\n"
+        f"1. LENGTH: 80–110 words maximum. Count every word. Stop at 110.\n"
+        f"2. OPENING: Start with the single most important finding as a specific number.\n"
+        f"   WRONG: 'The report reveals mixed results over the period.'\n"
+        f"   WRONG: 'This analysis covers performance from January to June.'\n"
+        f"   RIGHT: 'Revenue grew 33.9% over the period, reaching $9,494 in the latest reading.'\n"
+        f"3. NUMBERS: Every metric you mention must include its actual value or percentage. "
+        f"Never say 'slight decline' or 'significant growth' without a number.\n"
+        f"4. BANNED PHRASES: Do not use any of these — 'it is recommended that', "
+        f"'highlights the importance of', 'the data suggests', 'overall', 'in conclusion', "
+        f"'mixed bag', 'moving forward', 'actionable', 'this report'.\n"
+        f"5. VOICE: Active voice only. Third person.\n"
+        f"6. ENDING: Final sentence must be one specific action the business should take.\n"
+        f"7. FORMAT: Return plain text only. No headers, no bullets, no markdown.\n"
     )
 
     loop = asyncio.get_event_loop()
@@ -335,6 +381,15 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
     )
     if not result:
         return None
+    # Enforce length limit — truncate at sentence boundary if AI ignores the limit
+    if result:
+        words = result.split()
+        if len(words) > 120:
+            truncated = ' '.join(words[:110])
+            last_period = truncated.rfind('.')
+            result = (truncated[:last_period + 1]
+                      if last_period > 40
+                      else truncated + '.')
     return result
 
 
