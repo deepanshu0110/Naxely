@@ -278,12 +278,13 @@ class _AnomalyBox(Flowable):
 
 
 class _CoverBand(Flowable):
-    def __init__(self, company_name, logo_path, brand_color_hex):
+    def __init__(self, company_name, logo_path, brand_color_hex, white_label=False):
         Flowable.__init__(self)
         self.company_name = company_name
         self.logo_path = logo_path
         self.brand_color = HexColor(brand_color_hex)
         self.brand_color_hex = brand_color_hex
+        self.white_label = white_label
         self.width = PAGE_WIDTH
         self.height = 72
 
@@ -299,18 +300,20 @@ class _CoverBand(Flowable):
 
         glyph_x = 40
         glyph_y = 28
-        bar_w = 3.5
-        gap = 2.0
-        heights = [8, 11, 15, 20]
-        self.canv.setFillColor(self.brand_color)
-        for i, h in enumerate(heights):
-            bx = glyph_x + i * (bar_w + gap)
-            self.canv.roundRect(bx, glyph_y, bar_w, h, 1, fill=1, stroke=0)
 
-        wordmark_x = glyph_x + 4 * (bar_w + gap) + 6
-        self.canv.setFont('IBMPlexSans', 9)
-        self.canv.setFillColor(HexColor('#888580'))
-        self.canv.drawString(wordmark_x, glyph_y + 3, 'Naxely')
+        if not self.white_label:
+            bar_w = 3.5
+            gap = 2.0
+            heights = [8, 11, 15, 20]
+            self.canv.setFillColor(self.brand_color)
+            for i, h in enumerate(heights):
+                bx = glyph_x + i * (bar_w + gap)
+                self.canv.roundRect(bx, glyph_y, bar_w, h, 1, fill=1, stroke=0)
+
+            wordmark_x = glyph_x + 4 * (bar_w + gap) + 6
+            self.canv.setFont('IBMPlexSans', 9)
+            self.canv.setFillColor(HexColor('#888580'))
+            self.canv.drawString(wordmark_x, glyph_y + 3, 'Naxely')
 
         right_x = PAGE_WIDTH - 40
         if self.company_name:
@@ -800,6 +803,7 @@ def build_sync(
         company_name=company_name,
         logo_path=logo_path,
         brand_color_hex=brand_color,
+        white_label=is_white_label,
     ))
     story.append(Spacer(1, int(PAGE_HEIGHT * 0.20)))
 
