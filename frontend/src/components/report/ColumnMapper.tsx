@@ -43,7 +43,7 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
           {columns.map((col, idx) => (
             <tr key={col.original_name}>
-              <td className="py-3 pr-4 font-medium text-gray-900 dark:text-gray-100">{col.original_name}</td>
+              <td className="py-3 pr-4 font-medium text-ink dark:text-paper">{col.original_name}</td>
               <td className="py-3 pr-4">
                 <input
                   type="text"

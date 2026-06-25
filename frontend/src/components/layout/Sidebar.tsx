@@ -227,7 +227,7 @@ export default function Sidebar() {
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p className="truncate text-sm font-medium text-ink dark:text-paper">
               {user?.full_name ?? 'User'}
             </p>
             <p className="truncate text-xs text-gray-500 dark:text-gray-400">{user?.email ?? ''}</p>

@@ -28,14 +28,14 @@ export default function InsightCard({ insight }: { insight: AIInsight }) {
       )}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">📊 {insight.kpi}</h4>
+        <h4 className="text-sm font-semibold text-ink dark:text-paper">📊 {insight.kpi}</h4>
         <Badge
           variant={priorityVariant[insight.priority]}
           text={insight.priority.toUpperCase()}
         />
       </div>
 
-      <p className="mb-2 text-sm font-bold text-gray-800 dark:text-gray-200"># {displayNumber}</p>
+      <p className="mb-2 text-sm font-bold text-ink/80 dark:text-paper/80"># {displayNumber}</p>
       <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">▶ {insight.reason}</p>
       <p className="text-sm italic text-gray-500 dark:text-gray-400">✓ {insight.action}</p>
     </div>

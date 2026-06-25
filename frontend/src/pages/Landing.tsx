@@ -767,7 +767,7 @@ export default function Landing() {
                   "{t.quote}"
                 </p>
                 <div className="mt-4">
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-ink">
                     {t.name}
                   </p>
                   <p className="text-xs text-gray-500">
@@ -783,7 +783,7 @@ export default function Landing() {
       {/* ── Final CTA Banner ── */}
       <section
         ref={finalCtaRef}
-        className={`bg-gray-900 px-6 py-20 ${finalCtaInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
+        className={`bg-ink px-6 py-20 ${finalCtaInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
         style={{ animationDelay: '0ms' }}
       >
         <div className="mx-auto max-w-2xl text-center">
@@ -796,7 +796,7 @@ export default function Landing() {
           </p>
           <Link
             to="/signup"
-            className="mt-8 inline-block rounded-lg bg-white px-8 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100"
+            className="mt-8 inline-block rounded-lg bg-white px-8 py-3 text-sm font-semibold text-ink hover:bg-gray-100"
           >
             Get started free
           </Link>
@@ -814,19 +814,19 @@ export default function Landing() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
-              <a href="#features" className="hover:text-gray-900">
+              <a href="#features" className="hover:text-ink">
                 Features
               </a>
-              <a href="#pricing" className="hover:text-gray-900">
+              <a href="#pricing" className="hover:text-ink">
                 Pricing
               </a>
-              <a href="#" className="hover:text-gray-900">
+              <a href="#" className="hover:text-ink">
                 Privacy Policy
               </a>
-              <a href="#" className="hover:text-gray-900">
+              <a href="#" className="hover:text-ink">
                 Terms of Service
               </a>
-              <a href="#" className="hover:text-gray-900">
+              <a href="#" className="hover:text-ink">
                 Contact
               </a>
             </div>

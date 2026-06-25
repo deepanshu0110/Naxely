@@ -59,7 +59,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
           <div className="flex items-center gap-3">
             <FileText className="h-8 w-8 text-green-600 dark:text-green-400" />
             <div>
-              <p className="font-medium text-gray-900 dark:text-gray-100">{uploadResult.filename}</p>
+              <p className="font-medium text-ink dark:text-paper">{uploadResult.filename}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {uploadResult.row_count.toLocaleString()} rows × {uploadResult.column_count} columns
               </p>
