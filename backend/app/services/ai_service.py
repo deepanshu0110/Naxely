@@ -425,7 +425,9 @@ async def generate_recommendations(df: pd.DataFrame, config: dict, user: User) -
         return []
 
     column_stats = _build_column_stats(df, null_counts_override=config.get("_raw_null_counts"))
-    metric_cols = [c for c in column_stats["columns"] if c["type"] == "metric"]
+    metric_cols_raw = [c for c in column_stats["columns"] if c["type"] == "metric"]
+    # Strip internal field names that should not leak into recommendations
+    metric_cols = [{k: v for k, v in col.items() if k != "trend_pct_change"} for col in metric_cols_raw]
     kpi_stats_json = json.dumps(metric_cols, default=str)
 
     system_prompt = (
@@ -441,7 +443,8 @@ async def generate_recommendations(df: pd.DataFrame, config: dict, user: User) -
         f"- Start with a specific verb (e.g., Increase, Reduce, Implement, Launch, Optimize)\n"
         f"- Reference a specific metric or data point\n"
         f"- Be concrete and executable\n"
-        f"- Be 1-2 sentences maximum\n\n"
+        f"- Be 1-2 sentences maximum\n"
+        f"- Do NOT use internal field names like 'trend_pct_change' or 'pct_change' in the text.\n\n"
         f"Return ONLY the JSON array. No markdown, no explanation."
     )
 
