@@ -176,7 +176,6 @@ function ProfileTab({ profile, onSaved }: { profile: ProfileResponse; onSaved: (
       onSaved()
       toast.success('Profile updated')
     } catch {
-      toast.error('Failed to update profile')
     } finally {
       setIsSaving(false)
     }
@@ -269,7 +268,6 @@ function BrandingTab({ logoUrl, brandColor, companyName }: { logoUrl: string | n
       if (resp.suggested_colors) setSuggestedColors(resp.suggested_colors)
       toast.success('Branding saved')
     } catch {
-      toast.error('Failed to save branding')
     } finally {
       setIsSaving(false)
     }
@@ -451,7 +449,6 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
       const data = resp.data as CheckoutResponse
       window.location.href = data.checkout_url
     } catch {
-      toast.error('Failed to start checkout. Please try again.')
       setIsCreatingCheckout(null)
     }
   }
@@ -465,9 +462,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
       setShowDowngradeModal(null)
       await fetchSubscription()
     } catch (err) {
-      const detail = (err as any)?.response?.data?.detail
-      const message = typeof detail === 'string' ? detail : detail?.message
-      toast.error(message || 'Failed to schedule downgrade. Please try again.')
+      // toast handled by global interceptor
     } finally {
       setIsDowngrading(false)
     }
@@ -481,7 +476,6 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
       setDowngradeMessage(null)
       toast.success('Scheduled change cancelled')
     } catch {
-      toast.error('Failed to cancel scheduled change')
     } finally {
       setIsCancellingChange(false)
     }
@@ -653,7 +647,6 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
                       toast.success('Account deleted')
                       setTimeout(() => window.location.href = '/', 1500)
                     } catch {
-                      toast.error('Failed to delete account')
                     } finally {
                       setIsDeleting(false)
                       setShowDeleteModal(false)
@@ -699,7 +692,6 @@ function ApiKeysTab() {
         revoked: false,
       }, ...prev])
     } catch {
-      toast.error('Failed to generate API key')
     } finally {
       setKeyLoading(false)
     }
@@ -711,7 +703,6 @@ function ApiKeysTab() {
       setApiKeys(prev => prev.map(k => k.id === keyId ? { ...k, revoked: true } : k))
       toast.success('API key revoked')
     } catch {
-      toast.error('Failed to revoke API key')
     }
   }
 
@@ -722,7 +713,6 @@ function ApiKeysTab() {
       setApiKeys(prev => prev.filter(k => k.id !== keyId))
       toast.success('Key deleted')
     } catch {
-      toast.error('Failed to delete key')
     }
   }
 

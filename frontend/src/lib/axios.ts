@@ -1,4 +1,5 @@
 import axios from 'axios'
+import toast from 'react-hot-toast'
 import { useAuthStore } from '@/store/authStore'
 
 const api = axios.create({
@@ -22,12 +23,40 @@ api.interceptors.response.use(
     return response
   },
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status
+    const data = error.response?.data
+
+    if (status === 401) {
       window.location.href = '/login'
+      return Promise.reject(error)
     }
-    if (error.response?.status === 402) {
+
+    if (status === 402) {
       window.dispatchEvent(new CustomEvent('upgrade-needed'))
+      const upgradeMsg =
+        data?.detail?.message ??
+        data?.message ??
+        "You've reached your plan limit."
+      const upgradeUrl = data?.detail?.upgrade_url
+      toast.error(
+        upgradeUrl
+          ? `${upgradeMsg} — Upgrade your plan to continue.`
+          : upgradeMsg,
+        { duration: 5000 },
+      )
+      return Promise.reject(error)
     }
+
+    const errorMessage =
+      data?.message ??
+      data?.detail?.message ??
+      data?.detail ??
+      'Something went wrong. Please try again.'
+
+    if (typeof errorMessage === 'string') {
+      toast.error(errorMessage, { duration: 4000 })
+    }
+
     return Promise.reject(error)
   },
 )

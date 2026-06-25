@@ -45,7 +45,6 @@ export default function ReportCard({ report, onDelete, isSelected, onToggleSelec
       await onDelete(report.id)
       toast.success('Report deleted')
     } catch {
-      toast.error('Failed to delete report')
     } finally {
       setDeleting(false)
       setConfirmDelete(false)

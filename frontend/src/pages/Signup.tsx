@@ -6,7 +6,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
-import toast from 'react-hot-toast'
 import Button from '@/components/ui/Button'
 
 const signupSchema = z
@@ -63,9 +62,7 @@ export default function Signup() {
       })
       if (error) throw error
       navigate('/dashboard')
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Signup failed'
-      toast.error(message)
+    } catch {
     } finally {
       setIsSubmitting(false)
     }

@@ -60,7 +60,6 @@ export default function ReportView() {
       await deleteReport(id)
       navigate('/dashboard')
     } catch {
-      toast.error('Failed to delete report')
     } finally {
       setDeleting(false)
       setConfirmDelete(false)
@@ -74,7 +73,6 @@ export default function ReportView() {
       await api.post(`/reports/${id}/retry`)
       navigate('/dashboard')
     } catch {
-      toast.error('Failed to retry report generation')
     } finally {
       setRetrying(false)
     }
@@ -88,7 +86,6 @@ export default function ReportView() {
       setReport((prev) => prev ? { ...prev, share_token: data.share_token } : null)
       toast.success('Share link copied!')
     } catch {
-      toast.error('Failed to create share link')
     }
   }
 
@@ -110,7 +107,6 @@ export default function ReportView() {
       URL.revokeObjectURL(url)
       toast.success('PowerPoint exported successfully')
     } catch {
-      toast.error('Export failed. Please try again.')
     } finally {
       setPptxLoading(false)
     }
@@ -123,7 +119,6 @@ export default function ReportView() {
       setReport((prev) => prev ? { ...prev, share_token: null } : null)
       toast.success('Share link revoked')
     } catch {
-      toast.error('Failed to revoke share link')
     }
   }
 

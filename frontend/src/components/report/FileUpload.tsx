@@ -4,7 +4,6 @@ import { CloudUpload, FileText, X } from 'lucide-react'
 import Spinner from '@/components/ui/Spinner'
 import { useReportStore } from '@/store/reportStore'
 import type { UploadResult } from '@/types/report'
-import toast from 'react-hot-toast'
 
 interface FileUploadProps {
   onUploadComplete: (result: UploadResult) => void
@@ -29,7 +28,6 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Upload failed. Please try again.'
         setError(msg)
-        toast.error(msg)
       } finally {
         setUploading(false)
       }

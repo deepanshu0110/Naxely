@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import toast from 'react-hot-toast'
 import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/axios'
 import Button from '@/components/ui/Button'
@@ -22,7 +21,6 @@ export default function WelcomeModal({ onClose }: WelcomeModalProps) {
       await api.post('/auth/complete-onboarding')
       navigate('/report/new', { state: { uploadResult: data } })
     } catch {
-      toast.error('Failed to load sample data')
       setLoading(null)
     }
   }
@@ -33,7 +31,6 @@ export default function WelcomeModal({ onClose }: WelcomeModalProps) {
       await api.post('/auth/complete-onboarding')
       navigate('/report/new')
     } catch {
-      toast.error('Something went wrong')
       setLoading(null)
     }
   }
@@ -44,7 +41,6 @@ export default function WelcomeModal({ onClose }: WelcomeModalProps) {
       await fetchProfile()
       onClose()
     } catch {
-      toast.error('Something went wrong')
     }
   }
 

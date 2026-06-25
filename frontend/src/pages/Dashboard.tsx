@@ -56,7 +56,6 @@ export default function Dashboard() {
       setShowBulkConfirm(false)
       toast.success(`Deleted ${selectedIds.size} report${selectedIds.size !== 1 ? 's' : ''}`)
     } catch {
-      toast.error('Failed to delete reports')
     } finally {
       setBulkDeleting(false)
     }

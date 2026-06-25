@@ -5,7 +5,6 @@ import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { Eye, EyeOff } from 'lucide-react'
-import toast from 'react-hot-toast'
 import Button from '@/components/ui/Button'
 
 const loginSchema = z.object({
@@ -34,9 +33,7 @@ export default function Login() {
     try {
       await loginWithEmail(data.email, data.password)
       navigate('/dashboard')
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Login failed'
-      toast.error(message)
+    } catch {
     } finally {
       setIsSubmitting(false)
     }

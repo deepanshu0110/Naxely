@@ -81,9 +81,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
       onSaved(resp)
       reset({ provider: data.provider, api_key: '' })
       toast.success(data.provider === 'gemini' ? 'Switched to Gemini' : 'API key saved')
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to save API key'
-      toast.error(msg)
+    } catch {
     } finally {
       setIsSaving(false)
     }
@@ -97,7 +95,6 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
       toast.success('API key removed')
       setShowDeleteModal(false)
     } catch {
-      toast.error('Failed to delete API key')
     } finally {
       setIsDeleting(false)
     }

@@ -64,12 +64,7 @@ export default function NewReport() {
       setUploadResult(data)
       setCurrentStep(2)
       toast.success('Sheet imported successfully')
-    } catch (err: unknown) {
-      const msg =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response: { data: { detail?: string } } }).response?.data?.detail ?? 'Failed to import sheet'
-          : 'Failed to import sheet'
-      toast.error(msg)
+    } catch {
     } finally {
       setSheetsConnecting(false)
     }
@@ -139,7 +134,6 @@ export default function NewReport() {
       setCurrentStep(5)
       startPolling(id)
     } catch {
-      toast.error('Failed to generate report')
       setGenerating(false)
     }
   }

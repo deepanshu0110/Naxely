@@ -142,7 +142,6 @@ export default function ScheduledReports() {
       setFormUploadId(data.upload_id)
       toast.success('File uploaded')
     } catch {
-      toast.error('Failed to upload file')
       setFormUploadFile(null)
     } finally {
       setFormUploading(false)
@@ -195,7 +194,6 @@ export default function ScheduledReports() {
       closeForm()
       await fetchReports()
     } catch {
-      toast.error(formMode === 'create' ? 'Failed to create scheduled report' : 'Failed to update scheduled report')
     } finally {
       setFormSubmitting(false)
     }
@@ -209,7 +207,6 @@ export default function ScheduledReports() {
       )
       toast.success(r.is_active ? 'Report paused' : 'Report resumed')
     } catch {
-      toast.error('Failed to update report')
     }
   }
 
@@ -232,7 +229,6 @@ export default function ScheduledReports() {
       toast.success('Scheduled report deleted')
       closeDeleteModal()
     } catch {
-      toast.error('Failed to delete scheduled report')
     } finally {
       setDeleting(false)
     }
