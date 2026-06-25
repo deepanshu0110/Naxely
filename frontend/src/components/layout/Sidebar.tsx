@@ -15,6 +15,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Clock,
+  Globe,
   type LucideIcon,
 } from 'lucide-react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -93,7 +94,7 @@ export default function Sidebar() {
         className={`flex h-screen flex-col border-r w-60 shrink-0 bg-paper dark:bg-darkBg border-amber-200/40 dark:border-amber-900/40 ${slideTransition} ${hidden ? '-translate-x-full' : 'translate-x-0'}`}
       >
       <div className="flex h-16 items-center justify-between px-4">
-        <span className="font-display text-xl font-bold text-ink dark:text-gray-100">Naxely</span>
+        <Link to="/dashboard" className="font-display text-xl font-bold text-ink dark:text-gray-100">Naxely</Link>
         <button
           onClick={() => setHidden(true)}
           className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-gray-500 dark:hover:bg-gray-700/50 dark:hover:text-gray-300"
@@ -210,6 +211,15 @@ export default function Sidebar() {
         </button>
       </div>
 
+      <a
+        href="https://naxely.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+      >
+        <Globe className="h-5 w-5" />
+        <span>Visit Homepage</span>
+      </a>
       <div className="relative border-t border-amber-200/40 px-4 py-3 dark:border-amber-900/40" ref={menuRef}>
         <button
           className="flex w-full items-center gap-3 rounded-lg px-1 py-1 text-left transition-colors duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700/50"
