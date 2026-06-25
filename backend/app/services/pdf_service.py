@@ -1,6 +1,7 @@
 import logging
 import os
 import io
+import re
 import subprocess
 import sys
 import time
@@ -973,8 +974,9 @@ def build_sync(
 
         summary_text = ai_content['summary'].strip()
         if summary_text:
-            first_dot = summary_text.find('.')
-            if first_dot > 30:
+            match = re.search(r'(?<!\d)\.(?=\s)', summary_text)
+            first_dot = match.start() if match and match.start() > 20 else -1
+            if first_dot > 20:
                 lead = summary_text[:first_dot + 1].strip()
                 body_remainder = summary_text[first_dot + 1:].strip()
             else:

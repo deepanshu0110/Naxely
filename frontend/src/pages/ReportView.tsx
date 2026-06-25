@@ -275,9 +275,10 @@ export default function ReportView() {
 
               {isPro && report.ai_summary && (() => {
                 const text = report.ai_summary.trim();
-                const firstDot = text.indexOf('.');
-                const lead = firstDot > 30 ? text.slice(0, firstDot + 1) : text;
-                const body = firstDot > 30 ? text.slice(firstDot + 1).trim() : '';
+                const match = text.match(/(?<!\d)\.(?=\s)/);
+                const firstDot = match && match.index != null && match.index > 20 ? match.index : -1;
+                const lead = firstDot > 20 ? text.slice(0, firstDot + 1) : text;
+                const body = firstDot > 20 ? text.slice(firstDot + 1).trim() : '';
                 return (
                   <div className="rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-[#1e1c18] p-5">
                     <h3 className="mb-3 text-xs font-medium tracking-widest uppercase text-amber-600 dark:text-amber-400">
