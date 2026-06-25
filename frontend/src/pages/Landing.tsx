@@ -7,7 +7,6 @@ import {
   BarChart3,
   Palette,
   Link2,
-  Star,
 } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import { NaxelyMark } from '@/components/ui/NaxelyMark'
@@ -85,24 +84,18 @@ const plans = [
   },
 ]
 
-const testimonials = [
+const productStats = [
   {
-    quote: 'Coming soon — be the first to review',
-    name: '—',
-    role: '—',
-    company: '—',
+    value: '6,000+',
+    label: 'rows processed per report',
   },
   {
-    quote: 'Coming soon — be the first to review',
-    name: '—',
-    role: '—',
-    company: '—',
+    value: '< 30s',
+    label: 'average generation time',
   },
   {
-    quote: 'Coming soon — be the first to review',
-    name: '—',
-    role: '—',
-    company: '—',
+    value: '16',
+    label: 'chart types supported',
   },
 ]
 
@@ -747,33 +740,20 @@ export default function Landing() {
       >
         <div className="mx-auto max-w-5xl">
           <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
-            What our users say
+            Built for serious reporting work
           </h2>
           <div className="grid gap-6 md:grid-cols-3">
-            {testimonials.map((t, i) => (
+            {productStats.map((s, i) => (
               <div
                 key={i}
-                className="rounded-xl bg-paper p-6 shadow-sm"
+                className="rounded-xl bg-paper p-6 text-center shadow-sm"
               >
-                <div className="mb-3 flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <Star
-                      key={j}
-                      className="h-4 w-4 fill-amber-400 text-amber-400"
-                    />
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed text-gray-600">
-                  "{t.quote}"
+                <p className="font-display text-3xl font-bold text-ink">
+                  {s.value}
                 </p>
-                <div className="mt-4">
-                  <p className="text-sm font-semibold text-ink">
-                    {t.name}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {t.role}, {t.company}
-                  </p>
-                </div>
+                <p className="mt-2 text-sm text-gray-500">
+                  {s.label}
+                </p>
               </div>
             ))}
           </div>
@@ -791,7 +771,7 @@ export default function Landing() {
             Ready to stop spending hours on reports?
           </h2>
           <p className="mt-4 text-gray-400">
-            Join thousands of consultants and agencies saving time with
+            Join consultants and agencies saving time with
             Naxely.
           </p>
           <Link

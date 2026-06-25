@@ -9,14 +9,15 @@ interface UsageBarProps {
 export default function UsageBar({ reportsThisMonth, monthlyLimit }: UsageBarProps) {
   if (monthlyLimit === null) return null
 
+  const displayed = Math.min(reportsThisMonth, monthlyLimit)
   const atLimit = reportsThisMonth >= monthlyLimit
-  const pct = (reportsThisMonth / monthlyLimit) * 100
+  const pct = (atLimit ? 100 : (reportsThisMonth / monthlyLimit) * 100)
 
   return (
     <div>
       <Progress
         value={pct}
-        label={`${reportsThisMonth} of ${monthlyLimit} free reports used this month`}
+        label={`${displayed} of ${monthlyLimit} free reports used this month`}
         color={atLimit ? 'bg-red-500' : 'bg-gray-400'}
       />
       {atLimit && (

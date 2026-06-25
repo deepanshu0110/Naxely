@@ -515,7 +515,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
               plan="pro"
               loading={isCreatingCheckout === 'pro'}
               price="$29/month"
-              features={['Unlimited reports', 'AI insights', 'Custom branding', 'No watermark']}
+              features={['Unlimited reports', 'AI Executive Summary', 'NRA Insight Cards', 'Anomaly Detection', 'Custom branding (logo + colour)', 'No watermark', 'Google Sheets connector', 'Shareable links']}
               cta="Upgrade to Pro"
               onUpgrade={handleUpgrade}
             />
