@@ -12,7 +12,8 @@ import {
   Star,
 } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
-import Button from '@/components/ui/Button'
+import { NaxelyMark } from '@/components/ui/NaxelyMark'
+import { useAuthStore } from '@/store/authStore'
 
 const stepped = [
   {
@@ -139,7 +140,109 @@ const testimonials = [
   },
 ]
 
+function PDFMockupCard() {
+  return (
+    <div className="relative w-[340px] h-[460px]
+      bg-white dark:bg-[#1e1c18]
+      rounded-2xl
+      shadow-[0_24px_64px_rgba(0,0,0,0.10)]
+      dark:shadow-[0_24px_64px_rgba(0,0,0,0.45)]
+      overflow-hidden
+      border border-black/5 dark:border-white/5
+      flex-shrink-0">
+
+      {/* Top brand bar */}
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-amber-500" />
+
+      {/* Header row */}
+      <div className="flex items-center justify-between px-6 pt-7 pb-0">
+        <div className="flex items-center gap-1.5">
+          <NaxelyMark size={14} color="#D97A34" />
+          <span className="text-[10px] text-ink/30 dark:text-paper/25">Naxely</span>
+        </div>
+        <span className="text-[10px] text-ink/30 dark:text-paper/25">Acme Corp</span>
+      </div>
+
+      {/* Hero stat */}
+      <div className="px-6 pt-8 pb-5 text-center">
+        <p className="font-display text-xl font-semibold text-amber-500">
+          Revenue: +24.6% ▲
+        </p>
+      </div>
+
+      {/* Rule */}
+      <div className="mx-6 h-px bg-amber-500/25" />
+
+      {/* Report title */}
+      <div className="px-6 pt-5">
+        <h2 className="font-display text-[22px] font-semibold
+          text-ink dark:text-paper leading-tight mb-0.5">
+          Q2 Sales Report
+        </h2>
+        <p className="text-[10px] text-ink/35 dark:text-paper/25">Acme Corp</p>
+      </div>
+
+      {/* KPI mini-row */}
+      <div className="flex gap-2.5 px-6 pt-4">
+        {[
+          { label: 'Revenue', value: '$440K', trend: '+24.6%', up: true },
+          { label: 'Units',   value: '3.2K',  trend: '−3.1%',  up: false },
+          { label: 'Regions', value: '4',     trend: 'stable', up: null },
+        ].map((kpi) => (
+          <div key={kpi.label}
+            className="flex-1 bg-amber-500/6 dark:bg-amber-500/10 rounded-lg p-2.5">
+            <p className="text-[8px] text-ink/35 dark:text-paper/25 mb-0.5">
+              {kpi.label}
+            </p>
+            <p className="text-[13px] font-semibold text-ink dark:text-paper font-mono">
+              {kpi.value}
+            </p>
+            <p className={`text-[8px] font-mono ${
+              kpi.up === true  ? 'text-emerald-600 dark:text-emerald-400' :
+              kpi.up === false ? 'text-red-500 dark:text-red-400' :
+                                 'text-ink/25 dark:text-paper/20'
+            }`}>
+              {kpi.trend}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Mini bar chart */}
+      <div className="px-6 pt-4">
+        <div className="flex items-end gap-[3px] h-10">
+          {[35,52,41,68,45,72,58,80,63,88,71,95].map((h, i) => (
+            <div key={i}
+              className="flex-1 rounded-[2px] bg-amber-500/65 dark:bg-amber-500/55"
+              style={{ height: `${h}%` }}
+            />
+          ))}
+        </div>
+        <p className="text-[8px] font-mono text-ink/20 dark:text-paper/15 mt-1">
+          Monthly Revenue Trend
+        </p>
+      </div>
+
+      {/* Metadata footer */}
+      <div className="absolute bottom-5 left-0 right-0
+        flex justify-between px-6">
+        <span className="text-[8px] font-mono text-ink/20 dark:text-paper/15">
+          Jun 2026
+        </span>
+        <span className="text-[8px] font-mono text-ink/20 dark:text-paper/15">
+          Prepared by Acme Corp
+        </span>
+      </div>
+
+      {/* Bottom brand bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-amber-500" />
+    </div>
+  );
+}
+
 export default function Landing() {
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <div className="min-h-screen bg-paper text-ink">
       <Navbar />
@@ -153,60 +256,87 @@ export default function Landing() {
           backgroundSize: '28px 28px',
         }}
       >
-        <div className="relative mx-auto flex max-w-6xl items-center gap-12">
-          <div className="flex-1">
-            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-ink dark:text-gray-100 sm:text-5xl">
-              Turn raw data into a client-ready report in 2&nbsp;minutes
-            </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg text-gray-500 dark:text-gray-400">
-              Upload a CSV, get an AI-powered PDF report with insights, charts,
-              and recommendations. No design skills needed.
-            </p>
-            <Link to="/signup">
-              <Button variant="primary" className="mt-10 px-8 py-3.5 text-base">
-                Start Free — No credit card required
-              </Button>
-            </Link>
-            <p className="mt-4 text-sm text-gray-400 dark:text-gray-500">
-              Join consultants and agencies worldwide
-            </p>
-          </div>
-          <div className="hidden flex-1 lg:block">
-            <div className="rounded-xl border border-amber-200/40 dark:border-amber-900/40 bg-paper p-4 shadow-lg">
-              <div className="mb-3 flex items-center gap-2 border-b border-amber-200/20 dark:border-amber-900/20 pb-3">
-                <div className="flex gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-red-400 dark:bg-red-600" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-400 dark:bg-yellow-600" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-600" />
-                </div>
-                <div className="text-xs font-medium text-gray-400 dark:text-gray-500">report_preview.pdf</div>
-              </div>
-              <div className="overflow-hidden rounded-md bg-paper">
-                <div className="h-3 rounded-t-md bg-amber-500" />
-                <div className="space-y-2.5 p-3">
-                  <div className="flex h-7 items-end gap-1.5">
-                    <div className="w-2.5 rounded-sm bg-amber-500" style={{ height: '37%' }} />
-                    <div className="w-2.5 rounded-sm bg-amber-500" style={{ height: '60%' }} />
-                    <div className="w-2.5 rounded-sm bg-amber-500" style={{ height: '83%' }} />
-                  </div>
-                  <div className="h-px bg-gray-300" />
-                  <div className="font-display text-[10px] font-bold uppercase tracking-tight text-gray-500">Revenue</div>
-                  <div className="font-display text-lg font-bold leading-tight text-ink">$1,900</div>
-                  <div className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-mint">
-                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M5 1 L9 9 L1 9 Z" fill="#0E9F6E" /></svg>
-                    +90%
-                  </div>
-                  <div className="flex h-6 items-end gap-1 pt-1">
-                    <div className="flex-1 rounded-t-sm bg-amber-500/20" style={{ height: '40%' }} />
-                    <div className="flex-1 rounded-t-sm bg-amber-500/30" style={{ height: '55%' }} />
-                    <div className="flex-1 rounded-t-sm bg-amber-500/40" style={{ height: '70%' }} />
-                    <div className="flex-1 rounded-t-sm bg-amber-500/50" style={{ height: '85%' }} />
-                    <div className="flex-1 rounded-t-sm bg-amber-500/60" style={{ height: '100%' }} />
-                  </div>
-                </div>
-              </div>
+        {/* ── Hero inner layout ── */}
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+
+          {/* Left column — copy */}
+          <div className="flex-1 text-center lg:text-left">
+
+            {/* Eyebrow tag */}
+            <div className="inline-flex items-center gap-2 mb-6
+              bg-amber-500/10 dark:bg-amber-500/15
+              text-amber-700 dark:text-amber-400
+              text-xs font-medium tracking-widest uppercase
+              px-3 py-1.5 rounded-full
+              border border-amber-500/20 dark:border-amber-500/25">
+              <NaxelyMark size={11} color="currentColor" />
+              CSV → Branded PDF in under 60 seconds
             </div>
+
+            {/* H1 */}
+            <h1 className="font-display text-5xl lg:text-[3.5rem] font-semibold
+              text-ink dark:text-paper
+              leading-[1.1] tracking-tight mb-6">
+              Turn raw data into{' '}
+              <span className="text-amber-600 dark:text-amber-400">
+                client-ready reports
+              </span>
+              {' '}— automatically
+            </h1>
+
+            {/* Subheadline */}
+            <p className="text-ink/60 dark:text-paper/50 text-lg leading-relaxed
+              max-w-lg mx-auto lg:mx-0 mb-10">
+              Upload a CSV or connect Google Sheets. Naxely generates a branded PDF
+              with AI insights, charts, and recommendations in under a minute.
+              No design skills needed.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center
+              justify-center lg:justify-start gap-4 mb-10">
+              {isAuthenticated ? (
+                <Link to="/dashboard"
+                  className="bg-amber-500 hover:bg-amber-600 text-white
+                    font-medium px-7 py-3 rounded-lg transition-colors text-base
+                    inline-block">
+                  Go to Dashboard →
+                </Link>
+              ) : (
+                <>
+                  <Link to="/signup"
+                    className="bg-amber-500 hover:bg-amber-600 text-white
+                      font-medium px-7 py-3 rounded-lg transition-colors text-base
+                      inline-block">
+                    Generate your first report — free
+                  </Link>
+                  <Link to="/login"
+                    className="text-ink/60 dark:text-paper/50
+                      hover:text-ink dark:hover:text-paper
+                      font-medium text-base transition-colors">
+                    Sign in →
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* Social proof */}
+            <div className="flex flex-wrap items-center
+              justify-center lg:justify-start
+              gap-x-6 gap-y-2
+              text-sm text-ink/35 dark:text-paper/25">
+              <span>✓ No credit card required</span>
+              <span>✓ Free tier available</span>
+              <span>✓ PDF ready in under 60s</span>
+            </div>
+
           </div>
+
+          {/* Right column — PDF mockup */}
+          <div className="hidden lg:flex flex-1 justify-center items-center">
+            <PDFMockupCard />
+          </div>
+
         </div>
       </section>
 
