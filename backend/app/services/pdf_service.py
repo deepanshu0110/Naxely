@@ -740,7 +740,7 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         kpi_value = series.mean() if is_pct else series.sum()
         prefix = 'Avg' if is_pct else 'Total'
         trend = _compute_trend(series)
-        trend_pct = _compute_trend_percentage(series)
+        trend_pct = _compute_trend_percentage(series, df, config.get("date_column"))
         kpis.append({
             'name': f'{prefix} ' + col.replace('_', ' ').title(),
             'value': _fmt_kpi_value(kpi_value) + ('%' if is_pct else ''),
