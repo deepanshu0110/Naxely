@@ -25,5 +25,5 @@ body {
 }
 
 html.dark #root::before {
-  opacity: 0.012;
+  content: none;
 }
