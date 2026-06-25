@@ -411,7 +411,7 @@ async def _run_all_scheduled_reports() -> None:
                         if recipients:
                             send_email(
                                 to=recipients,
-                                subject=f"{sched_name} — Your scheduled report",
+                                subject=f"{sched_name} — {config.get('brand', {}).get('company_name') or config.get('title') or 'Report'} | {datetime.now().strftime('%d %b %Y')}",
                                 html=(
                                     f"<p>Your scheduled report <strong>{sched_name}</strong> "
                                     f"is ready.</p><p>The report PDF is attached.</p>"
