@@ -360,19 +360,25 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
         f"Top performing metric: {top_kpi_detail}\n"
         f"Biggest concern: {bottom_kpi_detail}\n\n"
         f"STRICT WRITING RULES — violating any rule means the output is rejected:\n"
-        f"1. LENGTH: 80–110 words maximum. Count every word. Stop at 110.\n"
-        f"2. OPENING: Start with the single most important finding as a specific number.\n"
+        f"1. LENGTH: 110–140 words. Not fewer than 110. Not more than 140.\n"
+        f"2. STRUCTURE: Four parts in this exact order — no labels, no headers:\n"
+        f"   Part 1 (Lead): The single most important finding with its specific number.\n"
+        f"   Part 2 (Context): One sentence on a secondary metric or supporting data point.\n"
+        f"   Part 3 (Implication): One sentence explaining what these numbers mean for the business.\n"
+        f"   Part 4 (Action): One specific, concrete action the business should take now.\n"
+        f"   Each part is 1-2 sentences maximum.\n"
+        f"3. OPENING: Start with the single most important finding as a specific number.\n"
         f"   WRONG: 'The report reveals mixed results over the period.'\n"
         f"   WRONG: 'This analysis covers performance from January to June.'\n"
         f"   RIGHT: 'Revenue grew 33.9% over the period, reaching $9,494 in the latest reading.'\n"
-        f"3. NUMBERS: Every metric you mention must include its actual value or percentage. "
+        f"4. NUMBERS: Every metric you mention must include its actual value or percentage. "
         f"Never say 'slight decline' or 'significant growth' without a number.\n"
-        f"4. BANNED PHRASES: Do not use any of these — 'it is recommended that', "
+        f"5. BANNED PHRASES: Do not use any of these — 'it is recommended that', "
         f"'highlights the importance of', 'the data suggests', 'overall', 'in conclusion', "
         f"'mixed bag', 'moving forward', 'actionable', 'this report'.\n"
-        f"5. VOICE: Active voice only. Third person.\n"
-        f"6. ENDING: Final sentence must be one specific action the business should take.\n"
-        f"7. FORMAT: Return plain text only. No headers, no bullets, no markdown.\n"
+        f"6. VOICE: Active voice only. Third person.\n"
+        f"7. ENDING: Final sentence must be one specific action the business should take.\n"
+        f"8. FORMAT: Return plain text only. No headers, no bullets, no markdown.\n"
     )
 
     loop = asyncio.get_event_loop()
@@ -384,8 +390,8 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
     # Enforce length limit — truncate at sentence boundary if AI ignores the limit
     if result:
         words = result.split()
-        if len(words) > 120:
-            truncated = ' '.join(words[:110])
+        if len(words) > 155:
+            truncated = ' '.join(words[:140])
             last_period = truncated.rfind('.')
             result = (truncated[:last_period + 1]
                       if last_period > 40
@@ -485,9 +491,21 @@ def detect_anomalies(df: pd.DataFrame) -> list[dict]:
                 "expected": f"{round(mean - 2 * std, 2)} – {round(mean + 2 * std, 2)}",
                 "message": f"{str(col_name)} value {value:.2f} is {abs(z):.1f}x the standard deviation from the mean",
             })
-            if len(anomalies) >= 5:
-                return anomalies
-    return anomalies
+    # Deduplicate by (column, value) so repeated outlier values don't flood the report
+    seen = set()
+    deduped = []
+    for anomaly in anomalies:
+        col = str(anomaly.get('column', ''))
+        val = anomaly.get('value')
+        try:
+            val_key = str(round(float(val), 4)) if val is not None else ''
+        except (TypeError, ValueError):
+            val_key = str(val)
+        key = (col, val_key)
+        if key not in seen:
+            seen.add(key)
+            deduped.append(anomaly)
+    return deduped[:10]
 
 
 def detect_trends(df: pd.DataFrame, date_col: str | None = None) -> list[dict]:

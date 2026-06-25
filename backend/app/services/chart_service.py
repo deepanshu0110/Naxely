@@ -46,6 +46,24 @@ def _fmt_axis(val: float) -> str:
     return f'{val:.0f}'
 
 
+def _drop_incomplete_last_bucket(resampled, raw_df, date_col, freq):
+    if len(resampled) <= 1:
+        return resampled
+
+    last_bucket_start = pd.Timestamp(resampled[date_col].iloc[-1])
+    last_data_date = pd.Timestamp(raw_df[date_col].max())
+    days_in_last_bucket = (last_data_date - last_bucket_start).days
+
+    if 'W' in str(freq):
+        if days_in_last_bucket < 4:
+            return resampled.iloc[:-1]
+    elif 'M' in str(freq):
+        if days_in_last_bucket < 15:
+            return resampled.iloc[:-1]
+
+    return resampled
+
+
 CHART_DIR = Path('/tmp/naxely')
 
 
@@ -281,6 +299,7 @@ def _generate_single_chart(
                     .agg(agg_func)
                     .reset_index()
                 )
+                df_plot = _drop_incomplete_last_bucket(df_plot, df_sorted, x_col, resample_freq)
             else:
                 df_plot = df_sorted.groupby(x_col)[y_col].agg(agg_func).reset_index()
 
