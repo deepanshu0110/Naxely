@@ -819,15 +819,6 @@ export default function Landing() {
             </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 mt-8 pt-8 border-t border-gray-200">
-            <a href="https://smollaunch.com" target="_blank" rel="noopener">
-              <img
-                src="https://smollaunch.com/badges/featured.svg"
-                alt="Naxely — Featured on Smol Launch"
-                loading="lazy"
-                width="250"
-                height="60"
-              />
-            </a>
             <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
               <img
                 src="https://assets.dang.ai/badges/dang-verified-dark.png"
