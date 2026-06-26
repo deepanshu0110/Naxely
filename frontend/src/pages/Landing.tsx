@@ -59,7 +59,7 @@ const plans = [
     features: [
       'Unlimited reports',
       'AI Executive Summary',
-      'NRA Insight Cards',
+      'AI insight cards — auto-written summary for every KPI',
       'Anomaly Detection',
       '16 chart types',
       'Custom branding (logo + colour)',
@@ -490,6 +490,9 @@ export default function Landing() {
                 Naxely identifies trends, flags anomalies, and writes plain-English
                 insights for every metric — ready to share with clients, no editing needed.
               </p>
+              <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed mb-8">
+                Edit any insight before export — you decide what your clients see.
+              </p>
 
               {/* Sample insight cards */}
               <div className="space-y-3">
@@ -712,6 +715,11 @@ export default function Landing() {
                   </span>
                   <span className="text-sm text-gray-500">{p.period}</span>
                 </p>
+                {p.name === 'Pro' && (
+                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                    If one report takes you 2 hours, this pays for itself in a single client deliverable.
+                  </p>
+                )}
                 <ul className="mt-6 space-y-3">
                   {p.features.map((f) => (
                     <li
