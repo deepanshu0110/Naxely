@@ -491,7 +491,7 @@ export default function Landing() {
                 insights for every metric — ready to share with clients, no editing needed.
               </p>
               <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed mb-8">
-                Edit any insight before export — you decide what your clients see.
+                AI-generated insights are included in every report — review them in the web app before downloading your PDF.
               </p>
 
               {/* Sample insight cards */}
