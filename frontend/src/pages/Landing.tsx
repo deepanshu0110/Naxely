@@ -818,22 +818,24 @@ export default function Landing() {
               </a>
             </div>
           </div>
-          <div className="mt-6 flex items-center justify-center gap-4 opacity-60">
-            <a
-              href="https://smollaunch.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              Featured on Smol Launch
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 pt-8 border-t border-gray-200">
+            <a href="https://smollaunch.com" target="_blank" rel="noopener">
+              <img
+                src="https://smollaunch.com/badges/featured.svg"
+                alt="Naxely — Featured on Smol Launch"
+                loading="lazy"
+                width="250"
+                height="60"
+              />
             </a>
-            <a
-              href="https://dang.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              Listed on Dang.ai
+            <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
+              <img
+                src="https://assets.dang.ai/badges/dang-verified-dark.png"
+                alt="Verified on DANG!"
+                width="260"
+                height="94"
+                style={{display:'block', width:'260px', maxWidth:'100%', height:'auto', border:0, outline:'none', textDecoration:'none'}}
+              />
             </a>
           </div>
           <p className="mt-4 text-center text-xs text-gray-400">
