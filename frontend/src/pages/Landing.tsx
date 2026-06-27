@@ -827,6 +827,18 @@ export default function Landing() {
             </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 mt-8 pt-8 border-t border-gray-200">
+            <a
+              href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
+                width="250"
+                height="54"
+                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
+              />
+            </a>
             <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
               <img
                 src="https://assets.dang.ai/badges/dang-verified-dark.png"
