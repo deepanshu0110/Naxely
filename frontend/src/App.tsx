@@ -13,6 +13,8 @@ import Settings from '@/pages/Settings'
 import Pricing from '@/pages/Pricing'
 import NotFound from '@/pages/NotFound'
 import SharedReportView from '@/pages/SharedReportView'
+import Contact from '@/pages/Contact'
+import Terms from '@/pages/Terms'
 
 function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuthStore()
@@ -64,6 +66,8 @@ function AppRouter() {
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/share/:token" element={<SharedReportView />} />
       <Route path="/pricing" element={<Pricing />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/terms" element={<Terms />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />

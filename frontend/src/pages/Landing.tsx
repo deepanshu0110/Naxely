@@ -818,12 +818,12 @@ export default function Landing() {
               <a href="#" className="hover:text-ink">
                 Privacy Policy
               </a>
-              <a href="#" className="hover:text-ink">
+              <Link to="/terms" className="hover:text-ink">
                 Terms of Service
-              </a>
-              <a href="#" className="hover:text-ink">
+              </Link>
+              <Link to="/contact" className="hover:text-ink">
                 Contact
-              </a>
+              </Link>
             </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 mt-8 pt-8 border-t border-gray-200">
