@@ -839,6 +839,9 @@ export default function Landing() {
                 src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
               />
             </a>
+            <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
+              <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" height="54" />
+            </a>
             <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
               <img
                 src="https://assets.dang.ai/badges/dang-verified-dark.png"
