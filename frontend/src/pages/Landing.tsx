@@ -221,6 +221,7 @@ export default function Landing() {
   const { ref: finalCtaRef, inView: finalCtaInView } = useInView();
   const { ref: featureHeaderRef, inView: featureHeaderInView } = useInView();
   const { ref: bentoRef, inView: bentoInView } = useInView();
+  const { ref: sampleRef, inView: sampleInView } = useInView();
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -677,6 +678,40 @@ export default function Landing() {
             </div>
 
           </div>{/* end bento grid */}
+        </div>
+      </section>
+
+      {/* ── Sample Report ── */}
+      <section
+        ref={sampleRef}
+        className={`px-6 py-20 ${sampleInView ? 'nax-animate-fade-in' : 'opacity-0'}`}
+        style={{ animationDelay: '0ms' }}
+      >
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">
+            See a Real Sample — No Cherry-Picking
+          </h2>
+          <p className="text-ink/60 dark:text-paper/50 text-base leading-relaxed mb-10 max-w-2xl mx-auto">
+            This is the unedited input and output. Download the raw CSV, then view
+            the exact PDF Naxely generated from it — nothing edited, nothing staged.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="/sample/agency_billable_hours.csv"
+              download
+              className="bg-amber-500 hover:bg-amber-600 text-white font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block"
+            >
+              Download Sample CSV
+            </a>
+            <a
+              href="/sample/report.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink/60 dark:text-paper/50 hover:text-ink dark:hover:text-paper font-medium text-base transition-colors inline-block"
+            >
+              View Sample PDF Report →
+            </a>
+          </div>
         </div>
       </section>
 
