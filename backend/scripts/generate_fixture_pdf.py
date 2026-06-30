@@ -1,5 +1,5 @@
-"""Generate a real sample PDF from the sample CSV using the Naxely pipeline."""
-import sys, os
+"""Generate a sample PDF with Pro-tier sections + real AI content via GROQ."""
+import sys, os, asyncio
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -9,12 +9,41 @@ from pathlib import Path
 
 import pandas as pd
 
+# ---- Bootstrap env so Settings() can be created ----
+os.environ.setdefault('SUPABASE_URL', 'https://placeholder.supabase.co')
+os.environ.setdefault('SUPABASE_SERVICE_KEY', 'placeholder')
+os.environ.setdefault('SUPABASE_JWT_SECRET', 'placeholder')
+os.environ.setdefault('SECRET_KEY', '0000000000000000000000000000000000000000000000000000000000000000')
 os.environ['TEMP_DIR'] = tempfile.gettempdir()
+GEMINI_KEY = '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'
+os.environ['GEMINI_API_KEY'] = GEMINI_KEY
 
 import matplotlib
 matplotlib.use('Agg')
 
-from app.services import data_service, chart_service, pdf_service
+from app.services import data_service, chart_service, pdf_service, ai_service
+
+# ---- Monkey-patch call_gemini → GROQ (OpenAI-compatible) ----
+_original_call_gemini = ai_service.call_gemini
+
+def _groq_via_gemini(prompt, system, api_key, timeout=25):
+    return ai_service.call_openai_compat(
+        prompt, system, api_key, timeout,
+        base_url='https://api.groq.com/openai/v1',
+        model='llama-3.3-70b-versatile',
+    )
+
+ai_service.call_gemini = _groq_via_gemini
+
+# ---- Mock user so get_user_api_key returns (gemini, key, None) ----
+class _MockUser:
+    ai_provider = 'gemini'
+    encrypted_api_key = 'dummy'
+    api_key_iv = 'dummy'
+    subscription_tier = 'pro'
+    tier = 'pro'
+
+_mock_user = _MockUser()
 
 CSV_PATH = Path(__file__).resolve().parent.parent / 'app' / 'static' / 'samples' / 'agency_billable_hours.csv'
 OUT_DIR = Path(__file__).resolve().parent.parent.parent / 'frontend' / 'public' / 'sample'
@@ -41,7 +70,7 @@ config = {
     'report_id': REPORT_ID,
     'date_column': date_column,
     'metric_columns': metric_columns,
-    'sections': ['charts', 'kpi_overview', 'data_table'],
+    'sections': ['executive_summary', 'key_metrics', 'charts', 'insights', 'recommendations', 'anomalies', 'data_table'],
     'brand': {'color': '#D97A34'},
     'column_config': [],
 }
@@ -70,17 +99,32 @@ chart_paths = chart_service.generate_sync(
     chart_specs=chart_specs,
 )
 
+# ---- Generate real AI content ----
+async def _generate_ai():
+    summary = await ai_service.generate_summary(df_norm, config, _mock_user)
+    insights = await ai_service.generate_nra_insights(df_norm, config, _mock_user)
+    recommendations = await ai_service.generate_recommendations(df_norm, config, _mock_user)
+    anomalies = ai_service.detect_anomalies(df_norm)
+    return summary, insights, recommendations, anomalies
+
+summary, insights, recommendations, anomalies = asyncio.run(_generate_ai())
+
+print(f'  summary: {len(summary) if summary else 0} chars')
+print(f'  insights: {len(insights)} cards')
+print(f'  recommendations: {len(recommendations)} items')
+print(f'  anomalies: {len(anomalies)} items')
+
 ai_content = {
-    'summary': None,
-    'insights': [],
-    'recommendations': [],
-    'anomalies': [],
+    'summary': summary,
+    'insights': insights,
+    'recommendations': recommendations,
+    'anomalies': anomalies,
     'trends': [],
 }
 
 user_data = {
     'brand_color': '#D97A34',
-    'tier': 'free',
+    'tier': 'pro',
     'logo_url': None,
     'company_name': 'Acme Agency',
 }
@@ -102,9 +146,10 @@ csv_out = OUT_DIR / 'agency_billable_hours.csv'
 print(f'CSV at {csv_out} ({csv_out.stat().st_size} bytes)')
 
 chart_service.cleanup_charts(REPORT_ID)
-os.unlink(pdf_path)
-parent_dir = Path(pdf_path).parent
-if parent_dir.exists():
+if pdf_path and Path(pdf_path).exists():
+    os.unlink(pdf_path)
+parent_dir = Path(pdf_path).parent if pdf_path else None
+if parent_dir and parent_dir.exists():
     shutil.rmtree(str(parent_dir), ignore_errors=True)
 
 print('Done.')

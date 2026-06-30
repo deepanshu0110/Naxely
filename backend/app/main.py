@@ -108,6 +108,15 @@ app.include_router(v1_router.router)
 
 @app.on_event("startup")
 async def startup_migrations():
+    try:
+        from app.utils.encryption import get_master_key
+        get_master_key()
+    except (ImportError, ValueError):
+        logger.error(
+            "MASTER_ENCRYPTION_KEY is missing or invalid — "
+            "BYOK key saving will fail with 500 errors until this is fixed"
+        )
+
     migrations = [
         "ALTER TABLE reports ADD COLUMN IF NOT EXISTS trend_pct FLOAT",
         "ALTER TABLE reports ADD COLUMN IF NOT EXISTS ai_skipped BOOLEAN DEFAULT FALSE",

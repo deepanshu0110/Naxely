@@ -198,7 +198,7 @@ class TestKpiCardArrowDirection:
         with fitz.open(pdf_path) as doc:
             for page in doc:
                 texts.extend(page.get_text().split('\n'))
-        return [t.strip() for t in texts if '% recent' in t]
+        return [t.strip() for t in texts if '% ' in t and any(suffix in t for suffix in ['recent', 'change'])]
 
     def test_negative_trend_pct_produces_down_arrow(self):
         import tempfile
@@ -317,8 +317,8 @@ class TestKpiCurrencyCleanPath:
         rev_kpi = next(k for k in kpis if "Revenue" in k["name"])
 
         total = 9770.44 + 666.80 + 5000 + 1234.56 + 3000
-        assert rev_kpi["value"] == "19.7K", (
-            f"Expected '19.7K' (${total:,.2f}), got '{rev_kpi['value']}'"
+        assert rev_kpi["value"] == "$19.7K", (
+            f"Expected '$19.7K' (${total:,.2f}), got '{rev_kpi['value']}'"
         )
 
     def test_messy_csv_revenue_kpi_440772(self):
@@ -352,8 +352,8 @@ class TestKpiCurrencyCleanPath:
         ai_content = {"insights": [], "summary": None, "anomalies": [], "trends": []}
         kpis = _compute_kpi_data(df_norm, config, ai_content, "#6366F1")
         rev_kpi = next(k for k in kpis if "Revenue" in k["name"])
-        assert rev_kpi["value"] == "440.8K", (
-            f"Revenue KPI tile value: expected '440.8K', got '{rev_kpi['value']}'"
+        assert rev_kpi["value"] == "$440.8K", (
+            f"Revenue KPI tile value: expected '$440.8K', got '{rev_kpi['value']}'"
         )
 
     def test_normalize_and_fallback_agree(self):
@@ -387,3 +387,40 @@ class TestKpiCurrencyCleanPath:
                 f"Value mismatch for {a['name']}: "
                 f"normalize-first='{a['value']}' fallback='{b['value']}'"
             )
+
+    def test_rate_column_with_high_values_is_currency(self):
+        from app.services.pdf_service import _is_currency_col, _is_percentage_col
+        series = pd.Series([100.0, 150.0, 200.0, 175.0, 125.0])
+        assert _is_currency_col("Rate", series), "Rate with values >5 should be currency"
+        assert not _is_percentage_col("Rate", series), "Rate with values >5 should NOT be percentage"
+
+    def test_rate_column_with_low_values_is_percentage(self):
+        from app.services.pdf_service import _is_currency_col, _is_percentage_col
+        series = pd.Series([0.5, 0.75, 0.8, 0.6, 0.9])
+        assert _is_percentage_col("Rate", series), "Rate with values <5 should be percentage"
+        assert _is_currency_col("Rate", series) is False, (
+            "Rate with values <5 should NOT be currency (max<5 threshold)"
+        )
+
+    def test_conversion_rate_column_is_percentage(self):
+        from app.services.pdf_service import _is_currency_col, _is_percentage_col
+        series = pd.Series([0.3, 0.5, 0.7, 0.4, 0.6])
+        assert _is_percentage_col("Conversion Rate", series), "Conversion Rate should be percentage"
+        assert _is_currency_col("Conversion Rate", series) is False, "Conversion Rate should NOT be currency"
+
+    def test_rate_kpi_integration(self):
+        from app.services.pdf_service import _compute_kpi_data
+        df = pd.DataFrame({
+            "Date": ["2024-01-01", "2024-01-02", "2024-01-03"],
+            "Rate": [100.0, 150.0, 200.0],
+        })
+        config = {"metric_columns": ["Rate"], "date_column": "Date"}
+        ai_content = {"insights": [], "summary": None, "anomalies": [], "trends": []}
+        kpis = _compute_kpi_data(df, config, ai_content, "#6366F1")
+        rate_kpi = next(k for k in kpis if "Rate" in k["name"])
+        assert rate_kpi["value"].startswith("$"), (
+            f"Rate KPI should have $ prefix, got '{rate_kpi['value']}'"
+        )
+        assert "%" not in rate_kpi["value"], (
+            f"Rate KPI should NOT have % suffix, got '{rate_kpi['value']}'"
+        )

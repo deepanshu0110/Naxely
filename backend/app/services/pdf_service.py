@@ -116,7 +116,8 @@ class _KPIRow(Flowable):
             trend_marker = '+' if trend_pct >= 0 else '-'
             self.canv.setFont('IBMPlexSans', 11)
             self.canv.setFillColor(HexColor(trend_color))
-            self.canv.drawString(x + 16, y + 16, f"{trend_marker} {abs(trend_pct):.1f}% recent")
+            label_suffix = kpi.get('trend_label', 'recent')
+            self.canv.drawString(x + 16, y + 16, f"{trend_marker} {abs(trend_pct):.1f}% {label_suffix}")
 
 
 class _InsightCard(Flowable):
@@ -589,15 +590,15 @@ def _download_logo(logo_url: str) -> str | None:
         return None
 
 
-def _fmt_kpi_value(val: float) -> str:
-    """Format KPI display value with K/M suffix and comma separator."""
+def _fmt_kpi_value(val: float, is_currency: bool = False) -> str:
+    prefix = '$' if is_currency else ''
     if abs(val) >= 1_000_000:
-        return f'{val/1_000_000:.1f}M'
+        return f'{prefix}{val/1_000_000:.1f}M'
     if abs(val) >= 1_000:
-        return f'{val/1_000:.1f}K'
+        return f'{prefix}{val/1_000:.1f}K'
     if isinstance(val, float) and val != int(val):
-        return f'{val:.2f}'
-    return f'{int(val):,}'
+        return f'{prefix}{val:.2f}'
+    return f'{prefix}{int(val):,}'
 
 
 def _add_watermark(canvas, doc):
@@ -628,10 +629,39 @@ def _on_page(canvas, doc, add_watermark=False, is_white_label=False, company_nam
     canvas.restoreState()
 
 
+def _try_clean_numeric_series(series: pd.Series) -> pd.Series:
+    from app.services.data_service import _try_clean_numeric
+    return _try_clean_numeric(series)
+
+
 def _is_percentage_col(col_name: str, series: pd.Series) -> bool:
-    name_hints = any(x in col_name.lower()
-                     for x in ['%', 'percent', 'rate', 'ratio', 'pct'])
-    return name_hints
+    name = col_name.lower()
+    if '%' in name or 'percent' in name or name.startswith('pct') or name.endswith('pct'):
+        return True
+    if 'rate' in name or 'ratio' in name:
+        clean = _try_clean_numeric_series(series).dropna()
+        if len(clean) == 0:
+            return False
+        if float(clean.max()) > 5:
+            return False
+        return True
+    return False
+
+
+def _is_currency_col(col_name: str, series: pd.Series) -> bool:
+    name = col_name.lower()
+    currency_keywords = ['amount', 'price', 'cost', 'fee', 'billable', 'revenue', 'salary', 'wage', 'budget', 'pay', 'hourly', 'rate']
+    if any(kw in name for kw in currency_keywords):
+        clean = _try_clean_numeric_series(series).dropna()
+        if len(clean) > 0 and float(clean.max()) > 5:
+            return True
+    return False
+
+
+def _is_per_unit_col(col_name: str) -> bool:
+    name = col_name.lower()
+    per_unit_keywords = ['rate', 'price', 'wage', 'hourly', 'per']
+    return any(kw in name for kw in per_unit_keywords)
 
 
 def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) -> Table:
@@ -737,15 +767,24 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
         if len(series) == 0:
             continue
         is_pct = _is_percentage_col(col, df[col])
-        kpi_value = series.mean() if is_pct else series.sum()
-        prefix = 'Avg' if is_pct else 'Total'
+        is_currency = not is_pct and _is_currency_col(col, df[col])
+        is_per_unit = is_currency and _is_per_unit_col(col)
+        if is_pct or is_per_unit:
+            kpi_value = series.mean()
+            prefix = 'Avg'
+        else:
+            kpi_value = series.sum()
+            prefix = 'Total'
         trend = _compute_trend(series)
         trend_pct = _compute_trend_percentage(series, df, config.get("date_column"))
+        has_date_col = bool(config.get("date_column"))
+        trend_label = 'recent' if has_date_col else 'change'
         kpis.append({
             'name': f'{prefix} ' + col.replace('_', ' ').title(),
-            'value': _fmt_kpi_value(kpi_value) + ('%' if is_pct else ''),
+            'value': _fmt_kpi_value(kpi_value, is_currency) + ('%' if is_pct else ''),
             'trend': trend,
             'trend_pct': trend_pct,
+            'trend_label': trend_label,
         })
     return kpis[:5]
 
