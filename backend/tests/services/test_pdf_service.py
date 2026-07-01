@@ -505,3 +505,65 @@ class TestFooterGrowthLoop:
         finally:
             try: os.unlink(path)
             except OSError: pass
+
+
+class TestRecommendationsGuard:
+    """Recommendations section must only render when the user selected
+    'insights' or 'executive_summary' and AI actually ran."""
+
+    def test_no_recommendations_when_no_ai_section(self):
+        """sections=['charts','kpi_overview','data_table'] → no Recommendations TOC entry/page."""
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
+        config = {
+            "metric_columns": ["Value"],
+            "title": "No AI Sections",
+            "sections": ["charts", "kpi_overview", "data_table"],
+            "report_id": "test-rec-guard-noai",
+        }
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": [],
+                       "recommendations": []}
+        user_data = {"brand_color": "#6366F1", "tier": "free", "logo_url": None, "company_name": None}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "Recommendations" not in text, (
+                "Recommendations section should NOT appear when no AI sections selected"
+            )
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_recommendations_appears_with_insights_and_ai_ran(self):
+        """sections includes 'insights' and AI content present → Recommendations page appears normally."""
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
+        config = {
+            "metric_columns": ["Value"],
+            "title": "With Insights",
+            "sections": ["charts", "kpi_overview", "insights", "data_table"],
+            "report_id": "test-rec-guard-ai",
+        }
+        ai_content = {"summary": None, "insights": [{"kpi": "Revenue", "number": "$300", "reason": "Revenue increased steadily", "action": "Invest in growth", "sentiment": "positive", "priority": "high"}], "anomalies": [],
+                      "trends": [{"column": "Value", "trend": "increasing", "pct_change": 100.0}], "recommendations": ["Optimize revenue by 10%"]}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "Recommendations" in text, (
+                "Recommendations section header should appear when 'insights' is selected and AI ran"
+            )
+            assert "Optimize revenue by 10%" in text, (
+                "Recommendation content should appear"
+            )
+        finally:
+            try: os.unlink(path)
+            except OSError: pass

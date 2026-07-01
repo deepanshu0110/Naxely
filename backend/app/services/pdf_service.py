@@ -1161,24 +1161,29 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     # SECTION 8 — Recommendations
     # ────────────────────────────────────────────────────────────
-    toc_entries.append(('Recommendations', str(toc_page)))
-    toc_page += 1
-    body_story.append(_SectionHeader('Recommendations', brand_color, content_width))
-    body_story.append(Spacer(1, 10))
-
-    if ai_skipped:
-        body_story.append(_AISkippedCard(width=content_width))
+    show_recommendations = (
+        'insights' in config.get('sections', [])
+        or 'executive_summary' in config.get('sections', [])
+    ) and not ai_skipped
+    if show_recommendations:
+        toc_entries.append(('Recommendations', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Recommendations', brand_color, content_width))
         body_story.append(Spacer(1, 10))
-    else:
-        recommendations = ai_content.get('recommendations') or []
 
-        if recommendations:
-            for idx, rec in enumerate(recommendations, 1):
-                body_story.append(_RecommendationCard(idx, rec, brand_color, content_width))
-                body_story.append(Spacer(1, 8))
+        if ai_skipped:
+            body_story.append(_AISkippedCard(width=content_width))
+            body_story.append(Spacer(1, 10))
         else:
-            body_story.append(Paragraph('No recommendations available.', body_style))
-    body_story.append(PageBreak())
+            recommendations = ai_content.get('recommendations') or []
+
+            if recommendations:
+                for idx, rec in enumerate(recommendations, 1):
+                    body_story.append(_RecommendationCard(idx, rec, brand_color, content_width))
+                    body_story.append(Spacer(1, 8))
+            else:
+                body_story.append(Paragraph('No recommendations available.', body_style))
+        body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
     # SECTION 9 — Appendix
