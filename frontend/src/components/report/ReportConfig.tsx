@@ -164,12 +164,23 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
               />
               <span className={`text-sm ${isAiLocked ? 'text-gray-400' : 'text-gray-700'}`}>{s.label}</span>
               {isAiLocked ? (
-                <a
-                  href="/settings?tab=api-key"
-                  className="ml-auto text-xs text-amber-600 underline hover:no-underline"
-                >
-                  Add API key to unlock
-                </a>
+                <span className="ml-auto flex items-center gap-1.5">
+                  <a
+                    href="/settings?tab=api-key"
+                    className="text-xs text-amber-600 underline hover:no-underline"
+                  >
+                    Add API key
+                  </a>
+                  <span className="text-xs text-gray-400">·</span>
+                  <a
+                    href="https://console.groq.com/keys"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-gray-400 underline hover:text-gray-600"
+                  >
+                    Get a free Groq key
+                  </a>
+                </span>
               ) : (
                 <span className="ml-auto text-xs text-green-600">✅</span>
               )}

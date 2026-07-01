@@ -162,9 +162,14 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
 
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
           <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
-          <p className="text-xs text-amber-700">
-            Add your own API key to enable AI insights. All plans support BYOK — bring keys from Gemini, Groq, DeepSeek, OpenAI and more.
-          </p>
+          <div className="text-xs text-amber-700">
+            <p>Add your own API key to enable AI insights. All plans support BYOK — bring keys from Gemini, Groq, DeepSeek, OpenAI and more.</p>
+            <p className="mt-1">
+              New to API keys?{' '}
+              <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" className="font-medium underline hover:no-underline">Get a free Groq key</a>
+              {' '}— no credit card needed, ready in minutes.
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
