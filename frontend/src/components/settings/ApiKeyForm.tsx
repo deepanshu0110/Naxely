@@ -16,12 +16,10 @@ const apiKeySchema = z.object({
   provider: z.enum(['gemini', 'openai', 'claude', 'groq', 'deepseek', 'mistral', 'together'], { required_error: 'Select a provider' }),
   api_key: z.string().optional(),
 }).superRefine((data, ctx) => {
-  if (data.provider !== 'gemini') {
-    if (!data.api_key || data.api_key.length === 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'API key is required for this provider', path: ['api_key'] })
-    } else if (data.api_key.length > 200) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'API key too long (max 200 chars)', path: ['api_key'] })
-    }
+  if (!data.api_key || data.api_key.length === 0) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'API key is required for this provider', path: ['api_key'] })
+  } else if (data.api_key.length > 200) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'API key too long (max 200 chars)', path: ['api_key'] })
   }
 })
 
@@ -74,7 +72,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
     try {
       const payload = {
         provider: data.provider,
-        api_key: data.provider === 'gemini' ? null : data.api_key,
+        api_key: data.api_key,
       }
       const keyResp = await api.post('/settings/api-key', payload)
       const resp = keyResp.data as ApiKeyResponse

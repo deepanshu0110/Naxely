@@ -1,4 +1,5 @@
 import re
+from unittest.mock import patch, MagicMock
 from app.api.routes.settings import (
     VALID_KEY_PATTERNS,
     ALLOWED_LOGO_EXTENSIONS,
@@ -187,3 +188,196 @@ class TestTemplateUpdateRequest:
         req = TemplateUpdateRequest(is_default=True)
         assert req.name is None
         assert req.is_default is True
+
+
+class TestGeminiSaveApiKey:
+    """Gemini BYOK fix: Gemini now encrypt-and-store like every other provider."""
+
+    VALID_GEMINI_KEY = "AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    VALID_GROQ_KEY = "gsk_abcdefghijklmnopqrstuvwxyz012345"
+
+    @pytest.fixture
+    def mock_request(self):
+        from starlette.requests import Request
+        scope = {
+            "type": "http",
+            "method": "POST",
+            "path": "/settings/api-key",
+            "headers": [(b"authorization", b"Bearer test")],
+            "query_string": b"",
+            "client": ("127.0.0.1", 8000),
+            "scheme": "http",
+            "server": ("test", 80),
+            "root_path": "",
+        }
+        async def receive():
+            return {"type": "http.request", "body": b"", "more_body": False}
+        return Request(scope, receive=receive)
+
+    @pytest.fixture
+    def db(self):
+        class _AsyncDB:
+            def __init__(self):
+                self.call_count = 0
+                self.executed_queries = []
+                self.committed = False
+                self.rows = []
+            async def execute(self, query, params=None):
+                self.executed_queries.append((str(query), params))
+                return self
+            async def commit(self):
+                self.committed = True
+            async def rollback(self):
+                pass
+            def mappings(self):
+                return self
+            def first(self):
+                return None
+            def all(self):
+                return []
+            def __getitem__(self, k):
+                return None
+            def get(self, k, default=None):
+                return default
+        return _AsyncDB()
+
+    @pytest.fixture
+    def user(self):
+        u = type("FakeUser", (), {})()
+        u.id = "uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"
+        return u
+
+    def _get_executed_update(self, db):
+        """Return the last UPDATE query's params dict."""
+        for item in reversed(db.executed_queries):
+            q, params = item
+            qs = str(q)
+            if "UPDATE" in qs.upper():
+                return params
+        return None
+
+    def _patch_limiter(self):
+        return patch("app.api.routes.settings.limiter", MagicMock())
+
+    # ── Test 1: Normal Gemini key save ──────────────────────────────────
+
+    @pytest.mark.asyncio
+    async def test_gemini_key_stored_normally(self, mock_request, db, user):
+        """Submitting a valid Gemini key stores it (encrypted), not null."""
+        from app.api.routes.settings import save_api_key, ApiKeyRequest
+
+        with self._patch_limiter():
+            with patch("app.api.routes.settings.encrypt_api_key", return_value=("encrypted_abc", "iv_xyz")):
+                with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                    result = await save_api_key(
+                        request=mock_request,
+                        body=ApiKeyRequest(provider="gemini", api_key=self.VALID_GEMINI_KEY),
+                        current_user=user,
+                        db=db,
+                    )
+
+        assert result["success"] is True
+        assert result["data"]["provider"] == "gemini"
+        assert result["data"]["key_preview"] == "...6789"
+
+        params = self._get_executed_update(db)
+        assert params is not None
+        assert params["encrypted"] == "encrypted_abc"
+        assert params["iv"] == "iv_xyz"
+        assert params["provider"] == "gemini"
+        assert params["preview"] == "...6789"
+        assert db.committed is True
+
+    # ── Test 2: Destructive regression — Groq key replaced by Gemini ────
+
+    @pytest.mark.asyncio
+    async def test_gemini_replaces_previous_provider_key(self, mock_request, db, user):
+        """User with a stored Groq key can switch to Gemini with a real key."""
+        from app.api.routes.settings import save_api_key, ApiKeyRequest
+
+        with self._patch_limiter():
+            with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_groq", "iv_groq")):
+                with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                    await save_api_key(
+                        request=mock_request,
+                        body=ApiKeyRequest(provider="groq", api_key=self.VALID_GROQ_KEY),
+                        current_user=user,
+                        db=db,
+                    )
+
+        groq_params = self._get_executed_update(db)
+        assert groq_params["encrypted"] == "enc_groq"
+        assert groq_params["provider"] == "groq"
+
+        with self._patch_limiter():
+            with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_gemini", "iv_gemini")):
+                with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                    result = await save_api_key(
+                        request=mock_request,
+                        body=ApiKeyRequest(provider="gemini", api_key=self.VALID_GEMINI_KEY),
+                        current_user=user,
+                        db=db,
+                    )
+
+        assert result["success"] is True
+        assert result["data"]["provider"] == "gemini"
+
+        gemini_params = self._get_executed_update(db)
+        assert gemini_params["encrypted"] == "enc_gemini"
+        assert gemini_params["iv"] == "iv_gemini"
+        assert gemini_params["provider"] == "gemini"
+        assert gemini_params["preview"] == "...6789"
+
+    # ── Test 3: No-accidental-wipe — empty Gemini submission rejected ────
+
+    @pytest.mark.asyncio
+    async def test_empty_gemini_submission_rejected_key_unchanged(self, mock_request, db, user):
+        """Submitting Gemini with no API key is rejected (400), preserving existing key."""
+        from app.api.routes.settings import save_api_key, ApiKeyRequest
+
+        with self._patch_limiter():
+            with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_groq", "iv_groq")):
+                with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                    await save_api_key(
+                        request=mock_request,
+                        body=ApiKeyRequest(provider="groq", api_key=self.VALID_GROQ_KEY),
+                        current_user=user,
+                        db=db,
+                    )
+
+        groq_params = self._get_executed_update(db)
+        assert groq_params["provider"] == "groq"
+        db.executed_queries.clear()
+
+        from fastapi import HTTPException
+        with self._patch_limiter():
+            with pytest.raises(HTTPException) as exc:
+                await save_api_key(
+                    request=mock_request,
+                    body=ApiKeyRequest(provider="gemini", api_key=""),
+                    current_user=user,
+                    db=db,
+                )
+        assert exc.value.status_code == 400
+
+        no_new_update = self._get_executed_update(db)
+        assert no_new_update is None, "No UPDATE should execute when validation fails"
+
+    # ── Test 4: Invalid Gemini format rejected ──────────────────────────
+
+    @pytest.mark.asyncio
+    async def test_invalid_gemini_key_format_rejected(self, mock_request, db, user):
+        """Invalid Gemini key format returns 400."""
+        from app.api.routes.settings import save_api_key, ApiKeyRequest
+        from fastapi import HTTPException
+
+        with self._patch_limiter():
+            with pytest.raises(HTTPException) as exc:
+                await save_api_key(
+                    request=mock_request,
+                    body=ApiKeyRequest(provider="gemini", api_key="sk-not-a-gemini-key"),
+                    current_user=user,
+                    db=db,
+                )
+        assert exc.value.status_code == 400
+        assert "Invalid API key format" in str(exc.value.detail)
