@@ -424,3 +424,84 @@ class TestKpiCurrencyCleanPath:
         assert "%" not in rate_kpi["value"], (
             f"Rate KPI should NOT have % suffix, got '{rate_kpi['value']}'"
         )
+
+
+class TestFooterGrowthLoop:
+    """Free tier must show 'Made with Naxely — naxely.com' in footer.
+    Pro and Agency must be byte-for-byte unchanged."""
+
+    def test_free_tier_footer_contains_made_with_naxely(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
+        config = {"metric_columns": ["Value"], "title": "Free Footer", "sections": ["key_metrics"], "report_id": "test-free-footer-gl1"}
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "free", "logo_url": None, "company_name": None}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "Made with Naxely" in text, "Free footer should contain 'Made with Naxely'"
+            assert "naxely.com" in text, "Free footer should contain 'naxely.com'"
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_free_tier_footer_not_old_generic(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
+        config = {"metric_columns": ["Value"], "title": "Free Footer Old", "sections": ["key_metrics"], "report_id": "test-free-footer-gl2"}
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "free", "logo_url": None, "company_name": None}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "Naxely Report" not in text, "Free footer must NOT use old generic text"
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_pro_tier_footer_unchanged(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
+        config = {"metric_columns": ["Value"], "title": "Pro Footer", "sections": ["key_metrics"], "report_id": "test-pro-footer-gl1"}
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "TestCo"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "Naxely Report" in text, "Pro footer must still contain 'Naxely Report'"
+            assert "Made with Naxely" not in text, "Pro footer must NOT contain 'Made with Naxely'"
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_agency_tier_footer_unchanged(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
+        config = {"metric_columns": ["Value"], "title": "Agency Footer", "sections": ["key_metrics"], "report_id": "test-agency-footer-gl1"}
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "agency", "logo_url": None, "company_name": "AgencyCo"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "Naxely" not in text, "Agency footer must NOT contain 'Naxely'"
+            assert "AgencyCo" in text, "Agency footer must contain company name"
+            assert "Made with Naxely" not in text, "Agency footer must NOT contain growth loop"
+        finally:
+            try: os.unlink(path)
+            except OSError: pass

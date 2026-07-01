@@ -611,17 +611,23 @@ def _add_watermark(canvas, doc):
     canvas.restoreState()
 
 
-def _on_page(canvas, doc, add_watermark=False, is_white_label=False, company_name=''):
+def _on_page(canvas, doc, add_watermark=False, is_white_label=False, is_free=False, company_name=''):
     canvas.saveState()
     canvas.setFillColor(CREAM_BG)
     canvas.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
-    canvas.setFont('IBMPlexSans', 8)
-    canvas.setFillColor(HexColor('#9CA3AF'))
     if is_white_label:
+        canvas.setFont('IBMPlexSans', 8)
+        canvas.setFillColor(HexColor('#9CA3AF'))
         if company_name:
             footer_text = f'{company_name} — {datetime.now().strftime("%B %d, %Y")}'
             canvas.drawString(MARGIN, 30, footer_text)
+    elif is_free:
+        canvas.setFont('IBMPlexSans', 9)
+        canvas.setFillColor(HexColor('#6B7280'))
+        canvas.drawString(MARGIN, 30, 'Made with Naxely — naxely.com')
     else:
+        canvas.setFont('IBMPlexSans', 8)
+        canvas.setFillColor(HexColor('#9CA3AF'))
         canvas.drawString(MARGIN, 30, f'Naxely Report — {datetime.now().strftime("%B %d, %Y")}')
     canvas.drawRightString(PAGE_WIDTH - MARGIN, 30, f'Page {doc.page}')
     if add_watermark:
@@ -810,7 +816,7 @@ def build_sync(
     pdf_path = str(output_dir / 'report.pdf')
 
     def on_page(canvas, doc):
-        _on_page(canvas, doc, add_watermark=is_free, is_white_label=is_white_label, company_name=company_name)
+        _on_page(canvas, doc, add_watermark=is_free, is_white_label=is_white_label, is_free=is_free, company_name=company_name)
 
     def on_first_page(canvas, doc):
         canvas.saveState()
@@ -820,7 +826,7 @@ def build_sync(
         canvas.rect(0, PAGE_HEIGHT - bar_h, PAGE_WIDTH, bar_h, fill=1, stroke=0)
         canvas.rect(0, 0, PAGE_WIDTH, bar_h, fill=1, stroke=0)
         canvas.restoreState()
-        _on_page(canvas, doc, add_watermark=is_free, is_white_label=is_white_label, company_name=company_name)
+        _on_page(canvas, doc, add_watermark=is_free, is_white_label=is_white_label, is_free=is_free, company_name=company_name)
 
     doc = SimpleDocTemplate(
         pdf_path,
