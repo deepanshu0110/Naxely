@@ -312,6 +312,22 @@ class TestGetUserApiKey:
         assert provider is None
         assert key is None
 
+    def test_gemini_byok_decrypted_not_server_key(self):
+        """Gemini user with stored key gets decrypted key, not settings.GEMINI_API_KEY."""
+        from app.services.ai_service import get_user_api_key
+        from unittest.mock import MagicMock, patch
+        user = MagicMock()
+        user.subscription_tier = "free"
+        user.tier = "free"
+        user.encrypted_api_key = b"encrypted_gemini"
+        user.api_key_iv = b"iv_gemini"
+        user.ai_provider = "gemini"
+        with patch("app.services.ai_service.decrypt_api_key", return_value="AQ.test_real_key_abc123"):
+            provider, key, base_url = get_user_api_key(user)
+        assert provider == "gemini"
+        assert key == "AQ.test_real_key_abc123"
+        assert key != "", "Must not return empty server-side key"
+
 
 # ── Fix 2: Insight Card Dedup Tests ────────────────────────────────────────────
 

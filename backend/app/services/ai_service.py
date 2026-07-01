@@ -54,9 +54,6 @@ def _get_user_provider_config(user) -> tuple[str, str, str | None]:
     cfg = PROVIDER_CONFIG.get(provider, {})
     base_url = cfg.get("base_url")
 
-    if provider == "gemini":
-        return ("gemini", settings.GEMINI_API_KEY, base_url)
-
     master_key = get_master_key()
     encrypted = str(user.encrypted_api_key) if not isinstance(user.encrypted_api_key, str) else user.encrypted_api_key
     iv = str(user.api_key_iv) if not isinstance(user.api_key_iv, str) else user.api_key_iv
