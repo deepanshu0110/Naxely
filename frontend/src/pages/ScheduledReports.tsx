@@ -142,6 +142,7 @@ export default function ScheduledReports() {
       setFormUploadId(data.upload_id)
       toast.success('File uploaded')
     } catch {
+      toast.error('Failed to upload file')
       setFormUploadFile(null)
     } finally {
       setFormUploading(false)

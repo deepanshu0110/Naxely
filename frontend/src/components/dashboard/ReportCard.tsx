@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { FileText, MoreHorizontal, Download, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import api from '@/lib/axios'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
@@ -38,6 +39,27 @@ export default function ReportCard({ report, onDelete, isSelected, onToggleSelec
   const [deleting, setDeleting] = useState(false)
   const reducedMotion = useReducedMotion()
   const displayRowCount = useCountUp(report.row_count, 700, reducedMotion)
+
+  const handleDownloadPdf = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!report.pdf_url) return
+    try {
+      const response = await api.get(`/reports/${report.id}/download`, {
+        responseType: 'blob',
+      })
+      const blob = response.data
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `naxely_report_${report.id.slice(0, 8)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error('Failed to download PDF')
+    }
+  }
 
   const handleDelete = async () => {
     setDeleting(true)
@@ -96,15 +118,13 @@ export default function ReportCard({ report, onDelete, isSelected, onToggleSelec
         <Badge variant={statusVariant(report.status)} text={statusLabel[report.status]} />
 
         {report.pdf_url && (
-          <a
-            href={report.pdf_url}
-            download
-            onClick={(e) => e.stopPropagation()}
+          <button
+            onClick={handleDownloadPdf}
             className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-gray-300 opacity-0 transition-all duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
             title="Download PDF"
           >
             <Download className="h-3.5 w-3.5" />
-          </a>
+          </button>
         )}
 
         <div className="relative flex-shrink-0">

@@ -89,6 +89,26 @@ export default function ReportView() {
     }
   }
 
+  const handleDownloadPdf = async () => {
+    if (!id || !report?.pdf_url) return
+    try {
+      const response = await api.get(`/reports/${id}/download`, {
+        responseType: 'blob',
+      })
+      const blob = response.data
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `naxely_report_${id.slice(0, 8)}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error('Failed to download PDF')
+    }
+  }
+
   const handlePptxExport = async () => {
     if (!id) return
     setPptxLoading(true)
@@ -163,11 +183,9 @@ export default function ReportView() {
           </div>
           <div className="flex items-center gap-2">
             {report.pdf_url && (
-              <a href={report.pdf_url} download>
-                <Button variant="primary" size="sm">
-                  <Download className="mr-1.5 h-4 w-4" /> Download PDF
-                </Button>
-              </a>
+              <Button variant="primary" size="sm" onClick={handleDownloadPdf}>
+                <Download className="mr-1.5 h-4 w-4" /> Download PDF
+              </Button>
             )}
             {user?.tier === 'agency' ? (
               <Button variant="outline" size="sm" onClick={handlePptxExport} loading={pptxLoading}>

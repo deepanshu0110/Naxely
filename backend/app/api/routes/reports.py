@@ -984,6 +984,40 @@ async def export_report_pptx(
     )
 
 
+@router.get("/reports/{report_id}/download")
+async def download_report(
+    report_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        text("SELECT * FROM reports WHERE id = :id AND user_id = :uid AND deleted_at IS NULL"),
+        {"id": report_id, "uid": str(current_user.id)},
+    )
+    row = result.mappings().first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    if row["status"] != "completed":
+        raise HTTPException(status_code=409, detail="Report is not yet completed")
+
+    pdf_path = row["pdf_url"].removeprefix("reports/")
+    try:
+        pdf_bytes = await _run_sync(
+            _get_supabase().storage.from_("reports").download,
+            pdf_path,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Could not retrieve PDF: {e}")
+
+    filename = f"naxely_report_{report_id[:8]}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @router.get("/reports")
 async def list_reports(
     limit: int = Query(default=20, le=50),
