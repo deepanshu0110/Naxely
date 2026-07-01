@@ -109,7 +109,7 @@ async def _generate_ai():
 
 summary, insights, recommendations, anomalies = asyncio.run(_generate_ai())
 
-print(f'  summary: {len(summary) if summary else 0} chars')
+print(f'  summary: {len(summary.full_text) if summary else 0} chars')
 print(f'  insights: {len(insights)} cards')
 print(f'  recommendations: {len(recommendations)} items')
 print(f'  anomalies: {len(anomalies)} items')

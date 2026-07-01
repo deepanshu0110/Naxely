@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 import pytest
 import pandas as pd
 import numpy as np
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 
 class TestAnomalyDetection:
@@ -342,3 +342,244 @@ class TestDedupInsightsByKpi:
         result = _dedup_insights_by_kpi(cards)
         assert len(result) == 1
         assert result[0]["priority"] == "high"  # first card (highest priority) kept
+
+
+class TestDedupInsightsByColumn:
+    """Dedup should prefer the 'column' field over 'kpi' when available."""
+
+    def test_dedup_same_column_different_kpi_labels(self):
+        """Same column 'Units Sold' with different kpi labels → only one kept."""
+        from app.services.ai_service import _dedup_insights_by_kpi
+
+        cards = [
+            {"kpi": "Units Sold",         "column": "Units Sold", "number": "105",   "reason": "a", "action": "b", "sentiment": "positive", "priority": "high"},
+            {"kpi": "Units Sold Average",  "column": "Units Sold", "number": "75.24", "reason": "c", "action": "d", "sentiment": "neutral", "priority": "medium"},
+            {"kpi": "Units Sold Max",      "column": "Units Sold", "number": "149",   "reason": "e", "action": "f", "sentiment": "positive", "priority": "low"},
+        ]
+        result = _dedup_insights_by_kpi(cards)
+        assert len(result) == 1, (
+            f"Expected 1 card (same column 'Units Sold'), got {len(result)}"
+        )
+        assert result[0]["kpi"] == "Units Sold", (
+            "First (highest-priority) card should be kept"
+        )
+
+    def test_dedup_different_columns_all_kept(self):
+        """Genuinely different source columns → all kept, not over-merged."""
+        from app.services.ai_service import _dedup_insights_by_kpi
+
+        cards = [
+            {"kpi": "Revenue",          "column": "Revenue",          "number": "14609", "reason": "a", "action": "b", "sentiment": "positive", "priority": "high"},
+            {"kpi": "Units Sold",       "column": "Units Sold",       "number": "105",   "reason": "c", "action": "d", "sentiment": "positive", "priority": "high"},
+            {"kpi": "Customer Satis.",  "column": "Satisfaction",     "number": "4.5",   "reason": "e", "action": "f", "sentiment": "positive", "priority": "medium"},
+        ]
+        result = _dedup_insights_by_kpi(cards)
+        assert len(result) == 3, (
+            f"Expected all 3 distinct columns kept, got {len(result)}"
+        )
+
+    def test_dedup_different_column_names_not_merged(self):
+        """'Total Revenue' vs 'Revenue Growth' are different columns → not merged."""
+        from app.services.ai_service import _dedup_insights_by_kpi
+
+        cards = [
+            {"kpi": "Total Revenue",    "column": "Total Revenue",    "number": "50000", "reason": "a", "action": "b", "sentiment": "positive", "priority": "high"},
+            {"kpi": "Revenue Growth",   "column": "Revenue Growth",   "number": "12.5%", "reason": "c", "action": "d", "sentiment": "positive", "priority": "high"},
+        ]
+        result = _dedup_insights_by_kpi(cards)
+        assert len(result) == 2, (
+            f"Expected 2 distinct columns kept, got {len(result)} — "
+            "Total Revenue and Revenue Growth must not be merged"
+        )
+
+    def test_dedup_fallback_to_kpi_when_column_missing(self):
+        """Backward compat: insights without 'column' field still dedup by kpi."""
+        from app.services.ai_service import _dedup_insights_by_kpi
+
+        cards = [
+            {"kpi": "Units Sold", "number": "105",   "reason": "a", "action": "b", "sentiment": "positive", "priority": "high"},
+            {"kpi": "Units Sold", "number": "75.24", "reason": "c", "action": "d", "sentiment": "neutral", "priority": "medium"},
+        ]
+        result = _dedup_insights_by_kpi(cards)
+        assert len(result) == 1, (
+            "Missing 'column' should fall back to exact kpi match"
+        )
+
+
+# ── Executive Summary 4-Part Parser Tests ────────────────────────────────────
+
+class TestParseSummarySections:
+    """_parse_summary_sections should extract the 4 delimited parts."""
+
+    WELL_FORMED = (
+        "[LEAD]Revenue grew 33.9% over the period, reaching $9,494 in the latest reading.[/LEAD]\n"
+        "[CONTEXT]Customer satisfaction held steady at 4.2/5.0 across all regions.[/CONTEXT]\n"
+        "[IMPLICATION]The combination of rising revenue and stable satisfaction suggests pricing power is intact.[/IMPLICATION]\n"
+        "[ACTION]Increase ad spend on the highest-margin product line to capitalize on momentum.[/ACTION]"
+    )
+
+    def test_parses_well_formed(self):
+        from app.services.ai_service import _parse_summary_sections, SummaryResult
+        result = _parse_summary_sections(self.WELL_FORMED)
+        assert result is not None
+        assert result.lead == "Revenue grew 33.9% over the period, reaching $9,494 in the latest reading."
+        assert result.context == "Customer satisfaction held steady at 4.2/5.0 across all regions."
+        assert result.implication == "The combination of rising revenue and stable satisfaction suggests pricing power is intact."
+        assert result.action == "Increase ad spend on the highest-margin product line to capitalize on momentum."
+
+    def test_parses_well_formed_full_text(self):
+        from app.services.ai_service import _parse_summary_sections
+        result = _parse_summary_sections(self.WELL_FORMED)
+        assert result is not None
+        assert "Revenue grew 33.9%" in result.full_text
+        assert "Customer satisfaction" in result.full_text
+        assert "pricing power" in result.full_text
+        assert "Increase ad spend" in result.full_text
+
+    def test_missing_one_tag_returns_what_it_has(self):
+        from app.services.ai_service import _parse_summary_sections
+        raw = (
+            "[LEAD]Revenue grew 33.9%.[/LEAD]\n"
+            "[IMPLICATION]This is a strong sign.[/IMPLICATION]\n"
+            "[ACTION]Invest more.[/ACTION]\n"
+        )
+        result = _parse_summary_sections(raw)
+        assert result is not None
+        assert result.lead == "Revenue grew 33.9%."
+        assert result.context == ""  # missing
+        assert result.implication == "This is a strong sign."
+        assert result.action == "Invest more."
+
+    def test_no_delimiters_falls_back_to_full_text_as_lead(self):
+        from app.services.ai_service import _parse_summary_sections
+        raw = "Revenue grew 33.9% over the period. This is a positive sign for the business."
+        result = _parse_summary_sections(raw)
+        assert result is not None
+        assert result.lead == raw
+        assert result.context == ""
+        assert result.implication == ""
+        assert result.action == ""
+
+    def test_empty_input_returns_none(self):
+        from app.services.ai_service import _parse_summary_sections
+        assert _parse_summary_sections("") is None
+        assert _parse_summary_sections("   ") is None
+        assert _parse_summary_sections(None) is None
+
+    def test_handles_multiline_content(self):
+        from app.services.ai_service import _parse_summary_sections
+        raw = (
+            "[LEAD]Revenue grew 33.9%\nover the period.[/LEAD]\n"
+            "[CONTEXT]This is context\nspanning two lines.[/CONTEXT]\n"
+            "[IMPLICATION]Important implication here.[/IMPLICATION]\n"
+            "[ACTION]Do this action now.[/ACTION]"
+        )
+        result = _parse_summary_sections(raw)
+        assert result is not None
+        assert "33.9%" in result.lead
+        assert "spanning two lines" in result.context
+
+
+class TestSummaryResult:
+    """SummaryResult dataclass behavior."""
+
+    def test_full_text_concatenates_all_parts(self):
+        from app.services.ai_service import SummaryResult
+        sr = SummaryResult(
+            lead="Lead here.",
+            context="Context here.",
+            implication="Implication here.",
+            action="Action here.",
+        )
+        assert "Lead here." in sr.full_text
+        assert "Context here." in sr.full_text
+        assert "Implication here." in sr.full_text
+        assert "Action here." in sr.full_text
+
+    def test_bool_true_when_content_exists(self):
+        from app.services.ai_service import SummaryResult
+        assert bool(SummaryResult(lead="Something.")) is True
+
+    def test_bool_false_when_empty(self):
+        from app.services.ai_service import SummaryResult
+        assert bool(SummaryResult()) is False
+
+    def test_bool_false_when_whitespace_only(self):
+        from app.services.ai_service import SummaryResult
+        assert bool(SummaryResult(lead="   ")) is False
+
+
+class TestGenerateSummaryStructured:
+    """generate_summary should return SummaryResult with delimited output."""
+
+    def test_returns_summary_result_when_ai_returns_delimited(self):
+        from app.services.ai_service import generate_summary, SummaryResult
+        import asyncio
+
+        df = pd.DataFrame({"Revenue": [100, 200, 300], "Region": ["A", "B", "C"]})
+        config = {"sections": ["executive_summary"]}
+
+        mock_user = MagicMock()
+        mock_user.ai_provider = "deepseek"
+        mock_user.encrypted_api_key = "encrypted"
+        mock_user.api_key_iv = "iv"
+
+        delimited = (
+            "[LEAD]Revenue grew 200.0% over the period.[/LEAD]\n"
+            "[CONTEXT]Region A contributed the majority of growth.[/CONTEXT]\n"
+            "[IMPLICATION]The company should focus on its strongest region.[/IMPLICATION]\n"
+            "[ACTION]Double down on Region A marketing spend.[/ACTION]"
+        )
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("deepseek", "sk-test", None)):
+            with patch("app.services.ai_service.call_openai_compat", return_value=delimited):
+                summary = asyncio.run(generate_summary(df, config, mock_user))
+
+        assert isinstance(summary, SummaryResult)
+        assert "200.0%" in summary.lead
+        assert summary.context != ""
+        assert summary.implication != ""
+        assert summary.action != ""
+
+    def test_returns_summary_result_when_ai_returns_plain_text(self):
+        """Fallback: no delimiters → full text becomes lead, rest empty."""
+        from app.services.ai_service import generate_summary, SummaryResult
+        import asyncio
+
+        df = pd.DataFrame({"Revenue": [100, 200, 300], "Region": ["A", "B", "C"]})
+        config = {"sections": ["executive_summary"]}
+
+        mock_user = MagicMock()
+        mock_user.ai_provider = "deepseek"
+        mock_user.encrypted_api_key = "encrypted"
+        mock_user.api_key_iv = "iv"
+
+        plain_text = "Revenue grew 200.0% over the period. This is a strong result."
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("deepseek", "sk-test", None)):
+            with patch("app.services.ai_service.call_openai_compat", return_value=plain_text):
+                summary = asyncio.run(generate_summary(df, config, mock_user))
+
+        assert isinstance(summary, SummaryResult)
+        assert summary.lead == plain_text
+        assert summary.context == ""
+        assert summary.implication == ""
+        assert summary.action == ""
+
+    def test_returns_none_when_ai_returns_none(self):
+        from app.services.ai_service import generate_summary
+        import asyncio
+
+        df = pd.DataFrame({"Revenue": [100, 200, 300]})
+        config = {"sections": ["executive_summary"]}
+
+        mock_user = MagicMock()
+        mock_user.ai_provider = "deepseek"
+        mock_user.encrypted_api_key = "encrypted"
+        mock_user.api_key_iv = "iv"
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("deepseek", "sk-test", None)):
+            with patch("app.services.ai_service.call_openai_compat", return_value=None):
+                summary = asyncio.run(generate_summary(df, config, mock_user))
+
+        assert summary is None

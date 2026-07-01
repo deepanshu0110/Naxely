@@ -1,7 +1,9 @@
 import asyncio
 import json
 import logging
+import re
 import time
+from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
@@ -17,6 +19,25 @@ from app.utils.encryption import decrypt_api_key, get_master_key
 from app.services.data_service import compute_column_stats
 
 logger = logging.getLogger(__name__)
+
+SECTION_TAGS = ["LEAD", "CONTEXT", "IMPLICATION", "ACTION"]
+
+
+@dataclass
+class SummaryResult:
+    """Structured executive summary with 4 parsed sections."""
+    lead: str = ""
+    context: str = ""
+    implication: str = ""
+    action: str = ""
+
+    @property
+    def full_text(self) -> str:
+        parts = [self.lead, self.context, self.implication, self.action]
+        return " ".join(p for p in parts if p.strip())
+
+    def __bool__(self) -> bool:
+        return bool(self.full_text.strip())
 
 PROVIDER_CONFIG = {
     "gemini":    {"base_url": None,                              "model": "gemini-2.0-flash"},
@@ -262,6 +283,40 @@ def _round_stats(entry: dict) -> dict:
     return rounded
 
 
+def _parse_summary_sections(raw: str | None) -> SummaryResult | None:
+    """Parse a delimited AI summary response into structured sections.
+
+    Expected format:
+      [LEAD]...[/LEAD]
+      [CONTEXT]...[/CONTEXT]
+      [IMPLICATION]...[/IMPLICATION]
+      [ACTION]...[/ACTION]
+
+    If all 4 tags are present, returns a fully populated SummaryResult.
+    If only some tags are found, uses what's available (others are empty string).
+    If NO delimiters are found at all, falls back to treating the entire
+    response as a single lead block (old-style plain text). This ensures
+    backward compatibility if the AI ignores the delimiter instruction.
+    """
+    if not raw or not raw.strip():
+        return None
+
+    pattern = r'\[(LEAD|CONTEXT|IMPLICATION|ACTION)\](.*?)\[/\1\]'
+    matches = re.findall(pattern, raw, re.DOTALL)
+
+    if not matches:
+        return SummaryResult(lead=raw.strip())
+
+    parsed: dict[str, str] = {tag: content.strip() for tag, content in matches}
+
+    return SummaryResult(
+        lead=parsed.get("LEAD", ""),
+        context=parsed.get("CONTEXT", ""),
+        implication=parsed.get("IMPLICATION", ""),
+        action=parsed.get("ACTION", ""),
+    )
+
+
 def _build_column_stats(df: pd.DataFrame, null_counts_override: dict | None = None) -> dict:
     stats = compute_column_stats(df)
     columns_out = []
@@ -359,27 +414,33 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
         f"{metrics_context}\n\n"
         f"Top performing metric: {top_kpi_detail}\n"
         f"Biggest concern: {bottom_kpi_detail}\n\n"
-        f"STRICT WRITING RULES — violating any rule means the output is rejected:\n"
-        f"1. LENGTH: 110–140 words. Not fewer than 110. Not more than 140.\n"
-        f"2. STRUCTURE: Four parts in this exact order — no labels, no headers:\n"
-        f"   Part 1 (Lead): The single most important finding with its specific number.\n"
-        f"   Part 2 (Context): One sentence on a secondary metric or supporting data point.\n"
-        f"   Part 3 (Implication): One sentence explaining what these numbers mean for the business.\n"
-        f"   Part 4 (Action): One specific, concrete action the business should take now.\n"
-        f"   Each part is 1-2 sentences maximum.\n"
-        f"3. OPENING: Start with the single most important finding as a specific number.\n"
-        f"   WRONG: 'The report reveals mixed results over the period.'\n"
-        f"   WRONG: 'This analysis covers performance from January to June.'\n"
-        f"   RIGHT: 'Revenue grew 33.9% over the period, reaching $9,494 in the latest reading.'\n"
-        f"4. NUMBERS: Every metric you mention must include its actual value or percentage. "
+        f"OUTPUT FORMAT — Return exactly 4 sections wrapped in XML-style tags in this exact order. "
+        f"Your response MUST follow this structure:\n\n"
+        f"[LEAD]The single most important finding with its specific number.[/LEAD]\n"
+        f"[CONTEXT]One sentence on a secondary metric or supporting data point.[/CONTEXT]\n"
+        f"[IMPLICATION]One sentence explaining what these numbers mean for the business.[/IMPLICATION]\n"
+        f"[ACTION]One specific, concrete action the business should take now.[/ACTION]\n\n"
+        f"Example of valid output:\n"
+        f"[LEAD]Revenue grew 33.9% over the period, reaching $9,494 in the latest reading.[/LEAD]\n"
+        f"[CONTEXT]Customer satisfaction held steady at 4.2/5.0 across all regions.[/CONTEXT]\n"
+        f"[IMPLICATION]The combination of rising revenue and stable satisfaction suggests pricing power is intact.[/IMPLICATION]\n"
+        f"[ACTION]Increase ad spend on the highest-margin product line to capitalize on momentum.[/ACTION]\n\n"
+        f"WRITING RULES:\n"
+        f"- Each section: 1-2 sentences maximum. Total: 110-140 words.\n"
+        f"- Start [LEAD] with the single most important finding as a specific number, not a generic statement.\n"
+        f"  WRONG: 'The report reveals mixed results over the period.'\n"
+        f"  WRONG: 'This analysis covers performance from January to June.'\n"
+        f"  RIGHT: 'Revenue grew 33.9% over the period, reaching $9,494 in the latest reading.'\n"
+        f"- Every metric you mention must include its actual value or percentage. "
         f"Never say 'slight decline' or 'significant growth' without a number.\n"
-        f"5. BANNED PHRASES: Do not use any of these — 'it is recommended that', "
-        f"'highlights the importance of', 'the data suggests', 'overall', 'in conclusion', "
-        f"'mixed bag', 'moving forward', 'actionable', 'this report'.\n"
-        f"6. VOICE: Active voice only. Third person.\n"
-        f"7. ENDING: Final sentence must be one specific action the business should take.\n"
-        f"8. FORMAT: Return plain text only. No headers, no bullets, no markdown.\n"
-        f"9. DIVERSITY: Do not repeat the same percentage value more than once across all four parts.\n"
+        f"- BANNED PHRASES: 'it is recommended that', 'highlights the importance of', "
+        f"'the data suggests', 'overall', 'in conclusion', 'mixed bag', 'moving forward', "
+        f"'actionable', 'this report'.\n"
+        f"- Active voice only. Third person.\n"
+        f"- Do not repeat the same percentage value more than once across all four sections.\n"
+        f"- Every section must be non-empty. If you must keep a section brief, that is fine, "
+        f"but all 4 tags must be present.\n"
+        f"- Return ONLY the delimited text above. No preamble, no explanation, no markdown.\n"
     )
 
     loop = asyncio.get_event_loop()
@@ -388,30 +449,25 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
     )
     if not result:
         return None
-    # Enforce length limit — truncate at sentence boundary if AI ignores the limit
-    if result:
-        words = result.split()
-        if len(words) > 155:
-            truncated = ' '.join(words[:140])
-            last_period = truncated.rfind('.')
-            result = (truncated[:last_period + 1]
-                      if last_period > 40
-                      else truncated + '.')
-    return result
+    return _parse_summary_sections(result)
 
 
 def _dedup_insights_by_kpi(insights: list[dict]) -> list[dict]:
     """
-    Keep only the first (highest-priority) insight per unique kpi.
+    Keep only the first (highest-priority) insight per unique metric.
+    Prefers the 'column' field when available (more reliable than
+    the AI-generated 'kpi' label which may vary in phrasing).
+    Falls back to exact 'kpi' match for backward compatibility.
     The LLM is prompted for priority ordering so first-occurrence
     is the most important card for that metric.
     """
     seen: set[str] = set()
     deduped: list[dict] = []
     for card in insights:
-        kpi_key = card.get("kpi", "").strip().lower()
-        if kpi_key and kpi_key not in seen:
-            seen.add(kpi_key)
+        key = card.get("column") or card.get("kpi", "")
+        key = key.strip().lower()
+        if key and key not in seen:
+            seen.add(key)
             deduped.append(card)
     return deduped
 
@@ -485,6 +541,7 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
         f"Return a JSON array where each object has:\n"
         f'{{\n'
         f'  "kpi": "metric name",\n'
+        f'  "column": "exact original column name from the data",\n'
         f'  "number": "one specific number-led observation",\n'
         f'  "reason": "one specific cause or explanation",\n'
         f'  "action": "one specific recommended action",\n'

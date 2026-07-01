@@ -1,7 +1,7 @@
 import logging
 import os
 import io
-import re
+
 import subprocess
 import sys
 import time
@@ -1018,17 +1018,8 @@ def build_sync(
         body_story.append(_SectionHeader('Executive Summary', brand_color, content_width))
         body_story.append(Spacer(1, 10))
 
-        summary_text = ai_content['summary'].strip()
-        if summary_text:
-            match = re.search(r'(?<!\d)\.(?=\s)', summary_text)
-            first_dot = match.start() if match and match.start() > 20 else -1
-            if first_dot > 20:
-                lead = summary_text[:first_dot + 1].strip()
-                body_remainder = summary_text[first_dot + 1:].strip()
-            else:
-                lead = summary_text
-                body_remainder = ''
-
+        summary = ai_content['summary']
+        if summary and summary.full_text.strip():
             # Lead sentence — Fraunces-Medium, 13pt, ink
             lead_style = ParagraphStyle(
                 'SummaryLead',
@@ -1038,7 +1029,7 @@ def build_sync(
                 leading=19,
                 spaceAfter=10,
             )
-            body_story.append(Paragraph(lead, lead_style))
+            body_story.append(Paragraph(summary.lead, lead_style))
 
             # Key stat strip — top 3 KPIs by absolute trend magnitude
             _kpis_for_strip = [k for k in (kpis or []) if k.get('trend_pct') is not None]
@@ -1058,9 +1049,11 @@ def build_sync(
                 body_story.append(_StatStrip(stat_text, brand_color, content_width))
                 body_story.append(Spacer(1, 10))
 
-            # Body prose — remaining text after lead sentence
-            if body_remainder:
-                body_story.append(Paragraph(body_remainder, body_style))
+            # Body prose — context, implication, action in sequence
+            body_parts = [summary.context, summary.implication, summary.action]
+            body_text = " ".join(p for p in body_parts if p.strip())
+            if body_text:
+                body_story.append(Paragraph(body_text, body_style))
 
         body_story.append(PageBreak())
 
