@@ -348,7 +348,9 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 """),
                 {
                     "pdf_url": storage_path,
-                    "ai_summary": ai_content.get("summary"),
+                    "ai_summary": ai_content.get("summary").full_text
+                        if isinstance(ai_content.get("summary"), ai_service.SummaryResult)
+                        else ai_content.get("summary"),
                     "ai_insights": json.dumps(ai_content.get("insights") or []),
                     "ai_anomalies": json.dumps(ai_content.get("anomalies") or []),
                     "gen_time": elapsed,

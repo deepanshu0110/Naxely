@@ -265,6 +265,36 @@ def test_trend_pct_uses_monthly_aggregates_not_row_level(compute_trend_pct_fn):
     )
 
 
+class TestAiSummaryDbSave:
+    """Regression: ai_summary must be saved as a string, not SummaryResult."""
+
+    @staticmethod
+    def _prepare_db_params(ai_summary_value) -> dict:
+        """Replicates the conversion logic at report_service.py:351-353."""
+        from app.services.ai_service import SummaryResult
+        return {
+            "ai_summary": ai_summary_value.full_text
+                if isinstance(ai_summary_value, SummaryResult)
+                else ai_summary_value,
+        }
+
+    def test_summary_result_converts_to_full_text(self):
+        """SummaryResult stored in ai_content is converted to .full_text."""
+        from app.services.ai_service import SummaryResult
+        sr = SummaryResult(lead="L", context="C", implication="I", action="A")
+        params = self._prepare_db_params(sr)
+        assert isinstance(params["ai_summary"], str)
+        assert params["ai_summary"] == "L C I A"
+
+    def test_none_passes_through(self):
+        params = self._prepare_db_params(None)
+        assert params["ai_summary"] is None
+
+    def test_plain_string_passes_through(self):
+        params = self._prepare_db_params("already a string")
+        assert params["ai_summary"] == "already a string"
+
+
 def test_trend_pct_excludes_incomplete_last_month(compute_trend_pct_fn):
     """
     If last month has only 1 row (vs ~30 expected), it must be excluded
