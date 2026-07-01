@@ -46,7 +46,8 @@ class TestApiKeyValidation:
     def test_gemini_key_valid(self):
         pattern = VALID_KEY_PATTERNS["gemini"]
         assert re.match(pattern, "AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-        assert re.match(pattern, "AQ.ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abc")
+        assert re.match(pattern, "AQ.AbCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abc")
+        assert re.match(pattern, "AQ.abc.def.ghi.jkl.mno.pqr.stu.vwx.yz0123")
 
     def test_gemini_key_invalid_prefix(self):
         pattern = VALID_KEY_PATTERNS["gemini"]
@@ -55,6 +56,7 @@ class TestApiKeyValidation:
     def test_gemini_key_too_short(self):
         pattern = VALID_KEY_PATTERNS["gemini"]
         assert not re.match(pattern, "AIzaShort")
+        assert not re.match(pattern, "AQ.tooshort")
 
 
 class TestHexColorValidation:
@@ -194,6 +196,8 @@ class TestGeminiSaveApiKey:
     """Gemini BYOK fix: Gemini now encrypt-and-store like every other provider."""
 
     VALID_GEMINI_KEY = "AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    VALID_GEMINI_KEY_AQ = "AQ.AbCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abc"
+    VALID_GEMINI_KEY_AQ_DOTS = "AQ.abc.def.ghi.jkl.mno.pqr.stu.vwx.yz0123"
     VALID_GROQ_KEY = "gsk_abcdefghijklmnopqrstuvwxyz012345"
 
     @pytest.fixture
@@ -288,7 +292,27 @@ class TestGeminiSaveApiKey:
         assert params["preview"] == "...6789"
         assert db.committed is True
 
-    # ── Test 2: Destructive regression — Groq key replaced by Gemini ────
+    # ── Test 2: AQ. format (Google AI Studio real-world format) ────────
+
+    @pytest.mark.asyncio
+    async def test_gemini_aq_format_with_dots(self, mock_request, db, user):
+        """Key starting with AQ. and containing dots in body passes validation."""
+        from app.api.routes.settings import save_api_key, ApiKeyRequest
+
+        for key in [self.VALID_GEMINI_KEY_AQ, self.VALID_GEMINI_KEY_AQ_DOTS]:
+            with self._patch_limiter():
+                with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_aq", "iv_aq")):
+                    with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                        result = await save_api_key(
+                            request=mock_request,
+                            body=ApiKeyRequest(provider="gemini", api_key=key),
+                            current_user=user,
+                            db=db,
+                        )
+            assert result["success"] is True
+            assert result["data"]["provider"] == "gemini"
+
+    # ── Test 4: Destructive regression — Groq key replaced by Gemini ────
 
     @pytest.mark.asyncio
     async def test_gemini_replaces_previous_provider_key(self, mock_request, db, user):
@@ -328,7 +352,7 @@ class TestGeminiSaveApiKey:
         assert gemini_params["provider"] == "gemini"
         assert gemini_params["preview"] == "...6789"
 
-    # ── Test 3: No-accidental-wipe — empty Gemini submission rejected ────
+    # ── Test 5: No-accidental-wipe — empty Gemini submission rejected ────
 
     @pytest.mark.asyncio
     async def test_empty_gemini_submission_rejected_key_unchanged(self, mock_request, db, user):
@@ -363,7 +387,7 @@ class TestGeminiSaveApiKey:
         no_new_update = self._get_executed_update(db)
         assert no_new_update is None, "No UPDATE should execute when validation fails"
 
-    # ── Test 4: Invalid Gemini format rejected ──────────────────────────
+    # ── Test 6: Invalid Gemini format rejected ──────────────────────────
 
     @pytest.mark.asyncio
     async def test_invalid_gemini_key_format_rejected(self, mock_request, db, user):

@@ -27,7 +27,7 @@ router = APIRouter()
 VALID_KEY_PATTERNS = {
     "openai": r"^sk-[a-zA-Z0-9\-_]{20,}$",
     "claude": r"^sk-ant-[a-zA-Z0-9\-_]{20,}$",
-    "gemini": r"^(AIza|AQ\.)[a-zA-Z0-9\-_]{30,}$",
+    "gemini": r"^(AIza[a-zA-Z0-9\-_]{30,}|AQ\.[a-zA-Z0-9\-_.]{20,})$",
     "groq": r"^gsk_[a-zA-Z0-9\-_]{20,}$",
     "deepseek": r"^[a-zA-Z0-9\-_]{20,}$",
     "mistral": r"^[a-zA-Z0-9\-_]{20,}$",
