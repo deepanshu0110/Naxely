@@ -145,12 +145,16 @@ async def api_download_report(
     if row["status"] != "completed":
         raise HTTPException(status_code=409, detail="Report is not yet completed")
 
-    pdf_path = row["pdf_url"].removeprefix("reports/")
+    import httpx
+    signed_url = await _generate_signed_url(row["pdf_url"])
+    if not signed_url:
+        raise HTTPException(status_code=502, detail="Could not generate signed URL for PDF")
+
     try:
-        pdf_bytes = await _run_sync(
-            _get_supabase().storage.from_("reports").download,
-            pdf_path,
-        )
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(signed_url, follow_redirects=True)
+            resp.raise_for_status()
+            pdf_bytes = resp.content
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Could not retrieve PDF: {e}")
 
