@@ -4,12 +4,12 @@ import { render, screen } from '@testing-library/react'
 vi.mock('react-hot-toast')
 vi.mock('@/lib/axios', () => ({ default: { post: vi.fn(), delete: vi.fn() } }))
 
-import ApiKeyForm from '../ApiKeyForm'
+import ApiKeyForm, { type AiProvider } from '../ApiKeyForm'
 
 function renderForm(overrides: Partial<React.ComponentProps<typeof ApiKeyForm>> = {}) {
   const props = {
     hasKey: false,
-    provider: null as string | null,
+    provider: null as AiProvider | null,
     keyPreview: null as string | null,
     tier: 'free',
     onSaved: vi.fn(),

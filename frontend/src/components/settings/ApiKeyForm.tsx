@@ -25,7 +25,7 @@ const apiKeySchema = z.object({
 
 type ApiKeyFormValues = z.infer<typeof apiKeySchema>
 
-type AiProvider = 'gemini' | 'openai' | 'claude' | 'groq' | 'deepseek' | 'mistral' | 'together'
+export type AiProvider = 'gemini' | 'openai' | 'claude' | 'groq' | 'deepseek' | 'mistral' | 'together'
 
 interface ApiKeyFormProps {
   hasKey: boolean
