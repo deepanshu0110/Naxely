@@ -52,6 +52,9 @@ export default function Privacy() {
           <p>You may export your reports and data at any time. We will respond to data requests within 30 days.</p>
           <p>If you are located in the EU/EEA or UK, you have rights under GDPR including access, correction, deletion, and data portability. Contact hello@naxely.com to exercise these rights.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Grievance Officer</h2>
+          <p>In accordance with the Digital Personal Data Protection Act, 2023 (India) and other applicable data protection laws, the Grievance Officer for Naxely is Deepanshu Garg, reachable at hello@naxely.com. If you have a complaint or concern about how your personal data is handled, please contact the Grievance Officer directly. We aim to acknowledge and resolve grievances within 90 days.</p>
+
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Cookies</h2>
           <p>We use essential cookies for authentication and session management. We also use Google Analytics (GA4), which sets analytics cookies to help us understand site usage. You can opt out of Google Analytics tracking using your browser settings or a browser extension such as Google's official opt-out add-on.</p>
 
