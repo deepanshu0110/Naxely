@@ -3,6 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import type { RouteRecord } from 'vite-react-ssg'
 import { useAuthStore } from '@/store/authStore'
 import { Toaster } from 'react-hot-toast'
+import CookieConsent from '@/components/CookieConsent'
 import Login from '@/pages/Login'
 import Signup from '@/pages/Signup'
 import AuthCallback from '@/pages/AuthCallback'
@@ -24,6 +25,7 @@ function RootLayout() {
   return (
     <HelmetProvider>
       <Outlet />
+      <CookieConsent />
       <Toaster position="top-right" />
     </HelmetProvider>
   )
