@@ -45,7 +45,7 @@ export default defineConfig({
     mock: true,
     dirStyle: 'nested',
     includedRoutes() {
-      return ['/', '/pricing', '/contact', '/terms', '/login', '/signup']
+      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/login', '/signup']
     },
   },
 })

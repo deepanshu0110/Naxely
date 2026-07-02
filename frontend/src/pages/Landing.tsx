@@ -858,9 +858,9 @@ export default function Landing() {
               <a href="#pricing" className="hover:text-ink">
                 Pricing
               </a>
-              <a href="#" className="hover:text-ink">
+              <Link to="/privacy" className="hover:text-ink">
                 Privacy Policy
-              </a>
+              </Link>
               <Link to="/terms" className="hover:text-ink">
                 Terms of Service
               </Link>

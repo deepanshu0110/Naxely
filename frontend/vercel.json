@@ -6,6 +6,7 @@
     { "source": "/pricing", "destination": "/pricing/index.html" },
     { "source": "/contact", "destination": "/contact/index.html" },
     { "source": "/terms", "destination": "/terms/index.html" },
+    { "source": "/privacy", "destination": "/privacy/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/signup", "destination": "/signup/index.html" },
     { "source": "/(.*)", "destination": "/shell.html" }
