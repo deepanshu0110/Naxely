@@ -8,13 +8,7 @@
     { "source": "/terms", "destination": "/terms/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/signup", "destination": "/signup/index.html" },
-    { "source": "/dashboard(/.*)?", "destination": "/shell.html" },
-    { "source": "/report(/.*)?", "destination": "/shell.html" },
-    { "source": "/settings(/.*)?", "destination": "/shell.html" },
-    { "source": "/scheduled-reports(/.*)?", "destination": "/shell.html" },
-    { "source": "/share(/.*)?", "destination": "/shell.html" },
-    { "source": "/auth(/.*)?", "destination": "/shell.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/shell.html" }
   ],
   "headers": [
     {
