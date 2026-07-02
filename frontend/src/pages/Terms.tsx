@@ -9,6 +9,7 @@ export default function Terms() {
         <meta name="description" content="Naxely Terms of Service. By using Naxely, you agree to these terms. AI-powered PDF report generation for lawful business purposes." />
         <meta property="og:title" content="Terms of Service — Naxely" />
         <meta property="og:description" content="Naxely Terms of Service — usage guidelines, AI content policy, and cancellation terms." />
+        <meta property="og:image" content="/og-image.png" />
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>

@@ -81,6 +81,7 @@ export default function Signup() {
         <meta name="description" content="Create your Naxely account and start turning raw data into professional PDF reports with AI-powered insights." />
         <meta property="og:title" content="Sign Up — Naxely" />
         <meta property="og:description" content="Create your Naxely account — free tier available, no credit card required." />
+        <meta property="og:image" content="/og-image.png" />
       </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">

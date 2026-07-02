@@ -52,6 +52,7 @@ export default function Login() {
         <meta name="description" content="Log in to your Naxely account to create, manage, and download AI-powered PDF reports." />
         <meta property="og:title" content="Log In — Naxely" />
         <meta property="og:description" content="Log in to your Naxely account." />
+        <meta property="og:image" content="/og-image.png" />
       </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">

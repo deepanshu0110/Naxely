@@ -120,6 +120,7 @@ export default function Pricing() {
         <meta name="description" content="Simple, transparent pricing for Naxely. Start free, upgrade when you need more. Plans from $0 to $79/month." />
         <meta property="og:title" content="Pricing — Naxely" />
         <meta property="og:description" content="Simple, transparent pricing for Naxely — Free, Pro ($29/mo), and Agency ($79/mo) plans." />
+        <meta property="og:image" content="/og-image.png" />
       </Head>
       <Navbar />
 
