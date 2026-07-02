@@ -18,6 +18,7 @@ import SharedReportView from '@/pages/SharedReportView'
 import Contact from '@/pages/Contact'
 import Terms from '@/pages/Terms'
 import Privacy from '@/pages/Privacy'
+import Refund from '@/pages/Refund'
 
 function RootLayout() {
   return (
@@ -87,6 +88,7 @@ export const routes: RouteRecord[] = [
       { path: '/contact', element: <Contact /> },
       { path: '/terms', element: <Terms /> },
       { path: '/privacy', element: <Privacy /> },
+      { path: '/refund', element: <Refund /> },
       {
         element: <ProtectedRoute />,
         children: [

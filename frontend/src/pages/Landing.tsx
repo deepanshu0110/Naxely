@@ -867,6 +867,9 @@ export default function Landing() {
               <Link to="/contact" className="hover:text-ink">
                 Contact
               </Link>
+              <Link to="/refund" className="hover:text-ink">
+                Refund Policy
+              </Link>
             </div>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 mt-8 pt-8 border-t border-gray-200">
