@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 import Navbar from '@/components/layout/Navbar'
 import Button from '@/components/ui/Button'
 import api from '@/lib/axios'
@@ -114,6 +115,12 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
+      <Head>
+        <title>Pricing — Naxely</title>
+        <meta name="description" content="Simple, transparent pricing for Naxely. Start free, upgrade when you need more. Plans from $0 to $79/month." />
+        <meta property="og:title" content="Pricing — Naxely" />
+        <meta property="og:description" content="Simple, transparent pricing for Naxely — Free, Pro ($29/mo), and Agency ($79/mo) plans." />
+      </Head>
       <Navbar />
 
       <section className="px-6 py-20">

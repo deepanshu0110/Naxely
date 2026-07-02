@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
+      <Head>
+        <title>Terms of Service — Naxely</title>
+        <meta name="description" content="Naxely Terms of Service. By using Naxely, you agree to these terms. AI-powered PDF report generation for lawful business purposes." />
+        <meta property="og:title" content="Terms of Service — Naxely" />
+        <meta property="og:description" content="Naxely Terms of Service — usage guidelines, AI content policy, and cancellation terms." />
+      </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Terms of Service</h1>

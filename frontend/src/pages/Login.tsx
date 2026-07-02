@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 import { useAuthStore } from '@/store/authStore'
 import { Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -46,6 +47,12 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate px-4">
+      <Head>
+        <title>Log In — Naxely</title>
+        <meta name="description" content="Log in to your Naxely account to create, manage, and download AI-powered PDF reports." />
+        <meta property="og:title" content="Log In — Naxely" />
+        <meta property="og:description" content="Log in to your Naxely account." />
+      </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">
           <h1 className="font-display text-2xl font-bold text-ink">Naxely</h1>

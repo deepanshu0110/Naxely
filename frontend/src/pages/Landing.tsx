@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 import {
   Upload,
   Settings,
@@ -225,6 +226,13 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
+      <Head>
+        <title>Naxely — AI-Powered PDF Report Generator</title>
+        <meta name="description" content="Turn raw data into client-ready PDF reports in under 60 seconds. Upload CSV or connect Google Sheets — AI writes insights, builds charts, and brands every page." />
+        <meta property="og:title" content="Naxely — AI-Powered PDF Report Generator" />
+        <meta property="og:description" content="Upload CSV or connect Google Sheets. Naxely generates a branded PDF with AI insights, charts, and recommendations in under a minute." />
+        <meta property="og:image" content="/og-image.png" />
+      </Head>
       <Navbar />
 
       {/* ── Hero ── */}

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /contact
+Allow: /terms
+Allow: /login
+Allow: /signup
+
+Sitemap: https://naxely.com/sitemap.xml

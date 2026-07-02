@@ -20,10 +20,14 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   session: null,
-  isLoading: true,
+  isLoading: import.meta.env.SSR ? false : true,
   isAuthenticated: false,
 
   initialize: async () => {
+    if (import.meta.env.SSR) {
+      set({ isLoading: false, isAuthenticated: false, user: null, session: null })
+      return
+    }
     if (import.meta.env.VITE_BYPASS_AUTH === 'true') {
       set({ user: { id: 'dev', email: 'dev@test.com', full_name: 'Dev User', avatar_url: null, tier: 'pro', tier_expires_at: null, has_api_key: false, ai_provider: null, logo_url: null, brand_color: null, company_name: 'Dev Co', reports_this_month: 0, monthly_limit: null, theme_preference: 'light', has_completed_onboarding: false }, isAuthenticated: true, isLoading: false })
       return

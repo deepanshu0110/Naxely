@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 import { useAuthStore } from '@/store/authStore'
 import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
@@ -75,6 +76,12 @@ export default function Signup() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate px-4">
+      <Head>
+        <title>Sign Up — Naxely</title>
+        <meta name="description" content="Create your Naxely account and start turning raw data into professional PDF reports with AI-powered insights." />
+        <meta property="og:title" content="Sign Up — Naxely" />
+        <meta property="og:description" content="Create your Naxely account — free tier available, no credit card required." />
+      </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">
           <h1 className="font-display text-2xl font-bold text-ink">Naxely</h1>

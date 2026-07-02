@@ -3,6 +3,11 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
+    { "source": "/pricing", "destination": "/pricing/index.html" },
+    { "source": "/contact", "destination": "/contact/index.html" },
+    { "source": "/terms", "destination": "/terms/index.html" },
+    { "source": "/login", "destination": "/login/index.html" },
+    { "source": "/signup", "destination": "/signup/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
