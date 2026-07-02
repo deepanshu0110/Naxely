@@ -16,3 +16,4 @@ const bodyEnd = clean.lastIndexOf('</body>')
 clean = clean.substring(0, bodyStart) + '\n  <div id="root"></div>\n' + clean.substring(bodyEnd)
 
 writeFileSync(resolve(dist, 'shell.html'), clean, 'utf-8')
+console.log(`[postbuild] shell.html (${clean.length} B)`)
