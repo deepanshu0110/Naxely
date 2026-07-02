@@ -897,6 +897,12 @@ export default function Landing() {
                 style={{display:'block', width:'260px', maxWidth:'100%', height:'auto', border:0, outline:'none', textDecoration:'none'}}
               />
             </a>
+            <a href="https://www.shipit.buzz/products/naxely?ref=badge" target="_blank" rel="noopener noreferrer">
+              <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" />
+            </a>
+            <a href="https://smollaunch.com" target="_blank" rel="noopener">
+              <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="250" height="60" />
+            </a>
           </div>
           <p className="mt-4 text-center text-xs text-gray-400">
             Made in India 🇮🇳 · Naxely © 2026
