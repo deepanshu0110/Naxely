@@ -1,8 +1,13 @@
 import { Link } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-paper dark:bg-darkBg">
+      <Head>
+        <title>Page Not Found — Naxely</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
       <h1 className="font-display text-4xl font-bold text-ink dark:text-gray-100">Page not found</h1>
       <p className="text-gray-500 dark:text-gray-400">The page you are looking for does not exist.</p>
       <Link

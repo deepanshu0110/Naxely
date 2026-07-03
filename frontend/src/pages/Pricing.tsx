@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/Navbar'
 import Button from '@/components/ui/Button'
 import api from '@/lib/axios'
 import toast from 'react-hot-toast'
+import { useAuthStore } from '@/store/authStore'
 
 const plans = [
   {
@@ -90,6 +91,7 @@ const faqs = [
 ]
 
 export default function Pricing() {
+  const { isAuthenticated } = useAuthStore()
   const [loading, setLoading] = useState<'pro' | 'agency' | null>(null)
 
   const handleCheckout = async (plan: 'pro' | 'agency') => {
@@ -177,7 +179,7 @@ export default function Pricing() {
                   <Link to={p.href} className="mt-8 block w-full rounded-lg border border-gray-300 bg-paper py-2.5 text-center text-sm font-semibold text-gray-700 transition-colors duration-150 ease-in-out hover:bg-slate focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
                     {p.cta}
                   </Link>
-                ) : (
+                ) : isAuthenticated ? (
                   <Button
                     variant="primary"
                     size="md"
@@ -187,6 +189,10 @@ export default function Pricing() {
                   >
                     {p.cta}
                   </Button>
+                ) : (
+                  <Link to="/signup" className="mt-8 block w-full rounded-lg bg-amber-500 py-2.5 text-center text-sm font-semibold text-white transition-colors duration-150 ease-in-out hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                    {p.cta}
+                  </Link>
                 )}
               </div>
             )})}

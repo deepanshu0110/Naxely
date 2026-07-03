@@ -2,7 +2,7 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "rewrites": [
+  "routes": [
     { "source": "/pricing", "destination": "/pricing/index.html" },
     { "source": "/contact", "destination": "/contact/index.html" },
     { "source": "/terms", "destination": "/terms/index.html" },
@@ -10,7 +10,14 @@
     { "source": "/refund", "destination": "/refund/index.html" },
     { "source": "/login", "destination": "/login/index.html" },
     { "source": "/signup", "destination": "/signup/index.html" },
-    { "source": "/(.*)", "destination": "/shell.html" }
+    { "source": "/auth/:path*", "destination": "/shell.html" },
+    { "source": "/dashboard/:path*", "destination": "/shell.html" },
+    { "source": "/report/:path*", "destination": "/shell.html" },
+    { "source": "/scheduled-reports/:path*", "destination": "/shell.html" },
+    { "source": "/settings/:path*", "destination": "/shell.html" },
+    { "source": "/share/:path*", "destination": "/shell.html" },
+    { "handle": "filesystem" },
+    { "source": "/(.*)", "destination": "/shell.html", "status": 404 }
   ],
   "headers": [
     {
