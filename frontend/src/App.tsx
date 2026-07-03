@@ -1,4 +1,5 @@
 import { HelmetProvider } from 'react-helmet-async'
+import { Analytics } from '@vercel/analytics/react'
 import { Navigate, Outlet } from 'react-router-dom'
 import type { RouteRecord } from 'vite-react-ssg'
 import { useAuthStore } from '@/store/authStore'
@@ -27,6 +28,7 @@ function RootLayout() {
       <Outlet />
       <CookieConsent />
       <Toaster position="top-right" />
+      <Analytics />
     </HelmetProvider>
   )
 }
