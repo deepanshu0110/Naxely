@@ -50,9 +50,17 @@ export default function Login() {
       <Head>
         <title>Log In — Naxely</title>
         <meta name="description" content="Log in to your Naxely account to create, manage, and download AI-powered PDF reports." />
+        <link rel="canonical" href="https://naxely.com/login" />
+        <meta property="og:url" content="https://naxely.com/login" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Log In — Naxely" />
         <meta property="og:description" content="Log in to your Naxely account." />
-        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Log In — Naxely" />
+        <meta name="twitter:description" content="Log in to your Naxely account." />
+        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
       </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">

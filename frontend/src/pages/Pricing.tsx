@@ -118,9 +118,17 @@ export default function Pricing() {
       <Head>
         <title>Pricing — Naxely</title>
         <meta name="description" content="Simple, transparent pricing for Naxely. Start free, upgrade when you need more. Plans from $0 to $79/month." />
+        <link rel="canonical" href="https://naxely.com/pricing" />
+        <meta property="og:url" content="https://naxely.com/pricing" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Pricing — Naxely" />
         <meta property="og:description" content="Simple, transparent pricing for Naxely — Free, Pro ($29/mo), and Agency ($79/mo) plans." />
-        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Pricing — Naxely" />
+        <meta name="twitter:description" content="Simple, transparent pricing for Naxely — Free, Pro ($29/mo), and Agency ($79/mo) plans." />
+        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
       </Head>
       <Navbar />
 

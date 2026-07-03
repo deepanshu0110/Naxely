@@ -7,9 +7,17 @@ export default function Terms() {
       <Head>
         <title>Terms of Service — Naxely</title>
         <meta name="description" content="Naxely Terms of Service. The rules and conditions for using our AI-powered PDF report generation service." />
+        <link rel="canonical" href="https://naxely.com/terms" />
+        <meta property="og:url" content="https://naxely.com/terms" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Terms of Service — Naxely" />
         <meta property="og:description" content="Naxely Terms of Service — usage, payment, liability, and account terms." />
-        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Terms of Service — Naxely" />
+        <meta name="twitter:description" content="Naxely Terms of Service — usage, payment, liability, and account terms." />
+        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>
