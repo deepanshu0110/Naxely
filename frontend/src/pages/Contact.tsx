@@ -7,18 +7,18 @@ export default function Contact() {
       <Head>
         <title>Contact — Naxely</title>
         <meta name="description" content="Have a question or need help with Naxely? Reach out to us at hello@naxely.com and we'll get back to you within 24 hours." />
-        <link rel="canonical" href="https://naxely.com/contact" />
-        <meta property="og:url" content="https://naxely.com/contact" />
+        <link rel="canonical" href="https://www.naxely.com/contact" />
+        <meta property="og:url" content="https://www.naxely.com/contact" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Contact — Naxely" />
         <meta property="og:description" content="Get in touch with the Naxely team. We respond within 24 hours." />
-        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Contact — Naxely" />
         <meta name="twitter:description" content="Get in touch with the Naxely team. We respond within 24 hours." />
-        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Contact","item":"https://naxely.com/contact"}]})}</script>
+        <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Contact","item":"https://www.naxely.com/contact"}]})}</script>
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>

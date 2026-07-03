@@ -7,18 +7,18 @@ export default function Privacy() {
       <Head>
         <title>Privacy Policy — Naxely</title>
         <meta name="description" content="Naxely Privacy Policy. How we collect, use, and protect your data when you use our AI-powered PDF report generation service." />
-        <link rel="canonical" href="https://naxely.com/privacy" />
-        <meta property="og:url" content="https://naxely.com/privacy" />
+        <link rel="canonical" href="https://www.naxely.com/privacy" />
+        <meta property="og:url" content="https://www.naxely.com/privacy" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Privacy Policy — Naxely" />
         <meta property="og:description" content="Naxely Privacy Policy — data collection, AI processing, third-party services, and your rights." />
-        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Privacy Policy — Naxely" />
         <meta name="twitter:description" content="Naxely Privacy Policy — data collection, AI processing, third-party services, and your rights." />
-        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Privacy Policy","item":"https://naxely.com/privacy"}]})}</script>
+        <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Privacy Policy","item":"https://www.naxely.com/privacy"}]})}</script>
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>

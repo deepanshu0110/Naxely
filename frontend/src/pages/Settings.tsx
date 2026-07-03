@@ -515,7 +515,7 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
               plan="pro"
               loading={isCreatingCheckout === 'pro'}
               price="$29/month"
-              features={['Unlimited reports', 'AI Executive Summary', 'NRA Insight Cards', 'Anomaly Detection', '16 chart types', 'Custom branding (logo + colour)', 'No watermark', 'Google Sheets connector', 'Scheduled reports', 'Shareable links', 'BYOK AI key']}
+              features={['Unlimited reports', 'AI Executive Summary', 'AI Insight Cards', 'Anomaly Detection', '16 chart types', 'Custom branding (logo + colour)', 'No watermark', 'Google Sheets connector', 'Scheduled reports', 'Shareable links', 'BYOK AI key']}
               cta="Upgrade to Pro"
               onUpgrade={handleUpgrade}
             />

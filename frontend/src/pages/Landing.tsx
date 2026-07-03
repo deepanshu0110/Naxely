@@ -229,18 +229,18 @@ export default function Landing() {
       <Head>
         <title>Naxely — AI-Powered PDF Report Generator</title>
         <meta name="description" content="Turn raw data into client-ready PDF reports in under 60 seconds. Upload CSV or connect Google Sheets — AI writes insights, builds charts, and brands every page." />
-        <link rel="canonical" href="https://naxely.com/" />
-        <meta property="og:url" content="https://naxely.com/" />
+        <link rel="canonical" href="https://www.naxely.com/" />
+        <meta property="og:url" content="https://www.naxely.com/" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Naxely — AI-Powered PDF Report Generator" />
         <meta property="og:description" content="Upload CSV or connect Google Sheets. Naxely generates a branded PDF with AI insights, charts, and recommendations in under a minute." />
-        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Naxely — AI-Powered PDF Report Generator" />
         <meta name="twitter:description" content="Upload CSV or connect Google Sheets. Naxely generates a branded PDF with AI insights, charts, and recommendations in under a minute." />
-        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"}]})}</script>
+        <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"}]})}</script>
       </Head>
       <Navbar />
 

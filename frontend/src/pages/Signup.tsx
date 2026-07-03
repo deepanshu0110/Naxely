@@ -79,18 +79,18 @@ export default function Signup() {
       <Head>
         <title>Sign Up — Naxely</title>
         <meta name="description" content="Create your Naxely account and start turning raw data into professional PDF reports with AI-powered insights." />
-        <link rel="canonical" href="https://naxely.com/signup" />
-        <meta property="og:url" content="https://naxely.com/signup" />
+        <link rel="canonical" href="https://www.naxely.com/signup" />
+        <meta property="og:url" content="https://www.naxely.com/signup" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Sign Up — Naxely" />
         <meta property="og:description" content="Create your Naxely account — free tier available, no credit card required." />
-        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Sign Up — Naxely" />
         <meta name="twitter:description" content="Create your Naxely account — free tier available, no credit card required." />
-        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Sign Up","item":"https://naxely.com/signup"}]})}</script>
+        <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Sign Up","item":"https://www.naxely.com/signup"}]})}</script>
       </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">

@@ -7,18 +7,18 @@ export default function Refund() {
       <Head>
         <title>Refund Policy — Naxely</title>
         <meta name="description" content="Naxely Refund Policy. 14-day money-back guarantee for Pro and Agency subscriptions." />
-        <link rel="canonical" href="https://naxely.com/refund" />
-        <meta property="og:url" content="https://naxely.com/refund" />
+        <link rel="canonical" href="https://www.naxely.com/refund" />
+        <meta property="og:url" content="https://www.naxely.com/refund" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Refund Policy — Naxely" />
         <meta property="og:description" content="Naxely Refund Policy — eligibility, how to request a refund, and exceptions." />
-        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Refund Policy — Naxely" />
         <meta name="twitter:description" content="Naxely Refund Policy — eligibility, how to request a refund, and exceptions." />
-        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Refund Policy","item":"https://naxely.com/refund"}]})}</script>
+        <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Refund Policy","item":"https://www.naxely.com/refund"}]})}</script>
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>

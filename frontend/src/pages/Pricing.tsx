@@ -34,7 +34,7 @@ const plans = [
     features: [
       'Unlimited reports',
       'AI Executive Summary',
-      'NRA Insight Cards',
+      'AI Insight Cards',
       'Anomaly Detection',
       '16 chart types',
       'Custom branding (logo + colour)',
@@ -118,18 +118,18 @@ export default function Pricing() {
       <Head>
         <title>Pricing — Naxely</title>
         <meta name="description" content="Simple, transparent pricing for Naxely. Start free, upgrade when you need more. Plans from $0 to $79/month." />
-        <link rel="canonical" href="https://naxely.com/pricing" />
-        <meta property="og:url" content="https://naxely.com/pricing" />
+        <link rel="canonical" href="https://www.naxely.com/pricing" />
+        <meta property="og:url" content="https://www.naxely.com/pricing" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Pricing — Naxely" />
         <meta property="og:description" content="Simple, transparent pricing for Naxely — Free, Pro ($29/mo), and Agency ($79/mo) plans." />
-        <meta property="og:image" content="https://naxely.com/og-image.png" />
+        <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Pricing — Naxely" />
         <meta name="twitter:description" content="Simple, transparent pricing for Naxely — Free, Pro ($29/mo), and Agency ($79/mo) plans." />
-        <meta name="twitter:image" content="https://naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Pricing","item":"https://naxely.com/pricing"}]})}</script>
+        <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Pricing","item":"https://www.naxely.com/pricing"}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I cancel anytime?","acceptedAnswer":{"@type":"Answer","text":"Yes, cancel any time — access continues until the end of your billing period."}},{"@type":"Question","name":"Do I need a credit card for the free plan?","acceptedAnswer":{"@type":"Answer","text":"No. The free plan requires no payment information."}},{"@type":"Question","name":"What AI providers are supported?","acceptedAnswer":{"@type":"Answer","text":"OpenAI and Anthropic Claude — bring your own API key."}},{"@type":"Question","name":"Is my data secure?","acceptedAnswer":{"@type":"Answer","text":"Yes — files are encrypted in transit and at rest. CSV files are deleted immediately after your report is generated."}},{"@type":"Question","name":"Can agencies white-label reports?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Agency plan removes all Naxely branding."}}]})}</script>
       </Head>
       <Navbar />
