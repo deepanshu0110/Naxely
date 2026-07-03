@@ -49,6 +49,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-slate px-4">
       <Head>
         <title>Log In — Naxely</title>
+        <meta name="robots" content="noindex, nofollow" />
         <meta name="description" content="Log in to your Naxely account to create, manage, and download AI-powered PDF reports." />
         <link rel="canonical" href="https://www.naxely.com/login" />
         <meta property="og:url" content="https://www.naxely.com/login" />

@@ -21,4 +21,16 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-Sitemap: https://naxely.com/sitemap.xml
+User-agent: Bingbot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://www.naxely.com/sitemap.xml

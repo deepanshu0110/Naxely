@@ -78,6 +78,7 @@ export default function Signup() {
     <div className="flex min-h-screen items-center justify-center bg-slate px-4">
       <Head>
         <title>Sign Up — Naxely</title>
+        <meta name="robots" content="noindex, nofollow" />
         <meta name="description" content="Create your Naxely account and start turning raw data into professional PDF reports with AI-powered insights." />
         <link rel="canonical" href="https://www.naxely.com/signup" />
         <meta property="og:url" content="https://www.naxely.com/signup" />
