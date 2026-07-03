@@ -1,0 +1,34 @@
+# Naxely
+
+> AI-powered PDF report generator. Turn CSV files and Google Sheets into branded, professional PDF reports with AI-written insights, charts, and tables.
+
+Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sheet, configure custom branding (your logo, colors, fonts), and generate a polished multi-page PDF report with AI-written analysis, charts, and a custom cover page. Built by Deepanshu Garg.
+
+## Features
+
+- **CSV & Google Sheets import** — Upload CSV files or connect Google Sheets with read-only OAuth authorization
+- **AI-powered insights** — AI-written summaries, analysis, and recommendations using your choice of provider (Groq, OpenAI, Gemini, Claude, DeepSeek, Mistral, Together AI)
+- **Custom branding** — Add your logo, brand colors, custom fonts (Fraunces + IBM Plex), and a cover letter
+- **Charts & tables** — Bar, line, pie, area, and donut charts; auto-detect column types; customizable data tables
+- **PDF export** — Download generated reports as polished PDFs
+- **Share & embed** — Share reports via a public link with optional expiry date; embedded iframe support
+- **Scheduled reports** — Upload data once and schedule recurring report generation (Pro and Agency tiers)
+- **White-label sharing** — Branded share page without Naxely footer (Agency tier)
+- **Dark mode** — The app supports a dark mode UI
+
+## Pricing
+
+- **Free** — 1 report, 3 AI credits, 50-row limit, Naxely branding, no scheduled reports
+- **Pro ($19/mo)** — Unlimited reports, 100 AI credits/mo, 50k-row limit, custom branding, scheduled reports, remove Naxely branding
+- **Agency ($49/mo)** — Everything in Pro plus unlimited AI credits, 500k-row limit, 5 team seats, white-label sharing
+
+## Contact
+
+- **Founder**: Deepanshu Garg
+- **Email**: hello@naxely.com
+- **Website**: https://naxely.com
+- **Pricing**: https://naxely.com/pricing
+- **Product Hunt**: https://www.producthunt.com/products/naxely
+- **Terms of Service**: https://naxely.com/terms
+- **Privacy Policy**: https://naxely.com/privacy
+- **Refund Policy**: https://naxely.com/refund
