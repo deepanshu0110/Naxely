@@ -129,6 +129,8 @@ export default function Pricing() {
         <meta name="twitter:title" content="Pricing — Naxely" />
         <meta name="twitter:description" content="Simple, transparent pricing for Naxely — Free, Pro ($29/mo), and Agency ($79/mo) plans." />
         <meta name="twitter:image" content="https://naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Pricing","item":"https://naxely.com/pricing"}]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I cancel anytime?","acceptedAnswer":{"@type":"Answer","text":"Yes, cancel any time — access continues until the end of your billing period."}},{"@type":"Question","name":"Do I need a credit card for the free plan?","acceptedAnswer":{"@type":"Answer","text":"No. The free plan requires no payment information."}},{"@type":"Question","name":"What AI providers are supported?","acceptedAnswer":{"@type":"Answer","text":"OpenAI and Anthropic Claude — bring your own API key."}},{"@type":"Question","name":"Is my data secure?","acceptedAnswer":{"@type":"Answer","text":"Yes — files are encrypted in transit and at rest. CSV files are deleted immediately after your report is generated."}},{"@type":"Question","name":"Can agencies white-label reports?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Agency plan removes all Naxely branding."}}]})}</script>
       </Head>
       <Navbar />
 

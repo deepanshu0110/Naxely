@@ -18,6 +18,7 @@ export default function Refund() {
         <meta name="twitter:title" content="Refund Policy — Naxely" />
         <meta name="twitter:description" content="Naxely Refund Policy — eligibility, how to request a refund, and exceptions." />
         <meta name="twitter:image" content="https://naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Refund Policy","item":"https://naxely.com/refund"}]})}</script>
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>

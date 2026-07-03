@@ -61,6 +61,7 @@ export default function Login() {
         <meta name="twitter:title" content="Log In — Naxely" />
         <meta name="twitter:description" content="Log in to your Naxely account." />
         <meta name="twitter:image" content="https://naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Log In","item":"https://naxely.com/login"}]})}</script>
       </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">

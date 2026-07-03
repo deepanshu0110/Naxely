@@ -240,6 +240,7 @@ export default function Landing() {
         <meta name="twitter:title" content="Naxely — AI-Powered PDF Report Generator" />
         <meta name="twitter:description" content="Upload CSV or connect Google Sheets. Naxely generates a branded PDF with AI insights, charts, and recommendations in under a minute." />
         <meta name="twitter:image" content="https://naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"}]})}</script>
       </Head>
       <Navbar />
 

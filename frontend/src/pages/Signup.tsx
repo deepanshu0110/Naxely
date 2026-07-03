@@ -90,6 +90,7 @@ export default function Signup() {
         <meta name="twitter:title" content="Sign Up — Naxely" />
         <meta name="twitter:description" content="Create your Naxely account — free tier available, no credit card required." />
         <meta name="twitter:image" content="https://naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Sign Up","item":"https://naxely.com/signup"}]})}</script>
       </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">

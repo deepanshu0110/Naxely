@@ -18,6 +18,7 @@ export default function Terms() {
         <meta name="twitter:title" content="Terms of Service — Naxely" />
         <meta name="twitter:description" content="Naxely Terms of Service — usage, payment, liability, and account terms." />
         <meta name="twitter:image" content="https://naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://naxely.com/"},{"@type":"ListItem","position":2,"name":"Terms of Service","item":"https://naxely.com/terms"}]})}</script>
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>
