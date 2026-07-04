@@ -1,0 +1,58 @@
+import { Link } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
+import Navbar from '@/components/layout/Navbar'
+
+const posts = [
+  {
+    slug: 'byok-ai-reporting-tool',
+    title: 'Why Naxely Uses BYOK: Bring Your Own AI Key for Client Reports',
+    excerpt: 'Most AI reporting tools bundle markups into your subscription. Naxely lets you bring your own key — you pay the provider directly, at cost, with zero markup.',
+    date: 'July 4, 2026',
+  },
+]
+
+export default function Blog() {
+  return (
+    <div className="min-h-screen bg-paper dark:bg-darkBg">
+      <Head>
+        <title>Blog — Naxely</title>
+        <meta name="description" content="Learn about AI-powered PDF report generation, BYOK pricing, and tips for automating client reports on the Naxely blog." />
+        <link rel="canonical" href="https://www.naxely.com/blog" />
+        <meta property="og:url" content="https://www.naxely.com/blog" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:title" content="Blog — Naxely" />
+        <meta property="og:description" content="Learn about AI-powered PDF report generation, BYOK pricing, and tips for automating client reports." />
+        <meta property="og:image" content="https://www.naxely.com/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Blog — Naxely" />
+        <meta name="twitter:description" content="Learn about AI-powered PDF report generation, BYOK pricing, and tips for automating client reports." />
+        <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+      </Head>
+      <Navbar />
+      <div className="mx-auto max-w-2xl px-6 py-24">
+        <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Blog</h1>
+        <p className="text-ink/55 dark:text-paper/45 text-sm mb-12">Product updates, guides, and thoughts on AI-powered reporting.</p>
+        <div className="space-y-6">
+          {posts.map((post) => (
+            <Link
+              key={post.slug}
+              to={`/blog/${post.slug}`}
+              className="block rounded-xl border border-gray-200 bg-paper p-6 transition-colors hover:border-amber-500/40 dark:border-gray-700 dark:bg-gray-800"
+            >
+              <p className="text-xs text-gray-400 mb-1.5">{post.date}</p>
+              <h2 className="font-display text-lg font-semibold text-ink dark:text-paper mb-1.5">{post.title}</h2>
+              <p className="text-sm text-ink/55 dark:text-paper/45 leading-relaxed">{post.excerpt}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+      <footer className="border-t border-gray-200 px-6 py-12">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs text-gray-400">Naxely © 2026</p>
+        </div>
+      </footer>
+    </div>
+  )
+}

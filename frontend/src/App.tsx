@@ -21,6 +21,8 @@ import Contact from '@/pages/Contact'
 import Terms from '@/pages/Terms'
 import Privacy from '@/pages/Privacy'
 import Refund from '@/pages/Refund'
+import Blog from '@/pages/Blog'
+import BlogPostByok from '@/pages/BlogPostByok'
 
 function RootLayout() {
   return (
@@ -93,6 +95,8 @@ export const routes: RouteRecord[] = [
       { path: '/terms', element: <Terms /> },
       { path: '/privacy', element: <Privacy /> },
       { path: '/refund', element: <Refund /> },
+      { path: '/blog', element: <Blog /> },
+      { path: '/blog/byok-ai-reporting-tool', element: <BlogPostByok /> },
       {
         element: <ProtectedRoute />,
         children: [
