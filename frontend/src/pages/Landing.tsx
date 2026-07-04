@@ -881,43 +881,81 @@ export default function Landing() {
               </Link>
             </div>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-8 pt-8 border-t border-gray-200">
-            <a
-              href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
-                width="250"
-                height="54"
-                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
-              />
-            </a>
-            <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
-              <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" height="54" />
-            </a>
-            <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-              <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" width="270" alt="Fazier badge" />
-            </a>
-            <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
-              <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
-            </a>
-            <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
-              <img
-                src="https://assets.dang.ai/badges/dang-verified-dark.png"
-                alt="Verified on DANG!"
-                width="260"
-                height="94"
-                style={{display:'block', width:'260px', maxWidth:'100%', height:'auto', border:0, outline:'none', textDecoration:'none'}}
-              />
-            </a>
-            <a href="https://www.shipit.buzz/products/naxely?ref=badge" target="_blank" rel="noopener noreferrer">
-              <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" />
-            </a>
-            <a href="https://smollaunch.com" target="_blank" rel="noopener">
-              <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="250" height="60" />
-            </a>
+          <div className="badge-marquee mt-8 pt-8 border-t border-gray-200">
+            <div className="badge-track">
+              <a
+                href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
+                  width="250"
+                  height="54"
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
+                />
+              </a>
+              <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" height="54" />
+              </a>
+              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" width="270" alt="Fazier badge" />
+              </a>
+              <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+              </a>
+              <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
+                <img
+                  src="https://assets.dang.ai/badges/dang-verified-dark.png"
+                  alt="Verified on DANG!"
+                  width="260"
+                  height="94"
+                  style={{display:'block', width:'260px', maxWidth:'100%', height:'auto', border:0, outline:'none', textDecoration:'none'}}
+                />
+              </a>
+              <a href="https://www.shipit.buzz/products/naxely?ref=badge" target="_blank" rel="noopener noreferrer">
+                <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" />
+              </a>
+              <a href="https://smollaunch.com" target="_blank" rel="noopener">
+                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="250" height="60" />
+              </a>
+              <a
+                href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
+                  width="250"
+                  height="54"
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
+                />
+              </a>
+              <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" height="54" />
+              </a>
+              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" width="270" alt="Fazier badge" />
+              </a>
+              <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+              </a>
+              <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
+                <img
+                  src="https://assets.dang.ai/badges/dang-verified-dark.png"
+                  alt="Verified on DANG!"
+                  width="260"
+                  height="94"
+                  style={{display:'block', width:'260px', maxWidth:'100%', height:'auto', border:0, outline:'none', textDecoration:'none'}}
+                />
+              </a>
+              <a href="https://www.shipit.buzz/products/naxely?ref=badge" target="_blank" rel="noopener noreferrer">
+                <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" />
+              </a>
+              <a href="https://smollaunch.com" target="_blank" rel="noopener">
+                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="250" height="60" />
+              </a>
+            </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-400">
             Made in India 🇮🇳 · Naxely © 2026

@@ -83,3 +83,37 @@ html.dark #root::before {
     transform: none !important;
   }
 }
+
+/* ------------------------------------------------------------
+   Infinite marquee badge row (footer)
+   ------------------------------------------------------------ */
+.badge-marquee {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.badge-track {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  width: max-content;
+  animation: scroll-badges 25s linear infinite;
+}
+
+.badge-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-badges {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-track {
+    animation: none !important;
+  }
+}
