@@ -897,8 +897,8 @@ export default function Landing() {
             <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
               <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" height="54" />
             </a>
-            <a href="https://fazier.com/launches/naxely.com" target="_blank" rel="noopener noreferrer">
-              <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=neutral" width="120" alt="Fazier badge" />
+            <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
+              <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" width="270" alt="Fazier badge" />
             </a>
             <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
               <img
