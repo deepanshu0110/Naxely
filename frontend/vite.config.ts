@@ -45,7 +45,7 @@ export default defineConfig({
     mock: true,
     dirStyle: 'nested',
     includedRoutes() {
-      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/refund', '/login', '/signup', '/blog', '/blog/byok-ai-reporting-tool']
+      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/refund', '/login', '/signup', '/blog', '/blog/byok-ai-reporting-tool', '/blog/csv-to-pdf-report-generator']
     },
   },
 })

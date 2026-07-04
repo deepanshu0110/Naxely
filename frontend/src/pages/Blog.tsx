@@ -9,6 +9,12 @@ const posts = [
     excerpt: 'Most AI reporting tools bundle markups into your subscription. Naxely lets you bring your own key — you pay the provider directly, at cost, with zero markup.',
     date: 'July 4, 2026',
   },
+  {
+    slug: 'csv-to-pdf-report-generator',
+    title: 'CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports',
+    excerpt: 'Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.',
+    date: 'July 4, 2026',
+  },
 ]
 
 export default function Blog() {

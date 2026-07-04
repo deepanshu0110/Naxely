@@ -23,6 +23,7 @@ import Privacy from '@/pages/Privacy'
 import Refund from '@/pages/Refund'
 import Blog from '@/pages/Blog'
 import BlogPostByok from '@/pages/BlogPostByok'
+import BlogPostCsvToPdf from '@/pages/BlogPostCsvToPdf'
 
 function RootLayout() {
   return (
@@ -97,6 +98,7 @@ export const routes: RouteRecord[] = [
       { path: '/refund', element: <Refund /> },
       { path: '/blog', element: <Blog /> },
       { path: '/blog/byok-ai-reporting-tool', element: <BlogPostByok /> },
+      { path: '/blog/csv-to-pdf-report-generator', element: <BlogPostCsvToPdf /> },
       {
         element: <ProtectedRoute />,
         children: [
