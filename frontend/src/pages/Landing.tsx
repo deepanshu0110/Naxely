@@ -900,6 +900,9 @@ export default function Landing() {
             <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
               <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" width="270" alt="Fazier badge" />
             </a>
+            <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
+              <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+            </a>
             <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
               <img
                 src="https://assets.dang.ai/badges/dang-verified-dark.png"
