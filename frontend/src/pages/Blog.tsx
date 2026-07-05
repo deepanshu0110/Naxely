@@ -2,7 +2,15 @@ import { Link } from 'react-router-dom'
 import { Head } from 'vite-react-ssg'
 import Navbar from '@/components/layout/Navbar'
 
-const posts = [
+interface Post {
+  slug: string
+  title: string
+  excerpt: string
+  date?: string
+  label?: string
+}
+
+const posts: Post[] = [
   {
     slug: 'byok-ai-reporting-tool',
     title: 'Why Naxely Uses BYOK: Bring Your Own AI Key for Client Reports',
@@ -20,6 +28,12 @@ const posts = [
     title: 'White-Label Client Reporting for Agencies: Why "Any-Data" Beats Another Marketing Connector',
     excerpt: 'Why agency reporting tools built for marketing connectors miss the mark for any-data client reporting — and what BYOK, white-label pricing actually looks like.',
     date: 'July 5, 2026',
+  },
+  {
+    slug: 'automating-client-reports',
+    title: 'Automating Client Reports: The Complete Guide for Freelancers and Agencies',
+    excerpt: 'How to automate client reporting — from CSV exports to AI-generated insights, BYOK pricing, and choosing the right tool for freelance analysts and agencies.',
+    label: 'Guide',
   },
 ]
 
@@ -53,7 +67,7 @@ export default function Blog() {
               to={`/blog/${post.slug}`}
               className="block rounded-xl border border-gray-200 bg-paper p-6 transition-colors hover:border-amber-500/40 dark:border-gray-700 dark:bg-gray-800"
             >
-              <p className="text-xs text-gray-400 mb-1.5">{post.date}</p>
+              <p className="text-xs text-gray-400 mb-1.5">{post.label ?? post.date}</p>
               <h2 className="font-display text-lg font-semibold text-ink dark:text-paper mb-1.5">{post.title}</h2>
               <p className="text-sm text-ink/55 dark:text-paper/45 leading-relaxed">{post.excerpt}</p>
             </Link>

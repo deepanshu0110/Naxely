@@ -20,6 +20,9 @@ export default function Navbar() {
           <a href="#how-it-works" className="text-sm font-medium text-gray-600 transition-colors duration-150 ease-in-out hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
             How it works
           </a>
+          <Link to="/blog/automating-client-reports" className="text-sm font-medium text-gray-600 transition-colors duration-150 ease-in-out hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+            Guides
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">

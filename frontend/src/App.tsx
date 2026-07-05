@@ -25,6 +25,7 @@ import Blog from '@/pages/Blog'
 import BlogPostByok from '@/pages/BlogPostByok'
 import BlogPostCsvToPdf from '@/pages/BlogPostCsvToPdf'
 import BlogPostWhiteLabel from '@/pages/BlogPostWhiteLabel'
+import BlogPostHub from '@/pages/BlogPostHub'
 
 function RootLayout() {
   return (
@@ -101,6 +102,7 @@ export const routes: RouteRecord[] = [
       { path: '/blog/byok-ai-reporting-tool', element: <BlogPostByok /> },
       { path: '/blog/csv-to-pdf-report-generator', element: <BlogPostCsvToPdf /> },
       { path: '/blog/white-label-client-reporting-agencies', element: <BlogPostWhiteLabel /> },
+      { path: '/blog/automating-client-reports', element: <BlogPostHub /> },
       {
         element: <ProtectedRoute />,
         children: [
