@@ -966,6 +966,9 @@ export default function Landing() {
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
               </a>
+              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" style={{ width: '195px', height: 'auto' }} />
+              </a>
               <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
                 <img
                   src="https://assets.dang.ai/badges/dang-verified-dark.png"
@@ -1001,6 +1004,9 @@ export default function Landing() {
               </a>
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+              </a>
+              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" style={{ width: '195px', height: 'auto' }} />
               </a>
               <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
                 <img
