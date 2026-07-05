@@ -30,7 +30,7 @@ def _groq_via_gemini(prompt, system, api_key, timeout=25):
     return ai_service.call_openai_compat(
         prompt, system, api_key, timeout,
         base_url='https://api.groq.com/openai/v1',
-        model='llama-3.3-70b-versatile',
+        model='openai/gpt-oss-120b',
     )
 
 ai_service.call_gemini = _groq_via_gemini

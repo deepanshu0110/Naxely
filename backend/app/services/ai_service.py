@@ -43,7 +43,7 @@ PROVIDER_CONFIG = {
     "gemini":    {"base_url": None,                              "model": "gemini-2.0-flash"},
     "openai":    {"base_url": "https://api.openai.com/v1",       "model": "gpt-4o"},
     "claude":    {"base_url": None,                              "model": "claude-sonnet-4-6"},
-    "groq":      {"base_url": "https://api.groq.com/openai/v1",  "model": "llama-3.3-70b-versatile"},
+    "groq":      {"base_url": "https://api.groq.com/openai/v1",  "model": "openai/gpt-oss-120b"},
     "deepseek":  {"base_url": "https://api.deepseek.com/v1",     "model": "deepseek-chat"},
     "mistral":   {"base_url": "https://api.mistral.ai/v1",       "model": "mistral-large-latest"},
 }
