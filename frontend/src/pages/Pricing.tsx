@@ -78,7 +78,7 @@ const faqs = [
   },
   {
     q: 'What AI providers are supported?',
-    a: 'OpenAI and Anthropic Claude — bring your own API key.',
+    a: 'Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — bring your own API key, no markup.',
   },
   {
     q: 'Is my data secure?',
