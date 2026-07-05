@@ -1,12 +1,19 @@
 import json
 import logging
 import time
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 from fastapi import HTTPException
 from jose import jwk, jwt, JWTError
 
 from app.core.config import settings
+
+
+def _validate_url_scheme(url: str) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"URL scheme '{parsed.scheme}' is not allowed (only http/https)")
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +31,7 @@ def _get_jwks() -> list[dict]:
 
     url = f"{settings.SUPABASE_URL}/auth/v1/.well-known/jwks.json"
     try:
+        _validate_url_scheme(url)
         resp = urlopen(url, timeout=10)
         data: dict = json.loads(resp.read().decode())
         _jwks = data.get("keys", [])

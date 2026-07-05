@@ -21,6 +21,10 @@ COPY . .
 # Create temp directory
 RUN mkdir -p /tmp/naxely
 
+# Create non-root user and grant ownership
+RUN useradd -m -u 1000 naxely && chown -R naxely:naxely /app /tmp/naxely
+USER naxely
+
 EXPOSE 8000
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

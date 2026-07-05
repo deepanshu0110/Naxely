@@ -10,7 +10,7 @@ openpyxl==3.1.2
 # Visualisation (PDF charts only — not served to frontend)
 matplotlib==3.8.4
 seaborn==0.13.2
-squarify>=0.4.3
+squarify==0.4.4
 pillow==12.2.0
 
 # PDF + PPT Generation

@@ -542,10 +542,17 @@ def _hex_to_reportlab(hex_str: str) -> HexColor:
     return HexColor(hex_str)
 
 
+def _validate_url_scheme(url: str) -> None:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"URL scheme '{parsed.scheme}' is not allowed (only http/https)")
+
+
 def _download_logo(logo_url: str) -> str | None:
     t0 = time.time()
     logging.info("[pdf_service] logo download start")
     try:
+        _validate_url_scheme(logo_url)
         req = urllib.request.Request(logo_url, headers={'User-Agent': 'Naxely/1.0'})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = resp.read()
