@@ -15,31 +15,34 @@ os.environ.setdefault('SUPABASE_SERVICE_KEY', 'placeholder')
 os.environ.setdefault('SUPABASE_JWT_SECRET', 'placeholder')
 os.environ.setdefault('SECRET_KEY', '0000000000000000000000000000000000000000000000000000000000000000')
 os.environ['TEMP_DIR'] = tempfile.gettempdir()
-GEMINI_KEY = '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'
-os.environ['GEMINI_API_KEY'] = GEMINI_KEY
+
+# Load .env so GROQ_API_KEY and MASTER_ENCRYPTION_KEY are available
+env_path = Path(__file__).resolve().parent.parent / '.env'
+if env_path.exists():
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if '=' in line and not line.startswith('#'):
+            k, v = line.split('=', 1)
+            os.environ.setdefault(k.strip(), v.strip())
 
 import matplotlib
 matplotlib.use('Agg')
 
 from app.services import data_service, chart_service, pdf_service, ai_service
+from app.utils.encryption import encrypt_api_key, get_master_key
 
-# ---- Monkey-patch call_gemini → GROQ (OpenAI-compatible) ----
-_original_call_gemini = ai_service.call_gemini
+GROQ_KEY = os.environ.get('GROQ_API_KEY', '')
+if not GROQ_KEY:
+    print("WARNING: GROQ_API_KEY not set — AI content will be empty/stub.")
 
-def _groq_via_gemini(prompt, system, api_key, timeout=25):
-    return ai_service.call_openai_compat(
-        prompt, system, api_key, timeout,
-        base_url='https://api.groq.com/openai/v1',
-        model='openai/gpt-oss-120b',
-    )
+# ---- Properly encrypted mock user for Groq ----
+master_key = get_master_key()
+encrypted, iv = encrypt_api_key(GROQ_KEY, master_key) if GROQ_KEY else ("", "")
 
-ai_service.call_gemini = _groq_via_gemini
-
-# ---- Mock user so get_user_api_key returns (gemini, key, None) ----
 class _MockUser:
-    ai_provider = 'gemini'
-    encrypted_api_key = 'dummy'
-    api_key_iv = 'dummy'
+    ai_provider = 'groq'
+    encrypted_api_key = encrypted
+    api_key_iv = iv
     subscription_tier = 'pro'
     tier = 'pro'
 
