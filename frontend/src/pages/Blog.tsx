@@ -15,6 +15,12 @@ const posts = [
     excerpt: 'Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.',
     date: 'July 4, 2026',
   },
+  {
+    slug: 'white-label-client-reporting-agencies',
+    title: 'White-Label Client Reporting for Agencies: Why "Any-Data" Beats Another Marketing Connector',
+    excerpt: 'Why agency reporting tools built for marketing connectors miss the mark for any-data client reporting — and what BYOK, white-label pricing actually looks like.',
+    date: 'July 5, 2026',
+  },
 ]
 
 export default function Blog() {
