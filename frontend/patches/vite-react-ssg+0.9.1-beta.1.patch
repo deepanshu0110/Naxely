@@ -1,0 +1,13 @@
+diff --git a/node_modules/vite-react-ssg/dist/index.mjs b/node_modules/vite-react-ssg/dist/index.mjs
+index c3ac2bd..78b0936 100644
+--- a/node_modules/vite-react-ssg/dist/index.mjs
++++ b/node_modules/vite-react-ssg/dist/index.mjs
+@@ -152,7 +152,7 @@ function ViteReactSSG(routerOptions, fn, options = {}) {
+       const { router } = context;
+       const app = /* @__PURE__ */ jsx(HelmetProvider, { children: /* @__PURE__ */ jsx(RouterProvider, { router, future: { v7_startTransition } }) });
+       const isSSR = document.querySelector("[data-server-rendered=true]") !== null;
+-      if (!isSSR && process.env.NODE_ENV === "development") {
++      if (!isSSR) {
+         render(app, container, options);
+       } else {
+         hydrate(app, container, options);

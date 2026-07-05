@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && vite-react-ssg build && node scripts/postbuild.mjs",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
-    "test": "tsc --noEmit && vitest run"
+    "test": "tsc --noEmit && vitest run",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.4.0",
@@ -45,6 +46,7 @@
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.0",
     "jsdom": "^24.1.0",
+    "patch-package": "^8.0.1",
     "postcss": "^8.4.0",
     "tailwindcss-animate": "^1.0.7",
     "vite": "^5.2.0",
