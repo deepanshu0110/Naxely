@@ -32,12 +32,50 @@ export default function BlogPostCsvToPdf() {
 
           <p>Naxely is a different category of tool: a <strong>CSV to PDF report generator</strong> that doesn't just reformat your data — it analyzes it, charts it, and writes insights about it.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">The Difference Between Converting and Reporting</h2>
-          <p><strong>A CSV-to-PDF converter</strong> (like CloudConvert or FreeConvert) takes your raw table and prints it as a PDF. You get the same rows and columns, just non-editable. No charts, no branding, no analysis — it's format conversion, not report creation.</p>
-          <p><strong>A CSV-to-PDF report generator</strong> (like Naxely) reads your data, identifies trends, builds relevant charts automatically, and writes plain-English summaries — then packages all of it into a branded document your client can actually understand at a glance.</p>
-          <p>If your CSV is internal data you just need archived, a converter is fine. If your CSV needs to go to a client, stakeholder, or anyone who isn't going to read raw numbers — you need a report generator.</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What's the difference between a CSV-to-PDF converter and a report generator?</h2>
+          <p>The difference is the end deliverable: a converter prints your raw table as-is, while a report generator analyzes your data, builds charts, writes plain-English insights, and packages everything into a branded client-ready PDF. Naxely does all of this automatically from a single CSV or Google Sheets URL.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What Happens When You Upload a CSV to Naxely</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper"></th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">CSV-to-PDF converter</th>
+                  <th className="py-2 font-semibold text-ink dark:text-paper">Report generator (Naxely)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Output</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Raw table as PDF</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Charts, KPIs, written insights, branded layout</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Charts</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">None</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">16+ chart types, auto-selected per column</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI analysis</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">None</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Trend detection, anomaly flags, insight cards</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Branding</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">None</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Logo, brand color, company name on every page</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Best for</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Archiving data as PDF</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Client-facing deliverables</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How does Naxely turn a CSV into a client-ready PDF report?</h2>
+          <p>Naxely processes your CSV through a five-step pipeline — upload, auto-detect, AI analysis, branding, and output — and delivers a finished PDF in under 30 seconds for datasets up to 6,000+ rows.</p>
           <ol className="list-decimal pl-5 space-y-2">
             <li><strong>Upload</strong> — drag your CSV in, or paste a Google Sheets URL directly (no export step needed)</li>
             <li><strong>Auto-detection</strong> — Naxely reads your column types (dates, currencies, percentages, categories) and picks the right chart types automatically — line for time series, bar for comparisons, scatter for correlations, and 13 more types</li>
@@ -46,8 +84,8 @@ export default function BlogPostCsvToPdf() {
             <li><strong>Output</strong> — a client-ready PDF, typically ready in under 30 seconds for datasets up to 6,000+ rows</li>
           </ol>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">A Concrete Example</h2>
-          <p>Say you have a CSV of monthly billable hours across a consulting team — columns for date, consultant name, client, hours logged, and rate.</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does a real CSV-to-PDF report look like?</h2>
+          <p>A concrete example: upload a CSV of monthly billable hours across a consulting team (columns for date, consultant name, client, hours logged, and rate), and Naxely delivers a PDF with a KPI summary card, line chart of hours trending, bar chart by consultant, and an AI-written insight flagging anomalies — not just a static table.</p>
           <p>A converter would give you a PDF that looks exactly like the spreadsheet — same rows, same columns, just locked as a PDF.</p>
           <p>Naxely would give you:</p>
           <ul className="list-disc pl-5 space-y-2">
@@ -59,21 +97,21 @@ export default function BlogPostCsvToPdf() {
           </ul>
           <p>Same input data. Completely different output value.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Who Actually Needs This</h2>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Who needs a CSV to PDF report generator?</h2>
+          <p>Three groups benefit most: freelance data analysts sending recurring client deliverables, marketing and ops teams turning raw exports into stakeholder-readable reports, and agencies managing multiple white-labeled client accounts at scale.</p>
           <ul className="list-disc pl-5 space-y-2">
             <li><strong>Freelance data analysts</strong> sending recurring client deliverables who are tired of manually formatting the same report structure every week</li>
             <li><strong>Marketing and ops teams</strong> who need to turn raw exports (ad platforms, CRM data, analytics tools) into something a non-technical stakeholder can read without a walkthrough call</li>
             <li><strong>Agencies</strong> managing multiple client accounts who need consistent, white-labeled reporting at scale</li>
           </ul>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Setup Takes Under a Minute</h2>
-          <p>Naxely uses a BYOK (Bring Your Own Key) model for the AI features — you connect your own API key from a supported provider (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, or Together AI), so there's no markup on AI usage. <Link to="/blog/byok-ai-reporting-tool" className="text-amber-600 hover:text-amber-700 underline">Read more about how BYOK works &rarr;</Link></p>
-          <p>The report generation itself needs no setup at all — upload a CSV, and Naxely handles chart selection, insight writing, and formatting automatically.</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How long does it take to set up?</h2>
+          <p>Report generation in Naxely needs no setup at all — upload a CSV, and Naxely handles chart selection, insight writing, and formatting automatically. For the AI features, Naxely uses a BYOK (bring-your-own-key) model: connect your own API key from one of seven supported providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, or Together AI) in about 2 minutes, and there's no markup on AI usage. <Link to="/blog/byok-ai-reporting-tool" className="text-amber-600 hover:text-amber-700 underline">Read more about how BYOK works &rarr;</Link></p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Try It With a Real Sample</h2>
-          <p>Don't want to upload your own data first? Naxely publishes an unedited sample: <a href="/sample/agency_billable_hours.csv" className="text-amber-600 hover:text-amber-700 underline">download the raw CSV</a> and <a href="/sample/report.pdf" className="text-amber-600 hover:text-amber-700 underline">view the exact PDF it generated</a> — nothing staged, nothing cherry-picked.</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Can I see a real sample before trying it?</h2>
+          <p>Yes — Naxely publishes an unedited sample so you can see the exact input and output: <a href="/sample/agency_billable_hours.csv" className="text-amber-600 hover:text-amber-700 underline">download the raw CSV</a> and <a href="/sample/report.pdf" className="text-amber-600 hover:text-amber-700 underline">view the exact PDF it generated</a> — nothing staged, nothing cherry-picked.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Get Started</h2>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I get started?</h2>
           <Link to="/" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
         </div>
       </article>

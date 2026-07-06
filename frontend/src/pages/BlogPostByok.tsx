@@ -32,21 +32,21 @@ export default function BlogPostByok() {
 
           <p>Naxely works differently. It's a <strong>BYOK (Bring Your Own Key) reporting tool</strong> — you connect your own API key from a supported AI provider, and you pay that provider directly. Naxely never marks up your AI usage.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What Does BYOK Actually Mean?</h2>
-          <p>BYOK means you generate your own API key from an AI provider — Google Gemini, Groq, OpenAI, Anthropic, DeepSeek, Mistral, or Together AI — and paste it into the tool you're using. The tool then uses <em>your</em> key to make AI calls on your behalf. You pay the AI provider directly, at their actual cost, with zero markup from the software layer.</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does BYOK actually mean?</h2>
+          <p>BYOK (bring your own key) means you generate your own API key from an AI provider — Google Gemini, Groq, OpenAI, Anthropic, DeepSeek, Mistral, or Together AI — and paste it into the tool you're using. The tool then uses <em>your</em> key to make AI calls on your behalf. You pay the AI provider directly, at their actual cost, with zero markup from the software layer.</p>
           <p>This is different from most SaaS AI tools, which bundle a fixed number of "AI credits" into your subscription price — often at a significant markup over what the underlying API actually costs.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Why This Matters for Client Reporting Specifically</h2>
-          <p>Client reporting has a usage pattern that makes BYOK especially valuable:</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Why does BYOK matter for client reporting?</h2>
+          <p>BYOK matters for client reporting because three specific factors make the traditional bundled-AI model a poor fit: usage spikes unpredictably across months, client data sensitivity is high, and provider choice gives you real cost control — Groq's free tier alone covers meaningful report volume at zero cost.</p>
           <ul className="list-disc pl-5 space-y-2">
             <li><strong>Usage spikes unpredictably.</strong> Agencies sending 40 reports in a busy month and 5 in a slow one get punished by flat "AI credit" tiers either way — paying for capacity they don't use, or hitting a wall when they need it most.</li>
             <li><strong>Data sensitivity is high.</strong> Client financial data, KPIs, and business metrics are exactly the kind of information you don't want passing through an unnecessary third-party layer. With BYOK, your data goes directly from Naxely to the AI provider you chose — nobody else touches it in between.</li>
             <li><strong>Provider choice matters for cost control.</strong> Some providers are dramatically cheaper for certain report types. Groq's free tier alone covers a meaningful volume of report generation at zero cost — something a fixed-markup tool would never pass on to you.</li>
           </ul>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How Much Does BYOK Actually Save?</h2>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How much does BYOK actually save?</h2>
           <p>Based on typical AI tool pricing patterns, BYOK users commonly pay <strong>$1–5/month in direct API costs</strong> for AI features that a bundled subscription tool would charge <strong>$20–50/month or more</strong> for the same usage. The exact savings depend on your report volume and which provider you choose, but the pattern holds broadly: cutting out the markup layer is where the savings come from.</p>
-          <p>Naxely takes this further than most BYOK tools by supporting <strong>seven providers</strong> rather than locking you into one:</p>
+          <p>Naxely supports <strong>seven providers</strong> so you can pick the best price-to-quality ratio for each report type:</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
@@ -88,8 +88,8 @@ export default function BlogPostByok() {
             </table>
           </div>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Setting Up Your Key Takes About 2 Minutes</h2>
-          <p>If you're not technical, this might sound intimidating — it isn't. Here's the process for the easiest option, Groq (free, no credit card):</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How long does it take to set up an AI key?</h2>
+          <p>Setting up an AI key in Naxely takes about 2 minutes from start to finish. Here's how it works for the easiest option — Groq (free, no credit card):</p>
           <ol className="list-decimal pl-5 space-y-2">
             <li>Go to console.groq.com/keys</li>
             <li>Sign up (free, no card required)</li>
@@ -99,22 +99,22 @@ export default function BlogPostByok() {
           </ol>
           <p>The same 2-3 minute process applies to any of the other six supported providers if you'd rather use one you already have an account with.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Is BYOK Right for Everyone?</h2>
-          <p>Being direct about the tradeoff: BYOK asks a little more of you upfront than "just subscribe and go." You do need to create one API key one time. For most freelancers and small agencies, this two-minute setup pays for itself within the first month through avoided markup — but if you'd genuinely rather not manage any external account at all, a fully bundled tool may suit you better.</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Is BYOK right for everyone?</h2>
+          <p>BYOK is not right for everyone. The tradeoff is simple: you save significant money over time, but you do need to create one API key one time as a one-time setup step. For most freelancers and small agencies, this two-minute setup pays for itself within the first month through avoided markup — but if you'd genuinely rather not manage any external account at all, a fully bundled tool may suit you better.</p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Try It With Naxely</h2>
-          <p>Naxely combines BYOK pricing with the report generation itself — CSV or Google Sheets in, branded client-ready PDF out, in under a minute.</p>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I try BYOK with Naxely?</h2>
+          <p>Sign up for Naxely's free tier (no credit card required), paste your AI provider's API key into Settings, upload a CSV or Google Sheets URL, and Naxely generates a branded client-ready PDF report in under 60 seconds using your key at cost — with 16+ chart types, AI-written insights, and zero markup.</p>
           <Link to="/" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Start free &rarr;</Link>
 
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
           <p className="text-xs text-gray-400 space-x-2">
             <span>Related reading:</span>
-            <span className="text-ink/55 dark:text-paper/45">How to Automate Client Reports</span>
+            <Link to="/blog/automating-client-reports" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Automate Client Reports</Link>
             <span className="text-gray-300">·</span>
-            <span className="text-ink/55 dark:text-paper/45">CSV to PDF Report Generator</span>
+            <Link to="/blog/csv-to-pdf-report-generator" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">CSV to PDF Report Generator</Link>
             <span className="text-gray-300">·</span>
-            <span className="text-ink/55 dark:text-paper/45">White Label Reporting for Agencies</span>
+            <Link to="/blog/white-label-client-reporting-agencies" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">White Label Reporting for Agencies</Link>
           </p>
         </div>
       </article>
