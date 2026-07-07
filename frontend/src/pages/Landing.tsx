@@ -968,7 +968,7 @@ export default function Landing() {
                 />
               </a>
               <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" height="54" />
+                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" style={{ height: '54px', width: 'auto' }} />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
@@ -1007,7 +1007,7 @@ export default function Landing() {
                 />
               </a>
               <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" height="54" />
+                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" style={{ height: '54px', width: 'auto' }} />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
