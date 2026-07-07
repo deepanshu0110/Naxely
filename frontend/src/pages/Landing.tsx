@@ -99,7 +99,7 @@ const productStats = [
     label: 'rows processed per report',
   },
   {
-    value: '< 30s',
+    value: '< 1 min',
     label: 'average generation time',
   },
   {
@@ -253,7 +253,7 @@ export default function Landing() {
         <meta name="twitter:description" content="Upload CSV or connect Google Sheets. Naxely generates a branded PDF with AI insights, charts, and recommendations in under a minute." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"}]})}</script>
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload, Google Sheets connector, and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all tiers — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically under 30 seconds for datasets up to 6,000+ rows."}}]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload, Google Sheets connector, and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all tiers — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically in under a minute."}}]})}</script>
       </Head>
       <Navbar />
 
@@ -903,7 +903,7 @@ export default function Landing() {
                 <span className="text-amber-500 transition-transform group-open:rotate-180">▼</span>
               </summary>
               <p className="mt-3 text-sm text-ink/55 leading-relaxed">
-                Typically under 30 seconds for datasets up to 6,000+ rows.
+                Typically in under a minute.
               </p>
             </details>
           </div>
