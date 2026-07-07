@@ -112,7 +112,7 @@ export default function ComparisonAgencyAnalytics() {
           <p>Naxely supports BYOK across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on every tier, so there's no AI cost markup. AgencyAnalytics does not offer a BYOK model.</p>
 
           <div className="pt-6">
-            <Link to="/" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
+            <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
           </div>
         </div>
       </article>

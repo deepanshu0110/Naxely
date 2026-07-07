@@ -24,7 +24,7 @@ export default function Terms() {
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Terms of Service</h1>
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-4">
-          <p>By using Naxely, you agree to these terms. Naxely provides an AI-powered PDF report generation service ("Service"), operated by [Deepanshu Garg], based in India ("Naxely," "we," "us").</p>
+          <p>By using Naxely, you agree to these terms. Naxely provides an AI-powered PDF report generation service ("Service"), operated by Deepanshu Garg, based in India ("Naxely," "we," "us").</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Usage</h2>
           <p>You may use Naxely for lawful business purposes only. You retain full ownership of your data and the reports you generate. You are responsible for maintaining the confidentiality of your account and for all activity under it.</p>

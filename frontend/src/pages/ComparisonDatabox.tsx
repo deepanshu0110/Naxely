@@ -112,7 +112,7 @@ export default function ComparisonDatabox() {
           <p>Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on every pricing tier, so there's no AI markup. Databox does not offer a BYOK option.</p>
 
           <div className="pt-6">
-            <Link to="/" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
+            <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
           </div>
         </div>
       </article>

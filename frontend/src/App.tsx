@@ -8,6 +8,8 @@ import CookieConsent from '@/components/CookieConsent'
 import Login from '@/pages/Login'
 import Signup from '@/pages/Signup'
 import AuthCallback from '@/pages/AuthCallback'
+import ForgotPassword from '@/pages/ForgotPassword'
+import ResetPassword from '@/pages/ResetPassword'
 import Dashboard from '@/pages/Dashboard'
 import NewReport from '@/pages/NewReport'
 import ReportView from '@/pages/ReportView'
@@ -94,6 +96,8 @@ export const routes: RouteRecord[] = [
         ],
       },
       { path: '/auth/callback', element: <AuthCallback /> },
+      { path: '/forgot-password', element: <ForgotPassword /> },
+      { path: '/auth/reset-password', element: <ResetPassword /> },
       { path: '/share/:token', element: <SharedReportView /> },
       { path: '/pricing', element: <Pricing /> },
       { path: '/contact', element: <Contact /> },

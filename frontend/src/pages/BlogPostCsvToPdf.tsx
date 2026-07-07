@@ -112,7 +112,7 @@ export default function BlogPostCsvToPdf() {
           <p>Yes — Naxely publishes an unedited sample so you can see the exact input and output: <a href="/sample/agency_billable_hours.csv" className="text-amber-600 hover:text-amber-700 underline">download the raw CSV</a> and <a href="/sample/report.pdf" className="text-amber-600 hover:text-amber-700 underline">view the exact PDF it generated</a> — nothing staged, nothing cherry-picked.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I get started?</h2>
-          <Link to="/" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
+          <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
         </div>
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">

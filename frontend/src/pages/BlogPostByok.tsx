@@ -104,7 +104,7 @@ export default function BlogPostByok() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I try BYOK with Naxely?</h2>
           <p>Sign up for Naxely's free tier (no credit card required), paste your AI provider's API key into Settings, upload a CSV or Google Sheets URL, and Naxely generates a branded client-ready PDF report in under 60 seconds using your key at cost — with 16+ chart types, AI-written insights, and zero markup.</p>
-          <Link to="/" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Start free &rarr;</Link>
+          <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Start free &rarr;</Link>
 
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 

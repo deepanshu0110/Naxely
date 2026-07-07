@@ -27,7 +27,7 @@ export default function Privacy() {
           <p>Naxely is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your data when you use our AI-powered PDF report generation service.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Data Controller</h2>
-          <p>Naxely is operated by [Deepanshu Garg], based in India. For any privacy questions or requests, contact hello@naxely.com.</p>
+          <p>Naxely is operated by Deepanshu Garg, based in India. For any privacy questions or requests, contact hello@naxely.com.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Information We Collect</h2>
           <p><strong>Account information:</strong> When you sign up, we collect your name, email address, and billing information (processed securely through Dodo Payments).</p>

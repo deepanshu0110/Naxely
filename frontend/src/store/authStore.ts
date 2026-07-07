@@ -13,6 +13,8 @@ interface AuthStore {
   initialize: () => Promise<void>
   loginWithGoogle: () => Promise<void>
   loginWithEmail: (email: string, password: string) => Promise<void>
+  sendPasswordResetEmail: (email: string) => Promise<void>
+  updatePassword: (newPassword: string) => Promise<void>
   logout: () => Promise<void>
   fetchProfile: () => Promise<void>
 }
@@ -61,6 +63,18 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   loginWithEmail: async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) throw error
+  },
+
+  sendPasswordResetEmail: async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    })
+    if (error) throw error
+  },
+
+  updatePassword: async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
     if (error) throw error
   },
 

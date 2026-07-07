@@ -195,9 +195,9 @@ export default function Signup() {
 
           <p className="text-xs text-gray-400">
             By signing up, you agree to our{' '}
-            <a href="#" className="text-amber-500 transition-colors duration-150 ease-in-out hover:text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-sm">Terms of Service</a>{' '}
+                          <Link to="/terms" className="text-amber-500 transition-colors duration-150 ease-in-out hover:text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-sm">Terms of Service</Link>{' '}
             and{' '}
-            <a href="#" className="text-amber-500 transition-colors duration-150 ease-in-out hover:text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-sm">Privacy Policy</a>
+            <Link to="/privacy" className="text-amber-500 transition-colors duration-150 ease-in-out hover:text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-sm">Privacy Policy</Link>
           </p>
 
           <Button type="submit" className="w-full justify-center" loading={isSubmitting}>

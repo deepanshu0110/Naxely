@@ -139,10 +139,11 @@ export default function Login() {
               <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
             )}
             <div className="mt-1 text-right">
-              <a href="#" className="text-xs text-amber-500 transition-colors duration-150 ease-in-out hover:text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-sm">
+              <Link to="/forgot-password" className="text-xs text-amber-500 transition-colors duration-150 ease-in-out hover:text-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded-sm">
                 Forgot password?
-              </a>
+              </Link>
             </div>
+
           </div>
 
           <Button type="submit" className="w-full justify-center" loading={isSubmitting}>

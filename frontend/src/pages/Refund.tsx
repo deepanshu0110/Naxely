@@ -27,7 +27,7 @@ export default function Refund() {
           <p>We offer a 14-day money-back guarantee on all paid subscriptions (Pro and Agency tiers). If you are not satisfied with Naxely for any reason, you may request a full refund within 14 days of purchase.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">What's Covered</h2>
-          <p>Any first-time purchase of a monthly or annual plan is eligible for a full refund within the first 14 days. No questions asked.</p>
+          <p>Any first-time purchase of a monthly plan is eligible for a full refund within the first 14 days. No questions asked.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">What's Not Covered</h2>
           <p>After the 14-day window, refunds are not available. However, you may cancel your subscription at any time, and you will retain access to paid features until the end of your current billing period.</p>
