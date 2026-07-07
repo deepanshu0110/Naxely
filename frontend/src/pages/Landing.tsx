@@ -977,9 +977,6 @@ export default function Landing() {
                   style={{ height: '54px', width: 'auto' }}
                 />
               </a>
-              <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" style={{ height: '54px', width: 'auto' }} />
-              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
               </a>
@@ -1041,9 +1038,6 @@ export default function Landing() {
                   src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
                   style={{ height: '54px', width: 'auto' }}
                 />
-              </a>
-              <a href="https://www.uneed.best/tool/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.uneed.best/EMBED3.png" alt="Uneed Embed Badge" style={{ height: '54px', width: 'auto' }} />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
