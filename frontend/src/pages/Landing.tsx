@@ -298,6 +298,16 @@ export default function Landing() {
               {' '}— automatically
             </h1>
 
+            {/* Definitional sentence — AI Signal (Unhid.ai) */}
+            <p className="text-ink/60 dark:text-paper/50 text-base leading-relaxed
+              max-w-lg mx-auto lg:mx-0 mb-4
+              nax-animate-fade-up"
+              style={{ animationDelay: '120ms' }}>
+              Naxely is a CSV-to-PDF report generator that uses AI to write
+              executive summaries, detect anomalies, and build charts — built
+              for freelance analysts, consultants, and small agencies.
+            </p>
+
             {/* Subheadline */}
             <p className="text-ink/60 dark:text-paper/50 text-lg leading-relaxed
               max-w-lg mx-auto lg:mx-0 mb-10
@@ -982,6 +992,32 @@ export default function Landing() {
               <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
                 <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
               </div>
+              <a href="https://saashive.com/products/naxely" target="_blank" rel="noopener noreferrer"
+                 style={{
+                   display: 'inline-flex', alignItems: 'center', gap: '10px',
+                   padding: '8px 18px 8px 10px', borderRadius: '10px', textDecoration: 'none',
+                   lineHeight: 1, whiteSpace: 'nowrap', background: '#1A1A2E',
+                   fontFamily: "'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                   height: '54px', boxSizing: 'border-box'
+                 }}>
+                <svg viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30" style={{ flexShrink: 0 }}>
+                  <polygon points="15,12 13.5,9.4 10.5,9.4 9,12 10.5,14.6 13.5,14.6" fill="#E5A010"/>
+                  <polygon points="15,6.4 13.5,3.8 10.5,3.8 9,6.4 10.5,9 13.5,9" fill="#F4B324"/>
+                  <polygon points="19.85,9.2 18.35,6.6 15.35,6.6 13.85,9.2 15.35,11.8 18.35,11.8" fill="#F9CC6A"/>
+                  <polygon points="19.85,14.8 18.35,12.2 15.35,12.2 13.85,14.8 15.35,17.4 18.35,17.4" fill="#FCECD2"/>
+                  <polygon points="15,17.6 13.5,15 10.5,15 9,17.6 10.5,20.2 13.5,20.2" fill="#F9CC6A"/>
+                  <polygon points="10.15,14.8 8.65,12.2 5.65,12.2 4.15,14.8 5.65,17.4 8.65,17.4" fill="#F4B324"/>
+                  <polygon points="10.15,9.2 8.65,6.6 5.65,6.6 4.15,9.2 5.65,11.8 8.65,11.8" fill="#FCECD2"/>
+                </svg>
+                <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', textAlign: 'left' }}>
+                    Listed on
+                  </span>
+                  <span style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '18px', letterSpacing: '0.01em', color: '#FFFFFF', textAlign: 'left' }}>
+                    SaaS Hive
+                  </span>
+                </span>
+              </a>
               <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
                 <img
                   src="https://assets.dang.ai/badges/dang-verified-dark.png"
@@ -993,7 +1029,7 @@ export default function Landing() {
                 <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" style={{ height: '54px', width: 'auto' }} />
               </a>
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
-                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto', minWidth: '100px' }} />
               </a>
               <a
                 href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
@@ -1021,6 +1057,32 @@ export default function Landing() {
               <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
                 <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
               </div>
+              <a href="https://saashive.com/products/naxely" target="_blank" rel="noopener noreferrer"
+                 style={{
+                   display: 'inline-flex', alignItems: 'center', gap: '10px',
+                   padding: '8px 18px 8px 10px', borderRadius: '10px', textDecoration: 'none',
+                   lineHeight: 1, whiteSpace: 'nowrap', background: '#1A1A2E',
+                   fontFamily: "'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                   height: '54px', boxSizing: 'border-box'
+                 }}>
+                <svg viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30" style={{ flexShrink: 0 }}>
+                  <polygon points="15,12 13.5,9.4 10.5,9.4 9,12 10.5,14.6 13.5,14.6" fill="#E5A010"/>
+                  <polygon points="15,6.4 13.5,3.8 10.5,3.8 9,6.4 10.5,9 13.5,9" fill="#F4B324"/>
+                  <polygon points="19.85,9.2 18.35,6.6 15.35,6.6 13.85,9.2 15.35,11.8 18.35,11.8" fill="#F9CC6A"/>
+                  <polygon points="19.85,14.8 18.35,12.2 15.35,12.2 13.85,14.8 15.35,17.4 18.35,17.4" fill="#FCECD2"/>
+                  <polygon points="15,17.6 13.5,15 10.5,15 9,17.6 10.5,20.2 13.5,20.2" fill="#F9CC6A"/>
+                  <polygon points="10.15,14.8 8.65,12.2 5.65,12.2 4.15,14.8 5.65,17.4 8.65,17.4" fill="#F4B324"/>
+                  <polygon points="10.15,9.2 8.65,6.6 5.65,6.6 4.15,9.2 5.65,11.8 8.65,11.8" fill="#FCECD2"/>
+                </svg>
+                <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', textAlign: 'left' }}>
+                    Listed on
+                  </span>
+                  <span style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '18px', letterSpacing: '0.01em', color: '#FFFFFF', textAlign: 'left' }}>
+                    SaaS Hive
+                  </span>
+                </span>
+              </a>
               <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
                 <img
                   src="https://assets.dang.ai/badges/dang-verified-dark.png"
@@ -1032,7 +1094,7 @@ export default function Landing() {
                 <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" style={{ height: '54px', width: 'auto' }} />
               </a>
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
-                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto', minWidth: '100px' }} />
               </a>
             </div>
           </div>
