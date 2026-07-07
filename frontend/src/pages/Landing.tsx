@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Head } from 'vite-react-ssg'
 import {
@@ -215,6 +216,16 @@ function PDFMockupCard() {
 
 export default function Landing() {
   const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (document.querySelector('script[data-sf-badge]')) return
+    const script = document.createElement('script')
+    script.async = true
+    script.dataset.sfBadge = 'true'
+    script.src = 'https://b.sf-syn.com/badge_js?sf_id=4111526&variant_id=sf'
+    document.body.appendChild(script)
+  }, [])
 
   const { ref: howItWorksRef, inView: howItWorksInView } = useInView();
   const { ref: pricingRef, inView: pricingInView } = useInView();
@@ -969,6 +980,9 @@ export default function Landing() {
               <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" style={{ width: '195px', height: 'auto' }} />
               </a>
+              <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
+                <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
+              </div>
               <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
                 <img
                   src="https://assets.dang.ai/badges/dang-verified-dark.png"
@@ -1008,6 +1022,9 @@ export default function Landing() {
               <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" style={{ width: '195px', height: 'auto' }} />
               </a>
+              <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
+                <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
+              </div>
               <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
                 <img
                   src="https://assets.dang.ai/badges/dang-verified-dark.png"
