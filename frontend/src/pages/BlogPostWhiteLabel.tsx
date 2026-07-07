@@ -113,6 +113,8 @@ export default function BlogPostWhiteLabel() {
             <Link to="/blog/byok-ai-reporting-tool" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Why BYOK AI Reporting Beats Built-In AI Markup</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/csv-to-pdf-report-generator" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How CSV-to-PDF Report Generation Actually Works</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/client-reporting-software-guide" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Choose Client Reporting Software</Link>
           </p>
         </div>
       </article>

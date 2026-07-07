@@ -115,6 +115,8 @@ export default function BlogPostByok() {
             <Link to="/blog/csv-to-pdf-report-generator" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">CSV to PDF Report Generator</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/white-label-client-reporting-agencies" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">White Label Reporting for Agencies</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/client-reporting-software-guide" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Choose Client Reporting Software</Link>
           </p>
         </div>
       </article>

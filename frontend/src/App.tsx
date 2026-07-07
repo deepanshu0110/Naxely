@@ -28,6 +28,7 @@ import BlogPostByok from '@/pages/BlogPostByok'
 import BlogPostCsvToPdf from '@/pages/BlogPostCsvToPdf'
 import BlogPostWhiteLabel from '@/pages/BlogPostWhiteLabel'
 import BlogPostHub from '@/pages/BlogPostHub'
+import BlogPostClientReporting from '@/pages/BlogPostClientReporting'
 import ComparisonAgencyAnalytics from '@/pages/ComparisonAgencyAnalytics'
 import ComparisonDatabox from '@/pages/ComparisonDatabox'
 
@@ -109,6 +110,7 @@ export const routes: RouteRecord[] = [
       { path: '/blog/csv-to-pdf-report-generator', element: <BlogPostCsvToPdf /> },
       { path: '/blog/white-label-client-reporting-agencies', element: <BlogPostWhiteLabel /> },
       { path: '/blog/automating-client-reports', element: <BlogPostHub /> },
+      { path: '/blog/client-reporting-software-guide', element: <BlogPostClientReporting /> },
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
       {

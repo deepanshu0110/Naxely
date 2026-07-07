@@ -113,6 +113,17 @@ export default function BlogPostCsvToPdf() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I get started?</h2>
           <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
+
+          <hr className="border-gray-200 dark:border-gray-700 my-8" />
+
+          <p className="text-xs text-gray-400 space-x-2">
+            <span>Related reading:</span>
+            <Link to="/blog/byok-ai-reporting-tool" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Why BYOK AI Reporting Beats Built-In AI Markup</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/white-label-client-reporting-agencies" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">White-Label Client Reporting for Agencies</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/client-reporting-software-guide" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Choose Client Reporting Software</Link>
+          </p>
         </div>
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">

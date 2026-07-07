@@ -154,12 +154,14 @@ export default function BlogPostHub() {
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
           <p className="text-xs text-gray-400 space-x-2">
-            <span>Further reading:</span>
+            <span>Related reading:</span>
             <Link to="/blog/byok-ai-reporting-tool" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Why BYOK AI Reporting Beats Built-In AI Markup</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/csv-to-pdf-report-generator" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">CSV to PDF Report Generator</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/white-label-client-reporting-agencies" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">White-Label Client Reporting for Agencies</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/client-reporting-software-guide" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Choose Client Reporting Software</Link>
           </p>
         </div>
       </article>

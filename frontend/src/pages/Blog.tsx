@@ -13,6 +13,12 @@ interface Post {
 
 const posts: Post[] = [
   {
+    slug: 'client-reporting-software-guide',
+    title: 'How to Choose Client Reporting Software (And Why I Built My Own)',
+    excerpt: 'Client reporting software should save you time — here is how to choose the right tool based on where your data actually lives, not an aspirational workflow.',
+    date: 'July 7, 2026',
+  },
+  {
     slug: 'byok-ai-reporting-tool',
     title: 'Why Naxely Uses BYOK: Bring Your Own AI Key for Client Reports',
     excerpt: 'Most AI reporting tools bundle markups into your subscription. Naxely lets you bring your own key — you pay the provider directly, at cost, with zero markup.',
