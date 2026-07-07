@@ -676,3 +676,262 @@ class TestBulkDelete:
                 loop.close()
         assert exc.value.status_code == 400
         assert "50" in exc.value.detail
+
+
+class TestSendReportToClient:
+    def test_send_report_request_valid(self):
+        from app.api.routes.reports import SendReportRequest
+        req = SendReportRequest(recipients=["a@test.com", "b@test.com"])
+        assert len(req.recipients) == 2
+        assert req.message is None
+
+    def test_send_report_request_with_message(self):
+        from app.api.routes.reports import SendReportRequest
+        req = SendReportRequest(recipients=["a@test.com"], message="Here is your report")
+        assert req.message == "Here is your report"
+
+    def test_send_report_request_invalid_email_rejected(self):
+        from pydantic import ValidationError
+        from app.api.routes.reports import SendReportRequest
+        with pytest.raises(ValidationError):
+            SendReportRequest(recipients=["not-an-email"])
+
+    def test_send_report_request_empty_recipients_rejected(self):
+        from pydantic import ValidationError
+        from app.api.routes.reports import SendReportRequest
+        with pytest.raises(ValidationError):
+            SendReportRequest(recipients=[])
+
+    @pytest.mark.asyncio
+    async def test_send_success(self):
+        from unittest.mock import MagicMock, patch, AsyncMock
+        from fastapi import HTTPException
+        from app.api.routes.reports import send_report_to_client, SendReportRequest
+        from app.models.user import User
+
+        user = User()
+        user.id = "send-test-user"
+        user.tier = "pro"
+        user.is_active = True
+        user.company_name = "Acme Co"
+        user.email = "user@acme.com"
+
+        body = SendReportRequest(recipients=["client@example.com"], message="Great report!")
+
+        class _FoundReport:
+            def mappings(self):
+                return self
+            def first(self):
+                row = MagicMock()
+                row.__getitem__ = lambda self_, key: {
+                    "id": "report-send-1",
+                    "title": "Q1 Report",
+                    "pdf_url": "reports/send-test-user/report-send-1/report.pdf",
+                    "user_id": "send-test-user",
+                }.get(key)
+                return row
+
+        class _AsyncDB:
+            def __init__(self):
+                self.executed_queries = []
+            async def execute(self, query, params=None):
+                self.executed_queries.append(str(query))
+                return _FoundReport()
+            async def commit(self):
+                pass
+
+        db = _AsyncDB()
+
+        with (
+            patch("app.api.routes.reports._get_supabase"),
+            patch("app.api.routes.reports._run_sync", return_value=b"fake-pdf-content"),
+            patch("app.api.routes.reports.send_email", return_value=True) as mock_email,
+        ):
+            result = await send_report_to_client(
+                report_id="report-send-1",
+                payload=body,
+                current_user=user,
+                db=db,
+            )
+
+        assert result["success"] is True
+        assert result["data"]["sent"] is True
+        assert result["data"]["recipients"] == 1
+        mock_email.assert_called_once()
+        call_args = mock_email.call_args
+        assert call_args[1]["to"] == ["client@example.com"]
+        assert call_args[1]["subject"] == "Q1 Report — from Acme Co"
+        assert len(call_args[1]["attachments"]) == 1
+        assert call_args[1]["attachments"][0]["filename"] == "Q1 Report.pdf"
+
+    @pytest.mark.asyncio
+    async def test_send_report_not_found(self):
+        from unittest.mock import MagicMock, patch
+        from fastapi import HTTPException
+        from app.api.routes.reports import send_report_to_client, SendReportRequest
+        from app.models.user import User
+
+        user = User()
+        user.id = "send-test-user"
+        user.tier = "pro"
+        user.is_active = True
+
+        body = SendReportRequest(recipients=["c@test.com"])
+
+        class _NotFound:
+            def mappings(self):
+                return self
+            def first(self):
+                return None
+
+        class _AsyncDB:
+            async def execute(self, query, params=None):
+                return _NotFound()
+            async def commit(self):
+                pass
+
+        db = _AsyncDB()
+
+        with (
+            patch("app.api.routes.reports._run_sync"),
+            patch("app.api.routes.reports.send_email"),
+        ):
+            with pytest.raises(HTTPException) as exc:
+                await send_report_to_client(
+                    report_id="nonexistent", payload=body, current_user=user, db=db,
+                )
+        assert exc.value.status_code == 404
+        assert "Report not found" in str(exc.value.detail)
+
+    @pytest.mark.asyncio
+    async def test_send_other_users_report_rejected(self):
+        from unittest.mock import MagicMock, patch
+        from fastapi import HTTPException
+        from app.api.routes.reports import send_report_to_client, SendReportRequest
+        from app.models.user import User
+
+        user = User()
+        user.id = "other-user"
+        user.tier = "pro"
+        user.is_active = True
+
+        body = SendReportRequest(recipients=["c@test.com"])
+
+        class _NotFound:
+            def mappings(self):
+                return self
+            def first(self):
+                return None
+
+        class _AsyncDB:
+            async def execute(self, query, params=None):
+                return _NotFound()
+            async def commit(self):
+                pass
+
+        db = _AsyncDB()
+
+        with (
+            patch("app.api.routes.reports._run_sync"),
+            patch("app.api.routes.reports.send_email"),
+        ):
+            with pytest.raises(HTTPException) as exc:
+                await send_report_to_client(
+                    report_id="someone-elses-report", payload=body, current_user=user, db=db,
+                )
+        assert exc.value.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_send_missing_pdf_rejected(self):
+        from unittest.mock import MagicMock, patch
+        from fastapi import HTTPException
+        from app.api.routes.reports import send_report_to_client, SendReportRequest
+        from app.models.user import User
+
+        user = User()
+        user.id = "send-test-user"
+        user.tier = "pro"
+        user.is_active = True
+
+        body = SendReportRequest(recipients=["c@test.com"])
+
+        class _NoPdfReport:
+            def mappings(self):
+                return self
+            def first(self):
+                row = MagicMock()
+                row.__getitem__ = lambda self_, key: {
+                    "id": "report-no-pdf",
+                    "title": "No PDF",
+                    "pdf_url": None,
+                    "user_id": "send-test-user",
+                }.get(key)
+                row.get.return_value = None
+                return row
+
+        class _AsyncDB:
+            async def execute(self, query, params=None):
+                return _NoPdfReport()
+            async def commit(self):
+                pass
+
+        db = _AsyncDB()
+
+        with (
+            patch("app.api.routes.reports._run_sync"),
+            patch("app.api.routes.reports.send_email"),
+        ):
+            with pytest.raises(HTTPException) as exc:
+                await send_report_to_client(
+                    report_id="report-no-pdf", payload=body, current_user=user, db=db,
+                )
+        assert exc.value.status_code == 409
+        assert "no pdf" in str(exc.value.detail).lower()
+
+    @pytest.mark.asyncio
+    async def test_send_failed_email_returns_502(self):
+        from unittest.mock import MagicMock, patch
+        from fastapi import HTTPException
+        from app.api.routes.reports import send_report_to_client, SendReportRequest
+        from app.models.user import User
+
+        user = User()
+        user.id = "send-test-user"
+        user.tier = "pro"
+        user.is_active = True
+        user.company_name = "Co"
+
+        body = SendReportRequest(recipients=["c@test.com"])
+
+        class _FoundReport:
+            def mappings(self):
+                return self
+            def first(self):
+                row = MagicMock()
+                row.__getitem__ = lambda self_, key: {
+                    "id": "report-send-2",
+                    "title": "Test",
+                    "pdf_url": "reports/send-test-user/report-send-2/report.pdf",
+                    "user_id": "send-test-user",
+                }.get(key)
+                return row
+
+        class _AsyncDB:
+            async def execute(self, query, params=None):
+                return _FoundReport()
+            async def commit(self):
+                pass
+
+        db = _AsyncDB()
+
+        with (
+            patch("app.api.routes.reports._get_supabase"),
+            patch("app.api.routes.reports._run_sync", return_value=b"fake-pdf"),
+            patch("app.api.routes.reports.send_email", return_value=False),
+        ):
+            with pytest.raises(HTTPException) as exc:
+                await send_report_to_client(
+                    report_id="report-send-2", payload=body, current_user=user, db=db,
+                )
+        assert exc.value.status_code == 502
+        assert "Failed to send" in exc.value.detail

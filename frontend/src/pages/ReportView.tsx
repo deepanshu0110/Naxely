@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { Download, Share2, Trash2, Clock, FileText, AlertTriangle, X, Presentation } from 'lucide-react'
+import { Download, Share2, Trash2, Clock, FileText, AlertTriangle, X, Presentation, Send } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Sidebar from '@/components/layout/Sidebar'
 import Badge from '@/components/ui/Badge'
@@ -10,6 +10,7 @@ import Spinner from '@/components/ui/Spinner'
 import InsightCard from '@/components/report/InsightCard'
 import UpgradePrompt from '@/components/ui/UpgradePrompt'
 import Modal from '@/components/ui/Modal'
+import SendToClientModal from './SendToClientModal'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/store/authStore'
 import { useReportStore } from '@/store/reportStore'
@@ -31,6 +32,7 @@ export default function ReportView() {
   const [deleting, setDeleting] = useState(false)
   const [retrying, setRetrying] = useState(false)
   const [pptxLoading, setPptxLoading] = useState(false)
+  const [sendToClientOpen, setSendToClientOpen] = useState(false)
   const reducedMotion = useReducedMotion()
   const displayGenTime = useCountUp(
     report?.generation_time_seconds != null ? Math.round(report.generation_time_seconds) : null,
@@ -210,6 +212,11 @@ export default function ReportView() {
                 <Share2 className="mr-1.5 h-4 w-4" /> Share
               </Button>
             )}
+            {isPro && (
+              <Button variant="outline" size="sm" onClick={() => setSendToClientOpen(true)}>
+                <Send className="mr-1.5 h-4 w-4" /> Send to Client
+              </Button>
+            )}
             <Button variant="danger" size="sm" onClick={() => setConfirmDelete(true)}>
               <Trash2 className="mr-1.5 h-4 w-4" /> Delete
             </Button>
@@ -356,6 +363,12 @@ export default function ReportView() {
         </div>
       </main>
 
+      <SendToClientModal
+        isOpen={sendToClientOpen}
+        onClose={() => setSendToClientOpen(false)}
+        reportId={id!}
+        reportTitle={report.title}
+      />
       <Modal isOpen={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Report">
         <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
           Are you sure you want to delete "{report.title}"? This cannot be undone.

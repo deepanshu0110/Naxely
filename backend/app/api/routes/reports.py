@@ -1,5 +1,6 @@
 import uuid
 import asyncio
+import base64
 import json
 import logging
 import os
@@ -13,7 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query, F
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 
 from app.api.deps import get_current_user, require_pro_or_above, require_byok, require_agency, check_report_limit
 from app.api.routes.settings import _get_logo_signed_url
@@ -33,6 +34,7 @@ from app.services.data_service import (
 )
 
 from app.core.supabase_helpers import _get_supabase, _run_sync
+from app.services.email_service import send_email
 from app.core.limiter import limiter
 
 logger = logging.getLogger(__name__)
@@ -92,6 +94,11 @@ class ReportGenerateRequest(BaseModel):
 class ShareRequest(BaseModel):
     expires_days: int = 30
     password: Optional[str] = None
+
+
+class SendReportRequest(BaseModel):
+    recipients: List[EmailStr] = Field(min_length=1)
+    message: Optional[str] = None
 
 
 async def _generate_signed_url(storage_path: str) -> str | None:
@@ -1318,6 +1325,52 @@ async def revoke_share(
     await db.commit()
 
     return {"success": True, "data": {"revoked": True}}
+
+
+@router.post("/reports/{report_id}/send", dependencies=[Depends(require_pro_or_above)])
+async def send_report_to_client(
+    report_id: str,
+    payload: SendReportRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Dict[str, Any]:
+    result = await db.execute(
+        text("SELECT * FROM reports WHERE id = :rid AND deleted_at IS NULL AND user_id = :uid"),
+        {"rid": report_id, "uid": str(current_user.id)},
+    )
+    report = result.mappings().first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    if not report.get("pdf_url"):
+        raise HTTPException(status_code=409, detail="Report has no PDF to send")
+
+    pdf_bytes = await _run_sync(
+        _get_supabase().storage.from_("reports").download,
+        report["pdf_url"],
+    )
+    pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
+
+    subject = f"{report['title']} — from {current_user.company_name or current_user.email}"
+
+    html_parts = [f"<p>Your report <strong>{report['title']}</strong> is ready.</p>"]
+    if payload.message:
+        html_parts.append(f"<blockquote style='border-left:3px solid #d97706;padding-left:12px;margin:16px 0;color:#555;'><p>{payload.message}</p></blockquote>")
+    html_parts.append("<p>The report PDF is attached.</p>")
+
+    ok = send_email(
+        to=payload.recipients,
+        subject=subject,
+        html="".join(html_parts),
+        attachments=[{
+            "filename": f"{report['title']}.pdf",
+            "content": pdf_b64,
+        }],
+    )
+    if not ok:
+        raise HTTPException(status_code=502, detail="Failed to send email")
+
+    return {"success": True, "data": {"sent": True, "recipients": len(payload.recipients)}}
 
 
 @router.get("/share/{share_token}")
