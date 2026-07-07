@@ -80,8 +80,7 @@ export default function ResetPassword() {
       await updatePassword(data.password)
       toast.success('Password updated successfully')
       navigate('/login')
-    } catch (error) {
-      console.error('Password update failed — full error:', error)
+    } catch {
       toast.error('Failed to update password. The link may have expired.')
     } finally {
       setIsSubmitting(false)
