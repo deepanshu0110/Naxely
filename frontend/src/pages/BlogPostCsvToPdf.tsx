@@ -75,13 +75,13 @@ export default function BlogPostCsvToPdf() {
           </div>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How does Naxely turn a CSV into a client-ready PDF report?</h2>
-          <p>Naxely processes your CSV through a five-step pipeline — upload, auto-detect, AI analysis, branding, and output — and delivers a finished PDF in under 30 seconds for datasets up to 6,000+ rows.</p>
+          <p>Naxely processes your CSV through a five-step pipeline — upload, auto-detect, AI analysis, branding, and output — and delivers a finished PDF in under a minute.</p>
           <ol className="list-decimal pl-5 space-y-2">
             <li><strong>Upload</strong> — drag your CSV in, or paste a Google Sheets URL directly (no export step needed)</li>
             <li><strong>Auto-detection</strong> — Naxely reads your column types (dates, currencies, percentages, categories) and picks the right chart types automatically — line for time series, bar for comparisons, scatter for correlations, and 13 more types</li>
             <li><strong>AI analysis</strong> — trends are identified, anomalies are flagged (e.g. "Revenue spike 2.1× standard deviation"), and insight cards are written in plain English for each key metric</li>
             <li><strong>Branding</strong> — your logo, brand color, and company name are applied to every page automatically</li>
-            <li><strong>Output</strong> — a client-ready PDF, typically ready in under 30 seconds for datasets up to 6,000+ rows</li>
+            <li><strong>Output</strong> — a client-ready PDF, typically ready in under a minute</li>
           </ol>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does a real CSV-to-PDF report look like?</h2>
