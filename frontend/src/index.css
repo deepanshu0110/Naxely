@@ -107,6 +107,11 @@ html.dark #root::before {
   animation-play-state: paused;
 }
 
+.sf-root img {
+  height: 54px !important;
+  width: auto !important;
+}
+
 @keyframes scroll-badges {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
