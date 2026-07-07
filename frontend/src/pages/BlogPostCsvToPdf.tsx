@@ -85,14 +85,14 @@ export default function BlogPostCsvToPdf() {
           </ol>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does a real CSV-to-PDF report look like?</h2>
-          <p>A concrete example: upload a CSV of monthly billable hours across a consulting team (columns for date, consultant name, client, hours logged, and rate), and Naxely delivers a PDF with a KPI summary card, line chart of hours trending, bar chart by consultant, and an AI-written insight flagging anomalies — not just a static table.</p>
+          <p>A concrete example: upload a CSV of monthly billable hours across client projects (columns for date, client name, project, hours logged, rate, billable amount, and status), and Naxely delivers a PDF with a KPI summary card, line chart of hours trending, bar chart by client, and an AI-written insight flagging anomalies — not just a static table.</p>
           <p>A converter would give you a PDF that looks exactly like the spreadsheet — same rows, same columns, just locked as a PDF.</p>
           <p>Naxely would give you:</p>
           <ul className="list-disc pl-5 space-y-2">
             <li>A KPI summary card (total hours, total billable value, average utilization)</li>
             <li>A line chart showing hours trending over the month</li>
-            <li>A bar chart breaking down hours by consultant</li>
-            <li>An AI-written insight: <em>"Consultant B's billable hours dropped 18% in the final week — worth checking in before month-end invoicing."</em></li>
+            <li>A bar chart breaking down hours by client</li>
+            <li>An AI-written insight: <em>"GreenLeaf's project hours dropped significantly in the final week — worth checking in before month-end invoicing."</em></li>
             <li>Your logo and brand color on every page</li>
           </ul>
           <p>Same input data. Completely different output value.</p>
