@@ -8,6 +8,7 @@ interface Post {
   excerpt: string
   date?: string
   label?: string
+  routePrefix?: string
 }
 
 const posts: Post[] = [
@@ -16,6 +17,20 @@ const posts: Post[] = [
     title: 'Why Naxely Uses BYOK: Bring Your Own AI Key for Client Reports',
     excerpt: 'Most AI reporting tools bundle markups into your subscription. Naxely lets you bring your own key — you pay the provider directly, at cost, with zero markup.',
     date: 'July 4, 2026',
+  },
+  {
+    slug: 'agencyanalytics',
+    title: 'Naxely vs AgencyAnalytics: Which Client Reporting Tool Fits Your Workflow?',
+    excerpt: 'Naxely is an AI-powered CSV-to-PDF report generator for freelancers and small agencies. AgencyAnalytics is a live marketing dashboard for multi-channel campaigns.',
+    label: 'Comparison',
+    routePrefix: '/compare/',
+  },
+  {
+    slug: 'databox',
+    title: 'Naxely vs Databox: Which Reporting Tool Fits Your Workflow?',
+    excerpt: 'Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 100+ integrations.',
+    label: 'Comparison',
+    routePrefix: '/compare/',
   },
   {
     slug: 'csv-to-pdf-report-generator',
@@ -64,7 +79,7 @@ export default function Blog() {
           {posts.map((post) => (
             <Link
               key={post.slug}
-              to={`/blog/${post.slug}`}
+              to={`${post.routePrefix || '/blog/'}${post.slug}`}
               className="block rounded-xl border border-gray-200 bg-paper p-6 transition-colors hover:border-amber-500/40 dark:border-gray-700 dark:bg-gray-800"
             >
               <p className="text-xs text-gray-400 mb-1.5">{post.label ?? post.date}</p>

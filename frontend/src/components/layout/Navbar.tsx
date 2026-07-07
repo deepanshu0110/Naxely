@@ -23,6 +23,9 @@ export default function Navbar() {
           <Link to="/blog/automating-client-reports" className="text-sm font-medium text-gray-600 transition-colors duration-150 ease-in-out hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
             Guides
           </Link>
+          <Link to="/compare/agencyanalytics" className="text-sm font-medium text-gray-600 transition-colors duration-150 ease-in-out hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+            Compare
+          </Link>
         </div>
 
         <div className="flex items-center gap-3">
