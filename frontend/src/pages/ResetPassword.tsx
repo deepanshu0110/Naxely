@@ -40,16 +40,38 @@ export default function ResetPassword() {
   })
 
   useEffect(() => {
+    let handled = false
+
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session && !handled && !import.meta.env.SSR) {
+        handled = true
+        setHasToken(true)
+        setChecking(false)
+      }
+    }
+
     const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
+      if (event === 'PASSWORD_RECOVERY' && !handled) {
+        handled = true
         setHasToken(true)
         setChecking(false)
       }
     })
-    setTimeout(() => {
-      setChecking(false)
+
+    checkExistingSession()
+
+    const timeout = setTimeout(() => {
+      if (!handled) {
+        setHasToken(false)
+        setChecking(false)
+      }
     }, 3000)
-    return () => data.subscription.unsubscribe()
+
+    return () => {
+      data.subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
   }, [])
 
   const onSubmit = async (data: ResetForm) => {
