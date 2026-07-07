@@ -240,7 +240,7 @@ export default function Landing() {
     <div className="min-h-screen bg-paper text-ink">
       <Head>
         <title>Naxely — AI-Powered PDF Report Generator</title>
-        <meta name="description" content="Turn raw data into client-ready PDF reports in under 60 seconds. Upload CSV or connect Google Sheets — AI writes insights, builds charts, and brands every page." />
+        <meta name="description" content="Turn raw data into client-ready PDF reports in under a minute. Upload CSV or connect Google Sheets — AI writes insights, builds charts, and brands every page." />
         <link rel="canonical" href="https://www.naxely.com/" />
         <meta property="og:url" content="https://www.naxely.com/" />
         <meta property="og:type" content="website" />
@@ -282,7 +282,7 @@ export default function Landing() {
               nax-animate-fade-up"
               style={{ animationDelay: '0ms' }}>
               <NaxelyMark size={11} color="currentColor" />
-              CSV → Branded PDF in under 60 seconds
+              CSV → Branded PDF in under a minute
             </div>
 
             {/* H1 */}
@@ -480,7 +480,7 @@ export default function Landing() {
               </h3>
               <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed max-w-md mb-8">
                 Drop in any CSV or connect a Google Sheet and Naxely generates a
-                fully branded, client-ready PDF report in under 60 seconds — with
+                fully branded, client-ready PDF report in under a minute — with
                 charts, KPI cards, and AI-written insights included.
               </p>
 

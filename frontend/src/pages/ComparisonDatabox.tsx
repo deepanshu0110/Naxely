@@ -50,7 +50,7 @@ export default function ComparisonDatabox() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Starting price</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free (3 reports/month)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Free tier available, paid plans from ~$59/month</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Free tier available, paid plans typically start in the $79–159/month range</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Output format</td>

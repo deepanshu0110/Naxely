@@ -60,7 +60,7 @@ export default function BlogPostWhiteLabel() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">AgencyAnalytics</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$65–$195/month</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Starts around $59–79/month depending on billing cycle</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -75,7 +75,7 @@ export default function BlogPostWhiteLabel() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">Databox</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$72–$159/month</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Paid plans typically start in the $79–159/month range</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform + custom API</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">

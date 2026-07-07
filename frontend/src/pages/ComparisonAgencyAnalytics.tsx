@@ -50,7 +50,7 @@ export default function ComparisonAgencyAnalytics() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Starting price</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free (3 reports/month)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Starts at $42/month (no free tier)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Starts around $59–79/month depending on billing cycle</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Pro tier</td>
