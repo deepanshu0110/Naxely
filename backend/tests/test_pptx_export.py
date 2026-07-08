@@ -33,7 +33,7 @@ def _mock_config():
     return {
         "report_id": "test-report-123",
         "title": "Q4 Sales Report",
-        "sections": ["key_metrics", "charts", "insights", "anomalies"],
+        "sections": ["kpi_overview", "charts", "insights", "anomalies"],
         "metric_columns": ["Revenue"],
         "date_column": "Date",
         "_ai_skipped": False,

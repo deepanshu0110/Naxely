@@ -25,7 +25,7 @@ class TestPipelineIntegration:
             "upload_id": "upload-fake-123",
             "metric_columns": ["Revenue", "Clicks"],
             "title": "E2E Pipeline Test",
-            "sections": ["key_metrics", "charts", "data_table"],
+            "sections": ["kpi_overview", "charts", "data_table"],
             "date_column": "Date",
         }
 
@@ -87,7 +87,7 @@ class TestPipelineIntegration:
             "upload_id": "upload-free-456",
             "metric_columns": ["Count"],
             "title": "Free Tier Pipeline",
-            "sections": ["key_metrics"],
+            "sections": ["kpi_overview"],
         }
 
         chart_paths = generate_sync(df, report_id, config)

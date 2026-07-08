@@ -1067,44 +1067,46 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     # SECTION 3 — Key Metrics Overview
     # ────────────────────────────────────────────────────────────
-    toc_entries.append(('Key Metrics Overview', str(toc_page)))
-    toc_page += 1
-    body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
-    body_story.append(Spacer(1, 10))
+    if 'kpi_overview' in config.get('sections', []):
+        toc_entries.append(('Key Metrics Overview', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
 
-    for i in range(0, len(kpis), 2):
-        row_kpis = kpis[i:i+2]
-        body_story.append(_KPIRow(row_kpis, content_width, brand_color))
-        body_story.append(Spacer(1, 12))
-    body_story.append(PageBreak())
+        for i in range(0, len(kpis), 2):
+            row_kpis = kpis[i:i+2]
+            body_story.append(_KPIRow(row_kpis, content_width, brand_color))
+            body_story.append(Spacer(1, 12))
+        body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
     # SECTION 4 — Charts
     # ────────────────────────────────────────────────────────────
-    toc_entries.append(('Charts & Visualizations', str(toc_page)))
-    toc_page += 1
-    body_story.append(_SectionHeader('Charts & Visualizations', brand_color, content_width))
-    body_story.append(Spacer(1, 10))
+    if 'charts' in config.get('sections', []):
+        toc_entries.append(('Charts & Visualizations', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Charts & Visualizations', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
 
-    for i, chart_item in enumerate(chart_paths):
-        if isinstance(chart_item, tuple):
-            chart_path = chart_item[0]
-        else:
-            chart_path = chart_item
-        if not os.path.isfile(chart_path):
-            continue
-        try:
-            draw_w = content_width
-            draw_h = 220
-            chart_img = Image(chart_path, width=draw_w, height=draw_h)
-            chart_img.hAlign = 'CENTER'
-            body_story.append(chart_img)
-            body_story.append(Spacer(1, 16))
-            if i < len(chart_paths) - 1:
-                body_story.append(PageBreak())
-        except Exception:
-            continue
-    body_story.append(PageBreak())
+        for i, chart_item in enumerate(chart_paths):
+            if isinstance(chart_item, tuple):
+                chart_path = chart_item[0]
+            else:
+                chart_path = chart_item
+            if not os.path.isfile(chart_path):
+                continue
+            try:
+                draw_w = content_width
+                draw_h = 220
+                chart_img = Image(chart_path, width=draw_w, height=draw_h)
+                chart_img.hAlign = 'CENTER'
+                body_story.append(chart_img)
+                body_story.append(Spacer(1, 16))
+                if i < len(chart_paths) - 1:
+                    body_story.append(PageBreak())
+            except Exception:
+                continue
+        body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
     # SECTION 5 — AI Insight Cards
@@ -1145,18 +1147,19 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     # SECTION 7 — Data Table
     # ────────────────────────────────────────────────────────────
-    toc_entries.append(('Data Table', str(toc_page)))
-    toc_page += 1
-    body_story.append(_SectionHeader('Data Table', brand_color, content_width))
-    body_story.append(Spacer(1, 10))
+    if 'data_table' in config.get('sections', []):
+        toc_entries.append(('Data Table', str(toc_page)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Data Table', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
 
-    display_df = df.copy()
-    if len(display_df) > 50:
-        display_df = display_df.head(50)
+        display_df = df.copy()
+        if len(display_df) > 50:
+            display_df = display_df.head(50)
 
-    data_table = _build_data_table(display_df, brand_color, content_width)
-    body_story.append(data_table)
-    body_story.append(PageBreak())
+        data_table = _build_data_table(display_df, brand_color, content_width)
+        body_story.append(data_table)
+        body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
     # SECTION 8 — Recommendations

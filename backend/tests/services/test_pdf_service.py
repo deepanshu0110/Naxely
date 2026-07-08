@@ -21,7 +21,7 @@ class TestPdfService:
         config = {
             "metric_columns": ["Revenue", "Clicks"],
             "title": "Test Report",
-            "sections": ["key_metrics", "charts", "data_table"],
+            "sections": ["kpi_overview", "charts", "data_table"],
         }
         chart_config = {"metric_columns": ["Revenue", "Clicks"]}
         report_id = "test-pdf-smoke"
@@ -64,7 +64,7 @@ class TestPdfService:
         config = {
             "metric_columns": ["Value"],
             "title": "Free Tier Test",
-            "sections": ["key_metrics"],
+            "sections": ["kpi_overview"],
             "report_id": "test-pdf-free",
         }
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
@@ -95,7 +95,7 @@ class TestPdfService:
         base_config = {
             "metric_columns": ["Value"],
             "title": "White Label Test",
-            "sections": ["key_metrics"],
+            "sections": ["kpi_overview"],
         }
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
 
@@ -265,7 +265,7 @@ class TestKpiCardArrowDirection:
         config = {
             "metric_columns": ["Revenue", "Profit"],
             "title": "Arrow Test",
-            "sections": ["key_metrics"],
+            "sections": ["kpi_overview"],
             "report_id": "test-arrow-pipeline",
         }
         chart_config = {"metric_columns": []}
@@ -435,7 +435,7 @@ class TestFooterGrowthLoop:
         from app.services.pdf_service import build_sync
 
         df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
-        config = {"metric_columns": ["Value"], "title": "Free Footer", "sections": ["key_metrics"], "report_id": "test-free-footer-gl1"}
+        config = {"metric_columns": ["Value"], "title": "Free Footer", "sections": ["kpi_overview"], "report_id": "test-free-footer-gl1"}
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
         user_data = {"brand_color": "#6366F1", "tier": "free", "logo_url": None, "company_name": None}
         path = build_sync(df, [], ai_content, config, user_data)
@@ -454,7 +454,7 @@ class TestFooterGrowthLoop:
         from app.services.pdf_service import build_sync
 
         df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
-        config = {"metric_columns": ["Value"], "title": "Free Footer Old", "sections": ["key_metrics"], "report_id": "test-free-footer-gl2"}
+        config = {"metric_columns": ["Value"], "title": "Free Footer Old", "sections": ["kpi_overview"], "report_id": "test-free-footer-gl2"}
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
         user_data = {"brand_color": "#6366F1", "tier": "free", "logo_url": None, "company_name": None}
         path = build_sync(df, [], ai_content, config, user_data)
@@ -472,7 +472,7 @@ class TestFooterGrowthLoop:
         from app.services.pdf_service import build_sync
 
         df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
-        config = {"metric_columns": ["Value"], "title": "Pro Footer", "sections": ["key_metrics"], "report_id": "test-pro-footer-gl1"}
+        config = {"metric_columns": ["Value"], "title": "Pro Footer", "sections": ["kpi_overview"], "report_id": "test-pro-footer-gl1"}
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
         user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "TestCo"}
         path = build_sync(df, [], ai_content, config, user_data)
@@ -491,7 +491,7 @@ class TestFooterGrowthLoop:
         from app.services.pdf_service import build_sync
 
         df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
-        config = {"metric_columns": ["Value"], "title": "Agency Footer", "sections": ["key_metrics"], "report_id": "test-agency-footer-gl1"}
+        config = {"metric_columns": ["Value"], "title": "Agency Footer", "sections": ["kpi_overview"], "report_id": "test-agency-footer-gl1"}
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
         user_data = {"brand_color": "#6366F1", "tier": "agency", "logo_url": None, "company_name": "AgencyCo"}
         path = build_sync(df, [], ai_content, config, user_data)
@@ -567,3 +567,184 @@ class TestRecommendationsGuard:
         finally:
             try: os.unlink(path)
             except OSError: pass
+
+
+class TestSectionToggles:
+    """Every section toggle must be respected: PDF should only render sections
+    that are present in config['sections'].  Cover Page and TOC always render."""
+
+    SECTION_TOC_NAMES = {
+        "executive_summary": "Executive Summary",
+        "kpi_overview": "Key Metrics Overview",
+        "charts": "Charts & Visualizations",
+        "insights": "AI Insights",
+        "anomalies": "Anomaly Flags",
+        "data_table": "Data Table",
+        "appendix": "Appendix — Raw Data",
+        "recommendations": "Recommendations",
+    }
+    """Maps section ID → text that appears in TOC / section headers."""
+
+    @staticmethod
+    def _make_df():
+        return pd.DataFrame({
+            "Metric": [10, 20, 30],
+            "Value": [100, 200, 300],
+        })
+
+    @staticmethod
+    def _make_ai_content(with_summary=False):
+        ai = {
+            "summary": None,
+            "insights": [],
+            "anomalies": [],
+            "trends": [],
+            "recommendations": [],
+        }
+        if with_summary:
+            from app.services.ai_service import SummaryResult
+            ai["summary"] = SummaryResult(
+                lead="Sales grew.",
+                context="Context text.",
+                implication="Implication text.",
+                action="Action text.",
+            )
+        return ai
+
+    @staticmethod
+    def _make_user_data(**overrides):
+        data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        data.update(overrides)
+        return data
+
+    def _check_pdf(self, sections: list[str], expect_present: set[str], expect_absent: set[str]):
+        """Generate a PDF with the given sections and assert TOC/section-header presence."""
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = self._make_df()
+        has_summary = "executive_summary" in sections
+        ai = self._make_ai_content(with_summary=has_summary)
+
+        # Add some anomalies so anomaly section can render if toggled
+        if "anomalies" in sections:
+            ai["anomalies"] = [{"message": "Spike detected in Value"}]
+
+        if "insights" in sections:
+            ai["insights"] = [{"kpi": "Value", "number": "$300", "reason": "Steady growth", "action": "Invest", "sentiment": "positive", "priority": "high"}]
+
+        config = {
+            "metric_columns": ["Value"],
+            "title": "Section Toggle Test",
+            "sections": sections,
+            "report_id": f"test-section-{'-'.join(sections) if sections else 'none'}",
+        }
+        user_data = self._make_user_data()
+
+        path = build_sync(df, [], ai, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+
+            for name in expect_present:
+                assert name in text, (
+                    f"Expected section '{name}' to appear in PDF with sections={sections}, "
+                    f"but it was not found in the rendered text"
+                )
+            for name in expect_absent:
+                assert name not in text, (
+                    f"Section '{name}' appeared in PDF with sections={sections}, "
+                    f"but it should have been excluded"
+                )
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    # ── 9 test cases ──────────────────────────────────────────────────
+
+    def test_executive_summary_only(self):
+        """Only Cover + Executive Summary + Recommendations (tied to exec_summary)."""
+        self._check_pdf(
+            sections=["executive_summary"],
+            expect_present={"Executive Summary", "Recommendations", "Cover Page"},
+            expect_absent={"Key Metrics Overview", "Charts & Visualizations", "AI Insights",
+                           "Anomaly Flags", "Data Table", "Appendix — Raw Data"},
+        )
+
+    def test_kpi_overview_only(self):
+        """Only Cover + Key Metrics Overview."""
+        self._check_pdf(
+            sections=["kpi_overview"],
+            expect_present={"Key Metrics Overview", "Cover Page"},
+            expect_absent={"Executive Summary", "Charts & Visualizations", "AI Insights",
+                           "Anomaly Flags", "Data Table", "Recommendations", "Appendix — Raw Data"},
+        )
+
+    def test_charts_only(self):
+        """Only Cover + Charts."""
+        self._check_pdf(
+            sections=["charts"],
+            expect_present={"Charts & Visualizations", "Cover Page"},
+            expect_absent={"Executive Summary", "Key Metrics Overview", "AI Insights",
+                           "Anomaly Flags", "Data Table", "Recommendations", "Appendix — Raw Data"},
+        )
+
+    def test_ai_insights_only(self):
+        """Only Cover + AI Insights + Recommendations (tied to insights)."""
+        self._check_pdf(
+            sections=["insights"],
+            expect_present={"AI Insights", "Recommendations", "Cover Page"},
+            expect_absent={"Executive Summary", "Key Metrics Overview", "Charts & Visualizations",
+                           "Anomaly Flags", "Data Table", "Appendix — Raw Data"},
+        )
+
+    def test_anomalies_only(self):
+        """Only Cover + Anomaly Flags."""
+        self._check_pdf(
+            sections=["anomalies"],
+            expect_present={"Anomaly Flags", "Cover Page"},
+            expect_absent={"Executive Summary", "Key Metrics Overview", "Charts & Visualizations",
+                           "AI Insights", "Data Table", "Recommendations", "Appendix — Raw Data"},
+        )
+
+    def test_data_table_only(self):
+        """Only Cover + Data Table."""
+        self._check_pdf(
+            sections=["data_table"],
+            expect_present={"Data Table", "Cover Page"},
+            expect_absent={"Executive Summary", "Key Metrics Overview", "Charts & Visualizations",
+                           "AI Insights", "Anomaly Flags", "Recommendations", "Appendix — Raw Data"},
+        )
+
+    def test_appendix_only(self):
+        """Only Cover + Appendix."""
+        self._check_pdf(
+            sections=["appendix"],
+            expect_present={"Appendix — Raw Data", "Cover Page"},
+            expect_absent={"Executive Summary", "Key Metrics Overview", "Charts & Visualizations",
+                           "AI Insights", "Anomaly Flags", "Data Table", "Recommendations"},
+        )
+
+    def test_all_sections(self):
+        """Every section checked → all present, none missing."""
+        self._check_pdf(
+            sections=["executive_summary", "kpi_overview", "charts", "insights",
+                      "anomalies", "data_table", "appendix"],
+            expect_present={"Executive Summary", "Key Metrics Overview", "Charts & Visualizations",
+                            "AI Insights", "Anomaly Flags", "Data Table", "Recommendations",
+                            "Appendix — Raw Data", "Cover Page"},
+            expect_absent=set(),
+        )
+
+    def test_no_sections(self):
+        """No sections checked → only Cover + TOC page, no body section headers."""
+        self._check_pdf(
+            sections=[],
+            expect_present={"Cover Page"},
+            expect_absent={"Executive Summary", "Key Metrics Overview", "Charts & Visualizations",
+                           "AI Insights", "Anomaly Flags", "Data Table", "Recommendations",
+                           "Appendix — Raw Data"},
+        )
