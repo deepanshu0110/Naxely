@@ -79,7 +79,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: [] } })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
     renderPage()
     await waitFor(() => {
       expect(screen.getByText('No templates yet')).toBeInTheDocument()
@@ -91,7 +91,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: mockTemplates } })
+    vi.mocked(api.get).mockResolvedValue({ data: mockTemplates })
     renderPage()
     await waitFor(() => {
       expect(screen.getByText('Monthly Client Report')).toBeInTheDocument()
@@ -118,7 +118,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: [] } })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
     renderPage()
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /no templates yet/i })).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: [] } })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
     renderPage()
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /no templates yet/i })).toBeInTheDocument()
@@ -154,8 +154,8 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: [] } })
-    vi.mocked(api.post).mockResolvedValue({ data: { success: true, data: { id: 'tmpl-new' } } })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
+    vi.mocked(api.post).mockResolvedValue({ data: { id: 'tmpl-new' } })
     renderPage()
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /no templates yet/i })).toBeInTheDocument()
@@ -183,7 +183,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: mockTemplates } })
+    vi.mocked(api.get).mockResolvedValue({ data: mockTemplates })
     renderPage()
     await waitFor(() => {
       expect(screen.getByText('Monthly Client Report')).toBeInTheDocument()
@@ -200,7 +200,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: mockTemplates } })
+    vi.mocked(api.get).mockResolvedValue({ data: mockTemplates })
     vi.mocked(api.patch).mockResolvedValue({ data: { success: true } })
     renderPage()
     await waitFor(() => {
@@ -228,8 +228,8 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: mockTemplates } })
-    vi.mocked(api.delete).mockResolvedValue({ data: { success: true, data: { deleted: true } } })
+    vi.mocked(api.get).mockResolvedValue({ data: mockTemplates })
+    vi.mocked(api.delete).mockResolvedValue({ data: { deleted: true } })
     renderPage()
     await waitFor(() => {
       expect(screen.getByText('Monthly Client Report')).toBeInTheDocument()
@@ -248,7 +248,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: mockTemplates } })
+    vi.mocked(api.get).mockResolvedValue({ data: mockTemplates })
     vi.mocked(api.patch).mockResolvedValue({ data: { success: true } })
     renderPage()
     await waitFor(() => {
@@ -265,7 +265,7 @@ describe('Templates', () => {
     vi.mocked(useAuthStore).mockReturnValue({
       user: { tier: 'pro', full_name: 'Pro User', email: 'pro@test.com' },
     })
-    vi.mocked(api.get).mockResolvedValue({ data: { success: true, data: [] } })
+    vi.mocked(api.get).mockResolvedValue({ data: [] })
     const { container } = renderPage()
     const mainElements = container.querySelectorAll('.dark\\:bg-darkBg')
     expect(mainElements.length).toBeGreaterThan(0)

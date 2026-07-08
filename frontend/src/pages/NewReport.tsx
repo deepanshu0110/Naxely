@@ -65,9 +65,9 @@ export default function NewReport() {
   useEffect(() => {
     if (!isPro || templatesFetched.current) return
     templatesFetched.current = true
-    api.get<{ success: boolean; data: Template[] }>('/templates')
+    api.get<Template[]>('/templates')
       .then(({ data }) => {
-        setTemplates(data.data)
+        setTemplates(data)
         const defaultTmpl = data.data.find((t) => t.is_default)
         if (defaultTmpl) {
           applyTemplate(defaultTmpl)

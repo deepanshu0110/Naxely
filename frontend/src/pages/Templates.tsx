@@ -71,8 +71,8 @@ export default function Templates() {
     setIsLoading(true)
     setError(null)
     try {
-      const resp = await api.get<{ success: boolean; data: Template[] }>('/templates')
-      setTemplates(resp.data.data)
+      const resp = await api.get<Template[]>('/templates')
+      setTemplates(resp.data)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to load templates'
       setError(msg)
