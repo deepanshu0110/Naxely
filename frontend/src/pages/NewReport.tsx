@@ -68,7 +68,7 @@ export default function NewReport() {
     api.get<Template[]>('/templates')
       .then(({ data }) => {
         setTemplates(data)
-        const defaultTmpl = data.data.find((t) => t.is_default)
+        const defaultTmpl = data.find((t) => t.is_default)
         if (defaultTmpl) {
           applyTemplate(defaultTmpl)
         }
