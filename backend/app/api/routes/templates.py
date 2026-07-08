@@ -22,6 +22,7 @@ class TemplateCreateRequest(BaseModel):
 class TemplateUpdateRequest(BaseModel):
     name: Optional[str] = Field(None, max_length=255)
     is_default: Optional[bool] = None
+    config: Optional[dict] = None
 
 
 @router.get("/templates")
@@ -42,6 +43,7 @@ async def list_templates(
             "id": str(row["id"]),
             "name": row["name"],
             "template_type": row.get("template_type", "marketing"),
+            "config": row.get("config") or {},
             "is_default": row.get("is_default", False),
             "created_at": row["created_at"].isoformat() + "Z" if row.get("created_at") else None,
         })
@@ -85,6 +87,7 @@ async def create_template(
             "id": str(row["id"]),
             "name": row["name"],
             "template_type": row.get("template_type", "marketing"),
+            "config": body.config,
             "is_default": row.get("is_default", False),
             "created_at": row["created_at"].isoformat() + "Z" if row.get("created_at") else None,
         },
@@ -126,6 +129,10 @@ async def update_template(
         update_parts.append("is_default = :is_default")
         params["is_default"] = body.is_default
 
+    if body.config is not None:
+        update_parts.append("config = :config")
+        params["config"] = json.dumps(body.config)
+
     await db.execute(
         text(f"UPDATE templates SET {', '.join(update_parts)} WHERE id = :tid"),
         params,
@@ -146,6 +153,7 @@ async def update_template(
             "id": str(updated["id"]),
             "name": updated["name"],
             "template_type": updated.get("template_type", "marketing"),
+            "config": updated.get("config") or {},
             "is_default": updated.get("is_default", False),
             "created_at": updated["created_at"].isoformat() + "Z" if updated.get("created_at") else None,
         },

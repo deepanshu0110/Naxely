@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', tiers: ['free', 'pro', 'agency'] },
   { label: 'New Report', icon: FilePlus, href: '/report/new', tiers: ['free', 'pro', 'agency'] },
   { label: 'Scheduled Reports', icon: Clock, href: '/scheduled-reports', tiers: ['agency'], hideForOthers: true },
-  { label: 'Templates', icon: LayoutTemplate, href: '#', tiers: ['pro', 'agency'], disabled: true, lockedFor: ['free'] },
+  { label: 'Templates', icon: LayoutTemplate, href: '/templates', tiers: ['pro', 'agency'], lockedFor: ['free'] },
   { label: 'Settings', icon: Settings, href: '/settings', tiers: ['free', 'pro', 'agency'] },
 ]
 

@@ -24,3 +24,5 @@ dist/
 /tmp/
 *.pdf
 *.csv
+.vercel
+.env*

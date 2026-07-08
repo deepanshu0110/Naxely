@@ -14,6 +14,7 @@ import Dashboard from '@/pages/Dashboard'
 import NewReport from '@/pages/NewReport'
 import ReportView from '@/pages/ReportView'
 import ScheduledReports from '@/pages/ScheduledReports'
+import Templates from '@/pages/Templates'
 import Landing from '@/pages/Landing'
 import Settings from '@/pages/Settings'
 import Pricing from '@/pages/Pricing'
@@ -120,6 +121,7 @@ export const routes: RouteRecord[] = [
           { path: '/report/new', element: <NewReport /> },
           { path: '/report/:id', element: <ReportView /> },
           { path: '/scheduled-reports', element: <ScheduledReports /> },
+          { path: '/templates', element: <Templates /> },
           { path: '/settings', element: <Settings /> },
           { path: '/settings/api-key', element: <Navigate to="/settings" replace /> },
           { path: '/settings/billing', element: <Navigate to="/settings" replace /> },

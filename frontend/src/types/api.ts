@@ -143,6 +143,14 @@ export interface Template {
   id: string
   name: string
   template_type: string
+  config: {
+    tone?: string
+    sections?: string[]
+    brand?: {
+      company_name?: string
+      prepared_by?: string
+    }
+  }
   is_default: boolean
   created_at: string
 }

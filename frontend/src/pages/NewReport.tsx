@@ -13,6 +13,7 @@ import { useReportStatus } from '@/hooks/useReportStatus'
 import { useReportStore } from '@/store/reportStore'
 import { useAuthStore } from '@/store/authStore'
 import type { UploadResult, ColumnConfig, ChartSpec, ReportConfig as ReportConfigType } from '@/types/report'
+import type { Template } from '@/types/api'
 
 const STEP_LABELS = ['Upload', 'Map', 'Configure', 'Charts', 'Generate']
 
@@ -24,6 +25,7 @@ export default function NewReport() {
   const [reportTone, setReportTone] = useState('professional')
   const [reportSections, setReportSections] = useState<string[]>(['charts', 'kpi_overview', 'data_table'])
   const [reportDateRange, setReportDateRange] = useState<{ from: string; to: string } | undefined>(undefined)
+  const [reportBrand, setReportBrand] = useState<{ company_name?: string; prepared_by?: string } | null>(null)
   const [chartSpecs, setChartSpecs] = useState<ChartSpec[]>([])
   const [generating, setGenerating] = useState(false)
   const [sourceType, setSourceType] = useState<'csv' | 'sheets'>('csv')
@@ -32,9 +34,13 @@ export default function NewReport() {
   const [serviceAccountEmail, setServiceAccountEmail] = useState<string | null>(null)
   const [sheetsConfigLoading, setSheetsConfigLoading] = useState(false)
   const sheetsConfigFetched = useRef(false)
+  const [templates, setTemplates] = useState<Template[]>([])
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('')
+  const templatesFetched = useRef(false)
 
   const generateReport = useReportStore((s) => s.generateReport)
   const user = useAuthStore((s) => s.user)
+  const isPro = user?.tier === 'pro' || user?.tier === 'agency'
   const { progress, currentStep: statusStep, isPolling, timeoutMessage, startPolling } = useReportStatus()
   const location = useLocation()
 
@@ -55,6 +61,41 @@ export default function NewReport() {
       .catch(() => setServiceAccountEmail(null))
       .finally(() => setSheetsConfigLoading(false))
   }, [sourceType])
+
+  useEffect(() => {
+    if (!isPro || templatesFetched.current) return
+    templatesFetched.current = true
+    api.get<{ success: boolean; data: Template[] }>('/templates')
+      .then(({ data }) => {
+        setTemplates(data.data)
+        const defaultTmpl = data.data.find((t) => t.is_default)
+        if (defaultTmpl) {
+          applyTemplate(defaultTmpl)
+        }
+      })
+      .catch(() => {})
+  }, [isPro])
+
+  const applyTemplate = useCallback((tmpl: Template) => {
+    setSelectedTemplateId(tmpl.id)
+    if (tmpl.config?.tone) setReportTone(tmpl.config.tone)
+    if (tmpl.config?.sections && tmpl.config.sections.length > 0) setReportSections(tmpl.config.sections)
+    if (tmpl.config?.brand) {
+      const brand: { company_name?: string; prepared_by?: string } = {}
+      if (tmpl.config.brand.company_name) brand.company_name = tmpl.config.brand.company_name
+      if (tmpl.config.brand.prepared_by) brand.prepared_by = tmpl.config.brand.prepared_by
+      setReportBrand(Object.keys(brand).length > 0 ? brand : null)
+    }
+  }, [])
+
+  const handleTemplateSelect = useCallback((templateId: string) => {
+    if (!templateId) {
+      setSelectedTemplateId('')
+      return
+    }
+    const tmpl = templates.find((t) => t.id === templateId)
+    if (tmpl) applyTemplate(tmpl)
+  }, [templates, applyTemplate])
 
   const handleSheetsConnect = useCallback(async () => {
     if (!sheetsUrl.trim()) return
@@ -124,8 +165,8 @@ export default function NewReport() {
 
     if (user?.tier !== 'free') {
       payload.brand = {
-        company_name: user?.company_name ?? '',
-        prepared_by: user?.full_name ?? '',
+        company_name: reportBrand?.company_name || user?.company_name || '',
+        prepared_by: reportBrand?.prepared_by || user?.full_name || '',
       }
     }
 
@@ -273,6 +314,27 @@ export default function NewReport() {
             {currentStep === 3 && (
               <div>
                 <h2 className="mb-4 text-lg font-semibold text-ink dark:text-gray-100">Configure Report</h2>
+
+                {isPro && templates.length > 0 && (
+                  <div className="mb-6">
+                    <label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                      Load from template
+                    </label>
+                    <select
+                      value={selectedTemplateId}
+                      onChange={(e) => handleTemplateSelect(e.target.value)}
+                      className="w-full rounded-lg border border-slate bg-paper px-3 py-2 text-sm text-ink focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-darkBg dark:text-paper"
+                    >
+                      <option value="">None</option>
+                      {templates.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name}{t.is_default ? ' (Default)' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <ReportConfigForm onConfigChange={handleConfigChange} />
               </div>
             )}
