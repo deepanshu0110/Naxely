@@ -45,7 +45,7 @@ async def list_templates(
             "template_type": row.get("template_type", "marketing"),
             "config": row.get("config") or {},
             "is_default": row.get("is_default", False),
-            "created_at": row["created_at"].isoformat() + "Z" if row.get("created_at") else None,
+            "created_at": row["created_at"].isoformat() if row.get("created_at") else None,
         })
 
     return {"success": True, "data": templates}
@@ -89,7 +89,7 @@ async def create_template(
             "template_type": row.get("template_type", "marketing"),
             "config": body.config,
             "is_default": row.get("is_default", False),
-            "created_at": row["created_at"].isoformat() + "Z" if row.get("created_at") else None,
+            "created_at": row["created_at"].isoformat() if row.get("created_at") else None,
         },
     }
 

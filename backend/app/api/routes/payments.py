@@ -397,7 +397,7 @@ async def downgrade_subscription(
             "success": True,
             "data": {
                 "planned_tier": "free",
-                "effective_date": effective_date.isoformat() + "Z",
+                "effective_date": effective_date.isoformat(),
                 "message": f"Your {current_user.tier.capitalize()} access continues until {month_name}. After that, you'll move to the Free plan.",
             },
         }
@@ -440,7 +440,7 @@ async def downgrade_subscription(
             "success": True,
             "data": {
                 "planned_tier": "pro",
-                "effective_date": effective_date.isoformat() + "Z",
+                "effective_date": effective_date.isoformat(),
                 "scheduled_change_id": scheduled_change_id,
                 "message": f"You'll move to Pro starting {month_name}",
             },
@@ -471,7 +471,7 @@ async def get_subscription_state(
             "id": sub.scheduled_change.id,
             "product_id": sub.scheduled_change.product_id,
             "planned_tier": target_tier,
-            "effective_at": sub.scheduled_change.effective_at.isoformat() + "Z",
+            "effective_at": sub.scheduled_change.effective_at.isoformat(),
         }
 
     return {
@@ -480,7 +480,7 @@ async def get_subscription_state(
             "has_subscription": True,
             "subscription_id": sub.subscription_id,
             "status": sub.status,
-            "next_billing_date": sub.next_billing_date.isoformat() + "Z" if sub.next_billing_date else None,
+            "next_billing_date": sub.next_billing_date.isoformat() if sub.next_billing_date else None,
             "cancel_at_next_billing_date": sub.cancel_at_next_billing_date,
             "scheduled_change": scheduled,
         },
@@ -557,7 +557,7 @@ async def cancel_subscription(
     row = result.mappings().first()
     access_until = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.now(timezone.utc)
 
-    access_until_str = access_until.isoformat() + "Z"
+    access_until_str = access_until.isoformat()
     month_name = f"{access_until.strftime('%B')} {access_until.day}, {access_until.year}" if hasattr(access_until, "strftime") else str(access_until)
 
     return {

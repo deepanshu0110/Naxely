@@ -1299,7 +1299,7 @@ async def share_report(
         "data": {
             "share_url": f"{settings.FRONTEND_BASE_URL}/share/{token}",
             "share_token": token,
-            "expires_at": expires_at.isoformat() + "Z",
+            "expires_at": expires_at.isoformat(),
         },
     }
 

@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 import json
 import pytest
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, timezone
 from starlette.requests import Request
 from fastapi import HTTPException
 
@@ -330,7 +330,7 @@ class TestTemplateOwnership:
     async def test_owner_can_update_own_template(self):
         from app.api.routes.templates import update_template, TemplateUpdateRequest
 
-        template_row = _Row(id="template-owned-by-a", user_id=FakeUserA.id, name="Original", template_type="marketing", is_default=False, created_at=datetime.utcnow())
+        template_row = _Row(id="template-owned-by-a", user_id=FakeUserA.id, name="Original", template_type="marketing", is_default=False, created_at=datetime.now(timezone.utc))
 
         db = _AsyncDB([template_row, MagicMock(), template_row])
         body = TemplateUpdateRequest(name="Updated Name")
