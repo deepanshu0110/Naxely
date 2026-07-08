@@ -36,7 +36,6 @@ const proSections = [
   { id: 'executive_summary', label: 'Executive Summary' },
   { id: 'insights', label: 'AI Insights' },
   { id: 'anomalies', label: 'Anomaly Detection' },
-  { id: 'trends', label: 'Trends' },
   { id: 'appendix', label: 'Appendix' },
 ]
 

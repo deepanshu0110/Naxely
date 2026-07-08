@@ -33,7 +33,6 @@ const proSections = [
   { id: 'executive_summary', label: 'Executive Summary', free: false },
   { id: 'insights', label: 'AI Insights', free: false },
   { id: 'anomalies', label: 'Anomaly Detection', free: false },
-  { id: 'trends', label: 'Trends', free: false },
 ]
 
 export default function ReportConfigForm({ tone, sections, onToneChange, onSectionsChange, onConfigChange }: ReportConfigProps) {

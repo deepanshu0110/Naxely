@@ -1130,7 +1130,7 @@ def build_sync(
     # SECTION 6 — Anomaly Flags
     # ────────────────────────────────────────────────────────────
     anomalies = ai_content.get('anomalies') or []
-    if anomalies:
+    if 'anomalies' in config.get('sections', []) and anomalies:
         toc_entries.append(('Anomaly Flags', str(toc_page)))
         toc_page += 1
         body_story.append(_SectionHeader('Anomaly Flags', brand_color, content_width))

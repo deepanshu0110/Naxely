@@ -360,7 +360,6 @@ async def _run_all_scheduled_reports() -> None:
                         "executive_summary",
                         "insights",
                         "anomalies",
-                        "trends",
                         "recommendations",
                         "data_table",
                     ])
