@@ -19,10 +19,17 @@ vi.mock('@/store/authStore', () => ({
 
 import ReportConfigForm from '../ReportConfig'
 
-function renderForm() {
+function renderForm(overrides: Record<string, unknown> = {}) {
   return render(
     <MemoryRouter>
-      <ReportConfigForm onConfigChange={vi.fn()} />
+      <ReportConfigForm
+        tone="professional"
+        sections={['charts', 'kpi_overview', 'data_table']}
+        onToneChange={vi.fn()}
+        onSectionsChange={vi.fn()}
+        onConfigChange={vi.fn()}
+        {...overrides}
+      />
     </MemoryRouter>,
   )
 }

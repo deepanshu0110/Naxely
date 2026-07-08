@@ -6,11 +6,13 @@ interface ReportConfigData {
   title: string
   dateFrom: string
   dateTo: string
-  tone: string
-  sections: string[]
 }
 
 interface ReportConfigProps {
+  tone: string
+  sections: string[]
+  onToneChange: (tone: string) => void
+  onSectionsChange: (sections: string[]) => void
   onConfigChange: (config: ReportConfigData) => void
 }
 
@@ -34,7 +36,7 @@ const proSections = [
   { id: 'trends', label: 'Trends', free: false },
 ]
 
-export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) {
+export default function ReportConfigForm({ tone, sections, onToneChange, onSectionsChange, onConfigChange }: ReportConfigProps) {
   const user = useAuthStore((s) => s.user)
   const isPro = user?.tier === 'pro' || user?.tier === 'agency'
   const isAiLocked = user?.tier === 'free' && !user?.has_api_key
@@ -42,18 +44,14 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
   const [title, setTitle] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
-  const [tone, setTone] = useState('professional')
-  const [sections, setSections] = useState<string[]>(
-    [...freeSections.map((s) => s.id), ...(isPro ? proSections.map((s) => s.id) : [])],
-  )
 
   const toggleSection = (id: string) => {
     const updated = sections.includes(id) ? sections.filter((s) => s !== id) : [...sections, id]
-    setSections(updated)
+    onSectionsChange(updated)
   }
 
   const emit = () => {
-    onConfigChange({ title, dateFrom, dateTo, tone, sections })
+    onConfigChange({ title, dateFrom, dateTo })
   }
 
   const handleTitleChange = (v: string) => {
@@ -113,10 +111,7 @@ export default function ReportConfigForm({ onConfigChange }: ReportConfigProps) 
             return (
               <button
                 key={t.id}
-                onClick={() => {
-                  setTone(t.id)
-                  emit()
-                }}
+                onClick={() => onToneChange(t.id)}
                 className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
                   active
                     ? 'border-amber-500 bg-amber-50 text-amber-600 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400'

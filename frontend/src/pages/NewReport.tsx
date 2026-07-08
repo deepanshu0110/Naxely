@@ -121,10 +121,8 @@ export default function NewReport() {
   }, [])
 
   const handleConfigChange = useCallback(
-    (config: { title: string; dateFrom: string; dateTo: string; tone: string; sections: string[] }) => {
+    (config: { title: string; dateFrom: string; dateTo: string }) => {
       setReportTitle(config.title)
-      setReportTone(config.tone)
-      setReportSections(config.sections)
       setReportDateRange(
         config.dateFrom && config.dateTo ? { from: config.dateFrom, to: config.dateTo } : undefined,
       )
@@ -335,7 +333,13 @@ export default function NewReport() {
                   </div>
                 )}
 
-                <ReportConfigForm onConfigChange={handleConfigChange} />
+                <ReportConfigForm
+                  tone={reportTone}
+                  sections={reportSections}
+                  onToneChange={setReportTone}
+                  onSectionsChange={setReportSections}
+                  onConfigChange={handleConfigChange}
+                />
               </div>
             )}
 
