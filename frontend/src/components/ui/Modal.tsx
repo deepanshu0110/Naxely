@@ -6,9 +6,10 @@ interface ModalProps {
   onClose: () => void
   title: string
   children: ReactNode
+  footer?: ReactNode
 }
 
-export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export default function Modal({ isOpen, onClose, title, children, footer }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -30,14 +31,23 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         if (e.target === overlayRef.current) onClose()
       }}
     >
-      <div className="mx-4 w-full max-w-md rounded-xl bg-paper p-6 text-ink shadow-lg dark:bg-darkBg dark:text-paper">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-body font-semibold text-ink dark:text-gray-100">{title}</h2>
-          <button onClick={onClose} className="rounded-md p-1 text-gray-400 transition-colors duration-150 ease-in-out hover:bg-slate hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300">
-            <X className="h-5 w-5" />
-          </button>
+      <div className="mx-4 flex w-full max-w-md flex-col rounded-xl bg-paper text-ink shadow-lg max-h-[calc(100vh-3rem)] dark:bg-darkBg dark:text-paper">
+        <div className="flex-shrink-0 px-6 pt-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-body font-semibold text-ink dark:text-gray-100">{title}</h2>
+            <button onClick={onClose} className="rounded-md p-1 text-gray-400 transition-colors duration-150 ease-in-out hover:bg-slate hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-gray-700 dark:hover:text-gray-300">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-        {children}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6">
+          {children}
+        </div>
+        {footer && (
+          <div className="flex-shrink-0 border-t border-gray-200 px-6 pb-6 pt-4 dark:border-gray-700">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   )

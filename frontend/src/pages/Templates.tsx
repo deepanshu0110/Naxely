@@ -333,6 +333,16 @@ export default function Templates() {
         isOpen={formOpen}
         onClose={closeForm}
         title={formMode === 'create' ? 'New Template' : 'Edit Template'}
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button variant="ghost" size="sm" onClick={closeForm} disabled={formSubmitting}>
+              Cancel
+            </Button>
+            <Button size="sm" loading={formSubmitting} onClick={handleFormSubmit}>
+              {formMode === 'create' ? 'Create' : 'Save'}
+            </Button>
+          </div>
+        }
       >
         <div className="space-y-4">
           <div>
@@ -374,7 +384,7 @@ export default function Templates() {
 
           <div>
             <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400">Sections</label>
-            <div className="max-h-[45vh] space-y-1.5 overflow-y-auto">
+            <div className="space-y-1.5">
               {allSections.map((s) => (
                 <label
                   key={s.id}
@@ -410,15 +420,6 @@ export default function Templates() {
                 className="w-full rounded-lg border border-slate bg-paper px-3 py-2 text-sm text-ink placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-gray-600 dark:bg-darkBg dark:text-paper dark:placeholder-gray-500"
               />
             </div>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-2">
-            <Button variant="ghost" size="sm" onClick={closeForm} disabled={formSubmitting}>
-              Cancel
-            </Button>
-            <Button size="sm" loading={formSubmitting} onClick={handleFormSubmit}>
-              {formMode === 'create' ? 'Create' : 'Save'}
-            </Button>
           </div>
         </div>
       </Modal>
