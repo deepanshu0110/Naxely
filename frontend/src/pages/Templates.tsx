@@ -374,7 +374,7 @@ export default function Templates() {
 
           <div>
             <label className="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400">Sections</label>
-            <div className="space-y-1.5">
+            <div className="max-h-[45vh] space-y-1.5 overflow-y-auto">
               {allSections.map((s) => (
                 <label
                   key={s.id}
