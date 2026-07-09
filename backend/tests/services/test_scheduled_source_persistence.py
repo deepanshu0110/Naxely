@@ -13,7 +13,7 @@ from app.core.supabase_helpers import _run_sync
 
 
 def _fake_request() -> Request:
-    return Request(scope={
+    req = Request(scope={
         "type": "http",
         "method": "POST",
         "path": "/reports/upload",
@@ -23,6 +23,9 @@ def _fake_request() -> Request:
         "scheme": "http",
         "query_string": b"",
     })
+    req.state._rate_limiting_complete = True
+    req.state.view_rate_limit = None
+    return req
 
 
 def _csv_upload() -> UploadFile:
@@ -64,6 +67,7 @@ class TestUploadCopiesToScheduledSources:
         with (
             patch("app.api.routes.reports._get_supabase", return_value=mock_storage),
             patch("app.api.routes.reports.parse_csv") as mock_parse,
+            patch("slowapi.extension.Limiter._check_request_limit"),
         ):
             df = pd.DataFrame({"a": [1, 3], "b": [2, 4]})
             mock_parse.return_value = df
@@ -102,6 +106,7 @@ class TestUploadCopiesToScheduledSources:
         with (
             patch("app.api.routes.reports._get_supabase", return_value=mock_storage),
             patch("app.api.routes.reports.parse_csv") as mock_parse,
+            patch("slowapi.extension.Limiter._check_request_limit"),
         ):
             df = pd.DataFrame({"a": [1, 3], "b": [2, 4]})
             mock_parse.return_value = df
@@ -128,6 +133,7 @@ class TestUploadCopiesToScheduledSources:
         with (
             patch("app.api.routes.reports._get_supabase", return_value=mock_storage),
             patch("app.api.routes.reports.parse_csv") as mock_parse,
+            patch("slowapi.extension.Limiter._check_request_limit"),
         ):
             df = pd.DataFrame({"a": [1, 3], "b": [2, 4]})
             mock_parse.return_value = df
@@ -163,6 +169,7 @@ class TestUploadCopiesToScheduledSources:
         with (
             patch("app.api.routes.reports._get_supabase", return_value=mock_storage),
             patch("app.api.routes.reports.parse_csv") as mock_parse,
+            patch("slowapi.extension.Limiter._check_request_limit"),
         ):
             df = pd.DataFrame({"a": [1, 3], "b": [2, 4]})
             mock_parse.return_value = df

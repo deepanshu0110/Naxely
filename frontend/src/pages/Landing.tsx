@@ -907,6 +907,11 @@ export default function Landing() {
               </p>
             </details>
           </div>
+          <div className="mt-8 text-center">
+            <Link to="/faq" className="text-sm font-semibold text-amber-600 hover:text-amber-700">
+              See all frequently asked questions &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -961,6 +966,9 @@ export default function Landing() {
               </Link>
               <Link to="/refund" className="hover:text-ink">
                 Refund Policy
+              </Link>
+              <Link to="/faq" className="hover:text-ink">
+                FAQ
               </Link>
             </div>
           </div>

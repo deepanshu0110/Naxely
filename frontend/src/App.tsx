@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react'
 import { HelmetProvider } from 'react-helmet-async'
 import { Analytics } from '@vercel/analytics/react'
 import { Navigate, Outlet } from 'react-router-dom'
@@ -13,8 +14,6 @@ import ResetPassword from '@/pages/ResetPassword'
 import Dashboard from '@/pages/Dashboard'
 import NewReport from '@/pages/NewReport'
 import ReportView from '@/pages/ReportView'
-import ScheduledReports from '@/pages/ScheduledReports'
-import Templates from '@/pages/Templates'
 import Landing from '@/pages/Landing'
 import Settings from '@/pages/Settings'
 import Pricing from '@/pages/Pricing'
@@ -32,6 +31,18 @@ import BlogPostHub from '@/pages/BlogPostHub'
 import BlogPostClientReporting from '@/pages/BlogPostClientReporting'
 import ComparisonAgencyAnalytics from '@/pages/ComparisonAgencyAnalytics'
 import ComparisonDatabox from '@/pages/ComparisonDatabox'
+import Faq from '@/pages/Faq'
+
+const LazyScheduledReports = React.lazy(() => import('@/pages/ScheduledReports'))
+const LazyTemplates = React.lazy(() => import('@/pages/Templates'))
+
+function Loading() {
+  return (
+    <div className="flex h-screen items-center justify-center bg-slate">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-amber-500" />
+    </div>
+  )
+}
 
 function RootLayout() {
   return (
@@ -114,14 +125,15 @@ export const routes: RouteRecord[] = [
       { path: '/blog/client-reporting-software-guide', element: <BlogPostClientReporting /> },
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
+      { path: '/faq', element: <Faq /> },
       {
         element: <ProtectedRoute />,
         children: [
           { path: '/dashboard', element: <Dashboard /> },
           { path: '/report/new', element: <NewReport /> },
           { path: '/report/:id', element: <ReportView /> },
-          { path: '/scheduled-reports', element: <ScheduledReports /> },
-          { path: '/templates', element: <Templates /> },
+          { path: '/scheduled-reports', element: <Suspense fallback={<Loading />}><LazyScheduledReports /></Suspense> },
+          { path: '/templates', element: <Suspense fallback={<Loading />}><LazyTemplates /></Suspense> },
           { path: '/settings', element: <Settings /> },
           { path: '/settings/api-key', element: <Navigate to="/settings" replace /> },
           { path: '/settings/billing', element: <Navigate to="/settings" replace /> },

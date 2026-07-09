@@ -125,10 +125,8 @@ def call_openai_compat(prompt: str, system: str, api_key: str, timeout: int = 25
         logger.error("AI call failed: %s", type(e).__name__)
         return None
     finally:
-        try:
+        if 'client' in locals():
             del client
-        except Exception:
-            pass
     if result is None:
         return None
     return result
@@ -191,7 +189,8 @@ def call_claude(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
         logger.error("Claude call failed: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="AI generation failed")
     finally:
-        del client
+        if 'client' in locals():
+            del client
     if not result:
         raise HTTPException(status_code=500, detail="AI returned empty response")
     return result
@@ -241,7 +240,8 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
         except requests.RequestException as e:
             status = e.response.status_code if e.response is not None else "N/A"
             body = e.response.text if e.response is not None else "N/A"
-            logger.error("Gemini call failed: status=%s body=%s", status, body)
+            safe_url = re.sub(r'([?&]key=)[^&]+', r'\1***REDACTED***', url)
+            logger.error("Gemini call failed: status=%s url=%s body=%s", status, safe_url, body)
             raise HTTPException(status_code=500, detail="AI generation failed")
     logger.error("Gemini retry exhausted after 3 attempts")
     raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")

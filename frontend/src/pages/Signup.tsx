@@ -66,7 +66,7 @@ export default function Signup() {
       navigate('/dashboard')
     } catch (err: any) {
       const message =
-        err?.message ??
+        err?.message ||
         'Sign up failed. Please try again.'
       toast.error(message)
     } finally {
@@ -175,6 +175,7 @@ export default function Signup() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors duration-150 ease-in-out hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

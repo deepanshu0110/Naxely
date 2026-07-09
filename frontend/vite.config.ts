@@ -45,7 +45,7 @@ export default defineConfig({
     mock: true,
     dirStyle: 'nested',
     includedRoutes() {
-      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/refund', '/blog', '/blog/byok-ai-reporting-tool', '/blog/csv-to-pdf-report-generator', '/blog/white-label-client-reporting-agencies', '/blog/automating-client-reports', '/blog/client-reporting-software-guide', '/compare/agencyanalytics', '/compare/databox']
+      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/refund', '/blog', '/blog/byok-ai-reporting-tool', '/blog/csv-to-pdf-report-generator', '/blog/white-label-client-reporting-agencies', '/blog/automating-client-reports', '/blog/client-reporting-software-guide', '/compare/agencyanalytics', '/compare/databox', '/faq']
     },
   },
 })

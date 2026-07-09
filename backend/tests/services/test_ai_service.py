@@ -1,6 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
+import json
 import pytest
 import pandas as pd
 import numpy as np
@@ -201,6 +202,41 @@ class TestGeminiRetry:
         with pytest.raises(Exception):
             call_gemini("prompt", "system", "fake-key")
         assert len(calls) == 1, f"Expected 1 POST call on 400 (no retry), got {len(calls)}"
+
+    def test_gemini_url_redacted_in_log_on_error(self, monkeypatch):
+        import io
+        import logging
+        import requests
+        from app.services.ai_service import call_gemini
+
+        captured = io.StringIO()
+        handler = logging.StreamHandler(captured)
+        handler.setLevel(logging.ERROR)
+        logger = logging.getLogger("app.services.ai_service")
+        logger.addHandler(handler)
+        original_level = logger.level
+        logger.setLevel(logging.ERROR)
+
+        try:
+            def error_post(*args, **kwargs):
+                resp = type("FakeResp", (), {
+                    "status_code": 500,
+                    "raise_for_status": lambda self: None,
+                    "text": "internal error",
+                })()
+                raise requests.RequestException("boom", response=resp)
+
+            monkeypatch.setattr("app.services.ai_service.requests.post", error_post)
+
+            with pytest.raises(Exception):
+                call_gemini("prompt", "system", "my-secret-key")
+
+            log_output = captured.getvalue()
+            assert "***REDACTED***" in log_output, "Expected key to be redacted in log"
+            assert "my-secret-key" not in log_output, "Raw key leaked into log"
+        finally:
+            logger.removeHandler(handler)
+            logger.setLevel(original_level)
 
 
 class TestBuildColumnStats:
@@ -599,3 +635,1131 @@ class TestGenerateSummaryStructured:
                 summary = asyncio.run(generate_summary(df, config, mock_user))
 
         assert summary is None
+
+
+# ── _call_ai Dispatch Tests ────────────────────────────────────────────────────
+
+class TestCallAiDispatch:
+    """_call_ai should dispatch to the correct provider function."""
+
+    def test_call_ai_claude(self):
+        from app.services import ai_service as ai_service_mod
+        with patch.object(ai_service_mod, "call_claude", return_value="resp") as mock:
+            result = ai_service_mod._call_ai("claude", "p", "s", "k")
+        assert result == "resp"
+        mock.assert_called_once_with("p", "s", "k", 25)
+
+    def test_call_ai_gemini(self):
+        from app.services import ai_service as ai_service_mod
+        with patch.object(ai_service_mod, "call_gemini", return_value="resp") as mock:
+            result = ai_service_mod._call_ai("gemini", "p", "s", "k")
+        assert result == "resp"
+        mock.assert_called_once_with("p", "s", "k", 25)
+
+    def test_call_ai_openai(self):
+        from app.services import ai_service as ai_service_mod
+        with patch.object(ai_service_mod, "call_openai_compat", return_value="resp") as mock:
+            result = ai_service_mod._call_ai("openai", "p", "s", "k")
+        assert result == "resp"
+        mock.assert_called_once_with("p", "s", "k", 25,
+            base_url="https://api.openai.com/v1", model="gpt-4o")
+
+    def test_call_ai_groq(self):
+        from app.services import ai_service as ai_service_mod
+        with patch.object(ai_service_mod, "call_openai_compat", return_value="resp") as mock:
+            result = ai_service_mod._call_ai("groq", "p", "s", "k")
+        assert result == "resp"
+        mock.assert_called_once_with("p", "s", "k", 25,
+            base_url="https://api.groq.com/openai/v1", model="openai/gpt-oss-120b")
+
+    def test_call_ai_deepseek(self):
+        from app.services import ai_service as ai_service_mod
+        with patch.object(ai_service_mod, "call_openai_compat", return_value="resp") as mock:
+            result = ai_service_mod._call_ai("deepseek", "p", "s", "k")
+        assert result == "resp"
+        mock.assert_called_once_with("p", "s", "k", 25,
+            base_url="https://api.deepseek.com/v1", model="deepseek-chat")
+
+    def test_call_ai_mistral(self):
+        from app.services import ai_service as ai_service_mod
+        with patch.object(ai_service_mod, "call_openai_compat", return_value="resp") as mock:
+            result = ai_service_mod._call_ai("mistral", "p", "s", "k")
+        assert result == "resp"
+        mock.assert_called_once_with("p", "s", "k", 25,
+            base_url="https://api.mistral.ai/v1", model="mistral-large-latest")
+
+    def test_call_ai_unknown_provider_falls_back(self):
+        """Unknown provider calls call_openai (not call_openai_compat)."""
+        from app.services import ai_service as ai_service_mod
+        with patch.object(ai_service_mod, "call_openai", return_value="fallback") as mock:
+            with patch.object(ai_service_mod, "call_openai_compat") as mock_compat:
+                result = ai_service_mod._call_ai("unknown", "p", "s", "k")
+        assert result == "fallback"
+        mock.assert_called_once_with("p", "s", "k", 25)
+        mock_compat.assert_not_called()
+
+
+class TestCallOpenaiCompat:
+    """call_openai_compat error handling."""
+
+    def _make_mock_response(self, content="test content"):
+        mock_msg = MagicMock()
+        mock_msg.content = content
+        mock_choice = MagicMock()
+        mock_choice.message = mock_msg
+        mock_resp = MagicMock()
+        mock_resp.choices = [mock_choice]
+        return mock_resp
+
+    def test_openai_compat_success(self):
+        from app.services.ai_service import call_openai_compat
+        mock_resp = self._make_mock_response("hello world")
+        with patch("app.services.ai_service.OpenAI") as mock_openai:
+            mock_client = MagicMock()
+            mock_openai.return_value = mock_client
+            mock_client.chat.completions.create.return_value = mock_resp
+            result = call_openai_compat("prompt", "system", "key")
+        assert result == "hello world"
+
+    def test_openai_compat_auth_error(self):
+        import httpx
+        from app.services.ai_service import call_openai_compat
+        from openai import AuthenticationError as OpenAIAuthError
+        httpx_resp = httpx.Response(401, request=httpx.Request("POST", "https://api.openai.com/v1"))
+        with patch("app.services.ai_service.OpenAI") as mock_openai:
+            mock_client = MagicMock()
+            mock_openai.return_value = mock_client
+            mock_client.chat.completions.create.side_effect = OpenAIAuthError(
+                "401 Unauthorized", response=httpx_resp, body={}
+            )
+            with pytest.raises(ValueError, match="Invalid API key"):
+                call_openai_compat("prompt", "system", "key")
+
+    def test_openai_compat_rate_limit(self):
+        import httpx
+        from app.services.ai_service import call_openai_compat
+        from fastapi import HTTPException
+        from openai import RateLimitError as OpenAIRateLimitError
+        httpx_resp = httpx.Response(429, request=httpx.Request("POST", "https://api.openai.com/v1"))
+        with patch("app.services.ai_service.OpenAI") as mock_openai:
+            mock_client = MagicMock()
+            mock_openai.return_value = mock_client
+            mock_client.chat.completions.create.side_effect = OpenAIRateLimitError(
+                "429 rate limit", response=httpx_resp, body={}
+            )
+            with pytest.raises(HTTPException) as exc:
+                call_openai_compat("prompt", "system", "key")
+        assert exc.value.status_code == 429
+
+    def test_openai_compat_bad_request(self):
+        import httpx
+        from app.services.ai_service import call_openai_compat
+        from openai import BadRequestError as OpenAIBadRequestError
+        httpx_resp = httpx.Response(400, json={"error": {"message": "unsupported param"}},
+                                     request=httpx.Request("POST", "https://api.openai.com/v1"))
+        with patch("app.services.ai_service.OpenAI") as mock_openai:
+            mock_client = MagicMock()
+            mock_openai.return_value = mock_client
+            mock_client.chat.completions.create.side_effect = OpenAIBadRequestError(
+                "bad request", response=httpx_resp, body=httpx_resp.json()
+            )
+            result = call_openai_compat("prompt", "system", "key")
+        assert result is None
+
+    def test_openai_compat_timeout(self):
+        from app.services.ai_service import call_openai_compat
+        from fastapi import HTTPException
+        from openai import APITimeoutError
+        with patch("app.services.ai_service.OpenAI") as mock_openai:
+            mock_client = MagicMock()
+            mock_openai.return_value = mock_client
+            mock_client.chat.completions.create.side_effect = APITimeoutError("timed out")
+            with pytest.raises(HTTPException) as exc:
+                call_openai_compat("prompt", "system", "key")
+        assert exc.value.status_code == 504
+
+    def test_openai_compat_other_error(self):
+        from app.services.ai_service import call_openai_compat
+        with patch("app.services.ai_service.OpenAI") as mock_openai:
+            mock_client = MagicMock()
+            mock_openai.return_value = mock_client
+            mock_client.chat.completions.create.side_effect = RuntimeError("unexpected")
+            result = call_openai_compat("prompt", "system", "key")
+        assert result is None
+
+
+class TestCallClaude:
+    """call_claude error handling."""
+
+    def _make_mock_claude_response(self, text="claude response"):
+        mock_content_block = MagicMock()
+        mock_content_block.text = text
+        mock_response = MagicMock()
+        mock_response.content = [mock_content_block]
+        return mock_response
+
+    def test_claude_success(self):
+        from app.services.ai_service import call_claude
+        mock_resp = self._make_mock_claude_response("hello from claude")
+        with patch("app.services.ai_service.Anthropic") as mock_anthropic:
+            mock_client = MagicMock()
+            mock_anthropic.return_value = mock_client
+            mock_client.messages.create.return_value = mock_resp
+            result = call_claude("prompt", "system", "key")
+        assert result == "hello from claude"
+
+    def test_claude_auth_error(self):
+        import httpx
+        from app.services.ai_service import call_claude
+        from fastapi import HTTPException
+        from anthropic import AuthenticationError as AnthropicAuthError
+        httpx_resp = httpx.Response(401, request=httpx.Request("POST", "https://api.anthropic.com/v1"))
+        with patch("app.services.ai_service.Anthropic") as mock_anthropic:
+            mock_client = MagicMock()
+            mock_anthropic.return_value = mock_client
+            mock_client.messages.create.side_effect = AnthropicAuthError(
+                "401 Unauthorized", response=httpx_resp, body={}
+            )
+            with pytest.raises(HTTPException) as exc:
+                call_claude("prompt", "system", "key")
+        assert exc.value.status_code == 400
+
+    def test_claude_rate_limit(self):
+        import httpx
+        from app.services.ai_service import call_claude
+        from fastapi import HTTPException
+        from anthropic import RateLimitError as AnthropicRateLimitError
+        httpx_resp = httpx.Response(429, request=httpx.Request("POST", "https://api.anthropic.com/v1"))
+        with patch("app.services.ai_service.Anthropic") as mock_anthropic:
+            mock_client = MagicMock()
+            mock_anthropic.return_value = mock_client
+            mock_client.messages.create.side_effect = AnthropicRateLimitError(
+                "429 rate limit", response=httpx_resp, body={}
+            )
+            with pytest.raises(HTTPException) as exc:
+                call_claude("prompt", "system", "key")
+        assert exc.value.status_code == 429
+
+    def test_claude_timeout(self):
+        from app.services.ai_service import call_claude
+        from fastapi import HTTPException
+        from anthropic import APITimeoutError as AnthropicTimeoutError
+        with patch("app.services.ai_service.Anthropic") as mock_anthropic:
+            mock_client = MagicMock()
+            mock_anthropic.return_value = mock_client
+            mock_client.messages.create.side_effect = AnthropicTimeoutError("timed out")
+            with pytest.raises(HTTPException) as exc:
+                call_claude("prompt", "system", "key")
+        assert exc.value.status_code == 504
+
+    def test_claude_other_error(self):
+        from app.services.ai_service import call_claude
+        from fastapi import HTTPException
+        with patch("app.services.ai_service.Anthropic") as mock_anthropic:
+            mock_client = MagicMock()
+            mock_anthropic.return_value = mock_client
+            mock_client.messages.create.side_effect = RuntimeError("unknown")
+            with pytest.raises(HTTPException) as exc:
+                call_claude("prompt", "system", "key")
+        assert exc.value.status_code == 500
+
+
+class TestCallGemini:
+    """call_gemini additional edge cases beyond retry behavior."""
+
+    def _make_200_response(self, text="gemini text"):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.json.return_value = {
+            "candidates": [{
+                "content": {"parts": [{"text": text}]},
+                "finishReason": "STOP",
+            }]
+        }
+        return resp
+
+    def test_gemini_success(self):
+        from app.services.ai_service import call_gemini
+        resp = self._make_200_response("success")
+        with patch("app.services.ai_service.requests.post", return_value=resp):
+            result = call_gemini("prompt", "system", "key")
+        assert result == "success"
+
+    def test_gemini_503_retry_then_success(self):
+        from app.services.ai_service import call_gemini
+
+        resp_503 = MagicMock()
+        resp_503.status_code = 503
+        resp_200 = self._make_200_response("recovered")
+        calls = [resp_503, resp_200]
+
+        def side_effect(*args, **kwargs):
+            return calls.pop(0)
+
+        with patch("app.services.ai_service.requests.post", side_effect=side_effect):
+            with patch("app.services.ai_service.time.sleep"):
+                result = call_gemini("prompt", "system", "key")
+        assert result == "recovered"
+
+    def test_gemini_all_503_exhausted(self):
+        from app.services.ai_service import call_gemini
+        from fastapi import HTTPException
+
+        resp_503 = MagicMock()
+        resp_503.status_code = 503
+
+        with patch("app.services.ai_service.requests.post", return_value=resp_503):
+            with patch("app.services.ai_service.time.sleep"):
+                with pytest.raises(HTTPException) as exc:
+                    call_gemini("prompt", "system", "key")
+        assert exc.value.status_code == 504
+
+    def test_gemini_url_key_redacted_on_error(self):
+        import io
+        import logging
+        import requests
+        from app.services.ai_service import call_gemini
+        from fastapi import HTTPException
+
+        captured = io.StringIO()
+        handler = logging.StreamHandler(captured)
+        handler.setLevel(logging.ERROR)
+        logger = logging.getLogger("app.services.ai_service")
+        logger.addHandler(handler)
+        original_level = logger.level
+        logger.setLevel(logging.ERROR)
+
+        try:
+            with patch("app.services.ai_service.requests.post",
+                       side_effect=requests.RequestException("boom")):
+                with pytest.raises(HTTPException):
+                    call_gemini("prompt", "system", "my-secret-api-key-12345")
+
+            log_output = captured.getvalue()
+            assert "***REDACTED***" in log_output
+            assert "my-secret-api-key-12345" not in log_output
+        finally:
+            logger.removeHandler(handler)
+            logger.setLevel(original_level)
+
+    def test_gemini_empty_candidates(self):
+        from app.services.ai_service import call_gemini
+        from fastapi import HTTPException
+
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.json.return_value = {"candidates": []}
+
+        with patch("app.services.ai_service.requests.post", return_value=resp):
+            with pytest.raises(HTTPException) as exc:
+                call_gemini("prompt", "system", "key")
+        assert exc.value.status_code == 500
+
+    def test_gemini_429_rate_limit(self):
+        from app.services.ai_service import call_gemini
+        from fastapi import HTTPException
+
+        resp = MagicMock()
+        resp.status_code = 429
+
+        with patch("app.services.ai_service.requests.post", return_value=resp):
+            with pytest.raises(HTTPException) as exc:
+                call_gemini("prompt", "system", "key")
+        assert exc.value.status_code == 429
+
+
+class TestGenerateSummaryEdgeCases:
+    """Edge cases for generate_summary."""
+
+    def test_generate_summary_no_api_key(self):
+        from app.services.ai_service import generate_summary
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+        with patch("app.services.ai_service.get_user_api_key", return_value=(None, None, None)):
+            result = asyncio.run(generate_summary(df, config, user))
+        assert result is None
+
+    def test_generate_summary_http_exception_in_get_key(self):
+        from app.services.ai_service import generate_summary
+        from fastapi import HTTPException
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+        with patch("app.services.ai_service.get_user_api_key",
+                   side_effect=HTTPException(status_code=400)):
+            result = asyncio.run(generate_summary(df, config, user))
+        assert result is None
+
+    def test_generate_summary_empty_result(self):
+        from app.services.ai_service import generate_summary
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._call_ai", return_value=""):
+                result = asyncio.run(generate_summary(df, config, user))
+        assert result is None
+
+
+class TestGenerateRecommendations:
+    """generate_recommendations edge cases."""
+
+    def test_recommendations_no_api_key(self):
+        from app.services.ai_service import generate_recommendations
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+        with patch("app.services.ai_service.get_user_api_key", return_value=(None, None, None)):
+            result = asyncio.run(generate_recommendations(df, config, user))
+        assert result == []
+
+    def test_recommendations_empty_json_returns_empty_list(self):
+        from app.services.ai_service import generate_recommendations
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._call_ai", return_value="invalid json"):
+                result = asyncio.run(generate_recommendations(df, config, user))
+        assert result == []
+
+
+class TestGenerateNraInsights:
+    """generate_nra_insights edge cases."""
+
+    def test_nra_insights_http_exception_passthrough(self):
+        from app.services.ai_service import generate_nra_insights
+        from fastapi import HTTPException
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._call_ai",
+                       side_effect=HTTPException(status_code=429)):
+                with pytest.raises(HTTPException) as exc:
+                    asyncio.run(generate_nra_insights(df, config, user))
+        assert exc.value.status_code == 429
+
+    def test_nra_insights_invalid_json_returns_empty_list(self):
+        from app.services.ai_service import generate_nra_insights
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._call_ai", return_value="not json at all"):
+                result = asyncio.run(generate_nra_insights(df, config, user))
+        assert result == []
+
+
+class TestGetUserProviderConfig:
+    def test_no_key_returns_none(self):
+        from unittest.mock import MagicMock
+        from app.services.ai_service import get_user_api_key
+
+        user = MagicMock()
+        user.ai_provider = None
+        user.encrypted_api_key = None
+        user.api_key_iv = None
+
+        provider, api_key, _ = get_user_api_key(user)
+        assert provider is None
+        assert api_key is None
+
+    def test_openai_provider_with_key(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import get_user_api_key
+
+        user = MagicMock()
+        user.ai_provider = "openai"
+        user.encrypted_api_key = "encrypted-key-value"
+        user.api_key_iv = "test-iv"
+
+        with patch("app.services.ai_service.decrypt_api_key", return_value="sk-proj-decrypted"):
+            provider, api_key, base_url = get_user_api_key(user)
+
+        assert provider == "openai"
+        assert api_key == "sk-proj-decrypted"
+
+
+class TestCallOpenai:
+    def test_call_openai_delegates_to_compat(self):
+        from unittest.mock import patch
+        from app.services.ai_service import call_openai
+
+        with patch("app.services.ai_service.call_openai_compat") as mock_compat:
+            mock_compat.return_value = "openai response"
+            result = call_openai("user prompt", "system prompt", "sk-test")
+            assert result == "openai response"
+
+    def test_call_openai_none_key(self):
+        from unittest.mock import patch
+        from app.services.ai_service import call_openai
+
+        with patch("app.services.ai_service.call_openai_compat") as mock_compat:
+            mock_compat.return_value = "ok"
+            call_openai("test", "sys", None)
+            args, kwargs = mock_compat.call_args
+            assert args[2] is None
+
+
+class TestSanitizeKwargs:
+    def test_deepseek_strips_unsupported(self):
+        from app.services.ai_service import _sanitize_kwargs, DEEPSEEK_UNSUPPORTED_PARAMS
+        result = _sanitize_kwargs(
+            base_url="https://api.deepseek.com",
+            kwargs={"temperature": 0.7, "presence_penalty": 0.1, "n": 3},
+        )
+        assert "presence_penalty" not in result
+        assert "n" not in result
+        assert result["temperature"] == 0.7
+
+    def test_deepseek_preserves_temperature(self):
+        from app.services.ai_service import _sanitize_kwargs
+        result = _sanitize_kwargs(
+            base_url="https://api.deepseek.com",
+            kwargs={"temperature": 0.7, "max_tokens": 1000},
+        )
+        assert result["temperature"] == 0.7
+        assert result["max_tokens"] == 1000
+
+    def test_non_deepseek_passthrough(self):
+        from app.services.ai_service import _sanitize_kwargs
+        result = _sanitize_kwargs(
+            base_url="https://api.openai.com",
+            kwargs={"temperature": 0.7, "top_p": 0.9},
+        )
+        assert result == {"temperature": 0.7, "top_p": 0.9}
+
+
+class TestRoundStats:
+    def test_rounds_float_values(self):
+        from app.services.ai_service import _round_stats
+        stats = {"mean": 10.5678, "std": 3.14159}
+        result = _round_stats(stats)
+        assert result["mean"] == 10.57
+        assert result["std"] == 3.14
+
+    def test_rounds_nested_dict_values(self):
+        from app.services.ai_service import _round_stats
+        stats = {"stats": {"mean": 1.2345, "std": 0.5678}}
+        result = _round_stats(stats)
+        assert result["stats"]["mean"] == 1.23
+
+    def test_passes_non_float_values(self):
+        from app.services.ai_service import _round_stats
+        stats = {"name": "test", "count": 100}
+        result = _round_stats(stats)
+        assert result["name"] == "test"
+        assert result["count"] == 100
+
+    def test_passes_none_values(self):
+        from app.services.ai_service import _round_stats
+        stats = {"mean": None}
+        result = _round_stats(stats)
+        assert result["mean"] is None
+
+
+class TestValidateApiKeyOtherProviders:
+    def test_gemini_always_valid(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+        result = validate_api_key("gemini", "any-key")
+        assert result["valid"] is True
+
+    def test_claude_valid(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_claude", return_value="OK"):
+            result = validate_api_key("claude", "sk-ant-valid-key")
+        assert result["valid"] is True
+
+    def test_openai_compat_valid(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat", return_value="OK"):
+            result = validate_api_key("openai", "sk-proj-valid-key")
+        assert result["valid"] is True
+
+    def test_groq_valid(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat", return_value="OK"):
+            result = validate_api_key("groq", "gsk-valid-key")
+        assert result["valid"] is True
+
+    def test_unknown_provider_rejected(self):
+        from app.services.ai_service import validate_api_key
+        result = validate_api_key("unknown-provider", "some-key")
+        assert result["valid"] is False
+        assert "unknown provider" in result["message"].lower()
+
+    def test_claude_http_exception_400_treated_as_valid(self):
+        from unittest.mock import patch
+        from fastapi import HTTPException
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_claude", side_effect=HTTPException(400, "Invalid key")):
+            result = validate_api_key("claude", "sk-ant-valid-key")
+        assert result["valid"] is True
+
+    def test_generic_exception_401_treated_as_invalid(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat", side_effect=Exception("Unauthorized")):
+            result = validate_api_key("openai", "sk-proj-bad-key")
+        assert result["valid"] is False
+
+    def test_generic_exception_unknown_treated_as_valid(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat", side_effect=Exception("Some weird error")):
+            result = validate_api_key("openai", "sk-proj-weird-key")
+        assert result["valid"] is True
+
+
+class TestGenerateRecommendationsHappyPath:
+    @pytest.mark.asyncio
+    async def test_recommendations_success_path(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import generate_recommendations
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        valid_json = (
+            '["Increase revenue by optimizing pricing strategy", '
+            '"Reduce operational costs through automation", '
+            '"Launch a customer loyalty program to boost retention", '
+            '"Optimize supply chain to reduce delivery times", '
+            '"Implement AI-driven customer support for faster resolution"]'
+        )
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value={"columns": []}):
+                with patch("app.services.ai_service._call_ai", return_value=valid_json):
+                    result = await generate_recommendations(df, config, user)
+
+        assert len(result) == 5
+        assert all(isinstance(r, str) for r in result)
+
+    @pytest.mark.asyncio
+    async def test_recommendations_with_json_markdown_fence(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import generate_recommendations
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        response_with_fence = (
+            '```json\n'
+            '["Increase revenue by optimizing pricing", '
+            '"Reduce operational costs through automation"]\n'
+            '```'
+        )
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value={"columns": []}):
+                with patch("app.services.ai_service._call_ai", return_value=response_with_fence):
+                    result = await generate_recommendations(df, config, user)
+
+        assert len(result) == 2
+
+    @pytest.mark.asyncio
+    async def test_recommendations_non_list_json(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import generate_recommendations
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value={"columns": []}):
+                with patch("app.services.ai_service._call_ai", return_value='{"key": "value"}'):
+                    result = await generate_recommendations(df, config, user)
+
+        assert result == []
+
+
+class TestGenerateNraInsightsHappyPath:
+    @pytest.mark.asyncio
+    async def test_nra_insights_success_path(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import generate_nra_insights
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        valid_insights = json.dumps([
+            {"kpi": "Revenue", "column": "Revenue", "number": "$1.5M",
+             "reason": "Seasonal demand increase", "action": "Increase inventory",
+             "sentiment": "positive", "priority": "high"},
+            {"kpi": "Cost", "column": "Cost", "number": "15%",
+             "reason": "Supplier price hike", "action": "Negotiate new contracts",
+             "sentiment": "negative", "priority": "medium"},
+        ])
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value={"columns": []}):
+                with patch("app.services.ai_service._call_ai", return_value=valid_insights):
+                    with patch("app.services.ai_service._dedup_insights_by_kpi",
+                               side_effect=lambda x: x):
+                        result = await generate_nra_insights(df, config, user)
+
+        assert len(result) == 2
+        assert all(isinstance(item, dict) for item in result)
+        assert all(item["kpi"] in ("Revenue", "Cost") for item in result)
+
+    @pytest.mark.asyncio
+    async def test_nra_insights_validates_insight_keys(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import generate_nra_insights
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        missing_keys = json.dumps([
+            {"kpi": "Revenue", "number": "$1.5M",
+             "reason": "Seasonal demand", "action": "Increase inventory",
+             "sentiment": "positive", "priority": "high"},
+            {"kpi": "Cost", "column": "Cost",
+             "sentiment": "negative", "priority": "low"},
+        ])
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value={"columns": []}):
+                with patch("app.services.ai_service._call_ai", return_value=missing_keys):
+                    with patch("app.services.ai_service._dedup_insights_by_kpi",
+                               side_effect=lambda x: x):
+                        result = await generate_nra_insights(df, config, user)
+
+        assert len(result) == 1
+        assert result[0]["kpi"] == "Revenue"
+
+    @pytest.mark.asyncio
+    async def test_nra_insights_truncates_to_five(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import generate_nra_insights
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        many_insights = json.dumps([
+            {"kpi": f"Metric{i}", "column": f"Col{i}", "number": f"{i}%",
+             "reason": f"Reason {i}", "action": f"Action {i}",
+             "sentiment": "neutral", "priority": "low"}
+            for i in range(10)
+        ])
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value={"columns": []}):
+                with patch("app.services.ai_service._call_ai", return_value=many_insights):
+                    with patch("app.services.ai_service._dedup_insights_by_kpi",
+                               side_effect=lambda x: x):
+                        result = await generate_nra_insights(df, config, user)
+
+        assert len(result) <= 5
+
+
+class TestCallOpenaiReturnsEmpty:
+    """call_openai returns "" when call_openai_compat returns None."""
+
+    def test_call_openai_returns_empty_when_compat_returns_none(self):
+        from unittest.mock import patch
+        from app.services.ai_service import call_openai
+
+        with patch("app.services.ai_service.call_openai_compat", return_value=None):
+            result = call_openai("prompt", "system", "key")
+        assert result == ""
+
+
+class TestCallOpenaiCompatResultNone:
+    """call_openai_compat returns None when API response content is None."""
+
+    def test_openai_compat_result_none_after_finally(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import call_openai_compat
+
+        mock_msg = MagicMock()
+        mock_msg.content = None
+        mock_choice = MagicMock()
+        mock_choice.message = mock_msg
+        mock_resp = MagicMock()
+        mock_resp.choices = [mock_choice]
+
+        with patch("app.services.ai_service.OpenAI") as mock_openai:
+            mock_client = MagicMock()
+            mock_openai.return_value = mock_client
+            mock_client.chat.completions.create.return_value = mock_resp
+            result = call_openai_compat("prompt", "system", "key")
+        assert result is None
+
+    def test_openai_compat_del_client_exception_swallowed(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import call_openai_compat
+
+        mock_msg = MagicMock()
+        mock_msg.content = "text"
+        mock_choice = MagicMock()
+        mock_choice.message = mock_msg
+        mock_resp = MagicMock()
+        mock_resp.choices = [mock_choice]
+
+        class ClientWithFailingDel:
+            def __init__(self):
+                self.chat = MagicMock()
+                self.chat.completions = MagicMock()
+                self.chat.completions.create = MagicMock(return_value=mock_resp)
+            def __del__(self):
+                raise RuntimeError("del failed")
+
+        with patch("app.services.ai_service.OpenAI", return_value=ClientWithFailingDel()):
+            result = call_openai_compat("prompt", "system", "key")
+        assert result == "text"
+
+
+class TestValidateApiKeyHttpExceptionDetail:
+    """validate_api_key exception detail parsing."""
+
+    def test_http_exception_invalid_api_key_detail(self):
+        from unittest.mock import patch
+        from fastapi import HTTPException
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat",
+                   side_effect=HTTPException(400, detail="Invalid API key")):
+            result = validate_api_key("openai", "sk-test")
+        assert result["valid"] is False
+        assert "Invalid API key" in result["message"]
+
+    def test_http_exception_400_detail_returns_valid_with_warning(self):
+        from unittest.mock import patch
+        from fastapi import HTTPException
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat",
+                   side_effect=HTTPException(400, detail="400 Bad Request")):
+            result = validate_api_key("openai", "sk-test")
+        assert result["valid"] is True
+        assert "400" in result["message"]
+
+    def test_http_exception_unauthorized_detail(self):
+        from unittest.mock import patch
+        from fastapi import HTTPException
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat",
+                   side_effect=HTTPException(401, detail="Unauthorized")):
+            result = validate_api_key("openai", "sk-test")
+        assert result["valid"] is False
+        assert "Invalid API key" in result["message"]
+
+    def test_value_error_401(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat",
+                   side_effect=ValueError("401 Unauthorized")):
+            result = validate_api_key("openai", "sk-test")
+        assert result["valid"] is False
+        assert "Invalid API key" in result["message"]
+
+    def test_value_error_other(self):
+        from unittest.mock import patch
+        from app.services.ai_service import validate_api_key
+
+        with patch("app.services.ai_service.call_openai_compat",
+                   side_effect=ValueError("Other error")):
+            result = validate_api_key("openai", "sk-test")
+        assert result["valid"] is True
+
+
+class TestCallClaudeEmptyResult:
+    """call_claude raises HTTPException 500 when result content is falsy."""
+
+    def test_claude_empty_content_raises_500(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import call_claude
+        from fastapi import HTTPException
+
+        mock_content_block = MagicMock()
+        mock_content_block.text = ""
+        mock_response = MagicMock()
+        mock_response.content = [mock_content_block]
+
+        with patch("app.services.ai_service.Anthropic") as mock_anthropic:
+            mock_client = MagicMock()
+            mock_anthropic.return_value = mock_client
+            mock_client.messages.create.return_value = mock_response
+            with pytest.raises(HTTPException) as exc:
+                call_claude("prompt", "system", "key")
+        assert exc.value.status_code == 500
+
+
+class TestCallGemini403:
+    """call_gemini raises HTTP 400 for 403 or 401 status."""
+
+    def test_gemini_403_raises_400(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import call_gemini
+        from fastapi import HTTPException
+
+        resp = MagicMock()
+        resp.status_code = 403
+
+        with patch("app.services.ai_service.requests.post", return_value=resp):
+            with pytest.raises(HTTPException) as exc:
+                call_gemini("prompt", "system", "key")
+        assert exc.value.status_code == 400
+
+    def test_gemini_401_raises_400(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import call_gemini
+        from fastapi import HTTPException
+
+        resp = MagicMock()
+        resp.status_code = 401
+
+        with patch("app.services.ai_service.requests.post", return_value=resp):
+            with pytest.raises(HTTPException) as exc:
+                call_gemini("prompt", "system", "key")
+        assert exc.value.status_code == 400
+
+
+class TestCallGeminiEmptyResult:
+    """call_gemini raises HTTP 500 when content parts are empty."""
+
+    def test_gemini_empty_text_raises_500(self):
+        from unittest.mock import patch, MagicMock
+        from app.services.ai_service import call_gemini
+        from fastapi import HTTPException
+
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.json.return_value = {
+            "candidates": [{
+                "content": {"parts": [{"text": ""}]},
+                "finishReason": "STOP",
+            }]
+        }
+
+        with patch("app.services.ai_service.requests.post", return_value=resp):
+            with pytest.raises(HTTPException) as exc:
+                call_gemini("prompt", "system", "key")
+        assert exc.value.status_code == 500
+
+
+class TestCallAiFallbackNone:
+    """_call_ai with unknown provider falls through to call_openai returning "" when result is None."""
+
+    def test_call_ai_unknown_provider_returns_empty(self):
+        from unittest.mock import patch
+        from app.services import ai_service as ai_service_mod
+
+        with patch.object(ai_service_mod, "call_openai", return_value=None) as mock_openai:
+            with patch.object(ai_service_mod, "call_openai_compat") as mock_compat:
+                result = ai_service_mod._call_ai("unknown", "p", "s", "k")
+        assert result == ""
+        mock_openai.assert_called_once_with("p", "s", "k", 25)
+        mock_compat.assert_not_called()
+
+
+class TestFmtVal:
+    """_fmt_val nested function formatting of different value types."""
+
+    def test_fmt_val_formats_correctly(self):
+        from app.services.ai_service import generate_summary
+        from unittest.mock import MagicMock, patch
+        import pandas as pd
+        import asyncio
+
+        df = pd.DataFrame({"dummy": [1, 2, 3]})
+        config = {}
+        user = MagicMock()
+
+        captured_prompt = [None]
+
+        def mock_call_ai(provider, prompt, system, api_key, timeout=25):
+            captured_prompt[0] = prompt
+            return "[LEAD]t[/LEAD][CONTEXT]t[/CONTEXT][IMPLICATION]t[/IMPLICATION][ACTION]t[/ACTION]"
+
+        col_stats = {
+            "columns": [
+                {"name": "TestCol", "type": "metric",
+                 "mean": None, "latest_value": float(5.0),
+                 "trend_pct_change": float(0.0),
+                 "min": 1, "max": 10, "null_count": 0, "row_count": 3},
+                {"name": "IntFloat", "type": "metric",
+                 "mean": float(5.0), "latest_value": float(10.0),
+                 "trend_pct_change": float(100.0),
+                 "min": 1, "max": 10, "null_count": 0, "row_count": 3},
+                {"name": "FloatCol", "type": "metric",
+                 "mean": float(2.5), "latest_value": float(3.5),
+                 "trend_pct_change": float(40.0),
+                 "min": 1, "max": 10, "null_count": 0, "row_count": 3},
+            ],
+            "date_column": None,
+            "date_range": {"from": "Jan", "to": "Mar"},
+        }
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value=col_stats):
+                with patch("app.services.ai_service._call_ai", side_effect=mock_call_ai):
+                    asyncio.run(generate_summary(df, config, user))
+
+        prompt = captured_prompt[0]
+        assert "mean=N/A" in prompt
+        assert "IntFloat: mean=5, latest=10" in prompt
+        assert "FloatCol: mean=2.50, latest=3.50" in prompt
+
+
+class TestGenerateRecommendationsHttpException:
+    """generate_recommendations returns [] when get_user_api_key raises HTTPException."""
+
+    def test_recommendations_http_exception_returns_empty(self):
+        from app.services.ai_service import generate_recommendations
+        from fastapi import HTTPException
+        from unittest.mock import MagicMock, patch
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        with patch("app.services.ai_service.get_user_api_key",
+                   side_effect=HTTPException(status_code=400)):
+            result = asyncio.run(generate_recommendations(df, config, user))
+        assert result == []
+
+
+class TestGenerateNraInsightsHttpException:
+    """generate_nra_insights returns [] when get_user_api_key raises HTTPException."""
+
+    def test_nra_insights_http_exception_returns_empty(self):
+        from app.services.ai_service import generate_nra_insights
+        from fastapi import HTTPException
+        from unittest.mock import MagicMock, patch
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        with patch("app.services.ai_service.get_user_api_key",
+                   side_effect=HTTPException(status_code=400)):
+            result = asyncio.run(generate_nra_insights(df, config, user))
+        assert result == []
+
+
+class TestGenerateNraInsightsApiKeyNone:
+    """generate_nra_insights returns [] when api_key is None."""
+
+    def test_nra_insights_api_key_none_returns_empty(self):
+        from app.services.ai_service import generate_nra_insights
+        from unittest.mock import MagicMock, patch
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=(None, None, None)):
+            result = asyncio.run(generate_nra_insights(df, config, user))
+        assert result == []
+
+
+class TestGenerateNraInsightsNonList:
+    """generate_nra_insights returns [] when parsed JSON is not a list."""
+
+    def test_nra_insights_non_list_json_returns_empty(self):
+        from app.services.ai_service import generate_nra_insights
+        from unittest.mock import MagicMock, patch
+        import asyncio
+
+        df = MagicMock()
+        config = {}
+        user = MagicMock()
+
+        with patch("app.services.ai_service.get_user_api_key", return_value=("openai", "sk-test", None)):
+            with patch("app.services.ai_service._build_column_stats", return_value={"columns": []}):
+                with patch("app.services.ai_service._call_ai", return_value='{"key": "value"}'):
+                    result = asyncio.run(generate_nra_insights(df, config, user))
+        assert result == []
+
+
+class TestDetectAnomaliesStdZero:
+    """detect_anomalies skips column with std == 0."""
+
+    def test_detect_anomalies_std_zero_skipped(self):
+        from app.services.ai_service import detect_anomalies
+        import pandas as pd
+
+        df = pd.DataFrame({
+            "Constant": [5, 5, 5, 5, 5],
+            "Values": [10, 12, 11, 100, 13],
+        })
+        result = detect_anomalies(df)
+        for anomaly in result:
+            assert anomaly["column"] != "Constant"
+
+
+class TestDetectAnomaliesValueError:
+    """detect_anomalies handles ValueError in val_key conversion."""
+
+    def test_detect_anomalies_value_error_handled(self):
+        from app.services import ai_service as ai_service_mod
+        from app.services.ai_service import detect_anomalies
+        import pandas as pd
+
+        df = pd.DataFrame({
+            "Values": [10, 12, 11, 13, 10, 100, 12, 11, 13, 12],
+        })
+
+        original_round = round
+        def mock_round(x, ndigits=0):
+            if ndigits == 4:
+                raise ValueError("bad")
+            return original_round(x, ndigits)
+
+        with patch.object(ai_service_mod, "round", mock_round, create=True):
+            result = detect_anomalies(df)
+        assert isinstance(result, list)
+
+
+class TestDetectTrendsZeroFirstValue:
+    """detect_trends returns pct_change 0.0 when first_value is 0."""
+
+    def test_detect_trends_zero_first_value(self):
+        from app.services.ai_service import detect_trends
+        import pandas as pd
+
+        df = pd.DataFrame({
+            "Revenue": [0, 100, 200, 300],
+        })
+        result = detect_trends(df)
+        assert result[0]["pct_change"] == 0.0

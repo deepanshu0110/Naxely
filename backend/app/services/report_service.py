@@ -13,6 +13,7 @@ from sqlalchemy import text
 from app.core.database import AsyncSessionLocal
 from app.core.supabase_helpers import _get_supabase, _run_sync
 from app.services import data_service, chart_service, ai_service, pdf_service
+from app.services.ai_service import SummaryResult
 from app.api.deps import increment_report_count, mark_upload_used
 
 logger = logging.getLogger(__name__)
@@ -349,7 +350,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 {
                     "pdf_url": storage_path,
                     "ai_summary": ai_content.get("summary").full_text
-                        if isinstance(ai_content.get("summary"), ai_service.SummaryResult)
+                        if isinstance(ai_content.get("summary"), SummaryResult)
                         else ai_content.get("summary"),
                     "ai_insights": json.dumps(ai_content.get("insights") or []),
                     "ai_anomalies": json.dumps(ai_content.get("anomalies") or []),

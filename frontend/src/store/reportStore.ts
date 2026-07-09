@@ -55,6 +55,7 @@ export const useReportStore = create<ReportStore>((set, get) => ({
     set({ isGenerating: true, generationStatus: null, error: null })
     try {
       const { data } = await api.post<GenerateResponse>('/reports/generate', config)
+      set({ isGenerating: false })
       return data.report_id
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to generate report'

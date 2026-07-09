@@ -20,7 +20,7 @@ vi.mock('@/components/layout/Sidebar', () => ({
 }))
 
 vi.mock('@/components/ui/Tabs', () => ({
-  default: ({ items, activeId, onChange, children }: any) => (
+  default: ({ items, onChange, children }: any) => (
     <div data-testid="tabs">
       <div data-testid="tab-buttons">
         {items.map((item: any) => (

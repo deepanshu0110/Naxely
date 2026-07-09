@@ -140,7 +140,7 @@ function setupReportStatus(overrides: Record<string, any> = {}) {
   })
 }
 
-function renderPage(initialEntries = ['/report/new']) {
+function renderPage(initialEntries: any[] = ['/report/new']) {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <NewReport />
@@ -154,7 +154,7 @@ describe('NewReport', () => {
     setupReportStore()
     setupAuth()
     setupReportStatus()
-    vi.mocked(api.get).mockResolvedValue({ data: [] })
+    ;(api.get as any).mockResolvedValue({ data: [] })
   })
 
   it('renders sidebar and heading', () => {
@@ -234,17 +234,17 @@ describe('NewReport', () => {
     const templates = [
       { id: 't-1', name: 'Marketing', template_type: 'marketing', config: { tone: 'story-driven', sections: ['charts', 'kpi_overview', 'executive_summary'] }, is_default: true, created_at: '' },
     ]
-    vi.mocked(api.get).mockResolvedValue({ data: templates })
+    ;(api.get as any).mockResolvedValue({ data: templates })
     renderPage()
 
     await waitFor(() => {
-      expect(api.get).toHaveBeenCalledWith('/templates')
+      expect(api.get as any).toHaveBeenCalledWith('/templates')
     })
   })
 
   it('does not fetch templates for free users', () => {
     renderPage()
-    expect(api.get).not.toHaveBeenCalledWith('/templates')
+    expect(api.get as any).not.toHaveBeenCalledWith('/templates')
   })
 
   it('builds correct generate payload for pro user', async () => {
