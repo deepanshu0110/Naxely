@@ -16,6 +16,14 @@ node_modules/
 dist/
 .vite/
 
+# Coverage / reports
+.coverage
+backend/.coverage
+coverage/
+backend/tests/core/
+stats.html
+stats.json
+
 # Playwright MCP artifacts
 .playwright-mcp/
 *.png
