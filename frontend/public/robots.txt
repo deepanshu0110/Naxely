@@ -5,6 +5,11 @@ Allow: /contact
 Allow: /terms
 Allow: /privacy
 Allow: /refund
+Disallow: /dashboard
+Disallow: /report/
+Disallow: /settings
+Disallow: /scheduled-reports
+Disallow: /templates
 
 User-agent: GPTBot
 Allow: /
