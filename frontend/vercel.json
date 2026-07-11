@@ -16,6 +16,7 @@
       },
       "continue": true
     },
+    { "source": "/share/(.*)", "headers": { "X-Robots-Tag": "noindex, nofollow" }, "continue": true },
     { "source": "/pricing", "destination": "/pricing/index.html" },
     { "source": "/contact", "destination": "/contact/index.html" },
     { "source": "/terms", "destination": "/terms/index.html" },

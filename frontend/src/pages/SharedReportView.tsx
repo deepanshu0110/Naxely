@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 import { format } from 'date-fns'
 import { FileText, Clock, RefreshCw } from 'lucide-react'
 import api from '@/lib/axios'
@@ -43,6 +44,12 @@ export default function SharedReportView() {
       .finally(() => setLoading(false))
   }, [token])
 
+  return (
+    <>
+      <Head>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
+      {(() => {
   if (loading) {
     return (
       <div data-testid="shared-report-skeleton" className="flex h-screen animate-pulse flex-col bg-paper dark:bg-darkBg">
@@ -130,5 +137,8 @@ export default function SharedReportView() {
         </footer>
       )}
     </div>
+  )
+      })()}
+    </>
   )
 }

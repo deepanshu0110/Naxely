@@ -19,8 +19,8 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 ## Pricing
 
 - **Free** — 1 report, 3 AI credits, 50-row limit, Naxely branding, no scheduled reports
-- **Pro ($19/mo)** — Unlimited reports, 100 AI credits/mo, 50k-row limit, custom branding, scheduled reports, remove Naxely branding
-- **Agency ($49/mo)** — Everything in Pro plus unlimited AI credits, 500k-row limit, 5 team seats, white-label sharing
+- **Pro ($29/mo)** — Unlimited reports, 100 AI credits/mo, 50k-row limit, custom branding, scheduled reports, remove Naxely branding
+- **Agency ($79/mo)** — Everything in Pro plus unlimited AI credits, 500k-row limit, 5 team seats, white-label sharing
 
 ## Contact
 
