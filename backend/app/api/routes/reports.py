@@ -396,6 +396,12 @@ async def upload_sheets(
     except RuntimeError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
+    try:
+        validate_csv(df)
+        validate_for_injection(df)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     import io as _io
     csv_bytes = df.to_csv(index=False).encode("utf-8")
 

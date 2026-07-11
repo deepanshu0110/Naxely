@@ -31,6 +31,6 @@
     { "src": "^/settings(?:/.*)?$", "destination": "/shell.html" },
     { "src": "^/share(?:/.*)?$", "destination": "/shell.html" },
     { "handle": "filesystem" },
-    { "source": "/(.*)", "destination": "/shell.html", "status": 404 }
+    { "src": "/(.*)", "dest": "/shell.html", "status": 404 }
   ]
 }
