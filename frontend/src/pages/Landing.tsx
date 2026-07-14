@@ -974,6 +974,12 @@ export default function Landing() {
           </div>
           <div className="badge-marquee mt-8 pt-8 border-t border-gray-200">
             <div className="badge-track">
+              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
+              </a>
+              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" style={{ height: '54px', width: 'auto' }} />
+              </a>
               <a
                 href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
                 target="_blank"
@@ -1035,6 +1041,12 @@ export default function Landing() {
               </a>
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
                 <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto', minWidth: '100px' }} />
+              </a>
+              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
+              </a>
+              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" style={{ height: '54px', width: 'auto' }} />
               </a>
               <a
                 href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
