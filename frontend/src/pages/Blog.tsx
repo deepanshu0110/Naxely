@@ -13,6 +13,12 @@ interface Post {
 
 const posts: Post[] = [
   {
+    slug: 'python-csv-to-pdf-reports',
+    title: 'Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool',
+    excerpt: 'A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.',
+    date: 'July 14, 2026',
+  },
+  {
     slug: 'client-reporting-software-guide',
     title: 'How to Choose Client Reporting Software (And Why I Built My Own)',
     excerpt: 'Client reporting software should save you time — here is how to choose the right tool based on where your data actually lives, not an aspirational workflow.',
