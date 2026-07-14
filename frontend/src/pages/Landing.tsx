@@ -239,18 +239,18 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-paper text-ink">
       <Head>
-        <title>Naxely — AI-Powered PDF Report Generator</title>
-        <meta name="description" content="Turn raw data into client-ready PDF reports in under a minute. Upload CSV or connect Google Sheets — AI writes insights, builds charts, and brands every page." />
+        <title>Naxely — AI Client Report Generator (CSV &amp; Sheets to PDF)</title>
+        <meta name="description" content="Naxely is an AI client report generator that turns CSV or Google Sheets data into branded PDF reports in under a minute — with AI insights and charts built in." />
         <link rel="canonical" href="https://www.naxely.com/" />
         <meta property="og:url" content="https://www.naxely.com/" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Naxely — AI-Powered PDF Report Generator" />
-        <meta property="og:description" content="Upload CSV or connect Google Sheets. Naxely generates a branded PDF with AI insights, charts, and recommendations in under a minute." />
+        <meta property="og:title" content="Naxely — AI Client Report Generator (CSV &amp; Sheets to PDF)" />
+        <meta property="og:description" content="Naxely is an AI client report generator that turns CSV or Google Sheets data into branded PDF reports in under a minute — with AI insights and charts built in." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Naxely — AI-Powered PDF Report Generator" />
-        <meta name="twitter:description" content="Upload CSV or connect Google Sheets. Naxely generates a branded PDF with AI insights, charts, and recommendations in under a minute." />
+        <meta name="twitter:title" content="Naxely — AI Client Report Generator (CSV &amp; Sheets to PDF)" />
+        <meta name="twitter:description" content="Naxely is an AI client report generator that turns CSV or Google Sheets data into branded PDF reports in under a minute — with AI insights and charts built in." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload, Google Sheets connector, and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all tiers — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically in under a minute."}}]})}</script>
@@ -298,6 +298,13 @@ export default function Landing() {
               {' '}— automatically
             </h1>
 
+            {/* Subheading — SEO client report generator positioning */}
+            <p className="text-amber-700 dark:text-amber-400 text-lg font-medium mb-4
+              nax-animate-fade-up"
+              style={{ animationDelay: '100ms' }}>
+              The client report generator built for freelance analysts, consultants, and small agencies.
+            </p>
+
             {/* Definitional sentence — AI Signal (Unhid.ai) */}
             <p className="text-ink/60 dark:text-paper/50 text-base leading-relaxed
               max-w-lg mx-auto lg:mx-0 mb-4
@@ -316,6 +323,16 @@ export default function Landing() {
               Upload a CSV or connect Google Sheets. Naxely generates a branded PDF
               with AI insights, charts, and recommendations in under a minute.
               No design skills needed.
+            </p>
+
+            {/* Positioning statement — category differentiation */}
+            <p className="text-sm text-ink/50 dark:text-paper/40 leading-relaxed
+              max-w-lg mx-auto lg:mx-0 mb-6
+              nax-animate-fade-up"
+              style={{ animationDelay: '200ms' }}>
+              Unlike marketing-dashboard tools that pull from ad platforms, Naxely works with
+              any spreadsheet — client ops data, sales numbers, custom KPIs — turning it into
+              a branded PDF report in under a minute.
             </p>
 
             {/* CTAs */}
