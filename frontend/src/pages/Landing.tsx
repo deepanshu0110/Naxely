@@ -1062,6 +1062,9 @@ export default function Landing() {
               <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
                 <img src="https://launchboard.dev/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="240" style={{ height: '54px', width: 'auto' }} />
               </a>
+              <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" style={{ height: '54px', width: 'auto' }} />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
               </a>
@@ -1132,6 +1135,9 @@ export default function Landing() {
               </a>
               <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
                 <img src="https://launchboard.dev/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="240" style={{ height: '54px', width: 'auto' }} />
+              </a>
+              <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" style={{ height: '54px', width: 'auto' }} />
               </a>
             </div>
           </div>
