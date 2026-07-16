@@ -7,17 +7,17 @@ export default function BlogPostHub() {
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
         <title>Automating Client Reports: The Complete Guide | Naxely</title>
-        <meta name="description" content="How to automate client reporting — from CSV exports to AI-generated insights, BYOK pricing, and choosing the right tool for freelance analysts and agencies." />
+        <meta name="description" content="How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle." />
         <link rel="canonical" href="https://www.naxely.com/blog/automating-client-reports" />
         <meta property="og:url" content="https://www.naxely.com/blog/automating-client-reports" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Automating Client Reports: The Complete Guide | Naxely" />
-        <meta property="og:description" content="How to automate client reporting — from CSV exports to AI-generated insights, BYOK pricing, and choosing the right tool for freelance analysts and agencies." />
+        <meta property="og:description" content="How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Automating Client Reports: The Complete Guide | Naxely" />
-        <meta name="twitter:description" content="How to automate client reporting — from CSV exports to AI-generated insights, BYOK pricing, and choosing the right tool for freelance analysts and agencies." />
+        <meta name="twitter:description" content="How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
       </Head>
       <Navbar />
@@ -31,6 +31,8 @@ export default function BlogPostHub() {
           <p>If you send the same client a report every week or month, you already know the drill: pull the data, rebuild the same charts, write commentary, export, send. Multiply that across five or ten clients and "reporting" quietly becomes one of the biggest recurring time costs in the business — one that clients never see and rarely pay for directly.</p>
 
           <p>This guide is for freelance analysts, consultants, and small agencies trying to get out from under that cycle. It covers what "automating client reports" actually means, what the market currently offers, and how to think about choosing the right approach for your situation.</p>
+
+          <p className="text-sm">Still comparing tools first? See our guide on <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline">choosing client reporting software</Link>.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does "automating client reports" actually mean?</h2>
           <p>Reporting automation is a spectrum from fully manual (pull data by hand, build charts, write commentary from scratch every cycle) to a full pipeline (hand over raw data and get a finished client-ready PDF with charts, KPIs, and written insights automatically).</p>
@@ -139,14 +141,8 @@ export default function BlogPostHub() {
           <p>At low report volume, this barely registers. At agency scale — dozens of reports a month, across multiple clients — the markup compounds into a real, recurring cost most agencies never actually itemize or notice.</p>
           <p><em>For the full breakdown of how BYOK pricing works and why it matters at scale, see <Link to="/blog/byok-ai-reporting-tool" className="text-amber-600 hover:text-amber-700 underline">Why BYOK AI Reporting Beats Built-In AI Markup</Link>.</em></p>
 
-          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I choose the right reporting tool for my situation?</h2>
-          <p>Start by identifying your primary data source — if it's live ad platforms, a connector-first tool like Swydo or AgencyAnalytics may fit better; if it's CSV exports or spreadsheets, an any-data tool like Naxely is the right fit.</p>
-          <ul className="list-disc pl-5 space-y-2">
-            <li><strong>Is most of your client data in a live ad platform (Google Ads, Meta, GA4)?</strong> A marketing-connector-first tool like Swydo or AgencyAnalytics may genuinely fit better — that's what they're built for.</li>
-            <li><strong>Is most of your client data CSV exports or spreadsheets, with no ad-platform connector needed?</strong> You're likely paying for infrastructure you'll never use in a connector-first tool. An any-data tool built around CSV/Sheets input, like Naxely, fits that gap directly.</li>
-            <li><strong>Do you need full white-label output</strong> — no platform branding at all in what the client sees — <strong>without paying for a top-tier plan just to get it?</strong> Worth checking where each platform gates that feature; it varies a lot.</li>
-            <li><strong>Do you want to control your own AI costs directly</strong>, rather than trusting a subscription tier to have priced AI usage fairly? BYOK is the only way to see and control that cost directly.</li>
-          </ul>
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Already comparing tools?</h2>
+          <p>Choosing the right reporting tool depends on your data source, budget, and how much client-facing polish you need. We break down exactly how to weigh those factors in <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline">How to Choose Client Reporting Software</Link> — worth reading before you commit to a workflow.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I get started with automated client reporting?</h2>
           <p>If your reporting workflow is mostly CSV exports and spreadsheets, and you're tired of rebuilding the same report by hand every cycle, <Link to="/signup" className="text-amber-600 hover:text-amber-700 underline">try it free</Link> — three reports a month, no credit card required. You can also see <a href="/sample/report.pdf" className="text-amber-600 hover:text-amber-700 underline">an unedited sample report</a> before deciding anything.</p>
