@@ -6,28 +6,28 @@ export default function ComparisonAgencyAnalytics() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Naxely vs AgencyAnalytics: Which Client Reporting Tool Fits Your Workflow? | Naxely</title>
-        <meta name="description" content="Naxely vs AgencyAnalytics comparison: Naxely is an AI CSV-to-PDF report generator for freelancers and small agencies. AgencyAnalytics is a live marketing-dashboard platform with 70+ integrations." />
+        <title>Naxely: The Free Alternative to AgencyAnalytics for Client Reporting | Naxely</title>
+        <meta name="description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 70+ integrations." />
         <link rel="canonical" href="https://www.naxely.com/compare/agencyanalytics" />
         <meta property="og:url" content="https://www.naxely.com/compare/agencyanalytics" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Naxely vs AgencyAnalytics: Which Client Reporting Tool Fits Your Workflow? | Naxely" />
-        <meta property="og:description" content="Naxely vs AgencyAnalytics comparison: Naxely is an AI CSV-to-PDF report generator for freelancers and small agencies. AgencyAnalytics is a live marketing-dashboard platform with 70+ integrations." />
+        <meta property="og:title" content="Naxely: The Free Alternative to AgencyAnalytics for Client Reporting | Naxely" />
+        <meta property="og:description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 70+ integrations." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Naxely vs AgencyAnalytics: Which Client Reporting Tool Fits Your Workflow? | Naxely" />
-        <meta name="twitter:description" content="Naxely vs AgencyAnalytics comparison: Naxely is an AI CSV-to-PDF report generator for freelancers and small agencies. AgencyAnalytics is a live marketing-dashboard platform with 70+ integrations." />
+        <meta name="twitter:title" content="Naxely: The Free Alternative to AgencyAnalytics for Client Reporting | Naxely" />
+        <meta name="twitter:description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 70+ integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs AgencyAnalytics: Which Client Reporting Tool Fits Your Workflow?</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Looking for an Agency Analytics Alternative? Here's How Naxely Compares</h1>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. AgencyAnalytics is a white-label marketing reporting platform built for agencies that need to pull live data from 70+ marketing integrations (Google Ads, Facebook Ads, SEO tools, analytics) and produce both dashboards and PDF reports.</p>
+          <p>If you're looking for an agency analytics alternative that doesn't require live marketing connectors, Naxely is worth a look. As an alternative to AgencyAnalytics, Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. AgencyAnalytics is a white-label marketing reporting platform built for agencies that need to pull live data from 70+ marketing integrations (Google Ads, Facebook Ads, SEO tools, analytics) and produce both dashboards and PDF reports.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). AgencyAnalytics pulls data continuously through live marketing connectors.</strong> Choosing between them comes down to whether your data lives in spreadsheets or in ad/analytics platforms.</p>
 
