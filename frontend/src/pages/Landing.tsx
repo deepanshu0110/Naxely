@@ -1059,6 +1059,9 @@ export default function Landing() {
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
                 <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto', minWidth: '100px' }} />
               </a>
+              <a href="https://launchbuff.com" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
+                <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
+              </a>
               <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
                 <img src="https://launchboard.dev/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="240" style={{ height: '54px', width: 'auto' }} />
               </a>
@@ -1132,6 +1135,9 @@ export default function Landing() {
               </a>
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
                 <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto', minWidth: '100px' }} />
+              </a>
+              <a href="https://launchbuff.com" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
+                <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
               </a>
               <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
                 <img src="https://launchboard.dev/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="240" style={{ height: '54px', width: 'auto' }} />
