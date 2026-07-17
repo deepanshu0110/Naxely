@@ -51,6 +51,13 @@ const posts: Post[] = [
     routePrefix: '/compare/',
   },
   {
+    slug: 'powerdrill',
+    title: 'Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform',
+    excerpt: 'Compare Naxely and Powerdrill. Naxely is a purpose-built AI PDF report generator for client deliverables. Powerdrill Bloom is a broader AI data analysis workspace with natural-language BI.',
+    label: 'Comparison',
+    routePrefix: '/compare/',
+  },
+  {
     slug: 'csv-to-pdf-report-generator',
     title: 'CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports',
     excerpt: 'Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.',
