@@ -33,6 +33,7 @@ import BlogPostPythonCsvToPdf from '@/pages/BlogPostPythonCsvToPdf'
 import BlogPostTwoWeeks from '@/pages/BlogPostTwoWeeks'
 import ComparisonAgencyAnalytics from '@/pages/ComparisonAgencyAnalytics'
 import ComparisonDatabox from '@/pages/ComparisonDatabox'
+import ComparisonPowerdrill from '@/pages/ComparisonPowerdrill'
 import Faq from '@/pages/Faq'
 import Changelog from '@/pages/Changelog'
 
@@ -130,6 +131,7 @@ export const routes: RouteRecord[] = [
       { path: '/blog/two-weeks-building-naxely', element: <BlogPostTwoWeeks /> },
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
+      { path: '/compare/powerdrill', element: <ComparisonPowerdrill /> },
       { path: '/faq', element: <Faq /> },
       { path: '/changelog', element: <Changelog /> },
       {
