@@ -85,6 +85,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://www.naxely.com/blog/two-weeks-building-naxely</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://www.naxely.com/compare/agencyanalytics</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>

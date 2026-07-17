@@ -13,6 +13,12 @@ interface Post {
 
 const posts: Post[] = [
   {
+    slug: 'two-weeks-building-naxely',
+    title: 'What Two Weeks of Building a Client-Reporting Tool Actually Looked Like',
+    excerpt: 'The real bugs, numbers, and decisions from the first two weeks after Naxely\'s Product Hunt launch — no polish, no inflated stats.',
+    date: 'July 17, 2026',
+  },
+  {
     slug: 'python-csv-to-pdf-reports',
     title: 'Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool',
     excerpt: 'A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.',
