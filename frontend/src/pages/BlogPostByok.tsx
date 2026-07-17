@@ -19,6 +19,7 @@ export default function BlogPostByok() {
         <meta name="twitter:title" content="BYOK AI Reporting Tool: Bring Your Own Key Explained | Naxely" />
         <meta name="twitter:description" content="Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"BYOK AI Reporting Tool: Bring Your Own Key Explained","description":"Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup.","url":"https://www.naxely.com/blog/byok-ai-reporting-tool","datePublished":"2026-07-04","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">

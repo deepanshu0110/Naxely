@@ -19,6 +19,7 @@ export default function BlogPostPythonCsvToPdf() {
         <meta name="twitter:title" content="Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool | Naxely" />
         <meta name="twitter:description" content="A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool","description":"A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.","url":"https://www.naxely.com/blog/python-csv-to-pdf-reports","datePublished":"2026-07-14","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">

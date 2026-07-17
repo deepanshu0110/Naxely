@@ -19,6 +19,7 @@ export default function BlogPostWhiteLabel() {
         <meta name="twitter:title" content="White-Label Client Reporting for Agencies | Naxely" />
         <meta name="twitter:description" content="Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"White-Label Client Reporting for Agencies","description":"Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead.","url":"https://www.naxely.com/blog/white-label-client-reporting-agencies","datePublished":"2026-07-05","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">

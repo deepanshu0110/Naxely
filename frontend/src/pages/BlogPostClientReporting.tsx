@@ -19,6 +19,7 @@ export default function BlogPostClientReporting() {
         <meta name="twitter:title" content="How to Choose Client Reporting Software | Naxely" />
         <meta name="twitter:description" content="Learn what client reporting software actually does, how to choose the right tool based on your data source, and why AI-assisted file-based reporting fills a real gap." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Choose Client Reporting Software","description":"Learn what client reporting software actually does, how to choose the right tool based on your data source, and why AI-assisted file-based reporting fills a real gap.","url":"https://www.naxely.com/blog/client-reporting-software-guide","datePublished":"2026-07-07","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">

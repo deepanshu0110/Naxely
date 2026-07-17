@@ -19,6 +19,7 @@ export default function BlogPostCsvToPdf() {
         <meta name="twitter:title" content="CSV to PDF Report Generator with AI Insights | Naxely" />
         <meta name="twitter:description" content="Convert CSV files into branded, professional PDF reports with AI-written insights and charts — not just a format converter. See how Naxely compares to basic CSV-to-PDF tools." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"CSV to PDF Report Generator with AI Insights","description":"Convert CSV files into branded, professional PDF reports with AI-written insights and charts — not just a format converter. See how Naxely compares to basic CSV-to-PDF tools.","url":"https://www.naxely.com/blog/csv-to-pdf-report-generator","datePublished":"2026-07-04","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">

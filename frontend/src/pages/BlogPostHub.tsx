@@ -19,6 +19,7 @@ export default function BlogPostHub() {
         <meta name="twitter:title" content="Automating Client Reports: The Complete Guide | Naxely" />
         <meta name="twitter:description" content="How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Automating Client Reports: The Complete Guide","description":"How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle.","url":"https://www.naxely.com/blog/automating-client-reports","datePublished":"2026-07-05","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
