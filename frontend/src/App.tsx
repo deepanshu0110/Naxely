@@ -34,6 +34,7 @@ import BlogPostTwoWeeks from '@/pages/BlogPostTwoWeeks'
 import ComparisonAgencyAnalytics from '@/pages/ComparisonAgencyAnalytics'
 import ComparisonDatabox from '@/pages/ComparisonDatabox'
 import Faq from '@/pages/Faq'
+import Changelog from '@/pages/Changelog'
 
 const LazyScheduledReports = React.lazy(() => import('@/pages/ScheduledReports'))
 const LazyTemplates = React.lazy(() => import('@/pages/Templates'))
@@ -130,6 +131,7 @@ export const routes: RouteRecord[] = [
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
       { path: '/faq', element: <Faq /> },
+      { path: '/changelog', element: <Changelog /> },
       {
         element: <ProtectedRoute />,
         children: [

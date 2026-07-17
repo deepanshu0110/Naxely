@@ -987,6 +987,9 @@ export default function Landing() {
               <Link to="/faq" className="hover:text-ink">
                 FAQ
               </Link>
+              <Link to="/changelog" className="hover:text-ink">
+                Changelog
+              </Link>
             </div>
           </div>
           <div className="badge-marquee mt-8 pt-8 border-t border-gray-200">
