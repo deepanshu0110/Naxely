@@ -940,7 +940,7 @@ export default function Landing() {
                 Turn data into insights, instantly.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
               <a href="#features" className="hover:text-ink">
                 Features
               </a>
