@@ -26,9 +26,9 @@ const posts: Post[] = [
   },
   {
     slug: 'client-reporting-software-guide',
-    title: 'How to Choose Client Reporting Software (And Why I Built My Own)',
-    excerpt: 'Client reporting software should save you time — here is how to choose the right tool based on where your data actually lives, not an aspirational workflow.',
-    date: 'July 7, 2026',
+    title: 'How to Choose Client Reporting Software',
+    excerpt: 'A practical guide to choosing client reporting software: map your data sources, evaluate AI and automation, pick the right delivery method, and check white-label options before you commit.',
+    label: 'Guide',
   },
   {
     slug: 'byok-ai-reporting-tool',
