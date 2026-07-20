@@ -19,6 +19,11 @@ export default function ComparisonAgencyAnalytics() {
         <meta name="twitter:title" content="Naxely: The Free Alternative to AgencyAnalytics for Client Reporting | Naxely" />
         <meta name="twitter:description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 70+ integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+          {"@type":"Question","name":"Is there a cheaper alternative to AgencyAnalytics?","acceptedAnswer":{"@type":"Answer","text":"Yes — Naxely's free tier covers 3 reports/month with no credit card required, and Pro at $29/month is well under AgencyAnalytics' entry pricing. The tradeoff: Naxely works from uploaded data (CSV/Sheets), not live marketing connectors."}},
+          {"@type":"Question","name":"Can Naxely replace AgencyAnalytics for live campaign reporting?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time multi-channel dashboards. AgencyAnalytics' 70+ integrations pulling live data from ad platforms and SEO tools is its core differentiator. Naxely is built for generating polished PDF reports from data you already have — they serve different workflows."}},
+          {"@type":"Question","name":"Does Naxely support API connections to ad platforms?","acceptedAnswer":{"@type":"Answer","text":"No. Naxely is intentionally focused on CSV/Google Sheets input. If your workflow requires live API pulls from Google Ads, Facebook Ads, or similar, AgencyAnalytics' connector model is built for that. If you have CSV exports from those platforms, Naxely handles them in seconds."}}
+        ]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
@@ -92,6 +97,7 @@ export default function ComparisonAgencyAnalytics() {
           </ul>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
+
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a cheaper alternative to AgencyAnalytics?</h3>
           <p>Yes — Naxely's free tier covers 3 reports/month with no credit card required, and Pro at $29/month is well under AgencyAnalytics' entry pricing. The tradeoff: Naxely works from uploaded data (CSV/Sheets), not live marketing connectors.</p>
 
@@ -106,12 +112,6 @@ export default function ComparisonAgencyAnalytics() {
           </div>
         </div>
       </article>
-
-      <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-        {"@type":"Question","name":"Is there a cheaper alternative to AgencyAnalytics?","acceptedAnswer":{"@type":"Answer","text":"Yes — Naxely's free tier covers 3 reports/month with no credit card required, and Pro at $29/month is well under AgencyAnalytics' entry pricing. The tradeoff: Naxely works from uploaded data (CSV/Sheets), not live marketing connectors."}},
-        {"@type":"Question","name":"Can Naxely replace AgencyAnalytics for live campaign reporting?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time multi-channel dashboards. AgencyAnalytics' 70+ integrations pulling live data from ad platforms and SEO tools is its core differentiator. Naxely is built for generating polished PDF reports from data you already have — they serve different workflows."}},
-        {"@type":"Question","name":"Does Naxely support API connections to ad platforms?","acceptedAnswer":{"@type":"Answer","text":"No. Naxely is intentionally focused on CSV/Google Sheets input. If your workflow requires live API pulls from Google Ads, Facebook Ads, or similar, AgencyAnalytics' connector model is built for that. If you have CSV exports from those platforms, Naxely handles them in seconds."}}
-      ]})}</script>
 
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">

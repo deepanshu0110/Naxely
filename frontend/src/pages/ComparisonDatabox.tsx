@@ -19,6 +19,11 @@ export default function ComparisonDatabox() {
         <meta name="twitter:title" content="Naxely vs Databox: Which Reporting Tool Fits Your Workflow? | Naxely" />
         <meta name="twitter:description" content="Naxely vs Databox comparison: Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 100+ integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+          {"@type":"Question","name":"Is there a cheaper alternative to Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. The key tradeoff is output format: Naxely generates a point-in-time PDF report, while Databox provides a live, continuously-updating dashboard."}},
+          {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Databox?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished report from data you already have — it doesn't pull live data from connected platforms the way Databox does. If your workflow needs always-on visibility into KPIs, Databox's integration model fits that better."}},
+          {"@type":"Question","name":"Does Naxely offer BYOK like Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on every pricing tier, so there's no AI markup. Databox does not offer a BYOK option."}}
+        ]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
@@ -116,12 +121,6 @@ export default function ComparisonDatabox() {
           </div>
         </div>
       </article>
-
-      <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-        {"@type":"Question","name":"Is there a cheaper alternative to Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. The key tradeoff is output format: Naxely generates a point-in-time PDF report, while Databox provides a live, continuously-updating dashboard."}},
-        {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Databox?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished report from data you already have — it doesn't pull live data from connected platforms the way Databox does. If your workflow needs always-on visibility into KPIs, Databox's integration model fits that better."}},
-        {"@type":"Question","name":"Does Naxely offer BYOK like Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on every pricing tier, so there's no AI markup. Databox does not offer a BYOK option."}}
-      ]})}</script>
 
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">

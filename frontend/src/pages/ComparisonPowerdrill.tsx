@@ -19,6 +19,12 @@ export default function ComparisonPowerdrill() {
         <meta name="twitter:title" content="Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform | Naxely" />
         <meta name="twitter:description" content="Compare Naxely and Powerdrill. Naxely is a purpose-built AI PDF report generator for client deliverables. Powerdrill Bloom is a broader AI data analysis workspace with natural-language BI." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+          {"@type":"Question","name":"Which is more affordable, Naxely or Powerdrill?","acceptedAnswer":{"@type":"Answer","text":"Both offer free tiers. Naxely Free includes 3 reports/month with no credit card. Powerdrill Free gives 1,000 daily credits for exploration. For paid plans, Naxely Pro ($29/mo) covers 30 branded reports, while Powerdrill Pro ($16.58/mo) gives 5,000 monthly credits for analysis — but doesn't include white-label output, API access, or client delivery features."}},
+          {"@type":"Question","name":"Can Powerdrill replace Naxely for client reporting?","acceptedAnswer":{"@type":"Answer","text":"Powerdrill can generate reports and presentations, but it doesn't offer white-label output, programmatic API access, or built-in send-to-client email delivery. Naxely is purpose-built for the agency workflow: upload data, get a branded PDF, send it to your client — end to end."}},
+          {"@type":"Question","name":"Can Naxely replace Powerdrill for data analysis?","acceptedAnswer":{"@type":"Answer","text":"No — Naxely is a report generator, not a BI platform. It doesn't support live SQL database queries, multi-format data ingestion, open-data search, or interactive dashboards. For exploratory data analysis and internal BI, Powerdrill is the broader tool."}},
+          {"@type":"Question","name":"Does Powerdrill offer white-label reports?","acceptedAnswer":{"@type":"Answer","text":"No. Powerdrill has no white-label or branding-removal features. Naxely's Agency tier ($79/month) removes all platform branding from client-facing output."}}
+        ]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
@@ -122,13 +128,6 @@ export default function ComparisonPowerdrill() {
           </div>
         </div>
       </article>
-
-      <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-        {"@type":"Question","name":"Which is more affordable, Naxely or Powerdrill?","acceptedAnswer":{"@type":"Answer","text":"Both offer free tiers. Naxely Free includes 3 reports/month with no credit card. Powerdrill Free gives 1,000 daily credits for exploration. For paid plans, Naxely Pro ($29/mo) covers 30 branded reports, while Powerdrill Pro ($16.58/mo) gives 5,000 monthly credits for analysis — but doesn't include white-label output, API access, or client delivery features."}},
-        {"@type":"Question","name":"Can Powerdrill replace Naxely for client reporting?","acceptedAnswer":{"@type":"Answer","text":"Powerdrill can generate reports and presentations, but it doesn't offer white-label output, programmatic API access, or built-in send-to-client email delivery. Naxely is purpose-built for the agency workflow: upload data, get a branded PDF, send it to your client — end to end."}},
-        {"@type":"Question","name":"Can Naxely replace Powerdrill for data analysis?","acceptedAnswer":{"@type":"Answer","text":"No — Naxely is a report generator, not a BI platform. It doesn't support live SQL database queries, multi-format data ingestion, open-data search, or interactive dashboards. For exploratory data analysis and internal BI, Powerdrill is the broader tool."}},
-        {"@type":"Question","name":"Does Powerdrill offer white-label reports?","acceptedAnswer":{"@type":"Answer","text":"No. Powerdrill has no white-label or branding-removal features. Naxely's Agency tier ($79/month) removes all platform branding from client-facing output."}}
-      ]})}</script>
 
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
