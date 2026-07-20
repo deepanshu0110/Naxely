@@ -30,6 +30,7 @@ import BlogPostCsvToPdf from '@/pages/BlogPostCsvToPdf'
 import BlogPostWhiteLabel from '@/pages/BlogPostWhiteLabel'
 import BlogPostHub from '@/pages/BlogPostHub'
 import BlogPostClientReporting from '@/pages/BlogPostClientReporting'
+import BlogPostBestFreelanceReporting from '@/pages/BlogPostBestFreelanceReporting'
 import BlogPostPythonCsvToPdf from '@/pages/BlogPostPythonCsvToPdf'
 import BlogPostTwoWeeks from '@/pages/BlogPostTwoWeeks'
 import ComparisonAgencyAnalytics from '@/pages/ComparisonAgencyAnalytics'
@@ -131,6 +132,7 @@ export const routes: RouteRecord[] = [
       { path: '/blog/white-label-client-reporting-agencies', element: <BlogPostWhiteLabel /> },
       { path: '/blog/automating-client-reports', element: <BlogPostHub /> },
       { path: '/blog/client-reporting-software-guide', element: <BlogPostClientReporting /> },
+      { path: '/blog/best-client-reporting-software-freelancers', element: <BlogPostBestFreelanceReporting /> },
       { path: '/blog/python-csv-to-pdf-reports', element: <BlogPostPythonCsvToPdf /> },
       { path: '/blog/two-weeks-building-naxely', element: <BlogPostTwoWeeks /> },
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },

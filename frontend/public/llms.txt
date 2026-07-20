@@ -40,6 +40,7 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 ## Guides
 
 - [Client Reporting Software Guide 2026](https://www.naxely.com/blog/client-reporting-software-guide): Comprehensive guide to the best client reporting software tools for agencies and freelancers.
+- [Best Client Reporting Software for Freelancers (2026)](https://www.naxely.com/blog/best-client-reporting-software-freelancers): Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely for freelancer reporting workflows.
 
 ## Pricing
 
