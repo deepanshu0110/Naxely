@@ -7,28 +7,50 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 ## Features
 
 - **CSV & Google Sheets import** — Upload CSV files or connect Google Sheets with read-only OAuth authorization
-- **AI-powered insights** — AI-written summaries, analysis, and recommendations using your choice of provider (Groq, OpenAI, Gemini, Claude, DeepSeek, Mistral, Together AI)
-- **Custom branding** — Add your logo, brand colors, custom fonts (Fraunces + IBM Plex), and a cover letter
-- **Charts & tables** — Bar, line, pie, area, and donut charts; auto-detect column types; customizable data tables
-- **PDF export** — Download generated reports as polished PDFs
-- **Share & embed** — Share reports via a public link with optional expiry date; embedded iframe support
+- **AI-powered insights** — AI Executive Summary, AI Insight Cards, Anomaly Detection using your choice of provider (Groq, OpenAI, Gemini, Claude, DeepSeek, Mistral, Together AI)
+- **Custom branding** — Add your logo, brand colours, custom fonts (Fraunces + IBM Plex), and a cover letter
+- **16 chart types** — Bar, line, pie, area, donut, scatter, bubble, heatmap, radar, treemap, funnel, waterfall, gauge, and more; auto-detect column types
+- **PDF export** — Download generated reports as polished PDFs (Pro tier removes Naxely watermark)
+- **Shareable links** — Share reports via a public link with optional expiry date
 - **Scheduled reports** — Upload data once and schedule recurring report generation (Pro and Agency tiers)
-- **White-label sharing** — Branded share page without Naxely footer (Agency tier)
+- **PowerPoint export** — Export reports as .pptx files (Agency tier)
+- **Full white-label** — Agency-tier reports carry no Naxely branding at all
+- **Programmatic API** — Agency-tier API access for automated report generation
 - **Dark mode** — The app supports a dark mode UI
+
+## Key Pages
+
+- **Home**: https://www.naxely.com/
+- **Pricing**: https://www.naxely.com/pricing
+- **Login**: https://www.naxely.com/login
+- **Sign Up**: https://www.naxely.com/signup
+- **Contact**: https://www.naxely.com/contact
+- **Terms of Service**: https://www.naxely.com/terms
+- **Privacy Policy**: https://www.naxely.com/privacy
+- **Refund Policy**: https://www.naxely.com/refund
+
+## Comparisons
+
+- **Naxely vs DashThis**: https://www.naxely.com/compare/dashthis
+- **Naxely vs Whatagraph**: https://www.naxely.com/compare/whatagraph
+- **Naxely vs AgencyAnalytics**: https://www.naxely.com/compare/agencyanalytics
+- **Naxely vs Databox**: https://www.naxely.com/compare/databox
+- **Naxely vs Powerdrill**: https://www.naxely.com/compare/powerdrill
+
+## Guides
+
+- **Client Reporting Software Guide 2026**: https://www.naxely.com/blog/client-reporting-software-guide
 
 ## Pricing
 
-- **Free** — 1 report, 3 AI credits, 50-row limit, Naxely branding, no scheduled reports
-- **Pro ($29/mo)** — Unlimited reports, 100 AI credits/mo, 50k-row limit, custom branding, scheduled reports, remove Naxely branding
-- **Agency ($79/mo)** — Everything in Pro plus unlimited AI credits, 500k-row limit, 5 team seats, white-label sharing
+All prices in USD. No credit card required for the Free plan.
+
+- **Free** — $0/month: 3 reports/month, CSV upload, Google Sheets connector, basic charts (bar, line, pie), PDF with Naxely watermark, BYOK AI key, email support
+- **Pro** — $29/month: Unlimited reports, AI Executive Summary, AI Insight Cards, Anomaly Detection, 16 chart types, custom branding (logo + colour), no watermark, scheduled reports, shareable links, BYOK AI key
+- **Agency** — $79/month: Everything in Pro, PowerPoint export, full white-label reports (no Naxely branding), programmatic API access, priority support from founder
 
 ## Contact
 
 - **Founder**: Deepanshu Garg
 - **Email**: hello@naxely.com
-- **Website**: https://naxely.com
-- **Pricing**: https://naxely.com/pricing
 - **Product Hunt**: https://www.producthunt.com/products/naxely
-- **Terms of Service**: https://naxely.com/terms
-- **Privacy Policy**: https://naxely.com/privacy
-- **Refund Policy**: https://naxely.com/refund
