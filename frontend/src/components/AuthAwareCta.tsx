@@ -17,7 +17,7 @@ export default function AuthAwareCta() {
   if (isAuthenticated) {
     return (
       <Link to="/dashboard"
-        className="bg-amber-500 hover:bg-amber-600 text-white
+        className="bg-amber-600 hover:bg-amber-700 text-white
           font-medium px-7 py-3 rounded-lg transition-colors text-base
           inline-block">
         Go to Dashboard →
