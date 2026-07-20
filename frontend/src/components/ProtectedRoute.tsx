@@ -1,8 +1,11 @@
+import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 
 export default function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuthStore()
+  const { isAuthenticated, isLoading, initialize } = useAuthStore()
+
+  useEffect(() => { initialize() }, [initialize])
 
   if (isLoading) {
     return (

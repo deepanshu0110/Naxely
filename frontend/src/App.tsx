@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react'
+import { Suspense, lazy } from 'react'
 import { HelmetProvider } from 'react-helmet-async'
 import { Analytics } from '@vercel/analytics/react'
 import { Navigate, Outlet } from 'react-router-dom'
@@ -6,44 +6,45 @@ import type { RouteRecord } from 'vite-react-ssg'
 import { Toaster } from 'react-hot-toast'
 import useCookieYesGA4 from '@/hooks/useCookieYesGA4'
 import useCookieYesClarity from '@/hooks/useCookieYesClarity'
-import Login from '@/pages/Login'
-import Signup from '@/pages/Signup'
-import AuthCallback from '@/pages/AuthCallback'
-import ForgotPassword from '@/pages/ForgotPassword'
-import ResetPassword from '@/pages/ResetPassword'
-import Dashboard from '@/pages/Dashboard'
-import NewReport from '@/pages/NewReport'
-import ReportView from '@/pages/ReportView'
-import Landing from '@/pages/Landing'
-import Settings from '@/pages/Settings'
-import Pricing from '@/pages/Pricing'
-import NotFound from '@/pages/NotFound'
-import SharedReportView from '@/pages/SharedReportView'
-import Contact from '@/pages/Contact'
-import Terms from '@/pages/Terms'
-import Privacy from '@/pages/Privacy'
-import Refund from '@/pages/Refund'
-import Blog from '@/pages/Blog'
-import BlogPostByok from '@/pages/BlogPostByok'
-import BlogPostCsvToPdf from '@/pages/BlogPostCsvToPdf'
-import BlogPostWhiteLabel from '@/pages/BlogPostWhiteLabel'
-import BlogPostHub from '@/pages/BlogPostHub'
-import BlogPostClientReporting from '@/pages/BlogPostClientReporting'
-import BlogPostBestFreelanceReporting from '@/pages/BlogPostBestFreelanceReporting'
-import BlogPostPythonCsvToPdf from '@/pages/BlogPostPythonCsvToPdf'
-import BlogPostTwoWeeks from '@/pages/BlogPostTwoWeeks'
-import ComparisonAgencyAnalytics from '@/pages/ComparisonAgencyAnalytics'
-import ComparisonDatabox from '@/pages/ComparisonDatabox'
-import ComparisonPowerdrill from '@/pages/ComparisonPowerdrill'
-import ComparisonDashThis from '@/pages/ComparisonDashThis'
-import ComparisonWhatagraph from '@/pages/ComparisonWhatagraph'
-import Faq from '@/pages/Faq'
-import Changelog from '@/pages/Changelog'
 
-const LazyScheduledReports = React.lazy(() => import('@/pages/ScheduledReports'))
-const LazyTemplates = React.lazy(() => import('@/pages/Templates'))
-const ProtectedRoute = React.lazy(() => import('@/components/ProtectedRoute'))
-const PublicOnlyRoute = React.lazy(() => import('@/components/PublicOnlyRoute'))
+const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'))
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'))
+const Dashboard = lazy(() => import('@/pages/Dashboard'))
+const NewReport = lazy(() => import('@/pages/NewReport'))
+const ReportView = lazy(() => import('@/pages/ReportView'))
+const Landing = lazy(() => import('@/pages/Landing'))
+const Settings = lazy(() => import('@/pages/Settings'))
+const Pricing = lazy(() => import('@/pages/Pricing'))
+const NotFound = lazy(() => import('@/pages/NotFound'))
+const SharedReportView = lazy(() => import('@/pages/SharedReportView'))
+const Contact = lazy(() => import('@/pages/Contact'))
+const Terms = lazy(() => import('@/pages/Terms'))
+const Privacy = lazy(() => import('@/pages/Privacy'))
+const Refund = lazy(() => import('@/pages/Refund'))
+const Blog = lazy(() => import('@/pages/Blog'))
+const BlogPostByok = lazy(() => import('@/pages/BlogPostByok'))
+const BlogPostCsvToPdf = lazy(() => import('@/pages/BlogPostCsvToPdf'))
+const BlogPostWhiteLabel = lazy(() => import('@/pages/BlogPostWhiteLabel'))
+const BlogPostHub = lazy(() => import('@/pages/BlogPostHub'))
+const BlogPostClientReporting = lazy(() => import('@/pages/BlogPostClientReporting'))
+const BlogPostBestFreelanceReporting = lazy(() => import('@/pages/BlogPostBestFreelanceReporting'))
+const BlogPostPythonCsvToPdf = lazy(() => import('@/pages/BlogPostPythonCsvToPdf'))
+const BlogPostTwoWeeks = lazy(() => import('@/pages/BlogPostTwoWeeks'))
+const ComparisonAgencyAnalytics = lazy(() => import('@/pages/ComparisonAgencyAnalytics'))
+const ComparisonDatabox = lazy(() => import('@/pages/ComparisonDatabox'))
+const ComparisonPowerdrill = lazy(() => import('@/pages/ComparisonPowerdrill'))
+const ComparisonDashThis = lazy(() => import('@/pages/ComparisonDashThis'))
+const ComparisonWhatagraph = lazy(() => import('@/pages/ComparisonWhatagraph'))
+const Faq = lazy(() => import('@/pages/Faq'))
+const Changelog = lazy(() => import('@/pages/Changelog'))
+const Login = lazy(() => import('@/pages/Login'))
+const Signup = lazy(() => import('@/pages/Signup'))
+
+const LazyScheduledReports = lazy(() => import('@/pages/ScheduledReports'))
+const LazyTemplates = lazy(() => import('@/pages/Templates'))
+const ProtectedRoute = lazy(() => import('@/components/ProtectedRoute'))
+const PublicOnlyRoute = lazy(() => import('@/components/PublicOnlyRoute'))
 
 function Loading() {
   return (
@@ -53,27 +54,14 @@ function Loading() {
   )
 }
 
-function AuthInitializer() {
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const idle = window.requestIdleCallback || ((cb: IdleRequestCallback) => setTimeout(cb, 10000))
-      idle(() => {
-        import('@/store/authStore').then(({ useAuthStore }) => {
-          useAuthStore.getState().initialize()
-        })
-      })
-    }
-  }, [])
-  return null
-}
-
 function RootLayout() {
   useCookieYesGA4()
   useCookieYesClarity()
   return (
     <HelmetProvider>
-      <Outlet />
-      <AuthInitializer />
+      <Suspense fallback={<Loading />}>
+        <Outlet />
+      </Suspense>
       <Toaster position="top-right" />
       <Analytics />
     </HelmetProvider>
@@ -86,7 +74,7 @@ export const routes: RouteRecord[] = [
     children: [
       { path: '/', element: <Landing /> },
       {
-        element: <Suspense fallback={<Loading />}><PublicOnlyRoute /></Suspense>,
+        element: <PublicOnlyRoute />,
         children: [
           { path: '/login', element: <Login /> },
           { path: '/signup', element: <Signup /> },
@@ -118,7 +106,7 @@ export const routes: RouteRecord[] = [
       { path: '/faq', element: <Faq /> },
       { path: '/changelog', element: <Changelog /> },
       {
-        element: <Suspense fallback={<Loading />}><ProtectedRoute /></Suspense>,
+        element: <ProtectedRoute />,
         children: [
           { path: '/dashboard', element: <Dashboard /> },
           { path: '/report/new', element: <NewReport /> },
