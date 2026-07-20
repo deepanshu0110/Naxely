@@ -6,6 +6,7 @@ import type { RouteRecord } from 'vite-react-ssg'
 import { useAuthStore } from '@/store/authStore'
 import { Toaster } from 'react-hot-toast'
 import useCookieYesGA4 from '@/hooks/useCookieYesGA4'
+import useCookieYesClarity from '@/hooks/useCookieYesClarity'
 import Login from '@/pages/Login'
 import Signup from '@/pages/Signup'
 import AuthCallback from '@/pages/AuthCallback'
@@ -52,6 +53,7 @@ function Loading() {
 
 function RootLayout() {
   useCookieYesGA4()
+  useCookieYesClarity()
   return (
     <HelmetProvider>
       <Outlet />
