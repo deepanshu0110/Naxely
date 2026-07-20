@@ -110,6 +110,7 @@ html.dark #root::before {
 .sf-root img {
   height: 54px !important;
   width: auto !important;
+  object-fit: contain;
 }
 
 @keyframes scroll-badges {

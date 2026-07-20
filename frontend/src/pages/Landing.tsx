@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Head } from 'vite-react-ssg'
 import {
@@ -13,8 +13,6 @@ import {
 import Navbar from '@/components/layout/Navbar'
 import { NaxelyMark } from '@/components/ui/NaxelyMark'
 import { useInView } from '@/hooks/useInView'
-
-const AuthAwareCta = lazy(() => import('@/components/AuthAwareCta'))
 
 const stepped = [
   {
@@ -118,7 +116,8 @@ function PDFMockupCard() {
       dark:shadow-[0_24px_64px_rgba(0,0,0,0.45)]
       overflow-hidden
       border border-black/5 dark:border-white/5
-      flex-shrink-0">
+      flex-shrink-0"
+      aria-hidden="true">
 
       {/* Top brand bar */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-amber-500" />
@@ -340,15 +339,17 @@ export default function Landing() {
               justify-center lg:justify-start gap-4 mb-10
               nax-animate-fade-up"
               style={{ animationDelay: '240ms' }}>
-              <Suspense fallback={
-                <Link to="/signup"
-                  className="bg-amber-600 hover:bg-amber-700 text-white
-                    font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block">
-                  Generate your first report — free
-                </Link>
-              }>
-                <AuthAwareCta />
-              </Suspense>
+              <Link to="/signup"
+                className="bg-amber-600 hover:bg-amber-700 text-white
+                  font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block">
+                Generate your first report — free
+              </Link>
+              <Link to="/login"
+                className="text-ink/60 dark:text-paper/50
+                  hover:text-ink dark:hover:text-paper
+                  font-medium text-base transition-colors">
+                Sign in →
+              </Link>
             </div>
 
             {/* Social proof */}
@@ -936,7 +937,7 @@ export default function Landing() {
           <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="font-display text-lg font-bold text-ink">Naxely</p>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-600">
                 Turn data into insights, instantly.
               </p>
             </div>
@@ -1121,7 +1122,7 @@ export default function Landing() {
               </a>
             </div>
           </div>
-          <p className="mt-4 text-center text-xs text-gray-400">
+          <p className="mt-4 text-center text-xs text-gray-600">
             Made in India 🇮🇳 · Naxely © 2026
           </p>
         </div>

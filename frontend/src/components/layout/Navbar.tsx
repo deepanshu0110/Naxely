@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom'
-import { useAuthStore } from '@/store/authStore'
 
 export default function Navbar() {
-  const { user } = useAuthStore()
   return (
     <nav className="sticky top-0 z-50 border-b border-slate bg-paper/95 backdrop-blur dark:border-gray-700 dark:bg-darkBg/95">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <Link to={user ? '/dashboard' : '/'} className="font-display text-xl font-bold text-ink dark:text-gray-100">
+        <Link to="/" className="font-display text-xl font-bold text-ink dark:text-gray-100">
           Naxely
         </Link>
 

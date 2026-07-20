@@ -1,9 +1,8 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { HelmetProvider } from 'react-helmet-async'
 import { Analytics } from '@vercel/analytics/react'
 import { Navigate, Outlet } from 'react-router-dom'
 import type { RouteRecord } from 'vite-react-ssg'
-import { useAuthStore } from '@/store/authStore'
 import { Toaster } from 'react-hot-toast'
 import useCookieYesGA4 from '@/hooks/useCookieYesGA4'
 import useCookieYesClarity from '@/hooks/useCookieYesClarity'
@@ -43,6 +42,8 @@ import Changelog from '@/pages/Changelog'
 
 const LazyScheduledReports = React.lazy(() => import('@/pages/ScheduledReports'))
 const LazyTemplates = React.lazy(() => import('@/pages/Templates'))
+const ProtectedRoute = React.lazy(() => import('@/components/ProtectedRoute'))
+const PublicOnlyRoute = React.lazy(() => import('@/components/PublicOnlyRoute'))
 
 function Loading() {
   return (
@@ -52,57 +53,31 @@ function Loading() {
   )
 }
 
+function AuthInitializer() {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const idle = window.requestIdleCallback || ((cb: IdleRequestCallback) => setTimeout(cb, 10000))
+      idle(() => {
+        import('@/store/authStore').then(({ useAuthStore }) => {
+          useAuthStore.getState().initialize()
+        })
+      })
+    }
+  }, [])
+  return null
+}
+
 function RootLayout() {
   useCookieYesGA4()
   useCookieYesClarity()
   return (
     <HelmetProvider>
       <Outlet />
+      <AuthInitializer />
       <Toaster position="top-right" />
       <Analytics />
     </HelmetProvider>
   )
-}
-
-function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuthStore()
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
-          <div className="h-5 w-32 animate-pulse rounded bg-gray-200" />
-        </div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-
-  return <Outlet />
-}
-
-function PublicOnlyRoute() {
-  const { isAuthenticated, isLoading } = useAuthStore()
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-5 w-32 animate-pulse rounded bg-gray-200" />
-        </div>
-      </div>
-    )
-  }
-
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />
-  }
-
-  return <Outlet />
 }
 
 export const routes: RouteRecord[] = [
@@ -111,7 +86,7 @@ export const routes: RouteRecord[] = [
     children: [
       { path: '/', element: <Landing /> },
       {
-        element: <PublicOnlyRoute />,
+        element: <Suspense fallback={<Loading />}><PublicOnlyRoute /></Suspense>,
         children: [
           { path: '/login', element: <Login /> },
           { path: '/signup', element: <Signup /> },
@@ -143,7 +118,7 @@ export const routes: RouteRecord[] = [
       { path: '/faq', element: <Faq /> },
       { path: '/changelog', element: <Changelog /> },
       {
-        element: <ProtectedRoute />,
+        element: <Suspense fallback={<Loading />}><ProtectedRoute /></Suspense>,
         children: [
           { path: '/dashboard', element: <Dashboard /> },
           { path: '/report/new', element: <NewReport /> },
