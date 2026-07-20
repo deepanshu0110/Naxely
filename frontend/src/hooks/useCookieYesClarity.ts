@@ -43,11 +43,16 @@ export default function useCookieYesClarity() {
       return false
     }
 
-    const t = setTimeout(check, 500)
-    const interval = setInterval(() => { if (check()) clearInterval(interval) }, 300)
-    setTimeout(() => clearInterval(interval), 30000)
+    const onConsentUpdate = () => { check() }
+
+    document.addEventListener('cookieyes_consent_update', onConsentUpdate)
+
+    const t = setTimeout(check, 1000)
+    const interval = setInterval(() => { if (check()) clearInterval(interval) }, 500)
+    setTimeout(() => clearInterval(interval), 300000)
 
     return () => {
+      document.removeEventListener('cookieyes_consent_update', onConsentUpdate)
       clearTimeout(t)
       clearInterval(interval)
     }
