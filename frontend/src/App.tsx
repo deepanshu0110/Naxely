@@ -34,6 +34,7 @@ import BlogPostTwoWeeks from '@/pages/BlogPostTwoWeeks'
 import ComparisonAgencyAnalytics from '@/pages/ComparisonAgencyAnalytics'
 import ComparisonDatabox from '@/pages/ComparisonDatabox'
 import ComparisonPowerdrill from '@/pages/ComparisonPowerdrill'
+import ComparisonDashThis from '@/pages/ComparisonDashThis'
 import Faq from '@/pages/Faq'
 import Changelog from '@/pages/Changelog'
 
@@ -132,6 +133,7 @@ export const routes: RouteRecord[] = [
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
       { path: '/compare/powerdrill', element: <ComparisonPowerdrill /> },
+      { path: '/compare/dashthis', element: <ComparisonDashThis /> },
       { path: '/faq', element: <Faq /> },
       { path: '/changelog', element: <Changelog /> },
       {

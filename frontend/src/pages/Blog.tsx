@@ -58,6 +58,13 @@ const posts: Post[] = [
     routePrefix: '/compare/',
   },
   {
+    slug: 'dashthis',
+    title: 'Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards',
+    excerpt: 'Naxely turns uploaded data into branded PDF reports in under a minute. DashThis is a customizable marketing-dashboard platform with 40+ integrations for live campaign reporting.',
+    label: 'Comparison',
+    routePrefix: '/compare/',
+  },
+  {
     slug: 'csv-to-pdf-report-generator',
     title: 'CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports',
     excerpt: 'Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.',
