@@ -34,3 +34,8 @@ stats.json
 *.csv
 .vercel
 .env*
+
+# Lighthouse reports, debug artifacts
+*.report.html
+console-errors.txt
+blog-client-reporting-verification.md
