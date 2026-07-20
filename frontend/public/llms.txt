@@ -20,26 +20,26 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 
 ## Key Pages
 
-- **Home**: https://www.naxely.com/
-- **Pricing**: https://www.naxely.com/pricing
-- **Login**: https://www.naxely.com/login
-- **Sign Up**: https://www.naxely.com/signup
-- **Contact**: https://www.naxely.com/contact
-- **Terms of Service**: https://www.naxely.com/terms
-- **Privacy Policy**: https://www.naxely.com/privacy
-- **Refund Policy**: https://www.naxely.com/refund
+- [Home](https://www.naxely.com/): Naxely homepage — AI-powered PDF report generator for freelance analysts and small agencies.
+- [Pricing](https://www.naxely.com/pricing): Three tiers — Free ($0/mo), Pro ($29/mo), Agency ($79/mo).
+- [Login](https://www.naxely.com/login): Sign in to your Naxely account.
+- [Sign Up](https://www.naxely.com/signup): Create a new Naxely account — no credit card required.
+- [Contact](https://www.naxely.com/contact): Get in touch with the Naxely team.
+- [Terms of Service](https://www.naxely.com/terms): Legal terms governing use of Naxely.
+- [Privacy Policy](https://www.naxely.com/privacy): How Naxely handles your data.
+- [Refund Policy](https://www.naxely.com/refund): Refund terms for paid plans.
 
 ## Comparisons
 
-- **Naxely vs DashThis**: https://www.naxely.com/compare/dashthis
-- **Naxely vs Whatagraph**: https://www.naxely.com/compare/whatagraph
-- **Naxely vs AgencyAnalytics**: https://www.naxely.com/compare/agencyanalytics
-- **Naxely vs Databox**: https://www.naxely.com/compare/databox
-- **Naxely vs Powerdrill**: https://www.naxely.com/compare/powerdrill
+- [Naxely vs DashThis](https://www.naxely.com/compare/dashthis): Compare Naxely with DashThis for automated client reporting.
+- [Naxely vs Whatagraph](https://www.naxely.com/compare/whatagraph): Compare Naxely with Whatagraph for marketing report automation.
+- [Naxely vs AgencyAnalytics](https://www.naxely.com/compare/agencyanalytics): Compare Naxely with AgencyAnalytics for agency reporting.
+- [Naxely vs Databox](https://www.naxely.com/compare/databox): Compare Naxely with Databox for business dashboards and reports.
+- [Naxely vs Powerdrill](https://www.naxely.com/compare/powerdrill): Compare Naxely with Powerdrill for AI-driven data analysis.
 
 ## Guides
 
-- **Client Reporting Software Guide 2026**: https://www.naxely.com/blog/client-reporting-software-guide
+- [Client Reporting Software Guide 2026](https://www.naxely.com/blog/client-reporting-software-guide): Comprehensive guide to the best client reporting software tools for agencies and freelancers.
 
 ## Pricing
 
@@ -53,4 +53,4 @@ All prices in USD. No credit card required for the Free plan.
 
 - **Founder**: Deepanshu Garg
 - **Email**: hello@naxely.com
-- **Product Hunt**: https://www.producthunt.com/products/naxely
+- [Product Hunt](https://www.producthunt.com/products/naxely): Naxely on Product Hunt.
