@@ -38,6 +38,4 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-LLMs: https://www.naxely.com/llms.txt
-
 Sitemap: https://www.naxely.com/sitemap.xml

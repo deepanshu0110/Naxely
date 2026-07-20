@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { Head } from 'vite-react-ssg'
 import {
@@ -12,8 +12,9 @@ import {
 } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import { NaxelyMark } from '@/components/ui/NaxelyMark'
-import { useAuthStore } from '@/store/authStore'
 import { useInView } from '@/hooks/useInView'
+
+const AuthAwareCta = lazy(() => import('@/components/AuthAwareCta'))
 
 const stepped = [
   {
@@ -215,8 +216,6 @@ function PDFMockupCard() {
 }
 
 export default function Landing() {
-  const { isAuthenticated } = useAuthStore();
-
   useEffect(() => {
     if (typeof document === 'undefined') return
     if (document.querySelector('script[data-sf-badge]')) return
@@ -256,6 +255,7 @@ export default function Landing() {
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload, Google Sheets connector, and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all tiers — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically in under a minute."}}]})}</script>
       </Head>
       <Navbar />
+      <main>
 
       {/* ── Hero ── */}
       <section
@@ -340,42 +340,15 @@ export default function Landing() {
               justify-center lg:justify-start gap-4 mb-10
               nax-animate-fade-up"
               style={{ animationDelay: '240ms' }}>
-              {isAuthenticated ? (
-                <Link to="/dashboard"
-                  className="bg-amber-500 hover:bg-amber-600 text-white
-                    font-medium px-7 py-3 rounded-lg transition-colors text-base
-                    inline-block">
-                  Go to Dashboard →
+              <Suspense fallback={
+                <Link to="/signup"
+                  className="bg-amber-600 hover:bg-amber-700 text-white
+                    font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block">
+                  Generate your first report — free
                 </Link>
-              ) : (
-                <>
-                  <Link to="/signup"
-                    className="
-                      relative overflow-hidden
-                      bg-amber-500 hover:bg-amber-600
-                      text-white font-medium px-7 py-3 rounded-lg
-                      transition-colors text-base inline-block
-                      group
-                    ">
-                    <span className="relative z-10">
-                      Generate your first report — free
-                    </span>
-                    {/* Shimmer layer */}
-                    <span className="
-                      absolute inset-0
-                      bg-gradient-to-r from-transparent via-white/20 to-transparent
-                      -translate-x-full group-hover:translate-x-full
-                      transition-transform duration-700 ease-in-out
-                    " />
-                  </Link>
-                  <Link to="/login"
-                    className="text-ink/60 dark:text-paper/50
-                      hover:text-ink dark:hover:text-paper
-                      font-medium text-base transition-colors">
-                    Sign in →
-                  </Link>
-                </>
-              )}
+              }>
+                <AuthAwareCta />
+              </Suspense>
             </div>
 
             {/* Social proof */}
@@ -756,7 +729,7 @@ export default function Landing() {
             <a
               href="/sample/agency_billable_hours.csv"
               download
-              className="bg-amber-500 hover:bg-amber-600 text-white font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block"
+              className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block"
             >
               Download Sample CSV
             </a>
@@ -794,7 +767,7 @@ export default function Landing() {
                 }`}
               >
                 {p.badge && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-500 px-3 py-0.5 text-xs font-semibold text-white">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-600 px-3 py-0.5 text-xs font-semibold text-white">
                     {p.badge}
                   </span>
                 )}
@@ -827,7 +800,7 @@ export default function Landing() {
                   to={p.href}
                   className={`mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
                     p.ctaVariant === 'filled'
-                      ? 'bg-amber-500 text-white hover:bg-amber-600'
+                      ? 'bg-amber-600 text-white hover:bg-amber-700'
                       : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -955,6 +928,8 @@ export default function Landing() {
         </div>
       </section>
 
+      </main>
+
       {/* ── Footer ── */}
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-5xl">
@@ -995,10 +970,10 @@ export default function Landing() {
           <div className="badge-marquee mt-8 pt-8 border-t border-gray-200">
             <div className="badge-track">
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
               </a>
               <a
                 href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
@@ -1008,17 +983,17 @@ export default function Landing() {
                 <img
                   alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
                   src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
-                  style={{ height: '54px', width: 'auto' }}
+                  width="180" height="54"
                 />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" width="200" height="54" />
               </a>
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
               </a>
               <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="160" height="54" />
               </a>
               <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
                 <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
@@ -1053,14 +1028,12 @@ export default function Landing() {
                 <img
                   src="https://assets.dang.ai/badges/dang-verified-dark.png"
                   alt="Verified on DANG!"
-                  style={{ height: '54px', width: 'auto', display:'block', border:0, outline:'none', textDecoration:'none' }}
+                  width="180" height="54" style={{ display:'block', border:0, outline:'none', textDecoration:'none' }}
                 />
               </a>
-              <a href="https://www.shipit.buzz/products/naxely?ref=badge" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" style={{ height: '54px', width: 'auto' }} />
-              </a>
+              {/* shipit.buzz badge removed — their badge API returns HTTP 500 as of July 2026 */}
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
-                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto', minWidth: '100px' }} />
+                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="140" height="54" />
               </a>
               <a href="https://launchbuff.com" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
                 <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
@@ -1069,13 +1042,13 @@ export default function Landing() {
                 <img src="/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" />
               </a>
               <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
               </a>
               <a
                 href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
@@ -1085,17 +1058,17 @@ export default function Landing() {
                 <img
                   alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
                   src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
-                  style={{ height: '54px', width: 'auto' }}
+                  width="180" height="54"
                 />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" width="200" height="54" />
               </a>
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
               </a>
               <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="160" height="54" />
               </a>
               <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
                 <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
@@ -1130,14 +1103,12 @@ export default function Landing() {
                 <img
                   src="https://assets.dang.ai/badges/dang-verified-dark.png"
                   alt="Verified on DANG!"
-                  style={{ height: '54px', width: 'auto', display:'block', border:0, outline:'none', textDecoration:'none' }}
+                  width="180" height="54" style={{ display:'block', border:0, outline:'none', textDecoration:'none' }}
                 />
               </a>
-              <a href="https://www.shipit.buzz/products/naxely?ref=badge" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.shipit.buzz/api/products/naxely/badge?theme=light" alt="Featured on Shipit" style={{ height: '54px', width: 'auto' }} />
-              </a>
+              {/* shipit.buzz badge removed — their badge API returns HTTP 500 as of July 2026 */}
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
-                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" style={{ height: '54px', width: 'auto', minWidth: '100px' }} />
+                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="140" height="54" />
               </a>
               <a href="https://launchbuff.com" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
                 <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
@@ -1146,7 +1117,7 @@ export default function Landing() {
                 <img src="/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" loading="lazy" />
               </a>
               <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" style={{ height: '54px', width: 'auto' }} />
+                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />
               </a>
             </div>
           </div>
