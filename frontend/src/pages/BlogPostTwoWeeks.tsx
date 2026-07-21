@@ -28,7 +28,7 @@ export default function BlogPostTwoWeeks() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">What Two Weeks of Building a Client-Reporting Tool Actually Looked Like</h1>
         <p className="text-xs text-gray-400 mb-10">July 17, 2026</p>
 
-        <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
+        <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Most "we launched!" posts skip the part where things break. Here's the actual record: bugs found, decisions made, and the real numbers from the first two weeks after Naxely went live.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">The launch numbers, unfiltered</h2>
@@ -86,7 +86,7 @@ export default function BlogPostTwoWeeks() {
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely &copy; 2026</p>
+          <p className="text-xs text-gray-600">Naxely &copy; 2026</p>
         </div>
       </footer>
     </div>

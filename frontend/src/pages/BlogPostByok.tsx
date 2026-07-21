@@ -28,7 +28,7 @@ export default function BlogPostByok() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Why Naxely Uses BYOK: Bring Your Own AI Key for Client Reports</h1>
         <p className="text-xs text-gray-400 mb-10">July 4, 2026</p>
 
-        <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
+        <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>If you've shopped for an AI-powered reporting tool recently, you've probably run into the same wall: a $29 or $49/month subscription that bundles in "AI credits" you can't fully see, control, or predict. Hit your limit mid-report, and you're stuck waiting for next month's reset.</p>
 
           <p>Naxely works differently. It's a <strong>BYOK (Bring Your Own Key) reporting tool</strong> — you connect your own API key from a supported AI provider, and you pay that provider directly. Naxely never marks up your AI usage.</p>
@@ -109,7 +109,7 @@ export default function BlogPostByok() {
 
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
-          <p className="text-xs text-gray-400 space-x-2">
+          <p className="text-xs text-gray-600 space-x-2">
             <span>Related reading:</span>
             <Link to="/blog/automating-client-reports" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Automate Client Reports</Link>
             <span className="text-gray-300">·</span>
@@ -123,7 +123,7 @@ export default function BlogPostByok() {
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely © 2026</p>
+          <p className="text-xs text-gray-600">Naxely © 2026</p>
         </div>
       </footer>
     </div>

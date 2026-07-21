@@ -37,7 +37,7 @@ export default function BlogPostClientReporting() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">How to Choose Client Reporting Software</h1>
         <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026</p>
 
-        <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
+        <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
 
           <p>Choosing client reporting software comes down to four questions: where your data lives, how much automation and AI you actually need, how you want to deliver reports, and whether white-labeling matters to your business. Most tools are built for one specific workflow — live ad-platform dashboards or file-based PDF generation — so matching the tool to how your data reaches it matters more than any feature list.</p>
 
@@ -125,7 +125,7 @@ export default function BlogPostClientReporting() {
 
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely &copy; 2026</p>
+          <p className="text-xs text-gray-600">Naxely &copy; 2026</p>
         </div>
       </footer>
     </div>

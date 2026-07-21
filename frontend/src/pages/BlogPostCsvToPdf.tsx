@@ -28,7 +28,7 @@ export default function BlogPostCsvToPdf() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports</h1>
         <p className="text-xs text-gray-400 mb-10">July 4, 2026</p>
 
-        <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
+        <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>If you've searched "CSV to PDF," you've probably landed on a converter — a tool that takes your spreadsheet and turns it into a PDF with the same rows and columns, just in a different file format. That's useful if all you need is a static copy of your data. It's not useful if you need to actually <em>show</em> that data to a client.</p>
 
           <p>Naxely is a different category of tool: a <strong>CSV to PDF report generator</strong> that doesn't just reformat your data — it analyzes it, charts it, and writes insights about it.</p>
@@ -129,7 +129,7 @@ export default function BlogPostCsvToPdf() {
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely © 2026</p>
+          <p className="text-xs text-gray-600">Naxely © 2026</p>
         </div>
       </footer>
     </div>

@@ -28,7 +28,7 @@ export default function BlogPostPythonCsvToPdf() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool</h1>
         <p className="text-xs text-gray-400 mb-10">July 14, 2026</p>
 
-        <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
+        <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>If you've ever typed "python csv to pdf report" into Google, you already know the drill. You've got a CSV full of client data, and you need it to look like something you can actually send someone — not a wall of comma-separated numbers.</p>
 
           <p>There are two ways this usually goes.</p>
@@ -94,7 +94,7 @@ export default function BlogPostPythonCsvToPdf() {
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely © 2026</p>
+          <p className="text-xs text-gray-600">Naxely © 2026</p>
         </div>
       </footer>
     </div>

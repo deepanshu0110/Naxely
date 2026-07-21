@@ -91,7 +91,7 @@ export default function Faq() {
 
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-5xl text-center">
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-600">
             Made in India 🇮🇳 · Naxely © 2026
           </p>
         </div>

@@ -28,7 +28,7 @@ export default function BlogPostWhiteLabel() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">White-Label Client Reporting for Agencies: Why &ldquo;Any-Data&rdquo; Beats Another Marketing Connector</h1>
         <p className="text-xs text-gray-400 mb-10">July 5, 2026</p>
 
-        <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
+        <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>You built the report. The client renamed three columns in their spreadsheet last week and didn't mention it. Now you're rebuilding the chart mappings at 11pm before tomorrow's call, because the automated pull broke on a header it didn't recognize.</p>
 
           <p>If you run a small agency or consultancy, this is a familiar Sunday night. And it's not really a data problem — it's a tooling problem. Every reporting platform built for agencies assumes your client's data lives inside Google Ads, Meta, or GA4. If it doesn't — if it's a CSV export from their internal system, a shared Google Sheet someone updates manually, a billing spreadsheet, an ops dashboard — you're on your own.</p>
@@ -121,7 +121,7 @@ export default function BlogPostWhiteLabel() {
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely © 2026</p>
+          <p className="text-xs text-gray-600">Naxely © 2026</p>
         </div>
       </footer>
     </div>

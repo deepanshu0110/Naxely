@@ -37,7 +37,7 @@ export default function BlogPostBestFreelanceReporting() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Best Client Reporting Software for Freelancers (2026)</h1>
         <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026</p>
 
-        <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
+        <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
 
           <p>If you pull reports from live ad accounts, DashThis at $44/mo is your best bet. If you work from CSV exports or spreadsheets, Naxely's Free tier gives you a branded PDF with AI insights at zero cost. For a no-cost DIY option, Looker Studio works — but expect to invest time in building templates from scratch. Bonsai and Plutio include reporting as a secondary feature within broader business management platforms, best when you need proposals and invoicing alongside basic performance stats rather than dedicated client-facing reports.</p>
 
@@ -175,7 +175,7 @@ export default function BlogPostBestFreelanceReporting() {
 
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely &copy; 2026</p>
+          <p className="text-xs text-gray-600">Naxely &copy; 2026</p>
         </div>
       </footer>
     </div>

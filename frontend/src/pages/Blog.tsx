@@ -123,7 +123,7 @@ export default function Blog() {
       </div>
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-400">Naxely © 2026</p>
+          <p className="text-xs text-gray-600">Naxely © 2026</p>
         </div>
       </footer>
     </div>

@@ -165,7 +165,7 @@ export default function Pricing() {
                 <h3 className="font-body text-lg font-semibold text-ink">{p.name}</h3>
                 <p className="mt-2">
                   <span className="font-mono tabular-nums text-3xl font-bold text-ink">{p.price}</span>
-                  <span className="text-sm text-gray-500">{p.period}</span>
+                  <span className="text-sm text-gray-600">{p.period}</span>
                 </p>
                 <ul className="mt-6 space-y-3">
                   {p.features.map((f) => (
@@ -209,7 +209,7 @@ export default function Pricing() {
             {faqs.map((faq) => (
               <div key={faq.q} className="rounded-xl bg-paper p-6 shadow-sm">
                 <h3 className="font-body text-base font-semibold text-ink">{faq.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">{faq.a}</p>
+                <p className="mt-2 text-sm leading-relaxed text-gray-600">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -218,7 +218,7 @@ export default function Pricing() {
 
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-5xl text-center">
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-600">
             Made in India 🇮🇳 · Naxely © 2026
           </p>
         </div>
