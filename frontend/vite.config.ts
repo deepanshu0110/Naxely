@@ -45,7 +45,7 @@ export default defineConfig({
     mock: true,
     dirStyle: 'nested',
     includedRoutes() {
-      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/refund', '/blog', '/blog/byok-ai-reporting-tool', '/blog/csv-to-pdf-report-generator', '/blog/white-label-client-reporting-agencies', '/blog/automating-client-reports', '/blog/client-reporting-software-guide', '/blog/best-client-reporting-software-freelancers', '/blog/python-csv-to-pdf-reports', '/blog/two-weeks-building-naxely', '/compare/agencyanalytics', '/compare/databox', '/compare/powerdrill', '/compare/dashthis', '/compare/whatagraph', '/faq', '/changelog']
+      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/refund', '/blog', '/blog/byok-ai-reporting-tool', '/blog/csv-to-pdf-report-generator', '/blog/white-label-client-reporting-agencies', '/blog/automating-client-reports', '/blog/client-reporting-software-guide', '/blog/best-client-reporting-software-freelancers', '/blog/python-csv-to-pdf-reports', '/blog/two-weeks-building-naxely', '/blog/what-should-client-report-include-checklist', '/blog/client-reporting-for-freelance-consultants', '/blog/client-reporting-tools-for-upwork-freelancer', '/blog/client-reporting-tools-flat-pricing', '/compare/agencyanalytics', '/compare/databox', '/compare/powerdrill', '/compare/dashthis', '/compare/whatagraph', '/faq', '/changelog']
     },
   },
 })

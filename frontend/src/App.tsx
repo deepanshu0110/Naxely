@@ -31,6 +31,10 @@ const BlogPostClientReporting = lazy(() => import('@/pages/BlogPostClientReporti
 const BlogPostBestFreelanceReporting = lazy(() => import('@/pages/BlogPostBestFreelanceReporting'))
 const BlogPostPythonCsvToPdf = lazy(() => import('@/pages/BlogPostPythonCsvToPdf'))
 const BlogPostTwoWeeks = lazy(() => import('@/pages/BlogPostTwoWeeks'))
+const BlogPostClientReportChecklist = lazy(() => import('@/pages/BlogPostClientReportChecklist'))
+const BlogPostConsultantReporting = lazy(() => import('@/pages/BlogPostConsultantReporting'))
+const BlogPostUpworkReporting = lazy(() => import('@/pages/BlogPostUpworkReporting'))
+const BlogPostFlatPricing = lazy(() => import('@/pages/BlogPostFlatPricing'))
 const ComparisonAgencyAnalytics = lazy(() => import('@/pages/ComparisonAgencyAnalytics'))
 const ComparisonDatabox = lazy(() => import('@/pages/ComparisonDatabox'))
 const ComparisonPowerdrill = lazy(() => import('@/pages/ComparisonPowerdrill'))
@@ -98,6 +102,10 @@ export const routes: RouteRecord[] = [
       { path: '/blog/best-client-reporting-software-freelancers', element: <BlogPostBestFreelanceReporting /> },
       { path: '/blog/python-csv-to-pdf-reports', element: <BlogPostPythonCsvToPdf /> },
       { path: '/blog/two-weeks-building-naxely', element: <BlogPostTwoWeeks /> },
+      { path: '/blog/what-should-client-report-include-checklist', element: <BlogPostClientReportChecklist /> },
+      { path: '/blog/client-reporting-for-freelance-consultants', element: <BlogPostConsultantReporting /> },
+      { path: '/blog/client-reporting-tools-for-upwork-freelancer', element: <BlogPostUpworkReporting /> },
+      { path: '/blog/client-reporting-tools-flat-pricing', element: <BlogPostFlatPricing /> },
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
       { path: '/compare/powerdrill', element: <ComparisonPowerdrill /> },
