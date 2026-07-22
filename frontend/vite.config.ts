@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { FontaineTransform } from 'fontaine'
 import path from 'path'
 
 export default defineConfig({
   plugins: [
+    FontaineTransform.vite({}),
     react(),
     {
       name: 'client-chunks',
