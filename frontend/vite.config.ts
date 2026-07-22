@@ -5,7 +5,14 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [
-    FontaineTransform.vite({}),
+    FontaineTransform.vite({
+      fallbacks: {},
+      categoryFallbacks: {
+        'sans-serif': ['BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', 'Arial', 'Noto Sans'],
+        'serif': ['Times New Roman', 'Georgia', 'Noto Serif'],
+        'monospace': ['Courier New', 'Roboto Mono', 'Noto Sans Mono'],
+      },
+    }),
     react(),
     {
       name: 'client-chunks',

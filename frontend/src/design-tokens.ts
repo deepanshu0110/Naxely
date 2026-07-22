@@ -51,9 +51,9 @@ export const COLORS = {
 export type ColorKey = keyof typeof COLORS
 
 export const FONTS = {
-  display: ['Fraunces', 'Georgia', 'serif'] as string[],
-  body: ['IBM Plex Sans', 'system-ui', 'sans-serif'] as string[],
-  mono: ['IBM Plex Mono', 'monospace'] as string[],
+  display: ['Fraunces', 'Fraunces fallback', 'Georgia', 'serif'] as string[],
+  body: ['IBM Plex Sans', 'IBM Plex Sans fallback', 'system-ui', 'sans-serif'] as string[],
+  mono: ['IBM Plex Mono', 'IBM Plex Mono fallback', 'monospace'] as string[],
 } as const
 
 export type FontKey = keyof typeof FONTS
