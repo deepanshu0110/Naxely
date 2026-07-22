@@ -1,5 +1,7 @@
 # Naxely — AI-Powered PDF Report Generator
 
+**Live:** https://naxely.com
+
 Turn raw data into client-ready PDF reports in 2 minutes. AI-powered insights, auto charts, custom branding.
 
 ## Tech Stack
@@ -14,7 +16,7 @@ Turn raw data into client-ready PDF reports in 2 minutes. AI-powered insights, a
 
 ### 1. Clone repository
 ```bash
-git clone https://github.com/yourusername/Naxely.git
+git clone https://github.com/deepanshu0110/Naxely.git
 cd Naxely
 ```
 
