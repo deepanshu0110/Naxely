@@ -1040,7 +1040,7 @@ export default function Landing() {
                 <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
               </a>
               <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
-                <img src="/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" />
+                <img src="/launchboard-badge.webp" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" />
               </a>
               <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />
@@ -1115,7 +1115,7 @@ export default function Landing() {
                 <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
               </a>
               <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
-                <img src="/launchboard-badge.png" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" loading="lazy" />
+                <img src="/launchboard-badge.webp" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" loading="lazy" />
               </a>
               <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />

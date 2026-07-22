@@ -27,7 +27,7 @@ export default function Privacy() {
           <p>Naxely is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your data when you use our AI-powered PDF report generation service.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Data Controller</h2>
-          <p>Naxely is operated by Deepanshu Garg, based in India. For any privacy questions or requests, contact hello@naxely.com.</p>
+          <p>Naxely is operated by Deepanshu Garg, based in India. For any privacy questions or requests, contact <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a>.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Information We Collect</h2>
           <p><strong>Account information:</strong> When you sign up, we collect your name, email address, and billing information (processed securely through Dodo Payments).</p>
@@ -57,12 +57,12 @@ export default function Privacy() {
           </ul>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Your Rights</h2>
-          <p>You may access, update, or delete your account data at any time through your account settings. To request full data deletion, email us at hello@naxely.com.</p>
+          <p>You may access, update, or delete your account data at any time through your account settings. To request full data deletion, email us at <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a>.</p>
           <p>You may export your reports and data at any time. We will respond to data requests within 30 days.</p>
-          <p>If you are located in the EU/EEA or UK, you have rights under GDPR including access, correction, deletion, and data portability. Contact hello@naxely.com to exercise these rights.</p>
+          <p>If you are located in the EU/EEA or UK, you have rights under GDPR including access, correction, deletion, and data portability. Contact <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a> to exercise these rights.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Grievance Officer</h2>
-          <p>In accordance with the Digital Personal Data Protection Act, 2023 (India) and other applicable data protection laws, the Grievance Officer for Naxely is Deepanshu Garg, reachable at hello@naxely.com. If you have a complaint or concern about how your personal data is handled, please contact the Grievance Officer directly. We aim to acknowledge and resolve grievances within 90 days.</p>
+          <p>In accordance with the Digital Personal Data Protection Act, 2023 (India) and other applicable data protection laws, the Grievance Officer for Naxely is Deepanshu Garg, reachable at <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a>. If you have a complaint or concern about how your personal data is handled, please contact the Grievance Officer directly. We aim to acknowledge and resolve grievances within 90 days.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Cookies</h2>
           <p>We use essential cookies for authentication and session management. We also use Google Analytics (GA4), which sets analytics cookies to help us understand site usage. You can opt out of Google Analytics tracking using your browser settings or a browser extension such as Google's official opt-out add-on.</p>
@@ -74,7 +74,7 @@ export default function Privacy() {
           <p>Naxely does not sell, rent, or trade your personal information to third parties for their own marketing purposes.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Children's Privacy</h2>
-          <p>Naxely is not directed at children under 16, and we do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact hello@naxely.com and we will delete it.</p>
+          <p>Naxely is not directed at children under 16, and we do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a> and we will delete it.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Changes to This Policy</h2>
           <p>We may update this policy from time to time. Material changes will be communicated via email or through the service.</p>

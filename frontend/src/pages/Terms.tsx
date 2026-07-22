@@ -56,13 +56,13 @@ export default function Terms() {
           <p>We may suspend or terminate your account if you violate these Terms, misuse the Service, or fail to pay applicable fees. Where reasonably possible, we will attempt to notify you before doing so.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Governing Law & Disputes</h2>
-          <p>These Terms are governed by the laws of India. Before pursuing a formal claim, you agree to first contact us at hello@naxely.com so we can attempt to resolve the dispute informally.</p>
+          <p>These Terms are governed by the laws of India. Before pursuing a formal claim, you agree to first contact us at <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a> so we can attempt to resolve the dispute informally.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Changes to These Terms</h2>
           <p>We may update these Terms from time to time. Material changes will be communicated via email or through the Service. Continued use after a change takes effect constitutes acceptance of the updated Terms.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Contact</h2>
-          <p>Questions about these Terms? Email us at hello@naxely.com.</p>
+          <p>Questions about these Terms? Email us at <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a>.</p>
 
           <p className="mt-8 text-xs text-ink/40">Last updated: July 2026</p>
         </div>

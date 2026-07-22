@@ -31,16 +31,16 @@ export default function Refund() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">What's Not Covered</h2>
           <p>After the 14-day window, refunds are not available. However, you may cancel your subscription at any time, and you will retain access to paid features until the end of your current billing period.</p>
-          <p>Renewal charges (payments made after the first 14 days for continued service) are generally non-refundable. If you believe an error occurred, contact hello@naxely.com and we will review your case.</p>
+          <p>Renewal charges (payments made after the first 14 days for continued service) are generally non-refundable. If you believe an error occurred, contact <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a> and we will review your case.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">How to Request a Refund</h2>
-          <p>Email us at <strong>hello@naxely.com</strong> from the email address associated with your Naxely account. Include your account name and the reason for your request. We will process your refund within 5-10 business days.</p>
+          <p>Email us at <strong><a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a></strong> from the email address associated with your Naxely account. Include your account name and the reason for your request. We will process your refund within 5-10 business days.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Payment Processor</h2>
           <p>All payments are processed by Dodo Payments. Refunds are issued through Dodo Payments and will be credited to the original payment method used at purchase.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Questions?</h2>
-          <p>If you have any questions about this Refund Policy, contact us at hello@naxely.com.</p>
+          <p>If you have any questions about this Refund Policy, contact us at <a href="mailto:hello@naxely.com" className="text-amber-600 hover:text-amber-700 underline">hello@naxely.com</a>.</p>
 
           <p className="mt-8 text-xs text-ink/40">Last updated: July 2026</p>
         </div>
