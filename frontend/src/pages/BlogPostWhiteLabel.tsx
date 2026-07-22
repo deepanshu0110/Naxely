@@ -6,7 +6,7 @@ export default function BlogPostWhiteLabel() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>White-Label Client Reporting for Agencies | Naxely</title>
+        <title>White Label Client Reporting for Agencies | Naxely</title>
         <meta name="description" content="Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead." />
         <link rel="canonical" href="https://www.naxely.com/blog/white-label-client-reporting-agencies" />
         <meta property="og:url" content="https://www.naxely.com/blog/white-label-client-reporting-agencies" />
@@ -25,7 +25,7 @@ export default function BlogPostWhiteLabel() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">White-Label Client Reporting for Agencies: Why &ldquo;Any-Data&rdquo; Beats Another Marketing Connector</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">White Label Client Reporting for Agencies: Why &ldquo;Any-Data&rdquo; Beats Another Marketing Connector</h1>
         <p className="text-xs text-gray-400 mb-10">July 5, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
@@ -34,6 +34,8 @@ export default function BlogPostWhiteLabel() {
           <p>If you run a small agency or consultancy, this is a familiar Sunday night. And it's not really a data problem — it's a tooling problem. Every reporting platform built for agencies assumes your client's data lives inside Google Ads, Meta, or GA4. If it doesn't — if it's a CSV export from their internal system, a shared Google Sheet someone updates manually, a billing spreadsheet, an ops dashboard — you're on your own.</p>
 
           <p>This post is about that gap: what manual client reporting actually costs you, why the existing agency tools don't close it, and what a genuinely any-data, BYOK, white-label alternative looks like.</p>
+
+          <p>If you've been searching for a white label reporting tool that doesn't break every time a client's spreadsheet changes shape, this is written for you.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What is the hidden cost of manual agency reporting?</h2>
           <p>Every recurring client report costs roughly one hour per cycle in repetitive manual work — pulling data, rebuilding the same charts, writing commentary, and formatting — and that time compounds across clients without ever being billable or improving in efficiency.</p>
