@@ -6,18 +6,18 @@ export default function BlogPostConsultantReporting() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Client Reporting Tools for Freelance Consultants (Not Just Marketers) — Naxely</title>
-        <meta name="description" content="Most client reporting tools are built for marketing agencies with live ad accounts. Here's what data analysts and consultants working from spreadsheets actually need." />
+        <title>Client Reporting for Freelance Consultants | Naxely</title>
+        <meta name="description" content="Most client reporting tools assume you're a marketing agency. Here's what freelance analysts and consultants working from spreadsheets actually need." />
         <link rel="canonical" href="https://www.naxely.com/blog/client-reporting-for-freelance-consultants" />
         <meta property="og:url" content="https://www.naxely.com/blog/client-reporting-for-freelance-consultants" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Client Reporting Tools for Freelance Consultants (Not Just Marketers) — Naxely" />
-        <meta property="og:description" content="Most client reporting tools are built for marketing agencies with live ad accounts. Here's what data analysts and consultants working from spreadsheets actually need." />
+        <meta property="og:title" content="Client Reporting for Freelance Consultants | Naxely" />
+        <meta property="og:description" content="Most client reporting tools assume you're a marketing agency. Here's what freelance analysts and consultants working from spreadsheets actually need." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Client Reporting Tools for Freelance Consultants (Not Just Marketers) — Naxely" />
-        <meta name="twitter:description" content="Most client reporting tools are built for marketing agencies with live ad accounts. Here's what data analysts and consultants working from spreadsheets actually need." />
+        <meta name="twitter:title" content="Client Reporting for Freelance Consultants | Naxely" />
+        <meta name="twitter:description" content="Most client reporting tools assume you're a marketing agency. Here's what freelance analysts and consultants working from spreadsheets actually need." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.naxely.com/blog"},{"@type":"ListItem","position":3,"name":"Client Reporting for Freelance Consultants (Not Just Marketers)","item":"https://www.naxely.com/blog/client-reporting-for-freelance-consultants"}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Client Reporting for Freelance Consultants (Not Just Marketers)","description":"Most client reporting tools are built for marketing agencies with live ad accounts. Here's what data analysts and consultants working from spreadsheets actually need.","url":"https://www.naxely.com/blog/client-reporting-for-freelance-consultants","datePublished":"2026-07-21","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>

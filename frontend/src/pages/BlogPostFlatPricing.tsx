@@ -7,17 +7,17 @@ export default function BlogPostFlatPricing() {
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
         <title>Client Reporting Tools With Flat Pricing (Not Per-Client) — Naxely</title>
-        <meta name="description" content="Some reporting tools price by dashboard or client count, which gets expensive as you scale. Here's how flat-rate pricing works instead, and when each model makes sense." />
+        <meta name="description" content="Some reporting tools price by dashboard or client count, which gets expensive at scale. Here's how flat-rate pricing works instead." />
         <link rel="canonical" href="https://www.naxely.com/blog/client-reporting-tools-flat-pricing" />
         <meta property="og:url" content="https://www.naxely.com/blog/client-reporting-tools-flat-pricing" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Client Reporting Tools With Flat Pricing (Not Per-Client) — Naxely" />
-        <meta property="og:description" content="Some reporting tools price by dashboard or client count, which gets expensive as you scale. Here's how flat-rate pricing works instead, and when each model makes sense." />
+        <meta property="og:description" content="Some reporting tools price by dashboard or client count, which gets expensive at scale. Here's how flat-rate pricing works instead." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Client Reporting Tools With Flat Pricing (Not Per-Client) — Naxely" />
-        <meta name="twitter:description" content="Some reporting tools price by dashboard or client count, which gets expensive as you scale. Here's how flat-rate pricing works instead, and when each model makes sense." />
+        <meta name="twitter:description" content="Some reporting tools price by dashboard or client count, which gets expensive at scale. Here's how flat-rate pricing works instead." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.naxely.com/blog"},{"@type":"ListItem","position":3,"name":"Reporting Tools With Flat Pricing (Not Per-Client)","item":"https://www.naxely.com/blog/client-reporting-tools-flat-pricing"}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Reporting Tools With Flat Pricing (Not Per-Client)","description":"Some reporting tools price by dashboard or client count, which gets expensive as you scale. Here's how flat-rate pricing works instead, and when each model makes sense.","url":"https://www.naxely.com/blog/client-reporting-tools-flat-pricing","datePublished":"2026-07-21","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>

@@ -6,17 +6,17 @@ export default function BlogPostTwoWeeks() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>What Two Weeks of Building a Client-Reporting Tool Actually Looked Like | Naxely</title>
+        <title>Two Weeks Building a Client-Reporting Tool | Naxely</title>
         <meta name="description" content="The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats." />
         <link rel="canonical" href="https://www.naxely.com/blog/two-weeks-building-naxely" />
         <meta property="og:url" content="https://www.naxely.com/blog/two-weeks-building-naxely" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="What Two Weeks of Building a Client-Reporting Tool Actually Looked Like | Naxely" />
+        <meta property="og:title" content="Two Weeks Building a Client-Reporting Tool | Naxely" />
         <meta property="og:description" content="The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="What Two Weeks of Building a Client-Reporting Tool Actually Looked Like | Naxely" />
+        <meta name="twitter:title" content="Two Weeks Building a Client-Reporting Tool | Naxely" />
         <meta name="twitter:description" content="The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"What Two Weeks of Building a Client-Reporting Tool Actually Looked Like","description":"The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats.","url":"https://www.naxely.com/blog/two-weeks-building-naxely","datePublished":"2026-07-17","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
