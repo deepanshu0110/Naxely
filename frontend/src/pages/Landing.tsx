@@ -252,6 +252,7 @@ export default function Landing() {
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload, Google Sheets connector, and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all tiers — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically in under a minute."}}]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"Naxely Demo — CSV to Client-Ready PDF Report in Under a Minute","description":"See how Naxely turns a raw CSV or Google Sheet into a branded PDF report with AI-written insights, automatically selected charts, and anomaly flags — in under 60 seconds.","thumbnailUrl":"https://www.naxely.com/naxely-demo-poster.jpg","uploadDate":"2026-07-23","duration":"PT2M55S","contentUrl":"https://www.naxely.com/naxely-demo.mp4"})}</script>
       </Head>
       <Navbar />
       <main>
@@ -373,6 +374,32 @@ export default function Landing() {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* ── Demo Video ── */}
+      <section className="bg-slate px-6 py-20"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #D97A3411 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      >
+        <div className="mx-auto max-w-5xl">
+          <h2 className="font-display mb-4 text-center text-2xl font-bold text-ink">
+            See it in action
+          </h2>
+          <p className="text-ink/60 dark:text-paper/50 text-center text-base leading-relaxed max-w-2xl mx-auto mb-10">
+            Watch Naxely turn a raw CSV into a branded PDF report — start to finish, in under 3 minutes.
+          </p>
+          <video
+            controls
+            preload="metadata"
+            poster="/naxely-demo-poster.jpg"
+            className="w-full rounded-xl shadow-lg"
+          >
+            <source src="/naxely-demo.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </section>
 
