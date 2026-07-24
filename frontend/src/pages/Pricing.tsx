@@ -1,11 +1,8 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Head } from 'vite-react-ssg'
 import Navbar from '@/components/layout/Navbar'
 import Button from '@/components/ui/Button'
-import api from '@/lib/axios'
-import toast from 'react-hot-toast'
-import { useAuthStore } from '@/store/authStore'
+import { usePricingCTA } from '@/hooks/usePricingCTA'
 
 const plans = [
   {
@@ -19,7 +16,7 @@ const plans = [
       'Google Sheets connector',
       'Basic charts (bar, line, pie)',
       'PDF with watermark',
-      'BYOK AI key (bring your own)',
+      'Use your own OpenAI key to keep AI costs low (optional)',
       'Email support',
     ],
     cta: 'Start Free',
@@ -43,7 +40,7 @@ const plans = [
       'Google Sheets connector',
       'Scheduled reports',
       'Shareable links',
-      'BYOK AI key',
+      'Use your own OpenAI key to keep AI costs low (optional)',
     ],
     cta: 'Upgrade to Pro',
     ctaVariant: 'filled' as const,
@@ -91,29 +88,7 @@ const faqs = [
 ]
 
 export default function Pricing() {
-  const { isAuthenticated } = useAuthStore()
-  const [loading, setLoading] = useState<'pro' | 'agency' | null>(null)
-
-  const handleCheckout = async (plan: 'pro' | 'agency') => {
-    setLoading(plan)
-    try {
-      const resp = await api.post('/payments/checkout', { plan })
-      const data = resp.data as { checkout_url: string }
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url
-      } else {
-        toast.success(`Upgraded to ${plan === 'pro' ? 'Pro' : 'Agency'}`)
-      }
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { status?: number } }
-      if (axiosErr.response?.status === 401) {
-        window.location.href = '/settings?tab=billing'
-        return
-      }
-      toast.error('Failed to start checkout. Please try again.')
-      setLoading(null)
-    }
-  }
+  const { isAuthenticated, loading, handleCheckout } = usePricingCTA()
 
   return (
     <div className="min-h-screen bg-paper text-ink">

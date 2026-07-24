@@ -11,8 +11,10 @@ import {
   Link2,
 } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
+import Button from '@/components/ui/Button'
 import { NaxelyMark } from '@/components/ui/NaxelyMark'
 import { useInView } from '@/hooks/useInView'
+import { usePricingCTA } from '@/hooks/usePricingCTA'
 
 const stepped = [
   {
@@ -44,7 +46,7 @@ const plans = [
       'Google Sheets connector',
       'Basic charts (bar, line, pie)',
       'PDF with watermark',
-      'BYOK AI key (bring your own)',
+      'Use your own OpenAI key to keep AI costs low (optional)',
       'Email support',
     ],
     cta: 'Start Free',
@@ -68,7 +70,7 @@ const plans = [
       'Google Sheets connector',
       'Scheduled reports',
       'Shareable links',
-      'BYOK AI key',
+      'Use your own OpenAI key to keep AI costs low (optional)',
     ],
     cta: 'Upgrade to Pro',
     ctaVariant: 'filled' as const,
@@ -233,6 +235,7 @@ export default function Landing() {
   const { ref: featureHeaderRef, inView: featureHeaderInView } = useInView();
   const { ref: bentoRef, inView: bentoInView } = useInView();
   const { ref: sampleRef, inView: sampleInView } = useInView();
+  const { isAuthenticated, loading, handleCheckout } = usePricingCTA()
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -291,48 +294,20 @@ export default function Landing() {
               leading-[1.1] tracking-tight mb-6
               nax-animate-fade-up"
               style={{ animationDelay: '80ms' }}>
-              Turn raw data into{' '}
+              Turn any CSV into a branded client PDF{' '}
               <span className="text-amber-600 dark:text-amber-400">
-                client-ready reports
+                — in under 60 seconds
               </span>
-              {' '}— automatically
             </h1>
 
-            {/* Subheading — SEO client report generator positioning */}
-            <p className="text-amber-700 dark:text-amber-400 text-lg font-medium mb-4
-              nax-animate-fade-up"
-              style={{ animationDelay: '100ms' }}>
-              The client report generator built for freelance analysts, consultants, and small agencies.
-            </p>
-
-            {/* Definitional sentence — AI Signal (Unhid.ai) */}
-            <p className="text-ink/60 dark:text-paper/50 text-base leading-relaxed
-              max-w-lg mx-auto lg:mx-0 mb-4
-              nax-animate-fade-up"
-              style={{ animationDelay: '120ms' }}>
-              Naxely is a CSV-to-PDF report generator that uses AI to write
-              executive summaries, detect anomalies, and build charts — built
-              for freelance analysts, consultants, and small agencies.
-            </p>
-
-            {/* Subheadline */}
+            {/* Single subhead paragraph */}
             <p className="text-ink/60 dark:text-paper/50 text-lg leading-relaxed
               max-w-lg mx-auto lg:mx-0 mb-10
               nax-animate-fade-up"
-              style={{ animationDelay: '160ms' }}>
-              Upload a CSV or connect Google Sheets. Naxely generates a branded PDF
-              with AI insights, charts, and recommendations in under a minute.
-              No design skills needed.
-            </p>
-
-            {/* Positioning statement — category differentiation */}
-            <p className="text-sm text-ink/50 dark:text-paper/40 leading-relaxed
-              max-w-lg mx-auto lg:mx-0 mb-6
-              nax-animate-fade-up"
-              style={{ animationDelay: '200ms' }}>
-              Unlike marketing-dashboard tools that pull from ad platforms, Naxely works with
-              any spreadsheet — client ops data, sales numbers, custom KPIs — turning it into
-              a branded PDF report in under a minute.
+              style={{ animationDelay: '120ms' }}>
+              Upload a CSV or connect Google Sheets. Naxely writes the executive
+              summary, builds the charts, and delivers a branded PDF your client
+              can open in under 60 seconds. No design skills needed.
             </p>
 
             {/* CTAs */}
@@ -340,17 +315,27 @@ export default function Landing() {
               justify-center lg:justify-start gap-4 mb-10
               nax-animate-fade-up"
               style={{ animationDelay: '240ms' }}>
-              <Link to="/signup"
-                className="bg-amber-600 hover:bg-amber-700 text-white
-                  font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block">
-                Generate your first report — free
-              </Link>
-              <Link to="/login"
-                className="text-ink/60 dark:text-paper/50
-                  hover:text-ink dark:hover:text-paper
-                  font-medium text-base transition-colors">
-                Sign in →
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/dashboard"
+                  className="bg-amber-600 hover:bg-amber-700 text-white
+                    font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block">
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link to="/signup"
+                    className="bg-amber-600 hover:bg-amber-700 text-white
+                      font-medium px-7 py-3 rounded-lg transition-colors text-base inline-block">
+                    Generate your first report — free
+                  </Link>
+                  <Link to="/login"
+                    className="text-ink/60 dark:text-paper/50
+                      hover:text-ink dark:hover:text-paper
+                      font-medium text-base transition-colors">
+                    Sign in →
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Social proof */}
@@ -415,9 +400,12 @@ export default function Landing() {
         }}
       >
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-display mb-14 text-center text-2xl font-bold text-ink">
+          <h2 className="font-display mb-4 text-center text-2xl font-bold text-ink">
             How it works
           </h2>
+          <p className="text-center text-ink/50 dark:text-paper/40 text-sm mb-12 max-w-xl mx-auto">
+            Works with any data — client ops, sales numbers, custom KPIs. Not just ad platform dashboards.
+          </p>
           <div className="grid gap-10 md:grid-cols-3">
             {stepped.map((s) => (
               <div key={s.num} className="text-center">
@@ -824,16 +812,38 @@ export default function Landing() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  to={p.href}
-                  className={`mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
-                    p.ctaVariant === 'filled'
-                      ? 'bg-amber-600 text-white hover:bg-amber-700'
-                      : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {p.cta}
-                </Link>
+                {(() => {
+                  const planKey = p.name.toLowerCase() as 'pro' | 'agency'
+                  return p.name === 'Free' ? (
+                    <Link
+                      to={p.href}
+                      className="mt-8 block w-full rounded-lg border border-gray-300 bg-white py-2.5 text-center text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                    >
+                      {p.cta}
+                    </Link>
+                  ) : isAuthenticated ? (
+                    <Button
+                      variant="primary"
+                      size="md"
+                      className="mt-8 w-full justify-center"
+                      loading={loading === planKey}
+                      onClick={() => handleCheckout(planKey)}
+                    >
+                      {p.cta}
+                    </Button>
+                  ) : (
+                    <Link
+                      to="/signup"
+                      className={`mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-semibold transition ${
+                        p.ctaVariant === 'filled'
+                          ? 'bg-amber-600 text-white hover:bg-amber-700'
+                          : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {p.cta}
+                    </Link>
+                  )
+                })()}
               </div>
             ))}
           </div>
@@ -944,8 +954,8 @@ export default function Landing() {
             Ready to stop spending hours on reports?
           </h2>
           <p className="mt-4 text-gray-400">
-            Join consultants and agencies saving time with
-            Naxely.
+            Your next client report could be done in under a minute. Start free — no
+            credit card, no setup, just upload a CSV and see what comes out.
           </p>
           <Link
             to="/signup"

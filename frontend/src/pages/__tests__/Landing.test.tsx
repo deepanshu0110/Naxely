@@ -39,8 +39,8 @@ describe('Landing page', () => {
 
   it('renders hero heading and CTA for unauthenticated', () => {
     renderPage()
-    expect(screen.getByText(/Turn raw data into/)).toBeInTheDocument()
-    expect(screen.getByText(/client-ready reports/)).toBeInTheDocument()
+    expect(screen.getByText(/Turn any CSV into a branded client PDF/)).toBeInTheDocument()
+    expect(screen.getAllByText(/in under 60 seconds/)).toHaveLength(2)
     expect(screen.getByRole('link', { name: /generate your first report/i })).toHaveAttribute('href', '/signup')
     expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/login')
   })
