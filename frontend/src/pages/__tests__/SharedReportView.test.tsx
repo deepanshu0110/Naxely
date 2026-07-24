@@ -3,6 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import SharedReportView from '../SharedReportView'
 
+vi.mock('vite-react-ssg', () => ({ Head: () => null }))
+
 vi.mock('@/lib/axios', () => ({
   default: {
     get: vi.fn(),

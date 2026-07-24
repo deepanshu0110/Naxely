@@ -91,7 +91,7 @@ describe('BlogPostByok', () => {
 describe('BlogPostClientReporting', () => {
   it('renders blog post heading', () => {
     renderWithRouter(BlogPostClientReporting)
-    expect(screen.getByText('How to Choose Client Reporting Software (And Why I Built My Own)')).toBeInTheDocument()
+    expect(screen.getByText('How to Choose Client Reporting Software')).toBeInTheDocument()
   })
 })
 
@@ -112,6 +112,6 @@ describe('BlogPostHub', () => {
 describe('BlogPostWhiteLabel', () => {
   it('renders blog post heading', () => {
     renderWithRouter(BlogPostWhiteLabel)
-    expect(screen.getByText(/White-Label Client Reporting for Agencies/)).toBeInTheDocument()
+    expect(screen.getByText(/White Label Client Reporting for Agencies/)).toBeInTheDocument()
   })
 })
