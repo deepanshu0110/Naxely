@@ -957,6 +957,11 @@ export default function Landing() {
             Your next client report could be done in under a minute. Start free — no
             credit card, no setup, just upload a CSV and see what comes out.
           </p>
+          <p className="mt-6 text-xs text-gray-500 leading-relaxed max-w-lg mx-auto">
+            Naxely is built and run by one person — a freelance data analyst who got tired
+            of spending Sunday nights formatting client reports by hand. If you send this to
+            a client and it looks good, that's the whole reason it exists.
+          </p>
           <Link
             to="/signup"
             className="mt-8 inline-block rounded-lg bg-white px-8 py-3 text-sm font-semibold text-ink hover:bg-gray-100"
