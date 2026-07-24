@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import api from '@/lib/axios'
 import toast from 'react-hot-toast'
 
 export function usePricingCTA() {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, initialize } = useAuthStore()
+  useEffect(() => { initialize() }, [initialize])
   const [loading, setLoading] = useState<'pro' | 'agency' | null>(null)
 
   const handleCheckout = async (plan: 'pro' | 'agency') => {

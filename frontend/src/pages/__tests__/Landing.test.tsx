@@ -14,7 +14,7 @@ vi.mock('@/components/ui/NaxelyMark', () => ({
 
 let mockIsAuthenticated = false
 vi.mock('@/store/authStore', () => ({
-  useAuthStore: () => ({ isAuthenticated: mockIsAuthenticated }),
+  useAuthStore: () => ({ isAuthenticated: mockIsAuthenticated, initialize: vi.fn() }),
 }))
 
 vi.mock('@/hooks/useInView', () => ({

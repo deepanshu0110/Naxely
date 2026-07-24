@@ -6,7 +6,7 @@ const mockPost = vi.hoisted(() => vi.fn())
 let mockIsAuthenticated = false
 
 vi.mock('@/store/authStore', () => ({
-  useAuthStore: () => ({ isAuthenticated: mockIsAuthenticated }),
+  useAuthStore: () => ({ isAuthenticated: mockIsAuthenticated, initialize: vi.fn() }),
 }))
 
 vi.mock('@/components/layout/Navbar', () => ({
