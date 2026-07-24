@@ -31,7 +31,7 @@ describe('Navbar', () => {
   })
 
   it('renders Log in, Start Free, and nav links when not authenticated', () => {
-    vi.mocked(useAuthStore).mockReturnValue({ user: null })
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false, user: null })
     renderNavbar()
 
     expect(screen.getByText('Log in')).toBeInTheDocument()
@@ -44,7 +44,7 @@ describe('Navbar', () => {
   })
 
   it('logo links to / when not authenticated', () => {
-    vi.mocked(useAuthStore).mockReturnValue({ user: null })
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false, user: null })
     renderNavbar()
 
     const logo = screen.getByText('Naxely')
@@ -53,6 +53,7 @@ describe('Navbar', () => {
 
   it('logo links to /dashboard when authenticated', () => {
     vi.mocked(useAuthStore).mockReturnValue({
+      isAuthenticated: true,
       user: { id: '1', email: 'test@test.com', full_name: 'Test' },
     })
     renderNavbar()

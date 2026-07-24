@@ -1944,7 +1944,7 @@ class TestUploadSheets:
 
         db = _AsyncDB()
 
-        df = pd.DataFrame({"col": [1, 2, 3]})
+        df = pd.DataFrame({"Date": ["2026-01-01", "2026-01-02", "2026-01-03"], "Revenue": [1000, 1200, 1100]})
 
         with (
             patch("app.api.routes.reports.sheets_service.extract_sheet_id", return_value="abc123"),
