@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Head } from 'vite-react-ssg'
 import { supabase } from '@/lib/supabase'
 
 export default function AuthCallback() {
@@ -16,6 +17,10 @@ export default function AuthCallback() {
 
   return (
     <div className="flex h-screen items-center justify-center bg-paper dark:bg-darkBg">
+      <Head>
+        <title>Signing In — Naxely</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
       <div className="flex flex-col items-center gap-4">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-200 border-t-amber-500" />
         <p className="text-base text-gray-600 dark:text-gray-400">Signing you in...</p>

@@ -93,7 +93,7 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-paper text-ink">
       <Head>
-        <title>Pricing — Naxely</title>
+        <title>Naxely Pricing — Free, Pro & Agency Plans for Client Reports</title>
         <meta name="description" content="Simple, transparent pricing for Naxely. Start free, upgrade when you need more. Plans from $0 to $79/month." />
         <link rel="canonical" href="https://www.naxely.com/pricing" />
         <meta property="og:url" content="https://www.naxely.com/pricing" />

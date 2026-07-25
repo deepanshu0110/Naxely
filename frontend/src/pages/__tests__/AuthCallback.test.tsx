@@ -11,6 +11,10 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate }
 })
 
+vi.mock('vite-react-ssg', () => ({
+  Head: () => null,
+}))
+
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
