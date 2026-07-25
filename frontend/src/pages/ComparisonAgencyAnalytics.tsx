@@ -49,8 +49,13 @@ export default function ComparisonAgencyAnalytics() {
               <tbody>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Input type</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">CSV upload, Google Sheets</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">CSV upload, Excel (.xlsx), Google Sheets</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">70+ live marketing connectors (ads, SEO, analytics, social)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Integrations / Data Sources</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">CSV, Excel, Google Sheets; programmatic API (Agency tier) — bring your own data from any source</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">85+ integrations across ad platforms, analytics/SEO tools, eCommerce, CRM/email, call tracking, databases</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Pricing model</td>
