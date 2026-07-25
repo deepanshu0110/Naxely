@@ -17,6 +17,7 @@
       "continue": true
     },
     { "src": "/share/(.*)", "headers": { "X-Robots-Tag": "noindex, nofollow" }, "continue": true },
+    { "src": "^/auth(?:/.*)?$", "headers": { "X-Robots-Tag": "noindex, nofollow" }, "continue": true },
     { "src": "/pricing", "destination": "/pricing/index.html" },
     { "src": "/contact", "destination": "/contact/index.html" },
     { "src": "/terms", "destination": "/terms/index.html" },
