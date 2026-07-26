@@ -22,7 +22,8 @@ export default function ComparisonAgencyAnalytics() {
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to AgencyAnalytics?","acceptedAnswer":{"@type":"Answer","text":"Yes — Naxely's free tier covers 3 reports/month with no credit card required, and Pro at $29/month is well under AgencyAnalytics' entry pricing. The tradeoff: Naxely works from uploaded data (CSV/Sheets), not live marketing connectors."}},
           {"@type":"Question","name":"Can Naxely replace AgencyAnalytics for live campaign reporting?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time multi-channel dashboards. AgencyAnalytics' 70+ integrations pulling live data from ad platforms and SEO tools is its core differentiator. Naxely is built for generating polished PDF reports from data you already have — they serve different workflows."}},
-          {"@type":"Question","name":"Does Naxely support API connections to ad platforms?","acceptedAnswer":{"@type":"Answer","text":"No. Naxely is intentionally focused on CSV/Google Sheets input. If your workflow requires live API pulls from Google Ads, Facebook Ads, or similar, AgencyAnalytics' connector model is built for that. If you have CSV exports from those platforms, Naxely handles them in seconds."}}
+          {"@type":"Question","name":"Does Naxely support API connections to ad platforms?","acceptedAnswer":{"@type":"Answer","text":"No. Naxely is intentionally focused on CSV/Google Sheets input. If your workflow requires live API pulls from Google Ads, Facebook Ads, or similar, AgencyAnalytics' connector model is built for that. If you have CSV exports from those platforms, Naxely handles them in seconds."}},
+          {"@type":"Question","name":"How does AgencyAnalytics compare to competitors like Whatagraph or DashThis?","acceptedAnswer":{"@type":"Answer","text":"AgencyAnalytics competes with Whatagraph (multi-channel dashboards), DashThis (simpler automated reporting), and Klipfolio (custom KPI dashboards) for live-connector agency workflows. Naxely occupies a different niche — CSV/Sheets report generation — so it is less a direct competitor and more a complementary tool depending on your data source."}}
         ]})}</script>
       </Head>
       <Navbar />
@@ -60,7 +61,7 @@ export default function ComparisonAgencyAnalytics() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Pricing model</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free–$79/month flat</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Paid plans only, scales with client count</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">$20/client/month (annual), no free tier</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Setup time</td>
@@ -85,6 +86,10 @@ export default function ComparisonAgencyAnalytics() {
               </tbody>
             </table>
           </div>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Naxely vs AgencyAnalytics: Side by Side</h2>
+          <p>Both platforms generate client-ready PDF reports, but they approach the problem from opposite directions. <strong>Naxely is a data-input-first tool — upload a CSV or connect Google Sheets, get an AI-written PDF in minutes.</strong> <strong>AgencyAnalytics is a connector-first platform — it pulls live data from 85+ marketing integrations and lets you build dashboards and automated PDF reports on a schedule.</strong></p>
+          <p>AgencyAnalytics also competes with <strong>Whatagraph</strong>, <strong>DashThis</strong>, and <strong>Klipfolio</strong> in the live-connector dashboard space. For users who only need PDFs from data they already have, those tools and AgencyAnalytics itself are often overkill — which is where Naxely fits. Choose based on your data source, not on feature checklists.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">When to Choose Naxely</h2>
           <ul className="list-disc pl-5 space-y-2">
@@ -111,6 +116,9 @@ export default function ComparisonAgencyAnalytics() {
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Naxely support API connections to ad platforms?</h3>
           <p>No. Naxely is intentionally focused on CSV/Google Sheets input. If your workflow requires live API pulls from Google Ads, Facebook Ads, or similar, AgencyAnalytics' connector model is built for that. If you have CSV exports from those platforms, Naxely handles them in seconds.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">How does AgencyAnalytics compare to competitors like Whatagraph or DashThis?</h3>
+          <p>AgencyAnalytics competes with Whatagraph (multi-channel dashboards), DashThis (simpler automated reporting), and Klipfolio (custom KPI dashboards) for live-connector agency workflows. Naxely occupies a different niche — CSV/Sheets report generation — so it is less a direct competitor and more a complementary tool depending on your data source. If you already export CSVs from your marketing tools, Naxely turns them into client-ready PDFs in minutes at a fraction of the cost.</p>
 
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
