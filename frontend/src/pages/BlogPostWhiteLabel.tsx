@@ -35,7 +35,7 @@ export default function BlogPostWhiteLabel() {
 
           <p>This post is about that gap: what manual client reporting actually costs you, why the existing agency tools don't close it, and what a genuinely any-data, BYOK, white-label alternative looks like.</p>
 
-          <p>If you've been searching for a white label reporting tool that doesn't break every time a client's spreadsheet changes shape, this is written for you.</p>
+          <p>If you've been searching for a white-label reporting tool that doesn't break every time a client's spreadsheet changes shape, this is written for you.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What is the hidden cost of manual agency reporting?</h2>
           <p>Every recurring client report costs roughly one hour per cycle in repetitive manual work — pulling data, rebuilding the same charts, writing commentary, and formatting — and that time compounds across clients without ever being billable or improving in efficiency.</p>
@@ -102,7 +102,7 @@ export default function BlogPostWhiteLabel() {
           <p>If you don't already have an API key, Groq's free tier is a genuine zero-cost way to start — no credit card required, generous enough limits for real agency use, and it's the path we point Free-tier users toward directly in the product.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How much does white-label client reporting cost?</h2>
-          <p>Full white-label reporting — every trace of platform branding removed from client-facing output — is available on Naxely's Agency tier at $79/month, compared to the industry norm of $150+/month where most platforms gate white-labeling behind their highest pricing tier.</p>
+          <p>Full white-label reporting (sometimes called private label reporting) — every trace of platform branding removed from client-facing output — is available on Naxely's Agency tier at $79/month, compared to the industry norm of $150+/month where most platforms gate white-labeling behind their highest pricing tier.</p>
           <p>Most platforms in this space gate full white-labeling — removing their own branding entirely from your client-facing output — behind their highest pricing tier, often north of $150/month.</p>
           <p>The Agency tier here is $79/month, and it removes every trace of platform branding from the output your client sees. It also includes PowerPoint export, programmatic API access for teams building their own pipeline on top, and direct priority support from the person actually building the product — not a support queue.</p>
 
