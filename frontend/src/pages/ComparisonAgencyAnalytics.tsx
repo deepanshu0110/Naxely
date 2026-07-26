@@ -81,7 +81,7 @@ export default function ComparisonAgencyAnalytics() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$79/month (Agency tier)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Included on most paid plans</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Included in Core plan</td>
                 </tr>
               </tbody>
             </table>
