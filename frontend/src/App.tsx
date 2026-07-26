@@ -6,6 +6,7 @@ import type { RouteRecord } from 'vite-react-ssg'
 import { Toaster } from 'react-hot-toast'
 import useCookieYesGA4 from '@/hooks/useCookieYesGA4'
 import useCookieYesClarity from '@/hooks/useCookieYesClarity'
+import useCookieYesAhrefs from '@/hooks/useCookieYesAhrefs'
 
 const AuthCallback = lazy(() => import('@/pages/AuthCallback'))
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'))
@@ -61,6 +62,7 @@ function Loading() {
 function RootLayout() {
   useCookieYesGA4()
   useCookieYesClarity()
+  useCookieYesAhrefs()
   return (
     <HelmetProvider>
       <Suspense fallback={<Loading />}>
