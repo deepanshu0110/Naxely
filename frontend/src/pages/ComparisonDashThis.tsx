@@ -122,8 +122,10 @@ export default function ComparisonDashThis() {
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does DashThis support white-label PDF reports?</h3>
           <p>DashThis offers white-labeling (custom domain, remove DashThis branding, custom logo and theme) on its Professional plan ($139/mo) and above — not on the Individual ($44/mo) entry tier. PDF export and automated email dispatch are available on all plans. Naxely's Agency tier ($79/month) includes white-label PDF output, send-to-client email, and programmatic API access at roughly half DashThis's white-label entry price.</p>
 
+          <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re also comparing other reporting tools, see <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs AgencyAnalytics</Link> or <Link to="/compare/whatagraph" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Whatagraph</Link> for more.</p>
+
           <div className="pt-6">
-            <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report — free &rarr;</Link>
+            <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report &mdash; free &rarr;</Link>
           </div>
         </div>
       </article>
