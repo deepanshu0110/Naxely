@@ -6,26 +6,26 @@ export default function BlogPostHub() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Automating Client Reports: The Complete Guide | Naxely</title>
+        <title>Automated Client Reporting: The Complete Guide for Freelancers and Agencies | Naxely</title>
         <meta name="description" content="How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle." />
         <link rel="canonical" href="https://www.naxely.com/blog/automating-client-reports" />
         <meta property="og:url" content="https://www.naxely.com/blog/automating-client-reports" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Automating Client Reports: The Complete Guide | Naxely" />
+        <meta property="og:title" content="Automated Client Reporting: The Complete Guide for Freelancers and Agencies | Naxely" />
         <meta property="og:description" content="How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Automating Client Reports: The Complete Guide | Naxely" />
+        <meta name="twitter:title" content="Automated Client Reporting: The Complete Guide for Freelancers and Agencies | Naxely" />
         <meta name="twitter:description" content="How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Automating Client Reports: The Complete Guide","description":"How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle.","url":"https://www.naxely.com/blog/automating-client-reports","datePublished":"2026-07-05","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Automated Client Reporting: The Complete Guide for Freelancers and Agencies","description":"How to automate client reporting — from CSV exports to AI-generated insights and BYOK pricing, so you can stop rebuilding the same report every cycle.","url":"https://www.naxely.com/blog/automating-client-reports","datePublished":"2026-07-05","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com"},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Automating Client Reports: The Complete Guide for Freelancers and Agencies</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Automated Client Reporting: The Complete Guide for Freelancers and Agencies</h1>
         <p className="text-xs text-gray-400 mb-10">Guide &middot; July 5, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
@@ -36,7 +36,7 @@ export default function BlogPostHub() {
           <p className="text-sm">Still comparing tools first? See our guide on <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline">choosing client reporting software</Link>.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does "automating client reports" actually mean?</h2>
-          <p>Reporting automation is a spectrum from fully manual (pull data by hand, build charts, write commentary from scratch every cycle) to a full pipeline (hand over raw data and get a finished client-ready PDF with charts, KPIs, and written insights automatically).</p>
+          <p>Client reporting automation is a spectrum from fully manual (pull data by hand, build charts, write commentary from scratch every cycle) to a full pipeline (hand over raw data and get a finished client-ready PDF with charts, KPIs, and written insights automatically).</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
@@ -143,7 +143,7 @@ export default function BlogPostHub() {
           <p><em>For the full breakdown of how BYOK pricing works and why it matters at scale, see <Link to="/blog/byok-ai-reporting-tool" className="text-amber-600 hover:text-amber-700 underline">Why BYOK AI Reporting Beats Built-In AI Markup</Link>.</em></p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Already comparing tools?</h2>
-          <p>Choosing the right reporting tool depends on your data source, budget, and how much client-facing polish you need. We break down exactly how to weigh those factors in <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline">How to Choose Client Reporting Software</Link> — worth reading before you commit to a workflow.</p>
+          <p>Choosing the right client reporting tool depends on your data source, budget, and how much client-facing polish you need. We break down exactly how to weigh those factors in <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline">How to Choose Client Reporting Software</Link> — worth reading before you commit to a workflow.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I get started with automated client reporting?</h2>
           <p>If your reporting workflow is mostly CSV exports and spreadsheets, and you're tired of rebuilding the same report by hand every cycle, <Link to="/signup" className="text-amber-600 hover:text-amber-700 underline">try it free</Link> — three reports a month, no credit card required. You can also see <a href="/sample/report.pdf" className="text-amber-600 hover:text-amber-700 underline">an unedited sample report</a> before deciding anything.</p>
