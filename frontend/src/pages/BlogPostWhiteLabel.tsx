@@ -58,27 +58,27 @@ export default function BlogPostWhiteLabel() {
               <tbody>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">Swydo</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$42–$286/month</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">€69/month (10 data sources incl.)</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">AgencyAnalytics</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Starts around $59–79/month depending on billing cycle</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$20/client/month (billed annually)</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">DashThis</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$42–$219/month</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$44–$429/month</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">Whatagraph</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$199–$440/month</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">€699/month billed annually (Max)</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">Databox</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Paid plans typically start in the $79–159/month range</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free tier; paid from $64–$399/month</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform + custom API</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">

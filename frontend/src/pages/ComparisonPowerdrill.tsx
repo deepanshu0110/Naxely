@@ -76,7 +76,7 @@ export default function ComparisonPowerdrill() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI model</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK — Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together (zero markup)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Built-in — OpenAI models (GPT-4, GPT-4o)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Built-in — Claude Code-level agent tasks and Claude Skills workflows</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Programmatic API</td>

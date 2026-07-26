@@ -7,7 +7,7 @@ export default function ComparisonDatabox() {
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
         <title>Naxely vs Databox: Which Reporting Tool Fits Your Workflow? | Naxely</title>
-        <meta name="description" content="Naxely vs Databox comparison: Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 100+ integrations." />
+        <meta name="description" content="Naxely vs Databox comparison: Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 130+ integrations." />
         <link rel="canonical" href="https://www.naxely.com/compare/databox" />
         <meta property="og:url" content="https://www.naxely.com/compare/databox" />
         <meta property="og:type" content="website" />
@@ -50,12 +50,12 @@ export default function ComparisonDatabox() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Data source</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Upload CSV or connect Google Sheets</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">100+ live integrations (analytics, CRM, ads, finance tools)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">130+ live integrations (analytics, CRM, ads, finance tools)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Starting price</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free (3 reports/month)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Free tier available, paid plans typically start in the $79–159/month range</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Free tier; paid from $64/month (Analyst) to $399/month (Growth)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Output format</td>
@@ -65,7 +65,7 @@ export default function ComparisonDatabox() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI-generated insights</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Yes — executive summaries, anomaly detection, recommendations</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">AI-assisted insights on higher tiers</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">AI-powered insights on all plans (Genie AI Analyst)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI cost model</td>
