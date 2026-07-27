@@ -16,6 +16,7 @@ import requests
 from app.core.config import settings
 from app.models.user import User
 from app.utils.encryption import decrypt_api_key, get_master_key
+from app.utils.error_notifier import notify_telegram_error
 from app.services.data_service import compute_column_stats
 
 logger = logging.getLogger(__name__)
@@ -98,6 +99,18 @@ def _sanitize_kwargs(kwargs: dict, base_url: str | None) -> dict:
     return kwargs
 
 
+def _infer_provider(base_url: str | None) -> str:
+    if not base_url:
+        return "openai"
+    if "groq.com" in base_url:
+        return "groq"
+    if "deepseek.com" in base_url:
+        return "deepseek"
+    if "mistral.ai" in base_url:
+        return "mistral"
+    return "openai_compat"
+
+
 def call_openai_compat(prompt: str, system: str, api_key: str, timeout: int = 25, base_url: str | None = None, model: str | None = None) -> str | None:
     client = OpenAI(api_key=api_key, timeout=timeout, base_url=base_url)
     try:
@@ -120,9 +133,17 @@ def call_openai_compat(prompt: str, system: str, api_key: str, timeout: int = 25
         logger.warning("AI provider returned 400 — likely unsupported parameter. Response: %s", detail)
         return None
     except APITimeoutError:
+        notify_telegram_error(
+            Exception("AI timed out"),
+            {"stage": f"ai_provider:{_infer_provider(base_url)}", "user_id": None},
+        )
         raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
     except Exception as e:
         logger.error("AI call failed: %s", type(e).__name__)
+        notify_telegram_error(
+            e,
+            {"stage": f"ai_provider:{_infer_provider(base_url)}", "user_id": None},
+        )
         return None
     finally:
         if 'client' in locals():
@@ -184,14 +205,17 @@ def call_claude(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
     except AnthropicRateLimitError:
         raise HTTPException(status_code=429, detail="AI rate limit — try again in 60 seconds")
     except AnthropicTimeoutError:
+        notify_telegram_error(Exception("Claude timed out"), {"stage": "ai_provider:claude", "user_id": None})
         raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
     except Exception as e:
         logger.error("Claude call failed: %s", type(e).__name__)
+        notify_telegram_error(e, {"stage": "ai_provider:claude", "user_id": None})
         raise HTTPException(status_code=500, detail="AI generation failed")
     finally:
         if 'client' in locals():
             del client
     if not result:
+        notify_telegram_error(Exception("Claude returned empty response"), {"stage": "ai_provider:claude", "user_id": None})
         raise HTTPException(status_code=500, detail="AI returned empty response")
     return result
 
@@ -223,11 +247,13 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
             data = resp.json()
             candidates = data.get("candidates", [])
             if not candidates:
+                notify_telegram_error(Exception("Gemini returned empty candidates"), {"stage": "ai_provider:gemini", "user_id": None})
                 raise HTTPException(status_code=500, detail="AI returned empty response")
             finish_reason = candidates[0].get("finishReason", "UNKNOWN")
             result = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
             logger.info("Gemini finishReason=%s result_len=%d", finish_reason, len(result))
             if not result:
+                notify_telegram_error(Exception("Gemini returned empty text"), {"stage": "ai_provider:gemini", "user_id": None})
                 raise HTTPException(status_code=500, detail="AI returned empty response")
             return result
         except HTTPException:
@@ -242,8 +268,10 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
             body = e.response.text if e.response is not None else "N/A"
             safe_url = re.sub(r'([?&]key=)[^&]+', r'\1***REDACTED***', url)
             logger.error("Gemini call failed: status=%s url=%s body=%s", status, safe_url, body)
+            notify_telegram_error(e, {"stage": "ai_provider:gemini", "user_id": None})
             raise HTTPException(status_code=500, detail="AI generation failed")
     logger.error("Gemini retry exhausted after 3 attempts")
+    notify_telegram_error(Exception("Gemini retry exhausted after 3 attempts"), {"stage": "ai_provider:gemini", "user_id": None})
     raise HTTPException(status_code=504, detail="AI timed out — report saved without AI insights")
 
 

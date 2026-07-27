@@ -15,6 +15,7 @@ from app.core.supabase_helpers import _get_supabase, _run_sync
 from app.services import data_service, chart_service, ai_service, pdf_service
 from app.services.ai_service import SummaryResult
 from app.api.deps import increment_report_count, mark_upload_used
+from app.utils.error_notifier import notify_telegram_error
 
 logger = logging.getLogger(__name__)
 
@@ -390,6 +391,15 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             logger.error("Failed to update report status to failed for %s", report_id)
 
         sentry_sdk.capture_exception(e)
+        _udr = locals().get("user_data_row")
+        notify_telegram_error(
+            e,
+            {
+                "user_id": user_id,
+                "user_email": _udr.get("email") if _udr else None,
+                "stage": "pipeline",
+            },
+        )
         logger.error("Report pipeline failed for %s", report_id, exc_info=True)
 
     finally:

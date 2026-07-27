@@ -36,6 +36,9 @@ class Settings(BaseSettings):
 
     SENTRY_DSN: str = ""
 
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
+
     SUPABASE_DB_HOST: str = ""
     SUPABASE_DB_PORT: int = 5432
     SUPABASE_DB_NAME: str = "postgres"
