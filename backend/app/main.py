@@ -31,7 +31,8 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-sentry_sdk.init(dsn=settings.SENTRY_DSN, send_default_pii=False)
+if settings.ENVIRONMENT == "production" and settings.SENTRY_DSN:
+    sentry_sdk.init(dsn=settings.SENTRY_DSN, send_default_pii=False)
 
 if os.getenv("RENDER") and not os.getenv("ENVIRONMENT"):
     logger.critical(
