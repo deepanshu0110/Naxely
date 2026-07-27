@@ -116,7 +116,7 @@ export default function ComparisonDatabox() {
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Naxely offer BYOK like Databox?</h3>
           <p>Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on every pricing tier, so there's no AI markup. Databox does not offer a BYOK option.</p>
 
-          <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re also comparing live dashboard tools, see <Link to="/compare/dashthis" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs DashThis</Link> for another perspective.</p>
+          <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re also comparing live dashboard tools, see <Link to="/compare/dashthis" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs DashThis</Link> or <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs AgencyAnalytics</Link> for another perspective.</p>
 
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report &mdash; free &rarr;</Link>

@@ -123,7 +123,7 @@ export default function ComparisonPowerdrill() {
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Powerdrill offer white-label reports?</h3>
           <p>No. Powerdrill has no white-label or branding-removal features. Naxely's Agency tier ($79/month) removes all platform branding from client-facing output.</p>
 
-          <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re weighing broader AI data-analysis platforms against purpose-built reporting tools, see <Link to="/compare/whatagraph" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Whatagraph</Link> or <Link to="/compare/databox" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Databox</Link>.</p>
+          <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re weighing broader AI data-analysis platforms against purpose-built reporting tools, see <Link to="/compare/whatagraph" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Whatagraph</Link>, <Link to="/compare/databox" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Databox</Link>, or <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs AgencyAnalytics</Link>.</p>
 
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Generate your first report &mdash; free &rarr;</Link>

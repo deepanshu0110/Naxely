@@ -56,6 +56,7 @@ export default function BlogPostFlatPricing() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Comparing specific tools</h2>
           <p>For exact current pricing on individual platforms, see the comparison pages below &mdash; pricing in this category changes often enough that it's worth checking the specific breakdown rather than relying on general category patterns.</p>
+          <p>To compare a flat-rate model against a live-dashboard platform, see <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs AgencyAnalytics</Link> for a side-by-side breakdown of the two approaches.</p>
 
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try Naxely free &rarr;</Link>
