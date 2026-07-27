@@ -41,6 +41,12 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 
 - [Client Reporting Software Guide 2026](https://www.naxely.com/blog/client-reporting-software-guide): Comprehensive guide to the best client reporting software tools for agencies and freelancers.
 - [Best Client Reporting Software for Freelancers (2026)](https://www.naxely.com/blog/best-client-reporting-software-freelancers): Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely for freelancer reporting workflows.
+- [Automated Client Reporting: The Complete Guide](https://www.naxely.com/blog/automating-client-reports): A complete guide to automating client reports — from CSV exports to AI-generated insights — for freelancers and agencies.
+- [BYOK AI Reporting Tool: Bring Your Own Key Explained](https://www.naxely.com/blog/byok-ai-reporting-tool): How BYOK (bring-your-own-key) AI reporting eliminates hidden AI markup, and why it matters for frequent report generation.
+- [White-Label Client Reporting for Agencies](https://www.naxely.com/blog/white-label-client-reporting-agencies): Why existing agency reporting tools built for marketing connectors don't fit any-data workflows, and what white-label BYOK pricing looks like instead.
+- [Client Reporting Tools With Flat Pricing (Not Per-Client)](https://www.naxely.com/blog/client-reporting-tools-flat-pricing): Compare flat-rate and per-client pricing models for client reporting tools and understand how each scales.
+- [Client Reporting Tools for Upwork & Freelancer.com Analysts](https://www.naxely.com/blog/client-reporting-tools-for-upwork-freelancer): What to look for in a reporting tool when every freelance contract brings different data and deliverables.
+- [What Should a Client Report Include? (Checklist)](https://www.naxely.com/blog/what-should-client-report-include-checklist): A practical checklist of what belongs in a client-facing report — from executive summary to next steps — and what to leave out.
 
 ## Pricing
 
