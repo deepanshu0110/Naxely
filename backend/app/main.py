@@ -10,6 +10,8 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
+import sentry_sdk
+
 from app.core.limiter import limiter
 
 from app.core.config import settings
@@ -29,9 +31,7 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-if settings.ENVIRONMENT == "production" and settings.SENTRY_DSN:
-    import sentry_sdk
-    sentry_sdk.init(dsn=settings.SENTRY_DSN)
+sentry_sdk.init(dsn=settings.SENTRY_DSN, send_default_pii=False)
 
 if os.getenv("RENDER") and not os.getenv("ENVIRONMENT"):
     logger.critical(
