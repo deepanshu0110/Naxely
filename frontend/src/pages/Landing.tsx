@@ -1096,6 +1096,9 @@ export default function Landing() {
               <a href="https://twelve.tools" target="_blank" rel="noopener noreferrer">
                 <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" width="200" height="54" />
               </a>
+              <a href="https://www.saashub.com/naxely?utm_source=badge&utm_campaign=badge&utm_content=naxely&badge_variant=color&badge_kind=approved" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1" alt="Featured on SaaSHub" width="150" height="50" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1179,6 +1182,9 @@ export default function Landing() {
               </a>
               <a href="https://twelve.tools" target="_blank" rel="noopener noreferrer">
                 <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" width="200" height="54" />
+              </a>
+              <a href="https://www.saashub.com/naxely?utm_source=badge&utm_campaign=badge&utm_content=naxely&badge_variant=color&badge_kind=approved" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1" alt="Featured on SaaSHub" width="150" height="50" />
               </a>
             </div>
           </div>
