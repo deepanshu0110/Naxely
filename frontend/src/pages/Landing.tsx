@@ -1105,6 +1105,9 @@ export default function Landing() {
               <a href="https://frogdr.com/naxely.com?utm_source=naxely.com" target="_blank" rel="noopener noreferrer">
                 <img src="https://frogdr.com/naxely.com/badge-white-sm.svg?round=1" alt="Monitor your Domain Rating with FrogDR" width="249" height="36" />
               </a>
+              <a href="https://showmebest.ai" target="_blank" rel="noopener noreferrer">
+                <img src="https://showmebest.ai/badge/feature-badge-white.webp" alt="Featured on ShowMeBestAI" width="220" height="60" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1197,6 +1200,9 @@ export default function Landing() {
               </a>
               <a href="https://frogdr.com/naxely.com?utm_source=naxely.com" target="_blank" rel="noopener noreferrer">
                 <img src="https://frogdr.com/naxely.com/badge-white-sm.svg?round=1" alt="Monitor your Domain Rating with FrogDR" width="249" height="36" />
+              </a>
+              <a href="https://showmebest.ai" target="_blank" rel="noopener noreferrer">
+                <img src="https://showmebest.ai/badge/feature-badge-white.webp" alt="Featured on ShowMeBestAI" width="220" height="60" />
               </a>
             </div>
           </div>
