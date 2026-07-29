@@ -12,9 +12,10 @@ from sqlalchemy import text
 
 from app.core.database import AsyncSessionLocal
 from app.core.supabase_helpers import _get_supabase, _run_sync
-from app.services import data_service, chart_service, ai_service, pdf_service
+from app.services import data_service, chart_service, ai_service, pdf_service, sheets_service
 from app.services.ai_service import SummaryResult
 from app.api.deps import increment_report_count, mark_upload_used
+from app.core.config import settings
 from app.utils.error_notifier import notify_telegram_error
 
 logger = logging.getLogger(__name__)
@@ -120,15 +121,45 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
     try:
         await update_status(report_id, 'processing', step='data')
 
+        data_source_stale = False
+
         if _use_default_path:
             upload = await get_upload(config["upload_id"])
             if not upload:
                 raise ValueError(f"Upload {config['upload_id']} not found")
             file_url = upload["file_url"]
+            sheets_url = upload.get("sheets_url")
 
-            csv_bytes = await _run_sync(
-                _get_supabase().storage.from_("uploads").download, file_url,
-            )
+            loop = asyncio.get_event_loop()
+
+            if sheets_url:
+                try:
+                    sheet_id = sheets_service.extract_sheet_id(sheets_url)
+                    creds = sheets_service.build_credentials(
+                        settings.GOOGLE_SERVICE_ACCOUNT_JSON
+                    )
+                    df_fresh = await loop.run_in_executor(
+                        None, sheets_service.fetch_sheet_as_df, sheet_id, creds,
+                    )
+                    csv_bytes = df_fresh.to_csv(index=False).encode("utf-8")
+                    logger.info(
+                        "[sheets_refresh] live fetch succeeded for upload=%s sheet=%s",
+                        config["upload_id"], sheet_id,
+                    )
+                except Exception as e:
+                    logger.warning(
+                        "[sheets_refresh] live fetch failed for upload=%s: %s — "
+                        "falling back to cached CSV",
+                        config["upload_id"], e,
+                    )
+                    csv_bytes = await _run_sync(
+                        _get_supabase().storage.from_("uploads").download, file_url,
+                    )
+                    data_source_stale = True
+            else:
+                csv_bytes = await _run_sync(
+                    _get_supabase().storage.from_("uploads").download, file_url,
+                )
 
         loop = asyncio.get_event_loop()
 
@@ -345,6 +376,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                         column_count = :col_count,
                         trend_pct = :trend_pct,
                         ai_skipped = :ai_skipped,
+                        data_source_stale = :stale,
                         error_message = :ai_err
                     WHERE id = :rid
                 """),
@@ -360,6 +392,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     "col_count": len(df.columns),
                     "trend_pct": trend_pct,
                     "ai_skipped": ai_skipped,
+                    "stale": data_source_stale,
                     "ai_err": ai_error,
                     "rid": report_id,
                 },

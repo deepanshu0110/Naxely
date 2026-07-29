@@ -43,6 +43,9 @@ class Report(Base, TimestampMixin):
     generation_time_seconds = Column(Float)
     current_step = Column(String(50))
     error_message = Column(Text)
+
+    # Data freshness
+    data_source_stale = Column(default=False)
     
     # Soft delete
     deleted_at = Column(DateTime(timezone=True))

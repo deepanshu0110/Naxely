@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 import logging
@@ -15,6 +16,7 @@ from app.core.config import settings
 from app.core.database import AsyncSessionLocal, get_db
 from app.models.user import User
 from app.services.email_service import send_email
+from app.services import sheets_service
 from app.services.report_service import run_report_pipeline, _get_supabase, _run_sync
 from app.services.scheduled_report_service import copy_upload_to_scheduled_source
 
@@ -78,6 +80,7 @@ class ScheduledReportResponse(BaseModel):
     created_at: datetime
     template_id: str | None
     workspace_id: str | None
+    sheets_url: str | None = None
 
 
 def _compute_next_run(frequency: str) -> datetime:
@@ -118,6 +121,7 @@ def _row_to_response(row: dict) -> ScheduledReportResponse:
         created_at=row["created_at"],
         template_id=str(row["template_id"]) if row.get("template_id") else None,
         workspace_id=str(row["workspace_id"]) if row.get("workspace_id") else None,
+        sheets_url=row.get("sheets_url"),
     )
 
 
@@ -173,9 +177,11 @@ async def create_scheduled_report(
         text("""
             INSERT INTO scheduled_reports
                 (user_id, template_id, workspace_id, name, frequency,
-                 next_run_at, recipient_emails, config_json, is_active)
+                 next_run_at, recipient_emails, config_json, is_active,
+                 sheets_url)
             VALUES (:user_id, :template_id, :workspace_id, :name, :frequency,
-                    :next_run_at, :recipient_emails, :config_json, TRUE)
+                    :next_run_at, :recipient_emails, :config_json, TRUE,
+                    :sheets_url)
             RETURNING *
         """),
         {
@@ -187,6 +193,7 @@ async def create_scheduled_report(
             "next_run_at": next_run_at,
             "recipient_emails": body.recipient_emails,
             "config_json": body.config_json,
+            "sheets_url": upload.get("sheets_url"),
         },
     )
     await db.commit()
@@ -324,22 +331,52 @@ async def _run_all_scheduled_reports() -> None:
                 sched_name = sched["name"]
 
                 try:
-                    # 1. Download CSV from storage (permanent path or legacy scheduled-sources)
-                    csv_storage_path = sched.get("csv_storage_path")
-                    if not csv_storage_path:
-                        logger.error("Scheduled report %s has no csv_storage_path — skipping", sched_id)
-                        continue
-                    if csv_storage_path.startswith("permanent/"):
-                        csv_bytes = await _run_sync(
-                            _get_supabase().storage.from_("uploads").download,
-                            csv_storage_path,
-                        )
+                    # 1. Download CSV data — try live Sheets fetch first if available
+                    sheets_url = sched.get("sheets_url")
+                    data_source_stale = False
+
+                    if sheets_url:
+                        try:
+                            sheet_id = sheets_service.extract_sheet_id(sheets_url)
+                            creds = sheets_service.build_credentials(
+                                settings.GOOGLE_SERVICE_ACCOUNT_JSON
+                            )
+                            loop = asyncio.get_event_loop()
+                            df_fresh = await loop.run_in_executor(
+                                None, sheets_service.fetch_sheet_as_df, sheet_id, creds,
+                            )
+                            csv_bytes = df_fresh.to_csv(index=False).encode("utf-8")
+                            logger.info(
+                                "[scheduler] live sheets fetch OK sched=%s sheet=%s",
+                                sched_id, sheet_id,
+                            )
+                        except Exception as e:
+                            logger.warning(
+                                "[scheduler] live sheets fetch failed sched=%s: %s — "
+                                "falling back to cached CSV",
+                                sched_id, e,
+                            )
+                            data_source_stale = True
+                            csv_bytes = None
                     else:
-                        filename = csv_storage_path.split("/")[-1]
-                        csv_bytes = await _run_sync(
-                            _get_supabase().storage.from_("scheduled-sources").download,
-                            filename,
-                        )
+                        csv_bytes = None
+
+                    if csv_bytes is None:
+                        csv_storage_path = sched.get("csv_storage_path")
+                        if not csv_storage_path:
+                            logger.error("Scheduled report %s has no csv_storage_path — skipping", sched_id)
+                            continue
+                        if csv_storage_path.startswith("permanent/"):
+                            csv_bytes = await _run_sync(
+                                _get_supabase().storage.from_("uploads").download,
+                                csv_storage_path,
+                            )
+                        else:
+                            filename = csv_storage_path.split("/")[-1]
+                            csv_bytes = await _run_sync(
+                                _get_supabase().storage.from_("scheduled-sources").download,
+                                filename,
+                            )
 
                     # 2. Create a new report record
                     report_id = str(uuid.uuid4())
@@ -368,9 +405,11 @@ async def _run_all_scheduled_reports() -> None:
                         text("""
                             INSERT INTO reports
                                 (id, user_id, title, template_type, status, source_type,
-                                 source_filename, config, created_at, updated_at)
+                                 source_filename, config, data_source_stale,
+                                 created_at, updated_at)
                             VALUES (:id, :uid, :title, :template, 'pending', 'csv',
-                                    :filename, :config, NOW(), NOW())
+                                    :filename, :config, :stale,
+                                    NOW(), NOW())
                         """),
                         {
                             "id": report_id,
@@ -379,6 +418,7 @@ async def _run_all_scheduled_reports() -> None:
                             "template": config.get("template_type", "professional"),
                             "filename": f"scheduled/{sched_id}.csv",
                             "config": json.dumps(config),
+                            "stale": data_source_stale,
                         },
                     )
                     await db.commit()

@@ -134,6 +134,7 @@ async def _store_csv_upload(
     file_ext: str = "csv",
     content_type: str = "text/csv",
     extra_meta: dict | None = None,
+    sheets_url: str | None = None,
 ) -> dict:
     """Store CSV bytes to Supabase Storage and insert into uploads table.
 
@@ -214,10 +215,12 @@ async def _store_csv_upload(
             text("""
                 INSERT INTO uploads (
                     id, user_id, filename, file_url, file_size_bytes, source_type,
-                    row_count, column_count, columns_meta, expires_at, used, created_at
+                    sheets_url, row_count, column_count, columns_meta, expires_at,
+                    used, created_at
                 ) VALUES (
                     :id, :user_id, :filename, :file_url, :file_size_bytes, :source_type,
-                    :row_count, :column_count, :columns_meta, :expires_at, FALSE, NOW()
+                    :sheets_url, :row_count, :column_count, :columns_meta, :expires_at,
+                    FALSE, NOW()
                 )
             """),
             {
@@ -227,6 +230,7 @@ async def _store_csv_upload(
                 "file_url": storage_path,
                 "file_size_bytes": len(csv_bytes),
                 "source_type": source_type,
+                "sheets_url": sheets_url,
                 "row_count": len(df),
                 "column_count": len(df.columns),
                 "columns_meta": columns_meta_json,
@@ -253,6 +257,7 @@ async def _store_csv_upload(
         "id": upload_id,
         "file_url": storage_path,
         "columns": columns_meta,
+        "sheets_url": sheets_url,
     }
 
 
@@ -414,6 +419,7 @@ async def upload_sheets(
         source_type="sheets",
         filename=filename,
         df=df,
+        sheets_url=sheets_url,
     )
 
     preview_rows = []
@@ -1144,6 +1150,7 @@ async def get_report(
         "created_at": report["created_at"].isoformat() if report.get("created_at") else None,
         "error_message": report.get("error_message"),
         "ai_skipped": report.get("ai_skipped", False),
+        "data_source_stale": report.get("data_source_stale", False),
     }
 
     return {"success": True, "data": data}

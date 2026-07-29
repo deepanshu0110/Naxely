@@ -17,6 +17,7 @@ class Upload(Base):
     file_url = Column(Text, nullable=False)
     file_size_bytes = Column(Integer)
     source_type = Column(String(20), default='csv')
+    sheets_url = Column(Text)
     
     # Parsed metadata
     row_count = Column(Integer)
