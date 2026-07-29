@@ -1087,6 +1087,9 @@ export default function Landing() {
               <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />
               </a>
+              <a href="https://startupfa.me/s/naxely?utm_source=naxely.com" target="_blank" rel="noopener">
+                <img src="https://startupfa.me/badges/featured/default-small-rounded.webp" alt="Naxely - Featured on Startup Fame" width="240" height="37" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1161,6 +1164,9 @@ export default function Landing() {
               </a>
               <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />
+              </a>
+              <a href="https://startupfa.me/s/naxely?utm_source=naxely.com" target="_blank" rel="noopener">
+                <img src="https://startupfa.me/badges/featured/default-small-rounded.webp" alt="Naxely - Featured on Startup Fame" width="240" height="37" />
               </a>
             </div>
           </div>
