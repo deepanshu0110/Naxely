@@ -4,6 +4,11 @@ import Navbar from '@/components/layout/Navbar'
 
 const entries = [
   {
+    date: 'July 29, 2026',
+    title: 'Google Sheets Live Refresh',
+    description: 'Previously, connecting a Google Sheet only pulled data once at import time — including for scheduled reports, which kept reusing that same snapshot even if the source Sheet changed. Reports now re-fetch the Sheet fresh at generation time (manual and scheduled), with a safe fallback to the last-known data if the live fetch fails.',
+  },
+  {
     date: 'July 8, 2026',
     title: 'Templates',
     description: 'Save and reuse report configurations. Create a template from any report\'s tone, section, and brand settings, then load it instantly when starting a new report — no need to reconfigure the same layout every time.',
