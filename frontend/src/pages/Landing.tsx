@@ -1093,6 +1093,9 @@ export default function Landing() {
               <a href="https://findly.tools/naxely?utm_source=naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="Featured on Findly.tools" width="175" height="55" />
               </a>
+              <a href="https://twelve.tools" target="_blank" rel="noopener noreferrer">
+                <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" width="200" height="54" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1173,6 +1176,9 @@ export default function Landing() {
               </a>
               <a href="https://findly.tools/naxely?utm_source=naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="Featured on Findly.tools" width="175" height="55" />
+              </a>
+              <a href="https://twelve.tools" target="_blank" rel="noopener noreferrer">
+                <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" width="200" height="54" />
               </a>
             </div>
           </div>
