@@ -1111,6 +1111,9 @@ export default function Landing() {
               <a href="https://submitaitools.org" target="_blank" rel="noopener noreferrer">
                 <img src="https://submitaitools.org/static_submitaitools/images/submitaitools.png" alt="Submit AI Tools" width="200" height="60" style={{ borderRadius: '10px' }} />
               </a>
+              <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1209,6 +1212,9 @@ export default function Landing() {
               </a>
               <a href="https://submitaitools.org" target="_blank" rel="noopener noreferrer">
                 <img src="https://submitaitools.org/static_submitaitools/images/submitaitools.png" alt="Submit AI Tools" width="200" height="60" style={{ borderRadius: '10px' }} />
+              </a>
+              <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
               </a>
             </div>
           </div>
