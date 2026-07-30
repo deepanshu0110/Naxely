@@ -1114,6 +1114,9 @@ export default function Landing() {
               <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
               </a>
+              <a href="https://goodaitools.com/ai/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://goodaitools.com/assets/images/badge.png" alt="Good AI Tools" width="207" height="54" loading="lazy" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1215,6 +1218,9 @@ export default function Landing() {
               </a>
               <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
+              </a>
+              <a href="https://goodaitools.com/ai/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://goodaitools.com/assets/images/badge.png" alt="Good AI Tools" width="207" height="54" loading="lazy" />
               </a>
             </div>
           </div>
