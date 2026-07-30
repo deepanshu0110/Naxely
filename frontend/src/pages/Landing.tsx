@@ -1120,6 +1120,9 @@ export default function Landing() {
               <a href="https://startupfa.st" target="_blank" rel="noopener noreferrer" title="Powered by Startup Fast">
                 <img src="https://startupfa.st/images/badges/powered-by-light.svg" alt="Powered by Startup Fast" width="150" height="44" />
               </a>
+              <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
+                <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1227,6 +1230,9 @@ export default function Landing() {
               </a>
               <a href="https://startupfa.st" target="_blank" rel="noopener noreferrer" title="Powered by Startup Fast">
                 <img src="https://startupfa.st/images/badges/powered-by-light.svg" alt="Powered by Startup Fast" width="150" height="44" />
+              </a>
+              <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
+                <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
               </a>
             </div>
           </div>
