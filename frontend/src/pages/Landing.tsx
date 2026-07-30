@@ -1123,6 +1123,9 @@ export default function Landing() {
               <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
                 <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
               </a>
+              <a href="https://saasfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://saasfame.com/badge-dark.svg" alt="Featured on saasfame.com" width="170" height="54" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
               </a>
@@ -1233,6 +1236,9 @@ export default function Landing() {
               </a>
               <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
                 <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
+              </a>
+              <a href="https://saasfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="https://saasfame.com/badge-dark.svg" alt="Featured on saasfame.com" width="170" height="54" />
               </a>
             </div>
           </div>
