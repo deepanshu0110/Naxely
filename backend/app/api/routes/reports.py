@@ -656,6 +656,7 @@ async def preview_charts(
     df, df_norm = _process_csv(df, config)
 
     chart_specs = None
+    tier_cap = chart_service_mod.chart_cap_for_tier(current_user.tier)
     try:
         user_result = await db.execute(
             text("SELECT * FROM users WHERE id = :uid"), {"uid": str(current_user.id)}
@@ -665,7 +666,7 @@ async def preview_charts(
         )
         provider, api_key = ai_service_mod.get_user_api_key(user_obj)
         chart_specs = chart_service_mod.select_charts_with_ai(
-            df=df_norm, config=config, provider=provider, api_key=api_key, max_charts=3,
+            df=df_norm, config=config, provider=provider, api_key=api_key, max_charts=tier_cap,
         )
     except Exception:
         logger.warning("[preview_charts] AI chart selection failed, using rule-based fallback")
@@ -677,13 +678,25 @@ async def preview_charts(
             c for c in df_norm.columns
             if c != date_column and not pd.api.types.is_numeric_dtype(df_norm[c]) and df_norm[c].nunique() <= 10
         ]
-        pairs = chart_service_mod._select_chart_pairs(df_norm, date_column, metric_columns, dimension_columns, 3)
+        pairs = chart_service_mod._select_chart_pairs(df_norm, date_column, metric_columns, dimension_columns, tier_cap)
         chart_specs = [
             {"x": x, "y": y, "type": chart_service_mod.select_chart_type(x, y, df_norm), "title": f"{y} by {x}"}
             for x, y in pairs
         ]
 
-    return {"chart_specs": chart_specs}
+    candidates = chart_service_mod.all_chart_candidates(df_norm, config)
+    seen = {(c["x"], c["y"], c["type"]) for c in candidates}
+    for spec in chart_specs:
+        key = (spec["x"], spec["y"], spec["type"])
+        if key not in seen:
+            candidates.append(spec)
+            seen.add(key)
+
+    recommended = {(s["x"], s["y"], s["type"]) for s in chart_specs}
+    for candidate in candidates:
+        candidate["recommended"] = (candidate["x"], candidate["y"], candidate["type"]) in recommended
+
+    return {"chart_specs": candidates}
 
 
 @router.post("/reports/generate")
@@ -956,12 +969,15 @@ async def export_report_pptx(
     config["_precomputed_kpis"] = kpis
     config["_ai_skipped"] = report.get("ai_skipped", False)
     config["report_id"] = report_id
+    config["tier"] = current_user.tier
+
+    chart_specs = config.get("chart_specs_override")
 
     loop = asyncio.get_event_loop()
     try:
         chart_paths = await loop.run_in_executor(
             None,
-            lambda: generate_charts(df_norm, report_id + "_pptx", config, brand_color),
+            lambda: generate_charts(df_norm, report_id + "_pptx", config, brand_color, chart_specs),
         )
     except Exception:
         logger.warning(f"[pptx_export] chart regeneration failed, continuing without charts")

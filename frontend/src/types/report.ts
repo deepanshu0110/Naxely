@@ -64,6 +64,7 @@ export interface ChartSpec {
   y: string
   type: string
   title: string
+  recommended?: boolean
 }
 
 export interface ReportConfig {

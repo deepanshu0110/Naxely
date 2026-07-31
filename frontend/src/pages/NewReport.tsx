@@ -350,6 +350,7 @@ export default function NewReport() {
                   uploadId={uploadResult.upload_id}
                   columnConfig={columnConfig}
                   onSpecsChange={setChartSpecs}
+                  maxCharts={user?.tier === 'agency' ? 16 : user?.tier === 'pro' ? 8 : 3}
                 />
               </div>
             )}

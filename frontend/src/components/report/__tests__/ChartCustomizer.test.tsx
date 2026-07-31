@@ -92,3 +92,98 @@ describe('ChartCustomizer', () => {
     ).toBeInTheDocument()
   })
 })
+
+describe('ChartCustomizer candidate selection', () => {
+  const candidateSpecs: ChartSpec[] = [
+    { x: 'date', y: 'sales', type: 'line', title: 'Sales over time', recommended: true },
+    { x: 'date', y: 'sales', type: 'bar', title: 'Sales by month', recommended: true },
+    { x: 'client', y: 'sales', type: 'bar', title: 'Sales by client', recommended: false },
+  ]
+
+  function renderCustomizer(opts: { maxCharts?: number; onSpecsChange?: ReturnType<typeof vi.fn> } = {}) {
+    const onSpecsChange = opts.onSpecsChange ?? vi.fn()
+    render(
+      <ChartCustomizer
+        uploadId="up-123"
+        columnConfig={mockColumnConfig}
+        onSpecsChange={onSpecsChange}
+        maxCharts={opts.maxCharts}
+      />,
+    )
+    return { onSpecsChange }
+  }
+
+  it('renders a selectable checkbox for every candidate returned, including non-recommended ones', async () => {
+    mockPost.mockResolvedValue({ data: { chart_specs: candidateSpecs } })
+    renderCustomizer()
+    expect(await screen.findByText('Sales by client')).toBeInTheDocument()
+    const checkboxes = screen.getAllByRole('checkbox')
+    expect(checkboxes).toHaveLength(3)
+  })
+
+  it('pre-checks only the recommended charts and emits exactly those to onSpecsChange', async () => {
+    const onSpecsChange = vi.fn()
+    mockPost.mockResolvedValue({ data: { chart_specs: candidateSpecs } })
+    renderCustomizer({ onSpecsChange })
+
+    await waitFor(() => {
+      expect(onSpecsChange).toHaveBeenLastCalledWith([
+        expect.objectContaining({ title: 'Sales over time' }),
+        expect.objectContaining({ title: 'Sales by month' }),
+      ])
+    })
+    expect(screen.getAllByRole('checkbox').filter((c) => (c as HTMLInputElement).checked)).toHaveLength(2)
+  })
+
+  it('unchecking a chart removes it from the emitted specs', async () => {
+    const onSpecsChange = vi.fn()
+    mockPost.mockResolvedValue({ data: { chart_specs: candidateSpecs } })
+    renderCustomizer({ onSpecsChange })
+
+    await screen.findByText('Sales by client')
+    await userEvent.click(screen.getAllByRole('checkbox')[0])
+
+    await waitFor(() => {
+      expect(onSpecsChange).toHaveBeenLastCalledWith([
+        expect.objectContaining({ title: 'Sales by month' }),
+      ])
+    })
+  })
+
+  it('checking a non-recommended chart adds it to the emitted specs', async () => {
+    const onSpecsChange = vi.fn()
+    mockPost.mockResolvedValue({ data: { chart_specs: candidateSpecs } })
+    renderCustomizer({ onSpecsChange })
+
+    await screen.findByText('Sales by client')
+    await userEvent.click(screen.getAllByRole('checkbox')[2])
+
+    await waitFor(() => {
+      expect(onSpecsChange).toHaveBeenLastCalledWith(
+        expect.arrayContaining([expect.objectContaining({ title: 'Sales by client' })]),
+      )
+    })
+  })
+
+  it('shows a cap message and refuses the check when selection would exceed the plan limit', async () => {
+    mockPost.mockResolvedValue({ data: { chart_specs: candidateSpecs } })
+    renderCustomizer({ maxCharts: 2 })
+
+    await screen.findByText('Sales by client')
+    await userEvent.click(screen.getAllByRole('checkbox')[2])
+
+    expect(
+      screen.getByText('You can include up to 2 charts on your plan.'),
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('checkbox').filter((c) => (c as HTMLInputElement).checked)).toHaveLength(2)
+  })
+
+  it('offers histogram as a selectable chart type', async () => {
+    mockPost.mockResolvedValue({ data: { chart_specs: candidateSpecs } })
+    renderCustomizer()
+    const selects = await screen.findAllByRole('combobox')
+    await userEvent.selectOptions(selects[0], 'histogram')
+    const options = Array.from(selects[0].querySelectorAll('option')).map((o) => o.value)
+    expect(options).toContain('histogram')
+  })
+})

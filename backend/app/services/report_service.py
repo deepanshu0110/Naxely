@@ -177,6 +177,8 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             brand_color = user_data_row["brand_color"]
 
         chart_specs = config.get("chart_specs_override")
+        user_tier = (user_data_row or {}).get("tier", "free") if user_data_row else "free"
+        config["tier"] = user_tier
         if chart_specs:
             logger.info(f"[report_service] using user chart overrides: {[s['type'] for s in chart_specs]}")
         else:
@@ -188,7 +190,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     config=config,
                     provider=_provider,
                     api_key=_api_key,
-                    max_charts=3,
+                    max_charts=chart_service.chart_cap_for_tier(user_tier),
                 )
             except Exception as e:
                 logger.warning(f"[report_service] AI chart selection skipped: {e}")

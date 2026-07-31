@@ -26,6 +26,14 @@ fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Bold.ttf'))
 
 SECONDARY_PALETTE = ['#6366F1', '#0E9F6E', '#F59E0B', '#EF4444']  # INDIGO, MINT, AMBER, RED
 
+TIER_CHART_CAPS = {"free": 3, "pro": 8, "agency": 16}
+
+
+def chart_cap_for_tier(tier: str | None) -> int:
+    """Max charts a given tier may select. Unknown/None tiers fall back to Free."""
+    tier = (tier or "free").lower()
+    return TIER_CHART_CAPS.get(tier, 3)
+
 
 def _lighten(hex_color: str, factor: float) -> str:
     """Blend hex_color toward white by factor (0.0–1.0)."""
@@ -143,6 +151,52 @@ def _select_chart_pairs(
             pairs.append((date_column, metric))
 
     return pairs[:max_charts]
+
+
+def all_chart_candidates(df: pd.DataFrame, config: dict) -> list[dict]:
+    """Enumerate every generatable {x, y, type, title} chart candidate.
+
+    Used by preview-charts to return the full selectable list (the frontend then
+    filters against the user's tier cap). Groups candidates by relationship:
+    trends over time (line), category comparisons (bar), distributions
+    (histogram), correlations (scatter), and cross-tabs (heatmap).
+    """
+    numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+    date_column = config.get("date_column")
+    dimension_columns = [
+        c for c in df.columns
+        if c != date_column
+        and not pd.api.types.is_numeric_dtype(df[c])
+        and df[c].nunique() <= 10
+    ]
+    primary_metric = numeric_cols[0] if numeric_cols else None
+
+    candidates: list[dict] = []
+
+    def add(x: str, y: str, chart_type: str) -> None:
+        title = f"{y} Distribution" if x == y else f"{y} by {x}"
+        candidates.append({"x": x, "y": y, "type": chart_type, "title": title})
+
+    if date_column and date_column in df.columns:
+        for metric in numeric_cols:
+            add(date_column, metric, 'line')
+
+    if primary_metric:
+        for dim in dimension_columns:
+            add(dim, primary_metric, 'bar')
+
+    for metric in numeric_cols:
+        add(metric, metric, 'histogram')
+
+    for i in range(len(numeric_cols)):
+        for j in range(i + 1, len(numeric_cols)):
+            add(numeric_cols[i], numeric_cols[j], 'scatter')
+
+    for i in range(len(dimension_columns)):
+        for j in range(i + 1, len(dimension_columns)):
+            add(dimension_columns[i], dimension_columns[j], 'heatmap')
+
+    return candidates
 
 
 def select_charts_with_ai(
@@ -579,12 +633,12 @@ def generate_sync(
     brand_color: str = '#6366F1',
     chart_specs: list[dict] | None = None,
 ) -> list[tuple[str, str]]:
-    MAX_CHARTS = 3
+    max_charts = chart_cap_for_tier(config.get("tier"))
 
     if chart_specs:
         pairs_with_type = [
             (s['x'], s['y'], s['type'], s.get('title', ''))
-            for s in chart_specs[:MAX_CHARTS]
+            for s in chart_specs[:max_charts]
         ]
     else:
         metric_columns = config.get('metric_columns') or [
@@ -597,7 +651,7 @@ def generate_sync(
             and not pd.api.types.is_numeric_dtype(df[c])
             and df[c].nunique() <= 10
         ]
-        pairs = _select_chart_pairs(df, date_column, metric_columns, dimension_columns, MAX_CHARTS)
+        pairs = _select_chart_pairs(df, date_column, metric_columns, dimension_columns, max_charts)
         pairs_with_type = [
             (x, y, select_chart_type(x, y, df), '')
             for x, y in pairs
