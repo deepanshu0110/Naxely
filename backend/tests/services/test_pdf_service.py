@@ -1048,6 +1048,216 @@ class TestSectionHeaderLedger:
                 pass
 
 
+class TestDataTableLedger:
+    """The data table's internal column-header row must follow the Ledger
+    design (plain uppercase mono labels + hairline rule) and must never
+    overlap cell content — no colored band, no sideways text spill."""
+
+    MUTED_RGB = int("6B6E76", 16)
+    BRAND_RGB = int("6366F1", 16)
+
+    @staticmethod
+    def _build_table_pdf(n_rows=48):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        rng = np.random.default_rng(1)
+        df = pd.DataFrame({
+            "Date": pd.date_range("2025-01-06", periods=n_rows, freq="D"),
+            "Region": [rng.choice(["East", "West", "North", "South"]) for _ in range(n_rows)],
+            "Salesperson": [rng.choice(["Carol", "David", "Elena", "Grace", "Ivy", "Jack"]) for _ in range(n_rows)],
+            "Product": [rng.choice(["Widget", "Gadget", "Whatchamacallit", "Thingamajig"]) for _ in range(n_rows)],
+            "Category": [rng.choice(["Hardware", "Software", "Services", "Accessories"]) for _ in range(n_rows)],
+        })
+        config = {
+            "metric_columns": [],
+            "title": "Data Table Ledger Test",
+            "sections": ["data_table"],
+            "report_id": f"test-ledger-datatable-{n_rows}",
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        return build_sync(df, [], {}, config, user_data)
+
+    @staticmethod
+    def _build_appendix_pdf(n_rows=48):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        rng = np.random.default_rng(1)
+        df = pd.DataFrame({
+            "Date": pd.date_range("2025-01-06", periods=n_rows, freq="D"),
+            "Region": [rng.choice(["East", "West", "North", "South"]) for _ in range(n_rows)],
+            "Salesperson": [rng.choice(["Carol", "David", "Elena", "Grace", "Ivy", "Jack"]) for _ in range(n_rows)],
+            "Product": [rng.choice(["Widget", "Gadget", "Whatchamacallit", "Thingamajig"]) for _ in range(n_rows)],
+            "Category": [rng.choice(["Hardware", "Software", "Services", "Accessories"]) for _ in range(n_rows)],
+        })
+        config = {
+            "metric_columns": [],
+            "title": "Appendix Ledger Test",
+            "sections": ["appendix"],
+            "report_id": f"test-ledger-appendix-{n_rows}",
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        return build_sync(df, [], {}, config, user_data)
+
+    def _appendix_pages(self, doc):
+        """Pages that render the Appendix table header (uppercase mono labels)."""
+        pages = []
+        for i in range(2, len(doc)):
+            text = doc[i].get_text()
+            if "SALESPERSON" in text and "REGION" in text:
+                pages.append(doc[i])
+        return pages
+
+    def test_appendix_header_is_mono_muted_uppercase(self):
+        """The Appendix — Raw Data table must use the same Ledger header style
+        (uppercase mono muted labels), not the old brand-colored band."""
+        import fitz
+        path = self._build_appendix_pdf()
+        try:
+            doc = fitz.open(path)
+            pages = self._appendix_pages(doc)
+            assert pages, "expected at least one Appendix table page"
+            for page in pages:
+                spans = []
+                for b in page.get_text("dict")["blocks"]:
+                    if b["type"] != 0:
+                        continue
+                    for line in b.get("lines", []):
+                        spans.extend(line["spans"])
+                headers = [s for s in spans if s["text"] in
+                           ("DATE", "REGION", "SALESPERSON", "PRODUCT", "CATEGORY")]
+                assert headers, f"uppercase mono header labels missing on page {page.number}"
+                assert all(s["font"].startswith("IBMPlexMono") for s in headers), (
+                    f"appendix header must be IBMPlexMono, got {[s['font'] for s in headers]}"
+                )
+                assert all(s["color"] == self.MUTED_RGB for s in headers), (
+                    f"appendix header must be MUTED #6B6E76, got "
+                    f"{[hex(s['color']) for s in headers]}"
+                )
+            doc.close()
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_no_brand_band_behind_appendix_header(self):
+        """Appendix header row must have no brand-colored background fill."""
+        import fitz
+        path = self._build_appendix_pdf()
+        try:
+            doc = fitz.open(path)
+            bands = []
+            for page in self._appendix_pages(doc):
+                for d in page.get_drawings():
+                    if not d.get("fill"):
+                        continue
+                    r, g, b = (round(c * 255) for c in d["fill"])
+                    fill = (r << 16) | (g << 8) | b
+                    rect = d["rect"]
+                    if fill == self.BRAND_RGB and rect.width > 300 and rect.height <= 45:
+                        bands.append((page.number, fill, rect))
+            doc.close()
+            assert not bands, f"brand-colored appendix header band still present: {bands}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def _table_pages(self, doc):
+        """Pages after cover (0) and TOC (1) that contain table header labels."""
+        pages = []
+        for i in range(2, len(doc)):
+            text = doc[i].get_text()
+            if "SALESPERSON" in text or "REGION" in text:
+                pages.append(doc[i])
+        return pages
+
+    def test_header_is_mono_muted_uppercase(self):
+        import fitz
+        path = self._build_table_pdf()
+        try:
+            doc = fitz.open(path)
+            pages = self._table_pages(doc)
+            assert len(pages) >= 2, "expected the data table to span multiple pages"
+            for page in pages:
+                spans = []
+                for b in page.get_text("dict")["blocks"]:
+                    if b["type"] != 0:
+                        continue
+                    for line in b.get("lines", []):
+                        spans.extend(line["spans"])
+                headers = [s for s in spans if s["text"] in
+                           ("DATE", "REGION", "SALESPERSON", "PRODUCT", "CATEGORY")]
+                assert headers, f"uppercase mono header labels missing on page {page.number}"
+                assert all(s["font"].startswith("IBMPlexMono") for s in headers), (
+                    f"table header must be IBMPlexMono, got {[s['font'] for s in headers]}"
+                )
+                assert all(s["color"] == self.MUTED_RGB for s in headers), (
+                    f"table header must be MUTED #6B6E76, got "
+                    f"{[hex(s['color']) for s in headers]}"
+                )
+            doc.close()
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_no_brand_band_behind_header(self):
+        import fitz
+        path = self._build_table_pdf()
+        try:
+            doc = fitz.open(path)
+            bands = []
+            for page in self._table_pages(doc):
+                for d in page.get_drawings():
+                    if not d.get("fill"):
+                        continue
+                    r, g, b = (round(c * 255) for c in d["fill"])
+                    fill = (r << 16) | (g << 8) | b
+                    rect = d["rect"]
+                    if fill == self.BRAND_RGB and rect.width > 300 and rect.height <= 45:
+                        bands.append((page.number, fill, rect))
+            doc.close()
+            assert not bands, f"brand-colored header band still present: {bands}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_no_overlapping_cell_text(self):
+        """Column text must never spill over into an adjacent column or row
+        (datetime values are the historical offender: width was computed from
+        a date-only str sample while cells render the full timestamp)."""
+        import fitz
+        path = self._build_table_pdf()
+        try:
+            doc = fitz.open(path)
+            overlaps = []
+            for page in self._table_pages(doc):
+                words = page.get_text("words")
+                for i in range(len(words)):
+                    for j in range(i + 1, len(words)):
+                        w1, w2 = words[i], words[j]
+                        x0, x1 = max(w1[0], w2[0]), min(w1[2], w2[2])
+                        y0, y1 = max(w1[1], w2[1]), min(w1[3], w2[3])
+                        if x0 < x1 and y0 < y1:
+                            h1, h2 = w1[3] - w1[1], w2[3] - w2[1]
+                            if (y1 - y0) / min(h1, h2) > 0.4:
+                                overlaps.append((page.number, w1[4], w2[4]))
+            doc.close()
+            assert not overlaps, f"overlapping table text: {overlaps[:5]}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
 class TestChartCaptionsRendered:
     """Data-driven chart captions must render under each chart in the PDF."""
 

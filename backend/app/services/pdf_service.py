@@ -696,7 +696,6 @@ def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) 
         r, g, b = tuple(int(hex_str[i:i+2], 16) / 255.0 for i in (0, 2, 4))
         return colors.Color(r, g, b)
 
-    brand = _hex_to_color(brand_color)
     even_row = _hex_to_color('#F2F1EB')
     odd_row = _hex_to_color(PAPER_BG)
     border = _hex_to_color(RULE)
@@ -720,17 +719,28 @@ def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) 
         text = str(val)
         return text[:MAX_CELL_CHARS] + '\u2026' if len(text) > MAX_CELL_CHARS else text
 
-    headers = list(df.columns)
+    headers = [str(col).upper() for col in df.columns]
     rows = [[_fmt(row[col], col) for col in df.columns]
             for _, row in df.iterrows()]
     data = [headers] + rows
 
-    MIN_W, MAX_W = 40, 120
+    # Size each column from the *actual rendered* cell text (exact font metrics)
+    # rather than raw `astype(str)` samples: datetime64 → str drops the time
+    # component and numeric str() lacks the thousands separators `_fmt` adds,
+    # both of which used to under-size columns and make text spill sideways.
+    MIN_W, MAX_W = 40, 130
+    PAD = 6  # matches LEFTPADDING / RIGHTPADDING below
+    HEADER_FONT, HEADER_SIZE = 'IBMPlexSans-Bold', 8
+    CELL_FONT, CELL_SIZE = 'IBMPlexMono', 7.5
     col_widths = []
     for col in df.columns:
-        sample = df[col].dropna().astype(str).head(20)
-        max_len = max(len(col), sample.str.len().max() if len(sample) else 0)
-        w = min(MAX_W, max(MIN_W, max_len * 5.5))
+        samples = [_fmt(v, col) for v in df[col].dropna().head(20)]
+        data_w = max(
+            (pdfmetrics.stringWidth(s, CELL_FONT, CELL_SIZE) for s in samples),
+            default=0.0,
+        )
+        hdr_w = pdfmetrics.stringWidth(str(col).upper(), HEADER_FONT, HEADER_SIZE)
+        w = min(MAX_W, max(MIN_W, max(hdr_w, data_w) + 2 * PAD + 6))
         col_widths.append(w)
 
     total = sum(col_widths)
@@ -740,20 +750,25 @@ def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) 
 
     table = Table(data, colWidths=col_widths, repeatRows=1)
 
+    muted = _hex_to_color(MUTED)
+    rule_strong = _hex_to_color(RULE_STRONG)
+
     style_cmds = [
-        ('BACKGROUND', (0, 0), (-1, 0), brand),
-        ('TEXTCOLOR', (0, 0), (-1, 0), white),
-        ('FONTNAME', (0, 0), (-1, 0), 'IBMPlexSans-Bold'),
+        # Plain uppercase mono column labels on PAPER — no colored band.
+        ('FONTNAME', (0, 0), (-1, 0), 'IBMPlexMono'),
         ('FONTSIZE', (0, 0), (-1, 0), 8),
+        ('TEXTCOLOR', (0, 0), (-1, 0), muted),
         ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
         ('FONTSIZE', (0, 1), (-1, -1), 7.5),
         ('TEXTCOLOR', (0, 1), (-1, -1), ink),
         ('ROWHEIGHT', (0, 0), (-1, -1), 18),
         ('TOPPADDING', (0, 0), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-        ('LEFTPADDING', (0, 0), (-1, -1), 6),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
-        ('LINEBELOW', (0, 0), (-1, -1), 0.5, border),
+        ('LEFTPADDING', (0, 0), (-1, -1), PAD),
+        ('RIGHTPADDING', (0, 0), (-1, -1), PAD),
+        # Hairline rule beneath the header row, matching the section-header language.
+        ('LINEBELOW', (0, 0), (-1, 0), 0.75, rule_strong),
+        ('LINEBELOW', (0, 1), (-1, -1), 0.5, border),
         ('GRID', (0, 0), (-1, -1), 0, white),
     ]
 
@@ -1294,7 +1309,7 @@ def build_sync(
             appendix_df = appendix_df.head(100)
 
         app_table_data = []
-        app_header = [str(c) for c in appendix_df.columns]
+        app_header = [str(c).upper() for c in appendix_df.columns]
         app_table_data.append(app_header)
         for _, row in appendix_df.iterrows():
             app_table_data.append([str(v) if pd.notna(v) else '' for v in row])
@@ -1306,13 +1321,15 @@ def build_sync(
         app_table = Table(app_table_data, colWidths=app_col_widths, repeatRows=1)
 
         app_style_commands = [
-            ('BACKGROUND', (0, 0), (-1, 0), HexColor(brand_color)),
-            ('TEXTCOLOR', (0, 0), (-1, 0), white),
-            ('FONTNAME', (0, 0), (-1, 0), 'Fraunces-SemiBold'),
+            # Plain uppercase mono column labels on PAPER — no colored band.
+            ('FONTNAME', (0, 0), (-1, 0), 'IBMPlexMono'),
             ('FONTSIZE', (0, 0), (-1, 0), 8),
+            ('TEXTCOLOR', (0, 0), (-1, 0), HexColor(MUTED)),
             ('FONTNAME', (0, 1), (-1, -1), 'IBMPlexMono'),
             ('FONTSIZE', (0, 1), (-1, -1), 7),
             ('GRID', (0, 0), (-1, -1), 0.5, HexColor(GRID_LINE)),
+            # Hairline rule beneath the header row, matching the section-header language.
+            ('LINEBELOW', (0, 0), (-1, 0), 0.75, HexColor(RULE_STRONG)),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('LEFTPADDING', (0, 0), (-1, -1), 4),
             ('RIGHTPADDING', (0, 0), (-1, -1), 4),
