@@ -683,13 +683,115 @@ def _generate_single_chart(
         plt.close(fig)
 
 
+def _fmt_caption_number(v) -> str:
+    """Format a numeric value for chart captions: thousands separators,
+    trimmed decimals, K/M shorthand for large magnitudes."""
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return str(v)
+    if pd.isna(f):
+        return '0'
+    if abs(f) >= 1_000_000:
+        return f'{f / 1_000_000:.1f}M'
+    if f == int(f):
+        return f'{int(f):,}'
+    return f'{f:,.2f}'.rstrip('0').rstrip('.')
+
+
+def _caption_bar_label(v) -> str:
+    if isinstance(v, pd.Timestamp):
+        return v.strftime('%b %d, %Y')
+    return str(v)
+
+
+def build_chart_caption(df, x_col, y_col, chart_type) -> str:
+    """One-line, data-driven caption for a chart, key figures wrapped in <b>
+    markup so the PDF can emphasise them. Mirrors the aggregation used in
+    _generate_single_chart so the figures match the rendered chart."""
+    try:
+        if chart_type == 'line':
+            s = df.sort_values(x_col)
+            if pd.api.types.is_datetime64_any_dtype(s[x_col]):
+                unique_dates = s[x_col].nunique()
+                date_range_days = (s[x_col].max() - s[x_col].min()).days
+                freq = 'ME' if date_range_days > 365 else ('W' if unique_dates > 60 else None)
+                if freq:
+                    agg_func = 'mean' if any(
+                        k in y_col.lower() for k in ['%', 'percent', 'rate', 'ratio', 'score', 'pct']
+                    ) else 'sum'
+                    s = (
+                        s.set_index(x_col)[y_col]
+                        .resample(freq)
+                        .agg(agg_func)
+                        .dropna()
+                        .reset_index()
+                    )
+            series = pd.to_numeric(s[y_col], errors='coerce').dropna()
+            if len(series) == 0:
+                raise ValueError('empty series')
+            if len(series) == 1:
+                return f"{y_col} holds at <b>{_fmt_caption_number(series.iloc[0])}</b> across the period."
+            v0, v1 = series.iloc[0], series.iloc[-1]
+            direction = 'rose' if v1 >= v0 else 'fell'
+            pct = (v1 - v0) / v0 * 100 if v0 else 0.0
+            sign = '+' if pct >= 0 else ''
+            span = 'the period' if len(series) < 2 else f'{len(series)} points'
+            return (
+                f"{y_col} {direction} from <b>{_fmt_caption_number(v0)}</b> "
+                f"to <b>{_fmt_caption_number(v1)}</b> across {span} ({sign}{pct:.0f}%)."
+            )
+
+        if chart_type == 'bar':
+            if pd.api.types.is_datetime64_any_dtype(df[x_col]):
+                freq = _bar_datetime_frequency(df, x_col)
+                if freq:
+                    agg_func = 'mean' if any(
+                        k in y_col.lower() for k in ['%', 'percent', 'rate', 'ratio', 'score', 'pct']
+                    ) else 'sum'
+                    grouped = (
+                        df.sort_values(x_col)
+                        .set_index(x_col)[y_col]
+                        .resample(freq)
+                        .agg(agg_func)
+                        .dropna()
+                    )
+                else:
+                    grouped = df.groupby(x_col)[y_col].mean()
+            else:
+                grouped = df.groupby(x_col)[y_col].mean()
+            grouped = grouped.sort_values(ascending=True)
+            if len(grouped) == 0:
+                raise ValueError('empty groups')
+            high_label = _caption_bar_label(grouped.index[-1])
+            low_label = _caption_bar_label(grouped.index[0])
+            high_val = grouped.iloc[-1]
+            low_val = grouped.iloc[0]
+            if len(grouped) == 1:
+                return f"{high_label} leads {y_col} at <b>{_fmt_caption_number(high_val)}</b>."
+            return (
+                f"{high_label} tops {y_col} at <b>{_fmt_caption_number(high_val)}</b>; "
+                f"{low_label} trails at <b>{_fmt_caption_number(low_val)}</b>."
+            )
+
+        series = pd.to_numeric(df[y_col], errors='coerce').dropna()
+        if len(series) == 0:
+            return f"Chart of {y_col} by {x_col}."
+        return (
+            f"Across <b>{len(df):,}</b> records, {y_col} ranges from "
+            f"<b>{_fmt_caption_number(series.min())}</b> to <b>{_fmt_caption_number(series.max())}</b>."
+        )
+    except Exception:
+        return f"Chart of {y_col} by {x_col}."
+
+
 def generate_sync(
     df: pd.DataFrame,
     report_id: str,
     config: dict,
     brand_color: str = '#6366F1',
     chart_specs: list[dict] | None = None,
-) -> list[tuple[str, str]]:
+) -> list[tuple[str, str, str]]:
     max_charts = chart_cap_for_tier(config.get("tier"))
 
     if chart_specs:
@@ -714,7 +816,7 @@ def generate_sync(
             for x, y in pairs
         ]
 
-    chart_paths: list[tuple[str, str]] = []
+    chart_paths: list[tuple[str, str, str]] = []
     for x_col, y_col, chart_type, title in pairs_with_type:
         if x_col not in df.columns or y_col not in df.columns:
             logger.warning(f"Skipping chart: column '{x_col}' or '{y_col}' not in df")
@@ -728,7 +830,8 @@ def generate_sync(
             brand_color=brand_color,
         )
         if path:
-            chart_paths.append((path, y_col))
+            caption = build_chart_caption(df, x_col, y_col, chart_type)
+            chart_paths.append((path, y_col, caption))
 
     return chart_paths
 

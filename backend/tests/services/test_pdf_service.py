@@ -198,7 +198,7 @@ class TestKpiCardArrowDirection:
         with fitz.open(pdf_path) as doc:
             for page in doc:
                 texts.extend(page.get_text().split('\n'))
-        return [t.strip() for t in texts if '% ' in t and any(suffix in t for suffix in ['recent', 'change'])]
+        return [t.strip() for t in texts if '%' in t and (t.strip().startswith('+') or t.strip().startswith('-'))]
 
     def test_negative_trend_pct_produces_down_arrow(self):
         import tempfile
@@ -210,8 +210,8 @@ class TestKpiCardArrowDirection:
         try:
             doc = SimpleDocTemplate(tmp, pagesize=A4)
             card = _KPIRow(
-                [{"name": "Units Sold", "value": "1,500", "trend": "increasing", "trend_pct": -35.7}],
-                400, "#D97A34",
+                {"name": "Units Sold", "value": "1,500", "trend": "increasing", "trend_pct": -35.7},
+                1, 400, "#D97A34",
             )
             doc.build([card])
 
@@ -235,8 +235,8 @@ class TestKpiCardArrowDirection:
         try:
             doc = SimpleDocTemplate(tmp, pagesize=A4)
             card = _KPIRow(
-                [{"name": "Revenue", "value": "$50K", "trend": "increasing", "trend_pct": 12.5}],
-                400, "#D97A34",
+                {"name": "Revenue", "value": "$50K", "trend": "increasing", "trend_pct": 12.5},
+                1, 400, "#D97A34",
             )
             doc.build([card])
 
@@ -1082,6 +1082,300 @@ class TestSectionHeaderLedger:
                         bands.append((page.number, fill, rect))
             doc.close()
             assert not bands, f"Brand-colored band rectangles still present: {bands}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+class TestChartCaptionsRendered:
+    """Data-driven chart captions must render under each chart in the PDF."""
+
+    def test_caption_text_appears_below_charts(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Date": pd.date_range("2024-01-01", periods=12, freq="D"),
+            "Revenue": [1000, 1200, 1100, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100],
+        })
+        specs = [{"x": "Date", "y": "Revenue", "type": "line", "title": "Revenue Trend"}]
+        report_id = "test-ledger-caprender"
+        chart_config = {"tier": "pro", "metric_columns": ["Revenue"]}
+        chart_paths = generate_sync(df, report_id, chart_config, "#6366F1", specs)
+
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Caption Render Test",
+            "sections": ["charts"],
+            "report_id": report_id,
+        }
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, chart_paths, ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "1,000" in text, "Caption should cite the actual start figure"
+            assert "2,100" in text, "Caption should cite the actual end figure"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+            cleanup_charts(report_id)
+
+
+class TestNoBackgroundRuledLines:
+    """Body pages must not be filled with full-page hairline ledger rules —
+    only content-own rules (section header hairlines, table borders) remain."""
+
+    @staticmethod
+    def _count_horizontal_rules(page):
+        count = 0
+        for d in page.get_drawings():
+            r = d["rect"]
+            if r.height < 1.5 and r.width > 400:
+                count += 1
+        return count
+
+    def test_body_pages_have_no_full_page_hairlines(self):
+        import fitz
+        from app.services.ai_service import SummaryResult
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300],
+            "Profit": [100, 300, 500, 700],
+        })
+        config = {
+            "metric_columns": ["Revenue", "Profit"],
+            "title": "Ruled Lines Test",
+            "sections": ["executive_summary", "kpi_overview"],
+            "report_id": "test-ledger-norules",
+        }
+        ai_content = {
+            "summary": SummaryResult(
+                lead="Revenue grew steadily.",
+                context="Context text.",
+                implication="Implication text.",
+                action="Action text.",
+            ),
+            "insights": [],
+            "anomalies": [],
+            "trends": [],
+            "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            per_page = [self._count_horizontal_rules(page) for page in doc]
+            doc.close()
+            assert per_page, "No pages found in PDF"
+            assert max(per_page) < 8, (
+                f"Expected only content-owned rules, found {per_page} full-page "
+                f"horizontal lines per page — background ruling may still be drawing"
+            )
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+class TestExecutiveSummaryStatRow:
+    """Executive Summary lead uses a serif drop cap and a 3-column ruled stat
+    row (vertical hairline dividers) instead of the old single-line strip."""
+
+    def _build_es_pdf(self):
+        import fitz
+        from app.services.ai_service import SummaryResult
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300],
+            "Profit": [100, 300, 500, 700],
+        })
+        config = {
+            "metric_columns": ["Revenue", "Profit"],
+            "title": "Stat Row Test",
+            "sections": ["executive_summary"],
+            "report_id": "test-ledger-statrow",
+        }
+        ai_content = {
+            "summary": SummaryResult(
+                lead="Revenue grew steadily through the quarter.",
+                context="Context text.",
+                implication="Implication text.",
+                action="Action text.",
+            ),
+            "insights": [],
+            "anomalies": [],
+            "trends": [],
+            "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        doc = fitz.open(path)
+        return doc, path
+
+    def test_lead_paragraph_has_serif_drop_cap(self):
+        doc, path = self._build_es_pdf()
+        try:
+            spans = []
+            for block in doc[2].get_text("dict")["blocks"]:
+                for line in block.get("lines", []):
+                    spans.extend(line["spans"])
+            drop_caps = [
+                s for s in spans
+                if s["font"].startswith("Fraunces") and 19 <= s["size"] <= 23
+                and len(s["text"].strip()) == 1
+            ]
+            assert drop_caps, (
+                f"Expected a single-character Fraunces drop cap in the lead, "
+                f"spans: {[(s['font'], round(s['size'], 1), s['text']) for s in spans if s['font'].startswith('Fraunces')]}"
+            )
+        finally:
+            doc.close()
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_stat_row_has_vertical_dividers(self):
+        doc, path = self._build_es_pdf()
+        try:
+            vertical = sum(
+                1 for d in doc[2].get_drawings()
+                if d["rect"].width < 1.5 and d["rect"].height > 20
+            )
+            assert vertical >= 2, (
+                f"Expected 2 vertical hairline dividers in the 3-column stat row, "
+                f"found {vertical}"
+            )
+        finally:
+            doc.close()
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+class TestInsightLedgerRow:
+    """AI insight rows must use the ledger treatment: no card backgrounds,
+    serif index, severity tag, and an arrowed action."""
+
+    def _build_insights_pdf(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300],
+        })
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Insight Ledger Test",
+            "sections": ["insights"],
+            "report_id": "test-ledger-insights",
+        }
+        ai_content = {
+            "summary": None,
+            "insights": [
+                {"kpi": "Revenue", "number": "$5,200", "reason": "Steady growth in billings.",
+                 "action": "Scale the winning channel", "sentiment": "positive", "priority": "high"},
+                {"kpi": "Revenue", "number": "$5,100", "reason": "Slight dip in the middle week.",
+                 "action": "Review campaign mix", "sentiment": "negative", "priority": "low"},
+            ],
+            "anomalies": [],
+            "trends": [],
+            "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        doc = fitz.open(path)
+        return doc, path
+
+    def test_no_card_background_rectangles(self):
+        doc, path = self._build_insights_pdf()
+        try:
+            filled = []
+            for d in doc[2].get_drawings():
+                if not d.get("fill"):
+                    continue
+                rect = d["rect"]
+                if rect.width > 300 and 40 < rect.height < 200:
+                    filled.append((doc[2].number, rect))
+            assert not filled, f"Insight rows still have card backgrounds: {filled}"
+        finally:
+            doc.close()
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_severity_tag_and_arrowed_action_render(self):
+        doc, path = self._build_insights_pdf()
+        try:
+            text = doc[2].get_text()
+            assert "HIGH" in text, f"Severity tag HIGH missing, got:\n{text}"
+            assert "LOW" in text, f"Severity tag LOW missing, got:\n{text}"
+            assert "\u2192" in text, f"Arrowed action (\u2192) missing, got:\n{text}"
+            assert "01" in text, f"Serif index 01 missing, got:\n{text}"
+        finally:
+            doc.close()
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+class TestRecommendationDisplayNumbering:
+    """Recommendation numbering must be rendered in Fraunces at display size
+    (16pt), zero-padded, not the old tiny 12pt badge number."""
+
+    def test_recommendation_number_is_serif_display_size(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300],
+        })
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Rec Numbering Test",
+            "sections": ["insights"],
+            "report_id": "test-ledger-recnum",
+        }
+        ai_content = {
+            "summary": None,
+            "insights": [{"kpi": "Revenue", "number": "$5,200", "reason": "Steady.",
+                          "action": "Invest", "sentiment": "positive", "priority": "medium"}],
+            "anomalies": [],
+            "trends": [],
+            "recommendations": ["Double down on the top channel.", "Cut spend on underperformers."],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            spans = []
+            for page in doc:
+                for block in page.get_text("dict")["blocks"]:
+                    for line in block.get("lines", []):
+                        spans.extend(line["spans"])
+            doc.close()
+            numbers = [
+                s for s in spans
+                if s["font"].startswith("Fraunces") and s["size"] >= 15
+                and s["text"].strip() in {"01", "02"}
+            ]
+            assert numbers, (
+                f"Expected Fraunces display-size recommendation numbers 01/02, "
+                f"got: {[(s['font'], round(s['size'], 1), s['text']) for s in spans if s['font'].startswith('Fraunces')]}"
+            )
         finally:
             try:
                 os.unlink(path)

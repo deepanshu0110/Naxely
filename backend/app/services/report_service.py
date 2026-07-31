@@ -288,7 +288,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
 
         try:
             _candidates = chart_service.all_chart_candidates(df_norm, config) or []
-            _rendered = {label for _, label in chart_paths}
+            _rendered = {label for _, label, _ in chart_paths}
             pdf_config["additional_charts"] = [
                 c["title"] for c in _candidates if c["y"] not in _rendered
             ]
