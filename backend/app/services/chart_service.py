@@ -14,15 +14,23 @@ import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
-from app.core.design_tokens import PAPER, INDIGO, MINT, AMBER, RED
+from app.core.design_tokens import PAPER_BG, INDIGO, MINT, AMBER, RED
 
 logger = logging.getLogger(__name__)
 
 FONT_DIR = Path(__file__).resolve().parent.parent / 'static' / 'fonts'
 fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexSans-Regular.ttf'))
 fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexSans-Italic.ttf'))
+fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexSans-Bold.ttf'))
 fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Regular.ttf'))
 fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Bold.ttf'))
+
+# Global matplotlib defaults — charts must inherit IBM Plex everywhere, so any
+# text that omits an explicit fontfamily (legends, cell annotations, etc.)
+# still matches the document instead of silently falling back to DejaVu Sans.
+plt.rcParams['font.family'] = 'IBM Plex Sans'
+plt.rcParams['font.sans-serif'] = ['IBM Plex Sans', 'DejaVu Sans']
+plt.rcParams['font.monospace'] = ['IBM Plex Mono', 'DejaVu Sans Mono']
 
 SECONDARY_PALETTE = ['#6366F1', '#0E9F6E', '#F59E0B', '#EF4444']  # INDIGO, MINT, AMBER, RED
 
@@ -47,12 +55,44 @@ def _lighten(hex_color: str, factor: float) -> str:
     return f"#{r:02x}{g:02x}{b:02x}"
 
 
+def _emphasize_endpoint(ax, x, y, brand_color: str) -> None:
+    """Ring the final data point and annotate it with its mono value so the
+    latest figure reads as the 'current' value on line charts."""
+    last_x, last_y = x.iloc[-1], y.iloc[-1]
+    ax.plot([last_x], [last_y], marker='o', markersize=11,
+            markerfacecolor=PAPER_BG, markeredgecolor=brand_color,
+            markeredgewidth=1.8, zorder=6)
+    ax.plot([last_x], [last_y], marker='o', markersize=4,
+            markerfacecolor=brand_color, markeredgecolor=brand_color,
+            zorder=7)
+    ax.annotate(
+        _fmt_axis(float(last_y)),
+        (last_x, last_y),
+        xytext=(0, 14),
+        textcoords='offset points',
+        ha='center',
+        va='bottom',
+        fontsize=8.5,
+        color='#14131F',
+        fontfamily='IBM Plex Mono',
+        zorder=8,
+    )
+
+
 def _fmt_axis(val: float) -> str:
-    """Format axis tick values as K/M without scientific notation."""
+    """Format axis tick values as K/M without scientific notation.
+
+    Uses a whole-number shorthand only when exact (1000 -> '1K'); otherwise
+    keeps one decimal (1500 -> '1.5K') so distinct tick values never
+    collapse into duplicate labels like two '1K's.
+    """
     if abs(val) >= 1_000_000:
         return f'{val/1_000_000:.1f}M'
     if abs(val) >= 1_000:
-        return f'{val/1_000:.0f}K'
+        v = val / 1_000
+        if abs(v - round(v)) < 1e-9:
+            return f'{v:.0f}K'
+        return f'{v:.1f}K'
     return f'{val:.0f}'
 
 
@@ -84,12 +124,13 @@ def _apply_chart_style(ax) -> None:
     ax.xaxis.grid(False)
     ax.set_axisbelow(True)
 
-    # Spines: hide top/right, style left/bottom
+    # Spines: hide top/right, style left/bottom as thin RULE-toned hairlines
+    # (matches pdf_service.RULE #D8D6CE — the document's ledger rule language)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_color('#D1D5DB')
+    ax.spines['left'].set_color('#D8D6CE')
     ax.spines['left'].set_linewidth(0.8)
-    ax.spines['bottom'].set_color('#D1D5DB')
+    ax.spines['bottom'].set_color('#D8D6CE')
     ax.spines['bottom'].set_linewidth(0.8)
 
     # Tick labels
@@ -116,7 +157,9 @@ def select_chart_type(col1: str, col2: str, df: pd.DataFrame) -> str:
         return 'heatmap'
     if col1_is_cat and col2_is_numeric:
         n_unique = df[col1].nunique()
-        return 'donut' if n_unique <= 2 else 'bar'
+        # Donut only for the meaningful 3-6 slice range; 1-2 slices are
+        # degenerate (a 2-slice donut is a half-bar) and >6 gets too busy.
+        return 'donut' if 3 <= n_unique <= 6 else 'bar'
     if col1 == col2 and pd.api.types.is_numeric_dtype(df[col1]):
         return 'histogram'
     if pd.api.types.is_numeric_dtype(df[col1]) and col2_is_numeric:
@@ -345,8 +388,8 @@ def _generate_single_chart(
     brand_color: str,
 ) -> str | None:
     fig, ax = plt.subplots(figsize=(10, 4), dpi=150)
-    fig.patch.set_facecolor(PAPER)
-    ax.set_facecolor(PAPER)
+    fig.patch.set_facecolor(PAPER_BG)
+    ax.set_facecolor(PAPER_BG)
 
     try:
         if chart_type == 'line':
@@ -382,12 +425,13 @@ def _generate_single_chart(
 
             ax.plot(x, y, color=brand_color, linewidth=1.8,
                     marker='o', markersize=3)
+            # Endpoint emphasis: ring the final point and label it with the
+            # current value so the latest figure reads as "now".
+            _emphasize_endpoint(ax, x, y, brand_color)
             ax.set_xlabel(x_col, fontsize=10, color='#4B5563',
                          fontfamily='IBM Plex Sans')
-            ax.set_title(f'{y_col} Over Time', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10,
-                        fontfamily='IBM Plex Sans')
 
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(nbins=6, prune='both'))
             ax.yaxis.set_major_formatter(
                 mticker.FuncFormatter(lambda val, _: _fmt_axis(val))
             )
@@ -415,14 +459,10 @@ def _generate_single_chart(
                     bar_labels = [d.strftime('%b %d') for d in grouped.index]
                 agg_label = 'Sum' if freq and agg_func == 'sum' else 'Mean'
                 xlabel = f'{agg_label} {y_col}'
-                title = f'{y_col} by {x_col}'
-                if freq_label:
-                    title += f' ({freq_label})'
             else:
                 grouped = df.groupby(x_col)[y_col].mean().sort_values(ascending=True)
                 bar_labels = [str(v) for v in grouped.index]
                 xlabel = f'Mean {y_col}'
-                title = f'{y_col} by {x_col}'
 
             n_bars = len(grouped)
             bar_range = np.arange(n_bars)
@@ -442,9 +482,6 @@ def _generate_single_chart(
                        fontfamily='IBM Plex Mono')
             ax.set_xlabel(xlabel, fontsize=10, color='#4B5563',
                          fontfamily='IBM Plex Sans')
-            ax.set_title(title, fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10,
-                        fontfamily='IBM Plex Sans')
 
         elif chart_type == 'scatter':
             ax.scatter(df[x_col], df[y_col],
@@ -454,9 +491,6 @@ def _generate_single_chart(
                          fontfamily='IBM Plex Sans')
             ax.set_ylabel(y_col, fontsize=10, color='#4B5563',
                          fontfamily='IBM Plex Sans')
-            ax.set_title(f'{x_col} vs {y_col}', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10,
-                        fontfamily='IBM Plex Sans')
 
         elif chart_type == 'area':
             df_sorted = df.sort_values(x_col)
@@ -465,14 +499,12 @@ def _generate_single_chart(
             ax.fill_between(x, y, color=brand_color, alpha=0.35)
             ax.plot(x, y, color=brand_color, linewidth=1.8)
             ax.set_xlabel(x_col, fontsize=10, color='#4B5563', fontfamily='IBM Plex Sans')
-            ax.set_title(f'{y_col} Over Time (Area)', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type in ('pie', 'donut'):
             agg = df.groupby(x_col)[y_col].sum().sort_values(ascending=False)
             n = len(agg)
             colors = [_lighten(brand_color, i / max(n - 1, 1) * 0.65) for i in range(n)]
-            wedge_props = {'linewidth': 1.2, 'edgecolor': PAPER}
+            wedge_props = {'linewidth': 1.2, 'edgecolor': PAPER_BG}
             ax.pie(
                 agg.values,
                 labels=agg.index.astype(str),
@@ -483,11 +515,9 @@ def _generate_single_chart(
                 textprops={'fontsize': 9, 'fontfamily': 'IBM Plex Sans'},
             )
             if chart_type == 'donut':
-                centre = plt.Circle((0, 0), 0.60, fc=PAPER)
+                centre = plt.Circle((0, 0), 0.60, fc=PAPER_BG)
                 ax.add_artist(centre)
             ax.axis('equal')
-            ax.set_title(f'{y_col} by {x_col}', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'lollipop':
             agg = df.groupby(x_col)[y_col].mean().sort_values(ascending=True)
@@ -500,8 +530,6 @@ def _generate_single_chart(
                 ax.text(val * 1.01, str(label), f'{val:,.0f}',
                        va='center', fontsize=9, color='#4B5563', fontfamily='IBM Plex Mono')
             ax.set_xlabel(f'Mean {y_col}', fontsize=10, color='#4B5563', fontfamily='IBM Plex Sans')
-            ax.set_title(f'{y_col} by {x_col}', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'box':
             groups = [grp[y_col].dropna().values for _, grp in df.groupby(x_col)]
@@ -520,8 +548,6 @@ def _generate_single_chart(
             ax.set_ylabel(y_col, fontsize=10, color='#4B5563', fontfamily='IBM Plex Sans')
             plt.xticks(rotation=45, ha='right', fontsize=7, fontfamily='IBM Plex Sans')
             plt.tight_layout()
-            ax.set_title(f'{y_col} Distribution by {x_col}', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'heatmap':
             pivot = pd.crosstab(df[x_col], df[y_col])
@@ -536,8 +562,6 @@ def _generate_single_chart(
                     ax.text(j, i, str(pivot.values[i, j]),
                            ha='center', va='center', fontsize=8, color='#14131F')
             plt.colorbar(im, ax=ax, shrink=0.8)
-            ax.set_title(f'{x_col} × {y_col} Frequency', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'grouped_bar':
             numerics = [c for c in df.columns
@@ -548,15 +572,13 @@ def _generate_single_chart(
             x_pos = np.arange(len(agg))
             w = 0.38
             ax.bar(x_pos - w/2, agg[numerics[0]], w,
-                  label=numerics[0], color=brand_color, alpha=0.85)
+                  label=numerics[0], color=brand_color, alpha=0.9)
             ax.bar(x_pos + w/2, agg[numerics[1]], w,
-                  label=numerics[1], color=_lighten(brand_color, 0.45), alpha=0.85)
+                  label=numerics[1], color=_lighten(brand_color, 0.6), alpha=0.6)
             ax.set_xticks(x_pos)
             ax.set_xticklabels(agg.index.astype(str), rotation=30,
                               fontsize=9, fontfamily='IBM Plex Sans')
             ax.legend(fontsize=8, frameon=False)
-            ax.set_title(f'{" & ".join(numerics)} by {x_col}', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'stacked_bar':
             numerics = [c for c in df.columns
@@ -564,13 +586,15 @@ def _generate_single_chart(
             agg = df.groupby(x_col)[numerics].mean()
             bottom = np.zeros(len(agg))
             for i, col in enumerate(numerics):
+                if i == 0:
+                    c, a = brand_color, 0.9
+                else:
+                    c, a = _lighten(brand_color, 0.4 + i * 0.15), 0.6
                 ax.bar(agg.index.astype(str), agg[col], bottom=bottom,
-                      label=col, color=_lighten(brand_color, i * 0.3), alpha=0.85)
+                      label=col, color=c, alpha=a)
                 bottom += agg[col].values
             ax.legend(fontsize=8, frameon=False)
             plt.xticks(rotation=30, fontsize=9, fontfamily='IBM Plex Sans')
-            ax.set_title(f'Stacked {" + ".join(numerics)} by {x_col}', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'combo':
             df_sorted = df.sort_values(x_col)
@@ -587,10 +611,22 @@ def _generate_single_chart(
                     markersize=3, label=numerics[1])
             ax.set_ylabel(numerics[0], fontsize=9, color='#4B5563', fontfamily='IBM Plex Sans')
             ax2.set_ylabel(numerics[1], fontsize=9, color='#4B5563', fontfamily='IBM Plex Sans')
+            # Despine the twin axis too: hide the right spine so no box border
+            # surrounds the plot; style ticks to match the shared chart style.
             ax2.spines['top'].set_visible(False)
+            ax2.spines['right'].set_visible(False)
+            ax2.yaxis.grid(False)
             ax2.tick_params(colors='#6B7280', labelsize=9)
-            ax.set_title(f'{numerics[0]} & {numerics[1]} Over Time', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
+            for _lbl in ax2.get_yticklabels():
+                _lbl.set_fontfamily('IBM Plex Mono')
+            # Cap y-ticks at 6 per axis and share the K/M shorthand so labels
+            # stay consistent between the bar and line side of the combo.
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(nbins=6, prune='both'))
+            ax2.yaxis.set_major_locator(mticker.MaxNLocator(nbins=6, prune='both'))
+            ax.yaxis.set_major_formatter(
+                mticker.FuncFormatter(lambda val, _: _fmt_axis(val)))
+            ax2.yaxis.set_major_formatter(
+                mticker.FuncFormatter(lambda val, _: _fmt_axis(val)))
 
         elif chart_type == 'waterfall':
             values = df[y_col].values.astype(float)
@@ -598,12 +634,10 @@ def _generate_single_chart(
             running = np.concatenate([[0.0], np.cumsum(values[:-1])])
             bar_colors = [brand_color if v >= 0 else RED for v in values]
             ax.bar(labels, values, bottom=running,
-                  color=bar_colors, alpha=0.85, edgecolor=PAPER, linewidth=0.5)
+                  color=bar_colors, alpha=0.85, edgecolor=PAPER_BG, linewidth=0.5)
             ax.axhline(0, color='#9CA3AF', linewidth=0.8, linestyle='--')
             plt.xticks(rotation=30, fontsize=9, fontfamily='IBM Plex Sans')
             ax.set_ylabel(y_col, fontsize=10, color='#4B5563', fontfamily='IBM Plex Sans')
-            ax.set_title(f'{y_col} Waterfall', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'funnel':
             values = df[y_col].values.astype(float)
@@ -615,7 +649,7 @@ def _generate_single_chart(
                 left = (1 - width) / 2
                 ax.barh(i, width, left=left,
                        color=_lighten(brand_color, i / max(n - 1, 1) * 0.5),
-                       edgecolor=PAPER, height=0.65, alpha=0.9)
+                       edgecolor=PAPER_BG, height=0.65, alpha=0.9)
                 ax.text(0.5, i, f'{label}: {val:,.0f}',
                        ha='center', va='center', fontsize=9,
                        color='#14131F', fontfamily='IBM Plex Sans', fontweight='bold')
@@ -624,8 +658,6 @@ def _generate_single_chart(
             ax.set_xticks([])
             for spine in ax.spines.values():
                 spine.set_visible(False)
-            ax.set_title(f'{y_col} Funnel', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'bullet':
             val = float(df['Value'].iloc[0]) if 'Value' in df.columns else float(df[y_col].iloc[0])
@@ -637,8 +669,6 @@ def _generate_single_chart(
             ax.axvline(target, color='#14131F', linewidth=2.5, linestyle='--', label=f'Target ({target:,.0f})')
             ax.legend(fontsize=8, frameon=False, loc='lower right')
             ax.set_xlabel('Value', fontsize=10, color='#4B5563', fontfamily='IBM Plex Sans')
-            ax.set_title(f'{label} vs Target', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         elif chart_type == 'treemap':
             agg = df.groupby(x_col)[y_col].sum().sort_values(ascending=False)
@@ -654,17 +684,12 @@ def _generate_single_chart(
                             'fontfamily': 'IBM Plex Sans', 'fontweight': 'bold'},
             )
             ax.set_axis_off()
-            ax.set_title(f'{y_col} by {x_col} (Treemap)', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10, fontfamily='IBM Plex Sans')
 
         else:  # histogram
             ax.hist(df[y_col].dropna(), bins=20,
                    color=brand_color, alpha=0.85, edgecolor='white')
             ax.set_xlabel(y_col, fontsize=10, color='#4B5563',
                          fontfamily='IBM Plex Sans')
-            ax.set_title(f'{y_col} Distribution', fontsize=13,
-                        fontweight='bold', color='#14131F', pad=10,
-                        fontfamily='IBM Plex Sans')
 
         _apply_chart_style(ax)
 
@@ -791,8 +816,9 @@ def generate_sync(
     config: dict,
     brand_color: str = '#6366F1',
     chart_specs: list[dict] | None = None,
-) -> list[tuple[str, str, str]]:
+) -> list[tuple[str, str, str, str]]:
     max_charts = chart_cap_for_tier(config.get("tier"))
+    date_column = config.get('date_column')
 
     if chart_specs:
         pairs_with_type = [
@@ -803,7 +829,6 @@ def generate_sync(
         metric_columns = config.get('metric_columns') or [
             c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
         ]
-        date_column = config.get('date_column')
         dimension_columns = [
             c for c in df.columns
             if c != date_column
@@ -816,7 +841,7 @@ def generate_sync(
             for x, y in pairs
         ]
 
-    chart_paths: list[tuple[str, str, str]] = []
+    chart_paths: list[tuple[str, str, str, str]] = []
     for x_col, y_col, chart_type, title in pairs_with_type:
         if x_col not in df.columns or y_col not in df.columns:
             logger.warning(f"Skipping chart: column '{x_col}' or '{y_col}' not in df")
@@ -831,7 +856,14 @@ def generate_sync(
         )
         if path:
             caption = build_chart_caption(df, x_col, y_col, chart_type)
-            chart_paths.append((path, y_col, caption))
+            if not title:
+                if y_col == x_col:
+                    title = y_col
+                elif date_column and x_col == date_column:
+                    title = f'{y_col} Over Time'
+                else:
+                    title = f'{y_col} by {x_col}'
+            chart_paths.append((path, y_col, caption, title))
 
     return chart_paths
 

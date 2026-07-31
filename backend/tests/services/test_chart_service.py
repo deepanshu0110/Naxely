@@ -26,7 +26,7 @@ class TestChartService:
         paths = generate_sync(df, report_id, config)
 
         assert len(paths) > 0
-        for p, col_name, _ in paths:
+        for p, col_name, _, _ in paths:
             assert Path(p).exists()
             img = Image.open(p)
             assert img.width > 0
@@ -46,7 +46,7 @@ class TestChartService:
         report_id = "test-date-chart"
         paths = generate_sync(df, report_id, config)
         assert len(paths) == 1
-        p, col_name, _ = paths[0]
+        p, col_name, _, _ = paths[0]
         assert Path(p).exists()
         assert col_name == "Revenue"
         cleanup_charts(report_id)
@@ -63,11 +63,25 @@ class TestChartService:
     def test_select_chart_type_bar(self):
         from app.services.chart_service import select_chart_type
         df = pd.DataFrame({
-            "Category": ["X", "Y", "Z"],
-            "Count": [10, 20, 30],
+            "Category": ["X", "Y", "Z", "W", "V", "U", "T", "S"],
+            "Count": [10, 20, 30, 40, 50, 60, 70, 80],
         })
         result = select_chart_type("Category", "Count", df)
         assert result == "bar"
+
+    def test_select_chart_type_donut(self):
+        """3-6 unique categories + numeric → donut (1-2 or 7+ → bar)."""
+        from app.services.chart_service import select_chart_type
+        df = pd.DataFrame({
+            "Category": ["X", "Y", "Z"],
+            "Count": [10, 20, 30],
+        })
+        assert select_chart_type("Category", "Count", df) == "donut"
+        df2 = pd.DataFrame({
+            "Category": ["X", "Y"],
+            "Count": [10, 20],
+        })
+        assert select_chart_type("Category", "Count", df2) == "bar"
 
     def test_select_chart_type_scatter(self):
         from app.services.chart_service import select_chart_type
@@ -141,7 +155,7 @@ class TestChartService:
         })
         config = {"date_column": "Date", "metric_columns": ["Revenue", "Hours Billed"]}
         paths = chart_service.generate_sync(df, "test-valid", config, "#0D7377")
-        for path, metric, _ in paths:
+        for path, metric, _, _ in paths:
             assert os.path.isfile(path), f"Chart file missing: {path}"
             assert path.endswith(".png"), f"Expected PNG, got: {path}"
         chart_service.cleanup_charts("test-valid")
@@ -171,8 +185,16 @@ class TestChartService:
         assert chart_service.select_chart_type("Date", "Revenue", df) == "line"
 
     def test_select_chart_type_bar_new(self):
+        """Categorical with 7+ categories → bar (donut would be too busy)."""
         df = self._full_df()
+        df["Region"] = ["North", "South", "East", "West", "Central",
+                        "Midwest", "Northeast", "Southwest", "Northwest", "Coastal"] * 2
         assert chart_service.select_chart_type("Region", "Revenue", df) == "bar"
+
+    def test_select_chart_type_donut_new(self):
+        """Categorical with 3-6 categories → donut."""
+        df = self._full_df()
+        assert chart_service.select_chart_type("Region", "Revenue", df) == "donut"
 
     def test_select_chart_type_scatter_new(self):
         df = self._full_df()
@@ -319,7 +341,7 @@ class TestChartService:
         df["Date"] = pd.to_datetime(df["Date"])
         paths = chart_service.generate_sync(df, "test-fallback", self._config(), "#0D7377")
         assert 1 <= len(paths) <= 3
-        for path, metric, _ in paths:
+        for path, metric, _, _ in paths:
             assert os.path.isfile(path)
         chart_service.cleanup_charts("test-fallback")
 
@@ -347,7 +369,7 @@ class TestBarOverDatetime:
             chart_specs=specs,
         )
         assert len(paths) == 1
-        p, _, _ = paths[0]
+        p, _, _, _ = paths[0]
         img = Image.open(p)
         assert img.width < 2 ** 16, "chart image too wide"
         assert img.height < 2 ** 16, "chart image too tall"
@@ -366,7 +388,7 @@ class TestBarOverDatetime:
             chart_specs=specs,
         )
         assert len(paths) == 1
-        p, _, _ = paths[0]
+        p, _, _, _ = paths[0]
         img = Image.open(p)
         assert img.width < 2 ** 16 and img.height < 2 ** 16
         assert 0 < img.width < 5000 and 0 < img.height < 5000, \
@@ -394,7 +416,7 @@ class TestBarOverDatetime:
             chart_specs=specs,
         )
         assert len(paths) == 1
-        p, _, _ = paths[0]
+        p, _, _, _ = paths[0]
         assert Path(p).exists()
         chart_service.cleanup_charts("test-bar-cat")
 
@@ -403,7 +425,7 @@ class TestLedgerChartStyling:
     """Chart images must reflect the Ledger re-theme: no fill under the line,
     small solid dot markers, no gridlines, and thin track-and-fill bars."""
 
-    PAPER = (247, 242, 233)   # design_tokens.PAPER (#F7F2E9)
+    PAPER = (250, 250, 247)   # design_tokens.PAPER_BG (#FAFAF7) — chart bg matches page bg
     TRACK = (231, 226, 212)   # chart_service.TRACK (#E7E2D4)
     BRAND = (99, 102, 241)    # #6366F1
 
@@ -415,7 +437,7 @@ class TestLedgerChartStyling:
             df, "test-ledger-style", {"metric_columns": ["y"]}, brand, chart_specs=specs,
         )
         assert len(paths) == 1, f"Expected 1 {chart_type} chart, got {len(paths)}"
-        p, _, _ = paths[0]
+        p, _, _, _ = paths[0]
         return Image.open(p).convert("RGB"), p
 
     def test_line_chart_has_no_fill_under_line(self):
@@ -450,10 +472,11 @@ class TestLedgerChartStyling:
 
 
 class TestChartCaptions:
-    """generate_sync returns (path, metric, caption) triples where the caption
-    is one data-driven line with <b>-wrapped key figures."""
+    """generate_sync returns (path, metric, caption, title) tuples where the
+    caption is one data-driven line with <b>-wrapped key figures and the
+    title names the chart (spec title or a derived default)."""
 
-    def test_generate_sync_returns_three_tuples_with_caption(self):
+    def test_generate_sync_returns_tuples_with_caption_and_title(self):
         df = pd.DataFrame({
             "Date": pd.date_range("2024-01-01", periods=8, freq="D"),
             "Revenue": [1000, 1200, 1100, 1300, 1400, 1500, 1600, 1700],
@@ -464,9 +487,10 @@ class TestChartCaptions:
         )
         try:
             assert len(paths) == 1
-            p, metric, caption = paths[0]
+            p, metric, caption, title = paths[0]
             assert os.path.isfile(p)
             assert metric == "Revenue"
+            assert title == "Revenue Trend"
             assert isinstance(caption, str) and caption.strip()
             assert "<b>" in caption and "</b>" in caption, (
                 f"Caption should bold its key figures, got: {caption!r}"

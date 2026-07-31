@@ -110,7 +110,7 @@ class TestTierCaps:
         paths = generate_sync(_df(), "test-pro8", {"tier": "pro"}, "#0D7377", specs)
         try:
             assert len(paths) == 8, f"Expected 8 charts for Pro, got {len(paths)}"
-            for p, _, _ in paths:
+            for p, _, _, _ in paths:
                 assert p.endswith(".png")
         finally:
             cleanup_charts("test-pro8")

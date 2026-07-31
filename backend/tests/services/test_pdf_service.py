@@ -192,13 +192,13 @@ class TestKpiCardArrowDirection:
     """Arrow drawn on KPI cards must derive direction/color from trend_pct, not trend field."""
 
     def _extract_trend_text(self, pdf_path: str) -> list[str]:
-        """Extract all text fragments containing trend markers from rendered PDF."""
+        """Extract all text fragments containing the trend marker from a PDF."""
         import fitz
         texts = []
         with fitz.open(pdf_path) as doc:
             for page in doc:
                 texts.extend(page.get_text().split('\n'))
-        return [t.strip() for t in texts if '%' in t and (t.strip().startswith('+') or t.strip().startswith('-'))]
+        return [t.strip() for t in texts if '%' in t]
 
     def test_negative_trend_pct_produces_down_arrow(self):
         import tempfile
@@ -216,6 +216,9 @@ class TestKpiCardArrowDirection:
             doc.build([card])
 
             trends = self._extract_trend_text(tmp)
+            assert any('\u2193' in t for t in trends), (
+                f"Expected down arrow for negative trend_pct, found: {trends}"
+            )
             assert any('-' in t for t in trends), (
                 f"Expected minus sign for negative trend_pct, found: {trends}"
             )
@@ -241,6 +244,9 @@ class TestKpiCardArrowDirection:
             doc.build([card])
 
             trends = self._extract_trend_text(tmp)
+            assert any('\u2191' in t for t in trends), (
+                f"Expected up arrow for positive trend_pct, found: {trends}"
+            )
             assert any('+' in t for t in trends), (
                 f"Expected plus sign for positive trend_pct, found: {trends}"
             )

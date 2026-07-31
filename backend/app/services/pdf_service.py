@@ -60,6 +60,7 @@ RULE = '#D8D6CE'
 RULE_STRONG = '#1A1D24'
 MUTED = '#6B6E76'
 RUST = '#A8481F'
+DELTA_UP = '#5B7C55'   # muted ledger green for positive deltas (matches _InsightCard)
 
 BRAND_COLOR_DEFAULT = '#D97A34'
 ROW_ALT_COLOR = '#F2F1EB'
@@ -132,13 +133,17 @@ class _KPIRow(Flowable):
         c.setFont('IBMPlexMono-Bold', 14)
         c.drawRightString(w - 88, (h - 14) / 2 - 2, value)
 
-        # trend — colored, far right
+        # trend — colored, far right. Colorblind-safe: arrow shape + sign +
+        # color all carry direction, and up/down use the semantic ledger
+        # mint/rust pair consistently with the AI insight cards.
         trend_pct = self.kpi.get('trend_pct', 0) or 0
-        trend_color = self.brand_color_hex if trend_pct >= 0 else RUST
+        trend_color = DELTA_UP if trend_pct >= 0 else RUST
         sign = '+' if trend_pct >= 0 else '-'
+        arrow = '\u2191' if trend_pct >= 0 else '\u2193'
         c.setFillColor(HexColor(trend_color))
         c.setFont('IBMPlexSans-Bold', 9)
-        c.drawRightString(w, (h - 9) / 2 - 2, f"{sign} {abs(trend_pct):.1f}%")
+        c.drawRightString(w, (h - 9) / 2 - 2,
+                          f"{arrow} {sign} {abs(trend_pct):.1f}%")
 
         c.restoreState()
 
@@ -154,7 +159,7 @@ class _InsightCard(Flowable):
     TAG_W = 44
     TAG_H = 13
 
-    _MINT = HexColor('#5B7C55')
+    _MINT = HexColor(DELTA_UP)
     _RED = HexColor(RUST)
     _AMBER = HexColor('#B45309')
     _INK = HexColor(INK)
@@ -1144,14 +1149,26 @@ def build_sync(
             if isinstance(chart_item, tuple):
                 chart_path = chart_item[0]
                 chart_caption = chart_item[2] if len(chart_item) > 2 else None
+                chart_label = chart_item[3] if len(chart_item) > 3 else None
             else:
                 chart_path = chart_item
                 chart_caption = None
+                chart_label = None
             if chart_path and os.path.isfile(chart_path):
-                rendered_charts.append((chart_path, chart_caption))
+                rendered_charts.append((chart_path, chart_caption, chart_label))
 
         chart_h = 200
         chart_gap = 16
+        chart_label_style = ParagraphStyle(
+            'ChartLabel',
+            fontName='IBMPlexMono',
+            fontSize=8.5,
+            textColor=HexColor(INK),
+            alignment=TA_CENTER,
+            leading=11,
+            spaceBefore=0,
+            spaceAfter=2,
+        )
         caption_style = ParagraphStyle(
             'ChartCaption',
             fontName='IBMPlexSans',
@@ -1164,8 +1181,10 @@ def build_sync(
         )
         for i in range(0, len(rendered_charts), 2):
             pair = rendered_charts[i:i + 2]
-            for j, (chart_path, chart_caption) in enumerate(pair):
+            for j, (chart_path, chart_caption, chart_label) in enumerate(pair):
                 try:
+                    if chart_label:
+                        body_story.append(Paragraph(chart_label.upper(), chart_label_style))
                     chart_img = Image(chart_path, width=content_width, height=chart_h)
                     chart_img.hAlign = 'CENTER'
                     body_story.append(chart_img)
