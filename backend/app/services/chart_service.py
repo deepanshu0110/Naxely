@@ -26,6 +26,8 @@ fm.fontManager.addfont(str(FONT_DIR / 'IBMPlexMono-Bold.ttf'))
 
 SECONDARY_PALETTE = ['#6366F1', '#0E9F6E', '#F59E0B', '#EF4444']  # INDIGO, MINT, AMBER, RED
 
+TRACK = '#E7E2D4'  # ledger light rail behind bars (track-and-fill treatment)
+
 TIER_CHART_CAPS = {"free": 3, "pro": 8, "agency": 16}
 
 
@@ -77,8 +79,8 @@ CHART_DIR = Path('/tmp/naxely')
 
 def _apply_chart_style(ax) -> None:
     """Apply Naxely visual standards to any chart axes."""
-    # Grid: horizontal only, dashed, light
-    ax.yaxis.grid(True, color='#E5E7EB', linewidth=0.6, linestyle='--', zorder=0)
+    # Grid: none — clean ledger look, no default grid clutter
+    ax.yaxis.grid(False)
     ax.xaxis.grid(False)
     ax.set_axisbelow(True)
 
@@ -378,11 +380,8 @@ def _generate_single_chart(
             x = pd.to_datetime(df_plot[x_col])
             y = df_plot[y_col]
 
-            ax.plot(x, y, color=brand_color, linewidth=2.0,
-                    marker='o', markersize=4,
-                    markerfacecolor='white', markeredgecolor=brand_color,
-                    markeredgewidth=1.5)
-            ax.fill_between(x, y, alpha=0.08, color=brand_color)
+            ax.plot(x, y, color=brand_color, linewidth=1.8,
+                    marker='o', markersize=3)
             ax.set_xlabel(x_col, fontsize=10, color='#4B5563',
                          fontfamily='IBM Plex Sans')
             ax.set_title(f'{y_col} Over Time', fontsize=13,
@@ -426,8 +425,12 @@ def _generate_single_chart(
                 title = f'{y_col} by {x_col}'
 
             n_bars = len(grouped)
-            ax.barh(range(n_bars), grouped.values,
-                    color=brand_color, alpha=0.85, height=0.55)
+            bar_range = np.arange(n_bars)
+            max_val = grouped.values.max()
+            ax.barh(bar_range, [max_val] * n_bars,
+                    color=TRACK, height=0.7, zorder=0)
+            ax.barh(bar_range, grouped.values,
+                    color=brand_color, height=0.34, zorder=1)
             label_step = max(1, n_bars // 20)
             bar_ticks = list(range(0, n_bars, label_step))
             ax.set_yticks(bar_ticks)

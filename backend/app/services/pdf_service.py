@@ -74,17 +74,19 @@ class _SectionHeader(Flowable):
         self.text = text
         self.brand_color = HexColor(brand_color_hex)
         self._width = width or (PAGE_WIDTH - 2 * MARGIN)
-        self.height = 36
+        self.height = 40
 
     def wrap(self, availWidth, availHeight):
         return (self._width, self.height)
 
     def draw(self):
-        self.canv.setFillColor(self.brand_color)
-        self.canv.rect(0, 2, self._width, 28, fill=1, stroke=0)
-        self.canv.setFillColor(white)
-        self.canv.setFont('Fraunces-SemiBold', 16)
-        self.canv.drawString(12, 9, self.text)
+        # Ledger section header: plain serif heading + hairline rule, no colored band.
+        self.canv.setFillColor(HexColor(INK))
+        self.canv.setFont('Fraunces-SemiBold', 20)
+        self.canv.drawString(0, 22, self.text)
+        self.canv.setStrokeColor(HexColor(RULE_STRONG))
+        self.canv.setLineWidth(0.75)
+        self.canv.line(0, 8, self._width, 8)
 
 
 class _KPIRow(Flowable):

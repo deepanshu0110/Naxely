@@ -977,3 +977,113 @@ class TestAnomalyRustColor:
                 os.unlink(path)
             except OSError:
                 pass
+
+
+class TestSectionHeaderLedger:
+    """Section headers must be plain serif headings in INK with a hairline rule,
+    NOT solid brand-colored bands with white text (the pre-redesign style)."""
+
+    INK_RGB = int("1A1D24", 16)
+    BRAND_RGB = int("6366F1", 16)
+
+    HEADERS = [
+        "Executive Summary",
+        "Key Metrics Overview",
+        "Charts & Visualizations",
+        "AI Insights",
+        "Anomaly Flags",
+        "Data Table",
+        "Recommendations",
+        "Appendix",
+    ]
+
+    def _build_all_sections_pdf(self):
+        import fitz
+        from app.services.ai_service import SummaryResult
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300],
+            "Profit": [100, 300, 500, 700],
+        })
+        config = {
+            "metric_columns": ["Revenue", "Profit"],
+            "title": "Section Header Test",
+            "sections": ["executive_summary", "kpi_overview", "charts", "insights",
+                         "anomalies", "data_table", "appendix"],
+            "report_id": "test-ledger-header",
+        }
+        ai_content = {
+            "summary": SummaryResult(
+                lead="Revenue grew steadily.",
+                context="Context text.",
+                implication="Implication text.",
+                action="Action text.",
+            ),
+            "insights": [{"kpi": "Revenue", "number": "$5000", "reason": "Steady", "action": "Invest",
+                          "sentiment": "positive", "priority": "high"}],
+            "anomalies": [{"message": "Spike detected in Revenue"}],
+            "trends": [],
+            "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        return path
+
+    def _body_pages(self, doc):
+        """Pages after cover (0) and TOC (1)."""
+        return [doc[i] for i in range(2, len(doc))]
+
+    def test_all_section_headers_are_serif_ink(self):
+        import fitz
+        path = self._build_all_sections_pdf()
+        try:
+            doc = fitz.open(path)
+            spans = []
+            for page in self._body_pages(doc):
+                for block in page.get_text("dict")["blocks"]:
+                    for line in block.get("lines", []):
+                        spans.extend(line["spans"])
+            doc.close()
+
+            serif_spans = [s for s in spans if s["font"].startswith("Fraunces")]
+            for name in self.HEADERS:
+                matching = [s for s in serif_spans if name in s["text"]]
+                assert matching, (
+                    f"Section header '{name}' not rendered as Fraunces serif"
+                )
+                assert all(s["color"] == self.INK_RGB for s in matching), (
+                    f"Section header '{name}' must be INK #1A1D24 (not white-on-band), got "
+                    f"{[hex(s['color']) for s in matching]}"
+                )
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_no_brand_colored_band_rects(self):
+        """No wide brand-colored filled rectangles near the top of body pages —
+        the old section-header band must be gone on every page."""
+        import fitz
+        path = self._build_all_sections_pdf()
+        try:
+            doc = fitz.open(path)
+            bands = []
+            for page in self._body_pages(doc):
+                for d in page.get_drawings():
+                    if not d.get("fill"):
+                        continue
+                    r, g, b = (round(c * 255) for c in d["fill"])
+                    fill = (r << 16) | (g << 8) | b
+                    rect = d["rect"]
+                    if (fill == self.BRAND_RGB and rect.width > 300
+                            and rect.height <= 45 and rect.y0 < 100):
+                        bands.append((page.number, fill, rect))
+            doc.close()
+            assert not bands, f"Brand-colored band rectangles still present: {bands}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass

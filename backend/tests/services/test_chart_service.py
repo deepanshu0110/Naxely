@@ -397,3 +397,53 @@ class TestBarOverDatetime:
         p, _ = paths[0]
         assert Path(p).exists()
         chart_service.cleanup_charts("test-bar-cat")
+
+
+class TestLedgerChartStyling:
+    """Chart images must reflect the Ledger re-theme: no fill under the line,
+    small solid dot markers, no gridlines, and thin track-and-fill bars."""
+
+    PAPER = (247, 242, 233)   # design_tokens.PAPER (#F7F2E9)
+    TRACK = (231, 226, 212)   # chart_service.TRACK (#E7E2D4)
+    BRAND = (99, 102, 241)    # #6366F1
+
+    @staticmethod
+    def _render(chart_type, x, y, brand="#6366F1"):
+        df = pd.DataFrame({"x": x, "y": y})
+        specs = [{"x": "x", "y": "y", "type": chart_type, "title": "Ledger Style"}]
+        paths = chart_service.generate_sync(
+            df, "test-ledger-style", {"metric_columns": ["y"]}, brand, chart_specs=specs,
+        )
+        assert len(paths) == 1, f"Expected 1 {chart_type} chart, got {len(paths)}"
+        p, _ = paths[0]
+        return Image.open(p).convert("RGB"), p
+
+    def test_line_chart_has_no_fill_under_line(self):
+        """A strip below the (rising) line, above the x-axis, must be plain
+        background — no brand-tinted area fill."""
+        dates = pd.date_range("2024-01-01", periods=20, freq="D")
+        values = list(range(100, 300, 10))
+        img, p = self._render("line", dates, values)
+        w, h = img.size
+        y = h - 45
+        non_paper = sum(
+            1 for x in range(int(w * 0.5), int(w * 0.95), 2)
+            if img.getpixel((x, y)) != self.PAPER
+        )
+        assert non_paper < 8, (
+            f"Found {non_paper} non-paper pixels below the line — area fill still present"
+        )
+        chart_service.cleanup_charts("test-ledger-style")
+
+    def test_bar_chart_has_track_and_fill(self):
+        """Bar chart must contain both the light track rail and the thin brand
+        fill — not a single solid bar."""
+        cats = ["A", "B", "C", "D"]
+        vals = [10, 40, 25, 60]
+        img, p = self._render("bar", cats, vals)
+        colors = img.getcolors(maxcolors=1_000_000)
+        assert colors is not None, "too many distinct colors in bar chart"
+        present = {c for _, c in colors}
+        assert self.TRACK in present, "Expected light track rail (TRACK) pixels in bar chart"
+        assert self.BRAND in present, "Expected brand-colored fill pixels in bar chart"
+        chart_service.cleanup_charts("test-ledger-style")
