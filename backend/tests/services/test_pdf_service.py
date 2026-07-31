@@ -829,7 +829,6 @@ class TestChartsTwoPerPage:
             "title": "Two-Per-Page Test",
             "sections": ["charts"],
             "report_id": report_id,
-            "additional_charts": [],
         }
         ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
         user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
@@ -843,52 +842,6 @@ class TestChartsTwoPerPage:
             assert max(chart_pages) <= 2, f"More than 2 charts on a page: {image_counts}"
             assert sum(chart_pages) == 4, f"Expected 4 chart images total, got {image_counts}"
             assert chart_pages.count(2) >= 2, f"Expected 2 pages with 2 charts each, got {image_counts}"
-        finally:
-            try:
-                os.unlink(path)
-            except OSError:
-                pass
-            cleanup_charts(report_id)
-
-
-class TestAdditionalChartsList:
-    """When additional candidates exist beyond the rendered charts, they are listed
-    on the last charts page under 'Additional Charts Available'."""
-
-    def test_additional_charts_list_renders(self):
-        import fitz
-        from app.services.chart_service import generate_sync, cleanup_charts
-        from app.services.pdf_service import build_sync
-
-        df = pd.DataFrame({
-            "Date": pd.date_range("2024-01-01", periods=8, freq="D"),
-            "Revenue": [1000, 1200, 1100, 1300, 1400, 1500, 1600, 1700],
-        })
-        specs = [
-            {"x": "Date", "y": "Revenue", "type": "line", "title": "Revenue Trend"},
-            {"x": "Date", "y": "Revenue", "type": "bar", "title": "Revenue by Date"},
-        ]
-        report_id = "test-ledger-additional"
-        chart_config = {"tier": "free", "metric_columns": ["Revenue"]}
-        chart_paths = generate_sync(df, report_id, chart_config, "#6366F1", specs)
-
-        config = {
-            "metric_columns": ["Revenue"],
-            "title": "Additional Charts Test",
-            "sections": ["charts"],
-            "report_id": report_id,
-            "additional_charts": ["Revenue Distribution", "Revenue by Client"],
-        }
-        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
-        user_data = {"brand_color": "#6366F1", "tier": "free", "logo_url": None, "company_name": None}
-        path = build_sync(df, chart_paths, ai_content, config, user_data)
-        try:
-            doc = fitz.open(path)
-            text = "".join(page.get_text() for page in doc)
-            doc.close()
-            assert "Additional Charts Available" in text, "Additional charts heading missing"
-            assert "Revenue Distribution" in text, "Additional chart title missing"
-            assert "Revenue by Client" in text, "Additional chart title missing"
         finally:
             try:
                 os.unlink(path)

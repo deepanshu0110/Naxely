@@ -1179,35 +1179,6 @@ def build_sync(
             if i + 2 < len(rendered_charts):
                 body_story.append(PageBreak())
 
-        additional_charts = config.get('additional_charts') or []
-        if additional_charts:
-            body_story.append(Spacer(1, 8))
-            body_story.append(Paragraph('Additional Charts Available', ParagraphStyle(
-                'AdditionalChartsHeading',
-                fontName='Fraunces-SemiBold',
-                fontSize=13,
-                textColor=HexColor(INK),
-                spaceAfter=6,
-                leading=16,
-            )))
-            add_style = ParagraphStyle(
-                'AdditionalChartRow',
-                fontName='IBMPlexMono',
-                fontSize=9,
-                textColor=HexColor(MUTED),
-                leading=15,
-            )
-            add_rows = [[Paragraph(t, add_style)] for t in additional_charts]
-            add_table = Table(add_rows, colWidths=[content_width])
-            add_table.setStyle(TableStyle([
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('LEFTPADDING', (0, 0), (-1, -1), 0),
-                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
-                ('TOPPADDING', (0, 0), (-1, -1), 4),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-                ('LINEBELOW', (0, 0), (-1, -2), 0.4, HexColor(RULE)),
-            ]))
-            body_story.append(add_table)
         body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
