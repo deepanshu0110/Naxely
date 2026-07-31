@@ -58,7 +58,7 @@ describe('ReportConfig Groq guidance', () => {
     renderForm()
     expect(screen.queryAllByText('Get a free Groq key').length).toBe(0)
     expect(screen.queryAllByText('Add API key').length).toBe(0)
-    expect(screen.getAllByText('✅').length).toBeGreaterThan(0)
+    expect(screen.getAllByLabelText('Included in plan').length).toBeGreaterThan(0)
   })
 
   it('hides Groq guidance when pro tier without stored key', () => {
@@ -67,7 +67,7 @@ describe('ReportConfig Groq guidance', () => {
     renderForm()
     expect(screen.queryAllByText('Get a free Groq key').length).toBe(0)
     expect(screen.queryAllByText('Add API key').length).toBe(0)
-    expect(screen.getAllByText('✅').length).toBeGreaterThan(0)
+    expect(screen.getAllByLabelText('Included in plan').length).toBeGreaterThan(0)
   })
 
   it('hides Groq guidance when agency tier without stored key', () => {
@@ -76,6 +76,6 @@ describe('ReportConfig Groq guidance', () => {
     renderForm()
     expect(screen.queryAllByText('Get a free Groq key').length).toBe(0)
     expect(screen.queryAllByText('Add API key').length).toBe(0)
-    expect(screen.getAllByText('✅').length).toBeGreaterThan(0)
+    expect(screen.getAllByLabelText('Included in plan').length).toBeGreaterThan(0)
   })
 })

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Briefcase, MessageCircle, BarChart3, BookOpen } from 'lucide-react'
+import { Briefcase, MessageCircle, BarChart3, BookOpen, CheckCircle2 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 
 interface ReportConfigData {
@@ -136,7 +136,7 @@ export default function ReportConfigForm({ tone, sections, onToneChange, onSecti
                     className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 dark:border-gray-600"
                 />
                 <span className="text-sm text-gray-700 dark:text-gray-300">{s.label}</span>
-                <span className="ml-auto text-xs text-green-600">✅</span>
+                <CheckCircle2 aria-label="Included in plan" className="ml-auto h-4 w-4 text-green-600" />
               </label>
           ))}
           {proSections.map((s) => (
@@ -175,7 +175,7 @@ export default function ReportConfigForm({ tone, sections, onToneChange, onSecti
                   </a>
                 </span>
               ) : (
-                <span className="ml-auto text-xs text-green-600">✅</span>
+                <CheckCircle2 aria-label="Included in plan" className="ml-auto h-4 w-4 text-green-600" />
               )}
             </label>
           ))}

@@ -32,10 +32,10 @@ describe('InsightCard', () => {
     expect(screen.getByText(/Revenue Growth/)).toBeInTheDocument()
     expect(screen.getByText('# 42.5')).toBeInTheDocument()
     expect(
-      screen.getByText('▶ Q4 performance exceeded expectations'),
+      screen.getByText(/Q4 performance exceeded expectations/),
     ).toBeInTheDocument()
     expect(
-      screen.getByText('✓ Continue current strategy'),
+      screen.getByText(/Continue current strategy/),
     ).toBeInTheDocument()
   })
 

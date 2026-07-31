@@ -9,6 +9,15 @@ import {
   BarChart3,
   Palette,
   Link2,
+  FileUp,
+  FileDown,
+  LineChart,
+  AreaChart,
+  PieChart,
+  ScatterChart,
+  Grid,
+  Donut,
+  TrendingUp,
 } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Button from '@/components/ui/Button'
@@ -109,111 +118,26 @@ const productStats = [
   },
 ]
 
-function PDFMockupCard() {
+function ReportPreviewCard() {
   return (
-    <div className="relative w-[340px] h-[460px]
-      bg-white dark:bg-[#1e1c18]
-      rounded-2xl
-      shadow-[0_24px_64px_rgba(0,0,0,0.10)]
+    <div className="relative w-[400px]
+      rounded-lg
+      shadow-[0_24px_64px_rgba(0,0,0,0.14)]
       dark:shadow-[0_24px_64px_rgba(0,0,0,0.45)]
+      ring-1 ring-black/5 dark:ring-white/5
       overflow-hidden
-      border border-black/5 dark:border-white/5
-      flex-shrink-0"
-      aria-hidden="true">
-
-      {/* Top brand bar */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-amber-500" />
-
-      {/* Header row */}
-      <div className="flex items-center justify-between px-6 pt-7 pb-0">
-        <div className="flex items-center gap-1.5">
-          <NaxelyMark size={14} color="#D97A34" />
-          <span className="text-[10px] text-ink/30 dark:text-paper/25">Naxely</span>
-        </div>
-        <span className="text-[10px] text-ink/30 dark:text-paper/25">Acme Corp</span>
-      </div>
-
-      {/* Hero stat */}
-      <div className="px-6 pt-8 pb-5 text-center">
-        <p className="font-display text-xl font-semibold text-amber-500">
-          Revenue: +24.6% ▲
-        </p>
-      </div>
-
-      {/* Rule */}
-      <div className="mx-6 h-px bg-amber-500/25" />
-
-      {/* Report title */}
-      <div className="px-6 pt-5">
-        <h2 className="font-display text-[22px] font-semibold
-          text-ink dark:text-paper leading-tight mb-0.5">
-          Q2 Sales Report
-        </h2>
-        <p className="text-[10px] text-ink/35 dark:text-paper/25">Acme Corp</p>
-      </div>
-
-      {/* KPI mini-row */}
-      <div className="flex gap-2.5 px-6 pt-4">
-        {[
-          { label: 'Revenue', value: '$440K', trend: '+24.6%', up: true },
-          { label: 'Units',   value: '3.2K',  trend: '−3.1%',  up: false },
-          { label: 'Regions', value: '4',     trend: 'stable', up: null },
-        ].map((kpi) => (
-          <div key={kpi.label}
-            className="flex-1 bg-amber-500/6 dark:bg-amber-500/10 rounded-lg p-2.5">
-            <p className="text-[8px] text-ink/35 dark:text-paper/25 mb-0.5">
-              {kpi.label}
-            </p>
-            <p className="text-[13px] font-semibold text-ink dark:text-paper font-mono">
-              {kpi.value}
-            </p>
-            <p className={`text-[8px] font-mono ${
-              kpi.up === true  ? 'text-emerald-600 dark:text-emerald-400' :
-              kpi.up === false ? 'text-red-500 dark:text-red-400' :
-                                 'text-ink/25 dark:text-paper/20'
-            }`}>
-              {kpi.trend}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Mini bar chart */}
-      <div className="px-6 pt-4">
-        <div className="flex items-end gap-[3px] h-10">
-          {[35,52,41,68,45,72,58,80,63,88,71,95].map((h, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-[2px] bg-amber-500/65 dark:bg-amber-500/55 nax-bar-grow"
-              style={{
-                height: `${h}%`,
-                transformOrigin: 'bottom',
-                animation: `nax-grow-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both`,
-                animationDelay: `${400 + i * 40}ms`,
-              }}
-            />
-          ))}
-        </div>
-        <p className="text-[8px] font-mono text-ink/20 dark:text-paper/15 mt-1">
-          Monthly Revenue Trend
-        </p>
-      </div>
-
-      {/* Metadata footer */}
-      <div className="absolute bottom-5 left-0 right-0
-        flex justify-between px-6">
-        <span className="text-[8px] font-mono text-ink/20 dark:text-paper/15">
-          Jun 2026
-        </span>
-        <span className="text-[8px] font-mono text-ink/20 dark:text-paper/15">
-          Prepared by Acme Corp
-        </span>
-      </div>
-
-      {/* Bottom brand bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-amber-500" />
+      bg-white">
+      <img
+        src="/sample-report-cover.webp"
+        alt="Sample Naxely report — Agency Billable Hours for Acme Agency, generated from a CSV in under a minute"
+        width={1654}
+        height={2339}
+        className="block w-full h-auto"
+        decoding="async"
+        {...({ fetchpriority: 'high' } as Record<string, string>)}
+      />
     </div>
-  );
+  )
 }
 
 export default function Landing() {
@@ -352,10 +276,10 @@ export default function Landing() {
 
           </div>
 
-          {/* Right column — PDF mockup */}
+          {/* Right column — real generated report */}
           <div className="hidden lg:flex flex-1 justify-center items-center">
             <div className="nax-animate-float">
-              <PDFMockupCard />
+              <ReportPreviewCard />
             </div>
           </div>
 
@@ -493,16 +417,16 @@ export default function Landing() {
               {/* Pipeline visual */}
               <div className="flex items-center gap-3">
                 {[
-                  { label: 'CSV Upload', emoji: '📄' },
-                  { label: 'AI Analysis', emoji: '✦' },
-                  { label: 'PDF Report', emoji: '📊' },
+                  { label: 'CSV Upload', Icon: FileUp },
+                  { label: 'AI Analysis', Icon: Sparkles },
+                  { label: 'PDF Report', Icon: FileDown },
                 ].map((step, i) => (
                   <div key={step.label} className="flex items-center gap-3">
                     <div className="flex flex-col items-center gap-1.5">
                       <div className="w-10 h-10 rounded-lg
                         bg-amber-500/10 dark:bg-amber-500/15
-                        flex items-center justify-center text-lg">
-                        {step.emoji}
+                        flex items-center justify-center">
+                        <step.Icon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                       </div>
                       <span className="text-[10px] font-mono text-ink/40 dark:text-paper/30">
                         {step.label}
@@ -598,13 +522,21 @@ export default function Landing() {
 
               {/* Chart type icon grid */}
               <div className="grid grid-cols-4 gap-1.5">
-                {['▦','▤','◉','▲','▬','◈','▩','◐'].map((glyph, i) => (
+                {[
+                  BarChart3,
+                  LineChart,
+                  PieChart,
+                  ScatterChart,
+                  AreaChart,
+                  Grid,
+                  Donut,
+                  TrendingUp,
+                ].map((Icon, i) => (
                   <div key={i}
                     className="aspect-square rounded-lg
                       bg-amber-500/8 dark:bg-amber-500/12
-                      flex items-center justify-center
-                      text-amber-600 dark:text-amber-400 text-sm">
-                    {glyph}
+                      flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   </div>
                 ))}
               </div>

@@ -1,4 +1,5 @@
 import { clsx } from 'clsx'
+import { BarChart3, Check, ChevronRight } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useCountUp } from '@/hooks/useCountUp'
@@ -28,7 +29,10 @@ export default function InsightCard({ insight }: { insight: AIInsight }) {
       )}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-ink dark:text-paper">📊 {insight.kpi}</h4>
+        <h4 className="flex items-center gap-1.5 text-sm font-semibold text-ink dark:text-paper">
+          <BarChart3 className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" />
+          {insight.kpi}
+        </h4>
         <Badge
           variant={priorityVariant[insight.priority]}
           text={insight.priority.toUpperCase()}
@@ -36,8 +40,14 @@ export default function InsightCard({ insight }: { insight: AIInsight }) {
       </div>
 
       <p className="mb-2 text-sm font-bold text-ink/80 dark:text-paper/80"># {displayNumber}</p>
-      <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">▶ {insight.reason}</p>
-      <p className="text-sm italic text-gray-500 dark:text-gray-400">✓ {insight.action}</p>
+      <p className="mb-2 flex items-start gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+        <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500" />
+        {insight.reason}
+      </p>
+      <p className="flex items-start gap-1.5 text-sm italic text-gray-500 dark:text-gray-400">
+        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500" />
+        {insight.action}
+      </p>
     </div>
   )
 }
