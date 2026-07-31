@@ -316,6 +316,24 @@ def select_charts_with_ai(
         return None
 
 
+def _bar_datetime_frequency(df: pd.DataFrame, x_col: str) -> str | None:
+    """Pick a resample frequency for bar charts over a datetime x-axis.
+
+    Mirrors the density policy used by line charts (see the 'line' branch
+    of _generate_single_chart): keep daily bars for short ranges, roll up
+    to weekly when there are many unique dates, and monthly when the span
+    exceeds a year. Returns None when raw daily bars are fine.
+    """
+    x = pd.to_datetime(df[x_col])
+    unique_dates = x.nunique()
+    date_range_days = (x.max() - x.min()).days
+    if date_range_days > 365:
+        return 'ME'
+    if unique_dates > 60:
+        return 'W'
+    return None
+
+
 def _generate_single_chart(
     df: pd.DataFrame,
     x_col: str,
@@ -376,16 +394,52 @@ def _generate_single_chart(
             )
 
         elif chart_type == 'bar':
-            grouped = df.groupby(x_col)[y_col].mean().sort_values(ascending=True)
-            ax.barh(grouped.index, grouped.values,
+            if pd.api.types.is_datetime64_any_dtype(df[x_col]):
+                freq = _bar_datetime_frequency(df, x_col)
+                x_sorted = df.sort_values(x_col)
+                if freq:
+                    agg_func = 'mean' if any(k in y_col.lower()
+                        for k in ['%', 'percent', 'rate', 'ratio', 'score', 'pct']) else 'sum'
+                    grouped = (
+                        x_sorted.set_index(x_col)[y_col]
+                        .resample(freq)
+                        .agg(agg_func)
+                        .dropna()
+                    )
+                else:
+                    grouped = df.groupby(x_col)[y_col].mean()
+                grouped = grouped.sort_values(ascending=True)
+                freq_label = {'ME': 'Month', 'W': 'Week'}.get(freq)
+                if freq_label:
+                    bar_labels = [d.strftime('%b %d, %Y') for d in grouped.index]
+                else:
+                    bar_labels = [d.strftime('%b %d') for d in grouped.index]
+                agg_label = 'Sum' if freq and agg_func == 'sum' else 'Mean'
+                xlabel = f'{agg_label} {y_col}'
+                title = f'{y_col} by {x_col}'
+                if freq_label:
+                    title += f' ({freq_label})'
+            else:
+                grouped = df.groupby(x_col)[y_col].mean().sort_values(ascending=True)
+                bar_labels = [str(v) for v in grouped.index]
+                xlabel = f'Mean {y_col}'
+                title = f'{y_col} by {x_col}'
+
+            n_bars = len(grouped)
+            ax.barh(range(n_bars), grouped.values,
                     color=brand_color, alpha=0.85, height=0.55)
+            label_step = max(1, n_bars // 20)
+            bar_ticks = list(range(0, n_bars, label_step))
+            ax.set_yticks(bar_ticks)
+            ax.set_yticklabels([bar_labels[t] for t in bar_ticks],
+                               fontsize=8, fontfamily='IBM Plex Sans')
             for i, (val, _) in enumerate(zip(grouped.values, grouped.index)):
                 ax.text(val * 1.01, i, f'{val:,.0f}',
                        va='center', fontsize=9, color='#4B5563',
                        fontfamily='IBM Plex Mono')
-            ax.set_xlabel(f'Mean {y_col}', fontsize=10, color='#4B5563',
+            ax.set_xlabel(xlabel, fontsize=10, color='#4B5563',
                          fontfamily='IBM Plex Sans')
-            ax.set_title(f'{y_col} by {x_col}', fontsize=13,
+            ax.set_title(title, fontsize=13,
                         fontweight='bold', color='#14131F', pad=10,
                         fontfamily='IBM Plex Sans')
 

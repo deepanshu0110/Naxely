@@ -329,3 +329,71 @@ class TestChartService:
         paths = chart_service.generate_sync(df, "test-max3", self._config(), "#0D7377")
         assert len(paths) <= 3
         chart_service.cleanup_charts("test-max3")
+
+
+class TestBarOverDatetime:
+    """Bar charts with a datetime x-axis (reachable via ChartCustomizer
+    type override) must render instead of crashing with
+    'Image size too large'."""
+
+    def test_bar_over_datetime_renders(self):
+        df = pd.DataFrame({
+            "Date": pd.date_range("2024-01-01", periods=20, freq="D"),
+            "Revenue": np.random.randint(1000, 5000, 20),
+        })
+        specs = [{"x": "Date", "y": "Revenue", "type": "bar", "title": "Revenue by Date"}]
+        paths = chart_service.generate_sync(
+            df, "test-bar-dt", {"metric_columns": ["Revenue"]}, "#0D7377",
+            chart_specs=specs,
+        )
+        assert len(paths) == 1
+        p, _ = paths[0]
+        img = Image.open(p)
+        assert img.width < 2 ** 16, "chart image too wide"
+        assert img.height < 2 ** 16, "chart image too tall"
+        assert 0 < img.width < 5000 and 0 < img.height < 5000, \
+            f"chart rendered at absurd size {img.size}"
+        chart_service.cleanup_charts("test-bar-dt")
+
+    def test_bar_over_dense_datetime_bins(self):
+        df = pd.DataFrame({
+            "Date": pd.date_range("2024-01-01", periods=200, freq="D"),
+            "Revenue": np.random.randint(1000, 5000, 200),
+        })
+        specs = [{"x": "Date", "y": "Revenue", "type": "bar", "title": "Revenue by Date"}]
+        paths = chart_service.generate_sync(
+            df, "test-bar-dense", {"metric_columns": ["Revenue"]}, "#0D7377",
+            chart_specs=specs,
+        )
+        assert len(paths) == 1
+        p, _ = paths[0]
+        img = Image.open(p)
+        assert img.width < 2 ** 16 and img.height < 2 ** 16
+        assert 0 < img.width < 5000 and 0 < img.height < 5000, \
+            f"dense bar chart not binned; rendered at absurd size {img.size}"
+        chart_service.cleanup_charts("test-bar-dense")
+
+    def test_bar_datetime_frequency_selection(self):
+        sparse = pd.DataFrame({"Date": pd.date_range("2024-01-01", periods=20, freq="D"), "V": range(20)})
+        assert chart_service._bar_datetime_frequency(sparse, "Date") is None
+
+        dense = pd.DataFrame({"Date": pd.date_range("2024-01-01", periods=200, freq="D"), "V": range(200)})
+        assert chart_service._bar_datetime_frequency(dense, "Date") == "W"
+
+        year = pd.DataFrame({"Date": pd.date_range("2023-01-01", periods=400, freq="D"), "V": range(400)})
+        assert chart_service._bar_datetime_frequency(year, "Date") == "ME"
+
+    def test_bar_over_categorical_unaffected(self):
+        df = pd.DataFrame({
+            "Region": ["North", "South", "East", "West"] * 5,
+            "Revenue": np.random.randint(1000, 5000, 20),
+        })
+        specs = [{"x": "Region", "y": "Revenue", "type": "bar", "title": "Revenue by Region"}]
+        paths = chart_service.generate_sync(
+            df, "test-bar-cat", {"metric_columns": ["Revenue"]}, "#0D7377",
+            chart_specs=specs,
+        )
+        assert len(paths) == 1
+        p, _ = paths[0]
+        assert Path(p).exists()
+        chart_service.cleanup_charts("test-bar-cat")

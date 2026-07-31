@@ -748,3 +748,232 @@ class TestSectionToggles:
                            "AI Insights", "Anomaly Flags", "Data Table", "Recommendations",
                            "Appendix — Raw Data"},
         )
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# Part B — PDF "Ledger" redesign
+# ────────────────────────────────────────────────────────────────────────────
+
+class TestLedgerTocNumbering:
+    """TOC entries must be zero-padded two-digit numbers (01, 02, … 0N)."""
+
+    def _build_toc_text(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300],
+            "Profit": [100, 300, 500, 700],
+        })
+        config = {
+            "metric_columns": ["Revenue", "Profit"],
+            "title": "TOC Numbering Test",
+            "sections": ["kpi_overview", "charts", "anomalies"],
+            "report_id": "test-ledger-toc",
+        }
+        ai_content = {
+            "summary": None,
+            "insights": [],
+            "anomalies": [{"message": "Spike in Revenue"}],
+            "trends": [],
+            "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            assert len(doc) >= 3, "Expected at least Cover, TOC, and one body page"
+            toc_text = doc[1].get_text()  # TOC is the 2nd page
+            doc.close()
+            return toc_text
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_toc_entries_zero_padded_two_digit(self):
+        toc_text = self._build_toc_text()
+        assert "01" in toc_text, f"Cover Page must be numbered 01, got:\n{toc_text}"
+        assert "02" in toc_text, f"Table of Contents must be numbered 02, got:\n{toc_text}"
+        assert "03" in toc_text, f"First section must be numbered 03, got:\n{toc_text}"
+
+
+class TestChartsTwoPerPage:
+    """Charts section must paginate two charts per page (not one per page)."""
+
+    def test_charts_render_two_per_page(self):
+        import fitz
+        from app.services.chart_service import generate_sync, cleanup_charts
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Date": pd.date_range("2024-01-01", periods=12, freq="D"),
+            "Revenue": [1000, 1200, 1100, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100],
+            "Clicks": [100, 110, 105, 120, 130, 125, 140, 150, 145, 160, 155, 170],
+            "Region": ["North"] * 6 + ["South"] * 6,
+        })
+        specs = [
+            {"x": "Date", "y": "Revenue", "type": "line", "title": "Revenue Trend"},
+            {"x": "Date", "y": "Clicks", "type": "line", "title": "Clicks Trend"},
+            {"x": "Region", "y": "Revenue", "type": "bar", "title": "Revenue by Region"},
+            {"x": "Region", "y": "Clicks", "type": "bar", "title": "Clicks by Region"},
+        ]
+        report_id = "test-ledger-charts"
+        chart_config = {"tier": "pro", "metric_columns": ["Revenue", "Clicks"]}
+        chart_paths = generate_sync(df, report_id, chart_config, "#6366F1", specs)
+        assert len(chart_paths) == 4, f"Expected 4 charts, got {len(chart_paths)}"
+
+        config = {
+            "metric_columns": ["Revenue", "Clicks"],
+            "title": "Two-Per-Page Test",
+            "sections": ["charts"],
+            "report_id": report_id,
+            "additional_charts": [],
+        }
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, chart_paths, ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            image_counts = [len(page.get_images(full=True)) for page in doc]
+            doc.close()
+            chart_pages = [c for c in image_counts if c > 0]
+            assert chart_pages, f"No chart pages found: {image_counts}"
+            assert max(chart_pages) <= 2, f"More than 2 charts on a page: {image_counts}"
+            assert sum(chart_pages) == 4, f"Expected 4 chart images total, got {image_counts}"
+            assert chart_pages.count(2) >= 2, f"Expected 2 pages with 2 charts each, got {image_counts}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+            cleanup_charts(report_id)
+
+
+class TestAdditionalChartsList:
+    """When additional candidates exist beyond the rendered charts, they are listed
+    on the last charts page under 'Additional Charts Available'."""
+
+    def test_additional_charts_list_renders(self):
+        import fitz
+        from app.services.chart_service import generate_sync, cleanup_charts
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Date": pd.date_range("2024-01-01", periods=8, freq="D"),
+            "Revenue": [1000, 1200, 1100, 1300, 1400, 1500, 1600, 1700],
+        })
+        specs = [
+            {"x": "Date", "y": "Revenue", "type": "line", "title": "Revenue Trend"},
+            {"x": "Date", "y": "Revenue", "type": "bar", "title": "Revenue by Date"},
+        ]
+        report_id = "test-ledger-additional"
+        chart_config = {"tier": "free", "metric_columns": ["Revenue"]}
+        chart_paths = generate_sync(df, report_id, chart_config, "#6366F1", specs)
+
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Additional Charts Test",
+            "sections": ["charts"],
+            "report_id": report_id,
+            "additional_charts": ["Revenue Distribution", "Revenue by Client"],
+        }
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "free", "logo_url": None, "company_name": None}
+        path = build_sync(df, chart_paths, ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "".join(page.get_text() for page in doc)
+            doc.close()
+            assert "Additional Charts Available" in text, "Additional charts heading missing"
+            assert "Revenue Distribution" in text, "Additional chart title missing"
+            assert "Revenue by Client" in text, "Additional chart title missing"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+            cleanup_charts(report_id)
+
+
+class TestKpiMonoNumbers:
+    """KPI numeric values must be set in the mono typeface (tabular alignment)."""
+
+    def test_kpi_values_use_mono_font(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 5200, 5100, 5300],
+            "Profit": [100, 300, 500, 700],
+        })
+        config = {
+            "metric_columns": ["Revenue", "Profit"],
+            "title": "Mono Numbers Test",
+            "sections": ["kpi_overview"],
+            "report_id": "test-ledger-mono",
+        }
+        ai_content = {"summary": None, "insights": [], "anomalies": [], "trends": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            mono_spans = []
+            for page in doc:
+                for block in page.get_text("dict")["blocks"]:
+                    for line in block.get("lines", []):
+                        for span in line["spans"]:
+                            if span["font"] == "IBMPlexMono-Bold":
+                                mono_spans.append(span["text"])
+            doc.close()
+            assert mono_spans, "No KPI value rendered in IBMPlexMono-Bold"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+class TestAnomalyRustColor:
+    """Anomaly text and accent must use the fixed RUST (#A8481F), not the old red."""
+
+    def test_anomaly_text_uses_rust_color(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [5000, 4800, 4600, 4400],
+        })
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Rust Anomaly Test",
+            "sections": ["anomalies"],
+            "report_id": "test-ledger-rust",
+        }
+        ai_content = {
+            "summary": None,
+            "insights": [],
+            "anomalies": [{"message": "Spike detected in Revenue"}],
+            "trends": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        rust = int("A8481F", 16)
+        try:
+            doc = fitz.open(path)
+            found = []
+            for page in doc:
+                for block in page.get_text("dict")["blocks"]:
+                    for line in block.get("lines", []):
+                        for span in line["spans"]:
+                            if "Spike detected" in span["text"]:
+                                found.append(span["color"])
+            doc.close()
+            assert found, "Anomaly message text not found"
+            assert all(c == rust for c in found), f"Anomaly text should be RUST #A8481F, got {found}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass

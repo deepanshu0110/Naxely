@@ -286,6 +286,15 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         pdf_config["_precomputed_kpis"] = kpis
         pdf_config["_ai_skipped"] = ai_skipped
 
+        try:
+            _candidates = chart_service.all_chart_candidates(df_norm, config) or []
+            _rendered = {label for _, label in chart_paths}
+            pdf_config["additional_charts"] = [
+                c["title"] for c in _candidates if c["y"] not in _rendered
+            ]
+        except Exception as e:
+            logger.warning("[report_service] additional_charts computation failed: %s", e)
+
         pdf_path = await loop.run_in_executor(
             _PDF_EXECUTOR,
             pdf_service.build_sync,
