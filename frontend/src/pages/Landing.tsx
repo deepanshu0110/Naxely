@@ -1013,9 +1013,6 @@ export default function Landing() {
           <div className="badge-marquee mt-8 pt-8 border-t border-gray-200">
             <div className="badge-track">
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
-              </a>
-              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
               </a>
               <a
@@ -1028,9 +1025,6 @@ export default function Landing() {
                   src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
                   width="180" height="54"
                 />
-              </a>
-              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" width="200" height="54" />
               </a>
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
@@ -1127,9 +1121,6 @@ export default function Landing() {
                 <img src="https://saasfame.com/badge-dark.svg" alt="Featured on saasfame.com" width="170" height="54" />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=daily&theme=light" width="270" height="54" alt="Fazier badge" />
-              </a>
-              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
               </a>
               <a
@@ -1142,9 +1133,6 @@ export default function Landing() {
                   src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
                   width="180" height="54"
                 />
-              </a>
-              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=neutral" alt="Fazier badge" width="200" height="54" />
               </a>
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
