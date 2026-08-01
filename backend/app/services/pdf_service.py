@@ -148,16 +148,55 @@ class _KPIRow(Flowable):
         c.restoreState()
 
 
+def _wrap_text_lines(text: str, font_name: str, font_size: float, max_width: float) -> list[str]:
+    """Greedy word wrap of `text` to `max_width` at the given font. Returns a
+    list of lines, each fitting the box; an unbreakable word wider than the box
+    is emitted alone rather than dropped."""
+    lines, cur = [], ''
+    for word in text.split(' '):
+        trial = f'{cur} {word}'.strip()
+        if cur and pdfmetrics.stringWidth(trial, font_name, font_size) > max_width:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def _fit_text_lines(text: str, font_name: str, font_size: float, max_width: float, max_lines: int) -> list[str]:
+    """Wrap `text` to at most `max_lines` lines that fit `max_width`. When the
+    text is longer, the final line is truncated at a word boundary with '…'
+    rather than cutting mid-word."""
+    lines = _wrap_text_lines(text, font_name, font_size, max_width)
+    if len(lines) <= max_lines:
+        return lines
+    head = lines[:max_lines - 1]
+    words = ' '.join(lines[max_lines - 1:]).split(' ')
+    for n in range(len(words), 0, -1):
+        candidate = ' '.join(words[:n]) + '\u2026'
+        if pdfmetrics.stringWidth(candidate, font_name, font_size) <= max_width:
+            return head + [candidate]
+    return head + ['\u2026']
+
+
 class _InsightCard(Flowable):
     """Ledger insight row: serif index, KPI name, severity tag, mono number,
-    reason, and an arrowed action — hairline rule below the row."""
+    reason, and an arrowed action — hairline rule below the row. Long
+    reason/action text wraps to a second line instead of being clipped
+    mid-word; anything still over budget truncates at a word boundary."""
 
     CARD_H = 84
+    LINE_H = 10
     PAD_LEFT = 30
     PAD_TOP = 12
     PAD_RIGHT = 8
     TAG_W = 44
     TAG_H = 13
+    TEXT_FONT = 'IBMPlexSans'
+    TEXT_SIZE = 8
+    MAX_LINES = 2
 
     _MINT = HexColor(DELTA_UP)
     _RED = HexColor(RUST)
@@ -177,21 +216,34 @@ class _InsightCard(Flowable):
         self.insight = insight
         self.index = index
         self._width = width or (PAGE_WIDTH - 2 * MARGIN)
+        self._reason_lines = []
+        self._action_lines = []
+        self._layout_text()
+
+    def _layout_text(self):
+        ins = self.insight
+        reason = str(ins.get('reason', '') or '')
+        action = str(ins.get('action', '') or '')
+        avail_w = self._width - self.PAD_LEFT - self.PAD_RIGHT
+        self._reason_lines = _fit_text_lines(
+            reason, self.TEXT_FONT, self.TEXT_SIZE, avail_w, self.MAX_LINES)
+        self._action_lines = _fit_text_lines(
+            '\u2192 ' + action, self.TEXT_FONT, self.TEXT_SIZE, avail_w, self.MAX_LINES)
 
     def wrap(self, availWidth, availHeight):
-        return (self._width, self.CARD_H)
+        extra = (len(self._reason_lines) - 1) + (len(self._action_lines) - 1)
+        return (self._width, self.CARD_H + extra * self.LINE_H)
 
     def draw(self):
         ins = self.insight
         kpi = str(ins.get('kpi', '') or '')
         number = str(ins.get('number', '') or '')
-        reason = str(ins.get('reason', '') or '')
-        action = str(ins.get('action', '') or '')
         priority = str(ins.get('priority', 'medium')).lower()
 
         priority_color = self._PRIORITY_COLORS.get(priority, self._AMBER)
         w = self._width
         c = self.canv
+        h = self.height
         c.saveState()
 
         # hairline below the ledger row
@@ -202,19 +254,18 @@ class _InsightCard(Flowable):
         # index — serif, muted
         c.setFillColor(self._GRAY)
         c.setFont('Fraunces-Medium', 14)
-        c.drawString(0, self.CARD_H - 26, str(self.index).zfill(2))
+        c.drawString(0, h - 26, str(self.index).zfill(2))
 
         text_x = self.PAD_LEFT
-        max_chars = int((w - text_x - self.TAG_W - self.PAD_RIGHT - 10) / 4.5)
 
         # KPI name
         c.setFillColor(self._INK)
         c.setFont('IBMPlexSans-Bold', 9.5)
-        c.drawString(text_x, self.CARD_H - self.PAD_TOP - 8, kpi)
+        c.drawString(text_x, h - self.PAD_TOP - 8, kpi)
 
         # Severity tag (top right)
         tag_x = w - self.TAG_W - self.PAD_RIGHT
-        tag_y = self.CARD_H - self.PAD_TOP - 11
+        tag_y = h - self.PAD_TOP - 11
         c.setFillColor(priority_color)
         c.roundRect(tag_x, tag_y, self.TAG_W, self.TAG_H, 6.5, fill=1, stroke=0)
         c.setFillColor(self._WHITE)
@@ -224,22 +275,21 @@ class _InsightCard(Flowable):
         # Number — mono bold
         c.setFillColor(self._INK)
         c.setFont('IBMPlexMono-Bold', 13)
-        c.drawString(text_x, self.CARD_H - self.PAD_TOP - 24, number)
+        c.drawString(text_x, h - self.PAD_TOP - 24, number)
 
-        # Reason
+        # Reason — wrapped, muted
         c.setFillColor(self._GRAY)
-        c.setFont('IBMPlexSans', 8)
-        truncated = reason[:max_chars] + '\u2026' if len(reason) > max_chars else reason
-        c.drawString(text_x, self.CARD_H - self.PAD_TOP - 39, truncated)
+        c.setFont(self.TEXT_FONT, self.TEXT_SIZE)
+        reason_y = h - self.PAD_TOP - 39
+        for i, line in enumerate(self._reason_lines):
+            c.drawString(text_x, reason_y - i * self.LINE_H, line)
 
-        # Action — arrowed, mint
+        # Action — arrowed, mint, wrapped
         c.setFillColor(self._MINT)
-        c.setFont('IBMPlexSans', 8)
-        max_action = int((w - text_x - self.PAD_RIGHT) / 4.5)
-        action_text = '\u2192 ' + action
-        if len(action_text) > max_action:
-            action_text = action_text[:max_action] + '\u2026'
-        c.drawString(text_x, self.CARD_H - self.PAD_TOP - 53, action_text)
+        c.setFont(self.TEXT_FONT, self.TEXT_SIZE)
+        action_y = reason_y - len(self._reason_lines) * self.LINE_H
+        for i, line in enumerate(self._action_lines):
+            c.drawString(text_x, action_y - i * self.LINE_H, line)
 
         c.restoreState()
 

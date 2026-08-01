@@ -128,8 +128,8 @@ function ReportPreviewCard() {
       overflow-hidden
       bg-white">
       <img
-        src="/sample-report-cover.webp"
-        alt="Sample Naxely report — Agency Billable Hours for Acme Agency, generated from a CSV in under a minute"
+        src="/sample-report-charts.webp"
+        alt="Sample Naxely report — Charts & Visualizations page showing despined charts with mono labels and data-driven captions, generated from a CSV in under a minute"
         width={1654}
         height={2339}
         className="block w-full h-auto"

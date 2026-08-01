@@ -1500,6 +1500,74 @@ class TestInsightLedgerRow:
             except OSError:
                 pass
 
+    def test_fit_text_lines_truncates_at_word_boundary(self):
+        """Long AI text must wrap to at most MAX_LINES and any ellipsis must
+        follow a whole word — never a mid-word cut."""
+        from reportlab.pdfbase import pdfmetrics as pm
+        from app.services.pdf_service import _fit_text_lines
+
+        font, size, width, max_lines = 'IBMPlexSans', 8, 477, 2
+        words = [f'word{i:03d}' for i in range(300)]
+        long_text = ' '.join(words)
+        lines = _fit_text_lines(long_text, font, size, width, max_lines)
+        assert len(lines) == 2, f"expected exactly {max_lines} lines, got {len(lines)}"
+        assert lines[1].endswith('\u2026'), f"long text should end with ellipsis, got: {lines[1][-40:]}"
+        assert all(pm.stringWidth(l, font, size) <= width for l in lines), "a wrapped line overflowed the box"
+
+        # Word-boundary guarantee: every emitted line is a contiguous slice of
+        # whole input words (ellipsis truncated last line included).
+        slices = {' '.join(words[i:j]) for i in range(len(words)) for j in range(i, len(words) + 1)}
+        assert lines[0] in slices, f"first line splits a word: …{lines[0][-30:]}"
+        core = lines[1][:-1]  # drop the trailing ellipsis
+        assert core in slices, f"truncated line splits a word: …{core[-30:]}"
+
+        # Short text is left untouched (no ellipsis, no wrapping needed)
+        short = _fit_text_lines('A short reason.', font, size, width, max_lines)
+        assert short == ['A short reason.'] and not short[-1].endswith('\u2026')
+
+    def test_long_insight_pdf_text_wraps_without_mid_word_cut(self):
+        """The rendered insight page must show the wrapped reason (not clipped
+        mid-word) and the action arrow intact."""
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({"Revenue": [5000, 5200]})
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Insight Wrap Test",
+            "sections": ["insights"],
+            "report_id": "test-ledger-insight-wrap",
+        }
+        reason = ("This is an unusually long insight reason produced by the language model that "
+                  "keeps going on and on about the underlying driver behind the recent decline in "
+                  "billable output across the entire agency portfolio and how it relates to staffing "
+                  "levels and utilization rates over the whole reporting period under review.")
+        action = ("Launch an aggressive utilization improvement program across every single team "
+                  "and every single project right away to lift average weekly hours back toward the "
+                  "seven hour target and stop the decline before it compounds further next quarter")
+        ai_content = {
+            "summary": None,
+            "insights": [{"kpi": "Revenue", "number": "$5,200", "reason": reason,
+                          "action": action, "sentiment": "negative", "priority": "high"}],
+            "anomalies": [],
+            "trends": [],
+            "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = doc[2].get_text()
+            doc.close()
+            assert '\u2026' in text, "long insight text should truncate with an ellipsis"
+            assert "decline in billable" in text, "wrapped reason line missing from page"
+            assert '\u2192' in text, "arrowed action missing"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
 
 class TestRecommendationDisplayNumbering:
     """Recommendation numbering must be rendered in Fraunces at display size

@@ -73,7 +73,7 @@ config = {
     'report_id': REPORT_ID,
     'date_column': date_column,
     'metric_columns': metric_columns,
-    'sections': ['executive_summary', 'key_metrics', 'charts', 'insights', 'recommendations', 'anomalies', 'data_table'],
+    'sections': ['executive_summary', 'kpi_overview', 'charts', 'insights', 'recommendations', 'anomalies', 'data_table'],
     'brand': {'color': '#D97A34'},
     'column_config': [],
 }
@@ -102,27 +102,47 @@ chart_paths = chart_service.generate_sync(
     chart_specs=chart_specs,
 )
 
-# ---- Generate real AI content ----
+# ---- Generate real AI content (mirrors report_service resilience) ----
 async def _generate_ai():
-    summary = await ai_service.generate_summary(df_norm, config, _mock_user)
-    insights = await ai_service.generate_nra_insights(df_norm, config, _mock_user)
-    recommendations = await ai_service.generate_recommendations(df_norm, config, _mock_user)
-    anomalies = ai_service.detect_anomalies(df_norm)
-    return summary, insights, recommendations, anomalies
+    summary = insights = recommendations = None
+    anomalies = []
+    trends = []
+    try:
+        summary = await ai_service.generate_summary(df_norm, config, _mock_user)
+    except Exception as e:
+        print(f'  summary failed: {e}')
+    try:
+        insights = await ai_service.generate_nra_insights(df_norm, config, _mock_user)
+    except Exception as e:
+        print(f'  insights failed: {e}')
+    try:
+        recommendations = await ai_service.generate_recommendations(df_norm, config, _mock_user)
+    except Exception as e:
+        print(f'  recommendations failed: {e}')
+    try:
+        anomalies = ai_service.detect_anomalies(df_norm)
+    except Exception as e:
+        print(f'  anomalies failed: {e}')
+    try:
+        trends = ai_service.detect_trends(df_norm)
+    except Exception as e:
+        print(f'  trends failed: {e}')
+    return summary, insights, recommendations, anomalies, trends
 
-summary, insights, recommendations, anomalies = asyncio.run(_generate_ai())
+summary, insights, recommendations, anomalies, trends = asyncio.run(_generate_ai())
 
 print(f'  summary: {len(summary.full_text) if summary else 0} chars')
-print(f'  insights: {len(insights)} cards')
-print(f'  recommendations: {len(recommendations)} items')
-print(f'  anomalies: {len(anomalies)} items')
+print(f'  insights: {len(insights or [])} cards')
+print(f'  recommendations: {len(recommendations or [])} items')
+print(f'  anomalies: {len(anomalies or [])} items')
+print(f'  trends: {len(trends or [])} items')
 
 ai_content = {
     'summary': summary,
-    'insights': insights,
-    'recommendations': recommendations,
-    'anomalies': anomalies,
-    'trends': [],
+    'insights': insights or [],
+    'recommendations': recommendations or [],
+    'anomalies': anomalies or [],
+    'trends': trends or [],
 }
 
 user_data = {
@@ -134,7 +154,7 @@ user_data = {
 
 pdf_path = pdf_service.build_sync(
     df=df,
-    chart_paths=[p for p, _ in chart_paths],
+    chart_paths=chart_paths,
     ai_content=ai_content,
     config=config,
     user_data=user_data,
