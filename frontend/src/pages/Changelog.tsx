@@ -4,6 +4,11 @@ import Navbar from '@/components/layout/Navbar'
 
 const entries = [
   {
+    date: 'August 1, 2026',
+    title: 'Redesigned PDF Reports',
+    description: 'Every generated report now uses a new visual system - cleaner charts, better-aligned data tables, and clearer typography throughout. You can also choose which charts appear in your report instead of Naxely picking a fixed set: Free includes 3, Pro up to 8, Agency unlimited.',
+  },
+  {
     date: 'July 29, 2026',
     title: 'Google Sheets Live Refresh',
     description: 'Previously, connecting a Google Sheet only pulled data once at import time — including for scheduled reports, which kept reusing that same snapshot even if the source Sheet changed. Reports now re-fetch the Sheet fresh at generation time (manual and scheduled), with a safe fallback to the last-known data if the live fetch fails.',
