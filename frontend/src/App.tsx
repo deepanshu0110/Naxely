@@ -23,6 +23,7 @@ const Contact = lazy(() => import('@/pages/Contact'))
 const Terms = lazy(() => import('@/pages/Terms'))
 const Privacy = lazy(() => import('@/pages/Privacy'))
 const Refund = lazy(() => import('@/pages/Refund'))
+const CookiePolicy = lazy(() => import('@/pages/CookiePolicy'))
 const Blog = lazy(() => import('@/pages/Blog'))
 const BlogPostByok = lazy(() => import('@/pages/BlogPostByok'))
 const BlogPostCsvToPdf = lazy(() => import('@/pages/BlogPostCsvToPdf'))
@@ -94,6 +95,7 @@ export const routes: RouteRecord[] = [
       { path: '/contact', element: <Contact /> },
       { path: '/terms', element: <Terms /> },
       { path: '/privacy', element: <Privacy /> },
+      { path: '/cookie-policy', element: <CookiePolicy /> },
       { path: '/refund', element: <Refund /> },
       { path: '/blog', element: <Blog /> },
       { path: '/blog/byok-ai-reporting-tool', element: <BlogPostByok /> },

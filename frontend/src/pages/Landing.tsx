@@ -925,6 +925,9 @@ export default function Landing() {
               <Link to="/privacy" className="hover:text-ink">
                 Privacy Policy
               </Link>
+              <Link to="/cookie-policy" className="hover:text-ink">
+                Cookie Policy
+              </Link>
               <Link to="/terms" className="hover:text-ink">
                 Terms of Service
               </Link>

@@ -11,6 +11,7 @@ import Contact from '../Contact'
 import Terms from '../Terms'
 import Privacy from '../Privacy'
 import Refund from '../Refund'
+import CookiePolicy from '../CookiePolicy'
 import Blog from '../Blog'
 import BlogPostByok from '../BlogPostByok'
 import BlogPostClientReporting from '../BlogPostClientReporting'
@@ -68,6 +69,16 @@ describe('Refund', () => {
     expect(screen.getByText('Refund Policy')).toBeInTheDocument()
     expect(screen.getByText(/14-day money-back guarantee/)).toBeInTheDocument()
     expect(screen.getByText("What's Covered")).toBeInTheDocument()
+  })
+})
+
+describe('CookiePolicy', () => {
+  it('renders heading and cookie categories', () => {
+    renderWithRouter(CookiePolicy)
+    expect(screen.getByText('Cookie Policy')).toBeInTheDocument()
+    expect(screen.getByText('Necessary (Always Active)')).toBeInTheDocument()
+    expect(screen.getByText('Analytics')).toBeInTheDocument()
+    expect(screen.getByText(/how to change your consent/i)).toBeInTheDocument()
   })
 })
 
