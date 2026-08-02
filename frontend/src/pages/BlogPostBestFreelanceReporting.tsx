@@ -156,6 +156,26 @@ export default function BlogPostBestFreelanceReporting() {
 
           <p>No single tool covers every freelancer reporting scenario. The right combination often involves using a business management platform (Bonsai or Plutio) for operations alongside a dedicated reporting tool (DashThis for live data, Naxely for file-based data) for client deliverables. A free trial with your own data will reveal workflow fit faster than any feature comparison — test two tools that match your data source and delivery format before committing to an annual plan.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What is the best free client reporting tool for freelancers?</h3>
+          <p>Looker Studio (formerly Google Data Studio) is the most capable free option. It connects to Google Analytics, Google Ads, and other Google services, plus third-party connectors through its partner network. The tradeoff is that it requires DIY template building and manual branding effort. For freelancers who want ready-made reports without setup, Naxely's free tier (3 reports/month with AI insights) is an alternative.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What is the best client reporting tool for freelancers who manage ad accounts?</h3>
+          <p>DashThis is the strongest fit for freelancers who manage live ad accounts directly. Its Individual plan ($44/mo billed yearly, 3 dashboards, 15 sources) connects to all major ad platforms and analytics tools. Reports are live dashboards clients can visit anytime, with optional PDF export. The limitation is that white-label branding requires jumping to the Professional plan ($139/mo).</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Bonsai generate client reports?</h3>
+          <p>Bonsai is primarily a business management platform for freelancers — proposals, contracts, invoicing, and project management with time tracking. It provides financial reports like profit and productivity dashboards, but it does not generate branded client-facing marketing reports from external data sources. If you need proposals and invoicing alongside client reporting, you would typically use Bonsai for business ops and a separate reporting tool.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What is the best client reporting tool for freelancers using CSV and spreadsheet data?</h3>
+          <p>Naxely is built for this exact use case. Instead of connecting to ad-platform APIs, it generates branded PDF reports from CSV uploads or Google Sheets. The Free tier ($0, 3 reports/month) includes AI-written executive summaries and BYOK AI. Pro ($29/month) removes the watermark and adds scheduled reporting. The limitation is that Naxely produces PDF snapshots, not live dashboards — it fits when clients expect a finished document rather than real-time access.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is Plutio good for client reporting?</h3>
+          <p>Plutio is an all-in-one business management platform (projects, invoicing, proposals, CRM) with a reporting add-on. Its reports focus on internal business metrics — project profitability, time tracking, and financial overviews — rather than client-facing marketing reports. Plutio is best suited for freelancers who want one platform for client operations and need basic reporting on business performance, not for generating branded reports to deliver to clients.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Which client reporting tool is most affordable for freelancers?</h3>
+          <p>Looker Studio is free but requires DIY setup. Naxely's Free tier ($0, 3 reports/month) offers the lowest entry cost for ready-made reports with AI insights. Among paid options, Naxely Pro ($29/month) and DashThis Individual ($44/mo billed yearly) are the most affordable, with Very different workflows — file-based vs. live-connector — so the right choice depends on your data source rather than price alone.</p>
+
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try Naxely free &rarr;</Link>
           </div>

@@ -58,6 +58,20 @@ export default function BlogPostFlatPricing() {
           <p>For exact current pricing on individual platforms, see the comparison pages below &mdash; pricing in this category changes often enough that it's worth checking the specific breakdown rather than relying on general category patterns.</p>
           <p>To compare a flat-rate model against a live-dashboard platform, see <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs AgencyAnalytics</Link> for a side-by-side breakdown of the two approaches.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What’s the difference between flat-rate and per-client reporting tool pricing?</h3>
+          <p>Flat-rate pricing is based on usage volume or feature tier regardless of client count. Per-client (or per-dashboard) pricing scales directly with how many clients or dashboards you maintain, which can mean paying for unused capacity between pricing tiers.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is flat pricing always cheaper?</h3>
+          <p>Not necessarily — it depends on your actual usage. Flat pricing tends to be more predictable for agencies with many small clients; per-client pricing can be more cost-efficient if you have few clients with heavy dashboard needs.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Naxely price by number of clients?</h3>
+          <p>No — Naxely’s tiers (Free, Pro $29/month, Agency $79/month) are based on report volume and feature access, not client count.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Why do some tools price by dashboard count instead of flat rate?</h3>
+          <p>Live dashboards require an ongoing data connection and refresh cycle per client, which is a real infrastructure cost that scales with dashboard count — so that pricing model reflects actual resource usage for continuously-updated tools.</p>
+
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try Naxely free &rarr;</Link>
           </div>

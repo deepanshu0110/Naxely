@@ -60,6 +60,20 @@ export default function BlogPostClientReportChecklist() {
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Turning this into a repeatable process</h2>
           <p>Building this structure from scratch every month is the part that eats freelancers' and consultants' time. Naxely generates the executive summary, chart selection, and anomaly callouts automatically from an uploaded CSV or Google Sheet, so the structure above is the default output rather than something you rebuild by hand each time.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">How many metrics should a client report include?</h3>
+          <p>3–5 is the practical range. Fewer than 3 usually means the report lacks context; more than 5–6 starts to bury the point the client actually needs.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Should a client report include raw data?</h3>
+          <p>Generally no — a summary table of the key figures is enough. If a client specifically needs the raw export, send it as a separate attachment rather than folding it into the report itself.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What’s the difference between a metric and an insight?</h3>
+          <p>A metric is a number (“conversion rate: 3.2%”). An insight explains what it means (“conversion rate is up 0.4 points since the checkout redesign shipped”). Reports built from metrics alone read like spreadsheets; reports with insights read like advice.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">How long should a client report be?</h3>
+          <p>Long enough to cover the summary, key metrics, one or two charts, and a recommendation — usually 1–2 pages. Length isn’t the goal; clarity is.</p>
+
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try Naxely free &rarr;</Link>
           </div>

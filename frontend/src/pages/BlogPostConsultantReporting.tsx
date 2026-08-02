@@ -57,6 +57,20 @@ export default function BlogPostConsultantReporting() {
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Getting started</h2>
           <p>If your reporting work starts with a spreadsheet rather than an ad account, that's the signal to look at upload-first tools rather than marketing-dashboard platforms built for a different kind of client relationship.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Do I need to be in marketing to use a client reporting tool?</h3>
+          <p>No — tools that generate reports from uploaded CSV or spreadsheet data work for any kind of client-facing data work, not just marketing campaign reporting.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What’s the difference between a marketing dashboard tool and a general reporting tool?</h3>
+          <p>Marketing dashboard tools connect live to ad platforms (Google Ads, Meta Ads, etc.) for ongoing monitoring. General reporting tools like Naxely generate a report from data you already have in a file — no live connection required.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can I use a CSV-to-PDF tool for financial or operations data, not just marketing metrics?</h3>
+          <p>Yes — if the tool works from an uploaded file rather than a specific platform’s API, it doesn’t matter what kind of data is in the columns.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is BYOK relevant if I’m not doing marketing reporting?</h3>
+          <p>Yes — bring-your-own-API-key means you control the AI cost and provider regardless of what kind of data you’re analyzing; it’s not marketing-specific.</p>
+
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try Naxely free &rarr;</Link>
           </div>

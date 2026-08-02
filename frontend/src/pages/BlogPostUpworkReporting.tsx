@@ -54,6 +54,20 @@ export default function BlogPostUpworkReporting() {
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Where Naxely fits</h2>
           <p>Naxely's free tier includes 3 reports per month with no card required, which covers most single-contract reporting gigs without a subscription commitment. Upload a CSV or connect a Google Sheet, and the output is a branded PDF ready to deliver &mdash; no client-side login, no integration setup on their end either.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a free client reporting tool for one-off Upwork gigs?</h3>
+          <p>Naxely’s free tier includes 3 reports/month with no credit card required, which fits a single reporting contract without a subscription.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Do I need to set up integrations for each new client?</h3>
+          <p>Not with upload-based tools — you upload whatever CSV or spreadsheet the client provides, without connecting to their internal systems or ad accounts.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What format should I deliver a client report in on freelance platforms?</h3>
+          <p>A PDF is the most portable option — the client can download it directly without needing to log into a separate dashboard tool.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">How do I decide whether to pay for a reporting tool or use spreadsheets for a single gig?</h3>
+          <p>If the tool has a genuine free tier that covers your report volume, there’s no reason to pay for a one-off contract — reserve paid tiers for recurring client work.</p>
+
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try Naxely free &rarr;</Link>
           </div>
