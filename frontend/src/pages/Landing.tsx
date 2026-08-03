@@ -967,6 +967,12 @@ export default function Landing() {
               <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="160" height="54" />
               </a>
+              <a href="https://auraplusplus.com/projects/naxely-automated-client-report-generator" target="_blank" rel="noopener noreferrer">
+                <img src="/aura-plusplus-top1-dark.svg" alt="Aura++ Top 1 Daily Winner" width="195" height="44" />
+              </a>
+              <a href="https://open-launch.com/projects/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="/open-launch-top3-dark.svg" alt="Open-Launch Top 3 Daily Winner" width="195" height="44" />
+              </a>
               <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
                 <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
               </div>
@@ -1074,6 +1080,12 @@ export default function Landing() {
               </a>
               <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="160" height="54" />
+              </a>
+              <a href="https://auraplusplus.com/projects/naxely-automated-client-report-generator" target="_blank" rel="noopener noreferrer">
+                <img src="/aura-plusplus-top1-dark.svg" alt="Aura++ Top 1 Daily Winner" width="195" height="44" />
+              </a>
+              <a href="https://open-launch.com/projects/naxely" target="_blank" rel="noopener noreferrer">
+                <img src="/open-launch-top3-dark.svg" alt="Open-Launch Top 3 Daily Winner" width="195" height="44" />
               </a>
               <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
                 <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
