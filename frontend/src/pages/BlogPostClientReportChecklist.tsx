@@ -59,6 +59,7 @@ export default function BlogPostClientReportChecklist() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Turning this into a repeatable process</h2>
           <p>Building this structure from scratch every month is the part that eats freelancers' and consultants' time. Naxely generates the executive summary, chart selection, and anomaly callouts automatically from an uploaded CSV or Google Sheet, so the structure above is the default output rather than something you rebuild by hand each time.</p>
+          <p>If you're still weighing which tool should own this process, our guide to <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline">choosing client reporting software</Link> covers how to evaluate options against a workflow like this.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
 

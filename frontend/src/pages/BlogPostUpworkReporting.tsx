@@ -44,6 +44,7 @@ export default function BlogPostUpworkReporting() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What to actually look for</h2>
           <p>Speed of first output matters more than depth of integration. If a tool takes 20 minutes to configure before it produces anything, that's 20 minutes you're not billing on a project that might only run a few hours total. Upload-and-generate tools skip the configuration step entirely &mdash; the client's data usually already exists as a spreadsheet or CSV export by the time it reaches you.</p>
+          <p>When you do compare options, our guide to <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline">choosing client reporting software</Link> walks through the full evaluation checklist.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Free tiers matter more here than in agency work</h2>
           <p>An agency with recurring clients can justify a monthly subscription because the tool gets reused every cycle. A platform freelancer taking on a single reporting gig can't always justify $29&ndash;79/month for a one-time deliverable. A genuine free tier &mdash; not a 14-day trial &mdash; lets you test whether a tool fits a specific project without upfront cost.</p>

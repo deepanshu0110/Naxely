@@ -20,6 +20,9 @@ export default function BlogPostWhiteLabel() {
         <meta name="twitter:description" content="Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"White-Label Client Reporting for Agencies","description":"Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead.","url":"https://www.naxely.com/blog/white-label-client-reporting-agencies","datePublished":"2026-07-05T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+          {"@type":"Question","name":"Is this the same as white label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes \u2014 white label reporting and white label client reporting are the same thing: reports delivered to clients with your agency\u2019s branding and no trace of the software vendor\u2019s."}}
+        ]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
@@ -108,6 +111,11 @@ export default function BlogPostWhiteLabel() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What should I do next?</h2>
           <p>Three things, together, that the existing market doesn't offer as a set: reporting that works from any data your client actually gives you, an AI layer with no hidden markup, and white-label output that doesn't require your highest-spending client alone to justify the tier. If you're rebuilding the same report by hand every month, <Link to="/signup" className="text-amber-600 hover:text-amber-700 underline">try it free</Link> — three reports a month, no credit card required. Or see <a href="/sample/report.pdf" className="text-amber-600 hover:text-amber-700 underline">an unedited sample report</a> before you commit to anything.</p>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is this the same as white label reporting?</h3>
+          <p>Yes — white label reporting and white label client reporting are the same thing: reports delivered to clients with your agency’s branding and no trace of the software vendor’s.</p>
 
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
