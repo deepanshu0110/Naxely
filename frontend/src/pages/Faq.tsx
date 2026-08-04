@@ -4,11 +4,11 @@ import Navbar from '@/components/layout/Navbar'
 const faqs = [
   {
     q: 'Can ChatGPT create a report?',
-    a: 'ChatGPT can help write report text if you paste in your data manually, but it won\'t generate charts, pull structured data from a CSV, or produce a branded PDF you can hand to a client. Naxely connects directly to your CSV or Google Sheet, builds the charts and analysis automatically, and outputs a finished PDF — no copy-pasting data into a chat window.',
+    a: 'ChatGPT can help write report text if you paste in your data manually, but it won\'t generate charts, pull structured data from a CSV, or produce a branded PDF you can hand to a client. Naxely connects directly to your CSV (or Google Sheet on Pro and above), builds the charts and analysis automatically, and outputs a finished PDF — no copy-pasting data into a chat window.',
   },
   {
     q: 'How do I generate a report with AI?',
-    a: 'Upload a CSV or connect a Google Sheet, map your columns, and Naxely\'s AI writes the executive summary, flags anomalies, and generates chart recommendations automatically. You review and adjust before exporting to PDF. Most reports take under a minute.',
+    a: 'Upload a CSV (or connect a Google Sheet on Pro and above), map your columns, and Naxely\'s AI writes the executive summary, flags anomalies, and generates chart recommendations automatically. You review and adjust before exporting to PDF. Most reports take under a minute.',
   },
   {
     q: 'Which AI tool is free to generate reports?',
@@ -32,7 +32,7 @@ const faqs = [
   },
   {
     q: 'Can I use AI to write a report from a Google Sheet?',
-    a: 'Yes — connect your Google Sheet directly, no need to export to CSV first. Naxely reads the data, generates charts, and writes the report the same way it would from an uploaded file.',
+    a: 'Yes — on Pro and above, connect your Google Sheet directly, no need to export to CSV first. Naxely reads the data, generates charts, and writes the report the same way it would from an uploaded file.',
   },
 ]
 

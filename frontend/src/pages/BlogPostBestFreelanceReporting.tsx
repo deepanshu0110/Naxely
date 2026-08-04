@@ -128,7 +128,7 @@ export default function BlogPostBestFreelanceReporting() {
 
           <p><strong>Pricing:</strong></p>
           <ul className="list-disc pl-5 space-y-1">
-            <li>Free: $0/month — 3 reports/month, CSV upload, Google Sheets connector, basic charts (bar, line, pie), PDF with watermark, BYOK AI key.</li>
+            <li>Free: $0/month — 3 reports/month, CSV upload, basic charts (bar, line, pie), PDF with watermark, BYOK AI key.</li>
             <li>Pro: $29/month — Unlimited reports, AI Executive Summary, AI Insight Cards, Anomaly Detection, 16 chart types, custom branding (logo + colour), no watermark, scheduled reports, shareable links.</li>
             <li>Agency: $79/month — Everything in Pro, PowerPoint export, full white-label reports (no Naxely branding), programmatic API access, priority support.</li>
           </ul>

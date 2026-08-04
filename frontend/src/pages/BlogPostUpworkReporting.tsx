@@ -53,7 +53,7 @@ export default function BlogPostUpworkReporting() {
           <p>However you generate it, the client-facing deliverable on freelance platforms is usually a PDF &mdash; something they can download, forward, or attach to a project completion message. Live dashboards that require the client to log into a separate tool add friction that most one-off platform clients won't want.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Where Naxely fits</h2>
-          <p>Naxely's free tier includes 3 reports per month with no card required, which covers most single-contract reporting gigs without a subscription commitment. Upload a CSV or connect a Google Sheet, and the output is a branded PDF ready to deliver &mdash; no client-side login, no integration setup on their end either.</p>
+          <p>Naxely's free tier includes 3 reports per month with no card required, which covers most single-contract reporting gigs without a subscription commitment. Upload a CSV (or connect a Google Sheet on Pro and above), and the output is a branded PDF ready to deliver &mdash; no client-side login, no integration setup on their end either.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
 

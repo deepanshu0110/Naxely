@@ -52,7 +52,6 @@ const plans = [
     features: [
       '3 reports/month',
       'CSV upload',
-      'Google Sheets connector',
       'Basic charts (bar, line, pie)',
       'PDF with watermark',
       'Use your own OpenAI key to keep AI costs low (optional)',
@@ -178,7 +177,7 @@ export default function Landing() {
         <meta name="twitter:description" content="Naxely is an AI client report generator that turns CSV or Google Sheets data into branded PDF reports in under a minute — with AI insights and charts built in." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"}]})}</script>
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload, Google Sheets connector, and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all tiers — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically in under a minute."}}]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on Pro and above — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically in under a minute."}}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"Naxely Demo — CSV to Client-Ready PDF Report in Under a Minute","description":"See how Naxely turns a raw CSV or Google Sheet into a branded PDF report with AI-written insights, automatically selected charts, and anomaly flags — in under 60 seconds.","thumbnailUrl":"https://www.naxely.com/naxely-demo-poster.jpg","uploadDate":"2026-07-23T00:00:00+05:30","duration":"PT2M55S","contentUrl":"https://www.naxely.com/naxely-demo.mp4"})}</script>
       </Head>
       <Navbar />
@@ -827,7 +826,7 @@ export default function Landing() {
                 <span className="text-amber-500 transition-transform group-open:rotate-180">▼</span>
               </summary>
               <p className="mt-3 text-sm text-ink/55 leading-relaxed">
-                Yes — the Free tier includes 3 reports/month with CSV upload, Google Sheets connector, and basic charts, no credit card required.
+                Yes — the Free tier includes 3 reports/month with CSV upload and basic charts, no credit card required.
               </p>
             </details>
             <details className="group cursor-pointer rounded-xl border border-gray-200 bg-paper p-5">
@@ -854,7 +853,7 @@ export default function Landing() {
                 <span className="text-amber-500 transition-transform group-open:rotate-180">▼</span>
               </summary>
               <p className="mt-3 text-sm text-ink/55 leading-relaxed">
-                Yes, on all tiers — paste a Sheets URL directly, no CSV export needed.
+                Yes, on Pro and above — paste a Sheets URL directly, no CSV export needed.
               </p>
             </details>
             <details className="group cursor-pointer rounded-xl border border-gray-200 bg-paper p-5">

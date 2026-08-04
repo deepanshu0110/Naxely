@@ -13,7 +13,6 @@ const plans = [
     features: [
       '3 reports/month',
       'CSV upload',
-      'Google Sheets connector',
       'Basic charts (bar, line, pie)',
       'PDF with watermark',
       'Use your own OpenAI key to keep AI costs low (optional)',
