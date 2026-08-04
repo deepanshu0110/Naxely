@@ -195,6 +195,33 @@ class TestPptxServiceUnit:
         assert "Total Revenue" in all_text
         assert "1.8K" in all_text
 
+    def test_kpi_trend_shows_qualifier(self):
+        """KPI trend % on the slide carries the same qualifier as the PDF
+        ('monthly trend' for trend_label='recent', 'first-to-last' for
+        'change'), so the two exports read consistently."""
+        from app.services.pptx_service import generate_pptx
+        config = _mock_config()
+        config["_precomputed_kpis"] = [
+            {"name": "Total Revenue", "value": "1.8K", "trend": "up", "trend_pct": 12.3, "trend_label": "recent"},
+            {"name": "Billable Rate", "value": "450", "trend": "down", "trend_pct": -5.0, "trend_label": "change"},
+        ]
+        result = generate_pptx(
+            df=_mock_df(),
+            chart_paths=[],
+            ai_content=_mock_ai_content(),
+            config=config,
+            user_data=_mock_user_data(),
+        )
+        prs = Presentation(io.BytesIO(result))
+        all_text = " ".join(
+            shape.text
+            for slide in prs.slides
+            for shape in slide.shapes
+            if shape.has_text_frame
+        )
+        assert "1.8K  \u2191 12.3% (monthly trend)" in all_text, all_text
+        assert "450  \u2193 -5.0% (first-to-last)" in all_text, all_text
+
     def test_ai_insight_text_appears_in_slides(self):
         """AI insight reason and action appear in slide text."""
         from app.services.pptx_service import generate_pptx

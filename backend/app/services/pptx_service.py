@@ -9,6 +9,8 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.util import Inches, Pt
 
+from app.services.pdf_service import _trend_qualifier
+
 logger = logging.getLogger(__name__)
 
 SLIDE_W = Inches(13.33)
@@ -149,7 +151,11 @@ def _build_kpi_slide(prs, kpis, brand_color):
             _add_textbox(slide, left + ACCENT_W + Inches(0.15), top + Inches(0.1), CARD_W - ACCENT_W - Inches(0.2), Inches(0.4), kpi.get("name", ""), font_size=13, bold=True, color=COLOR_INK)
 
             arrow = TREND_ARROW.get(trend, "\u2192")
-            value_text = f"{kpi.get('value', '')}  {arrow} {kpi.get('trend_pct', 0):.1f}%"
+            qualifier = _trend_qualifier(kpi.get('trend_label', ''))
+            trend_text = f"{kpi.get('trend_pct', 0):.1f}%" + (
+                f" ({qualifier})" if qualifier else ''
+            )
+            value_text = f"{kpi.get('value', '')}  {arrow} {trend_text}"
             _add_textbox(slide, left + ACCENT_W + Inches(0.15), top + Inches(0.55), CARD_W - ACCENT_W - Inches(0.2), Inches(0.6), value_text, font_size=22, bold=True, color=card_color, font_name="IBM Plex Mono")
 
 
