@@ -195,10 +195,16 @@ class TestPptxServiceUnit:
         assert "Total Revenue" in all_text
         assert "1.8K" in all_text
 
-    def test_kpi_trend_shows_qualifier(self):
-        """KPI trend % on the slide carries the same qualifier as the PDF
-        ('monthly trend' for trend_label='recent', 'first-to-last' for
-        'change'), so the two exports read consistently."""
+    def test_kpi_trend_qualifier_formatting_only(self):
+        """FORMAT-ONLY test: KPI trend % on the slide carries the same qualifier
+        as the PDF ('monthly trend' for trend_label='recent', 'first-to-last'
+        for 'change'), so the two exports read consistently.
+
+        NOTE: this injects _precomputed_kpis directly and therefore exercises
+        ONLY the slide rendering, never the data computation behind it. The
+        data-correctness contract (PDF and PPTX must show the SAME trend_pct
+        for the same report) is covered by
+        tests/services/test_pptx_pdf_kpi_parity.py."""
         from app.services.pptx_service import generate_pptx
         config = _mock_config()
         config["_precomputed_kpis"] = [

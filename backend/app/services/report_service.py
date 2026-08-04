@@ -78,6 +78,22 @@ def _has_ai_sections(config: dict) -> bool:
     return bool(sections & ai_sections)
 
 
+def _build_stored_config(config: dict, kpis: list) -> dict:
+    """Snapshot the in-memory pipeline config for persistence in the reports row.
+
+    Keeps the original request config plus the KPI results the PDF was built
+    from, so later exports (e.g. the PPTX route) reuse the exact same numbers
+    instead of recomputing on a different, date-blind code path. Per-run
+    transients (date detection, null counts, tier, AI-skip state) are dropped —
+    they are re-derived on every pipeline run and must not leak into reuse.
+    """
+    stored = dict(config)
+    for key in ("_raw_null_counts", "date_column", "_ai_skipped", "tier"):
+        stored.pop(key, None)
+    stored["_precomputed_kpis"] = kpis
+    return stored
+
+
 def _process_csv(df: pd.DataFrame, config: dict) -> tuple:
     column_config = config.get("column_config", [])
     if column_config:
@@ -113,6 +129,12 @@ def _process_csv(df: pd.DataFrame, config: dict) -> tuple:
 
 async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_bytes: bytes | None = None) -> None:
     start_time = time.monotonic()
+
+    # A retry reuses the stored config, which may carry _precomputed_kpis
+    # persisted by a previous run. KPIs must ALWAYS be recomputed from the
+    # current data during generation — the persisted dict is only for reuse by
+    # later exports (PPTX route), never as the source for a new pipeline run.
+    config.pop("_precomputed_kpis", None)
 
     chart_paths = []
     pdf_path = None
@@ -275,6 +297,11 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             "company_name": (user_data_row.get("company_name") if user_data_row else None),
         }
 
+        metric_cols = config.get('metric_columns') or [
+            c for c in df_norm.columns if pd.api.types.is_numeric_dtype(df_norm[c])
+        ]
+        config["metric_columns"] = metric_cols[:5]
+
         kpis = await loop.run_in_executor(
             None,
             pdf_service._compute_kpi_data,
@@ -369,6 +396,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 text("""
                     UPDATE reports SET
                         status = 'completed',
+                        config = :config,
                         pdf_url = :pdf_url,
                         ai_summary = :ai_summary,
                         ai_insights = :ai_insights,
@@ -383,6 +411,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     WHERE id = :rid
                 """),
                 {
+                    "config": json.dumps(_build_stored_config(config, kpis)),
                     "pdf_url": storage_path,
                     "ai_summary": ai_content.get("summary").full_text
                         if isinstance(ai_content.get("summary"), SummaryResult)

@@ -962,7 +962,13 @@ async def export_report_pptx(
     }
 
     try:
-        kpis = _compute_kpi_data(df_norm, config, ai_content, brand_color)
+        # Reuse the exact KPI dict the PDF pipeline computed and persisted
+        # (same numbers, same monthly-aggregate trend basis). Fall back to a
+        # from-scratch computation only for reports generated before the
+        # persistence change — their stored config has no _precomputed_kpis.
+        kpis = config.get("_precomputed_kpis")
+        if not kpis:
+            kpis = _compute_kpi_data(df_norm, config, ai_content, brand_color)
     except Exception:
         kpis = []
     logger.info(f"pptx export kpis: {kpis}  metric_columns={config.get('metric_columns')}  _precomputed_kpis={config.get('_precomputed_kpis')}")
