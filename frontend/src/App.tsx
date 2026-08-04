@@ -38,6 +38,7 @@ const BlogPostConsultantReporting = lazy(() => import('@/pages/BlogPostConsultan
 const BlogPostUpworkReporting = lazy(() => import('@/pages/BlogPostUpworkReporting'))
 const BlogPostFlatPricing = lazy(() => import('@/pages/BlogPostFlatPricing'))
 const BlogPostAnomalyDetection = lazy(() => import('@/pages/BlogPostAnomalyDetection'))
+const BlogPostGoogleSheets = lazy(() => import('@/pages/BlogPostGoogleSheets'))
 const ComparisonAgencyAnalytics = lazy(() => import('@/pages/ComparisonAgencyAnalytics'))
 const ComparisonDatabox = lazy(() => import('@/pages/ComparisonDatabox'))
 const ComparisonPowerdrill = lazy(() => import('@/pages/ComparisonPowerdrill'))
@@ -112,6 +113,7 @@ export const routes: RouteRecord[] = [
       { path: '/blog/client-reporting-tools-for-upwork-freelancer', element: <BlogPostUpworkReporting /> },
       { path: '/blog/client-reporting-tools-flat-pricing', element: <BlogPostFlatPricing /> },
       { path: '/blog/anomaly-detection-in-client-reports', element: <BlogPostAnomalyDetection /> },
+      { path: '/blog/google-sheets-client-reports', element: <BlogPostGoogleSheets /> },
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
       { path: '/compare/powerdrill', element: <ComparisonPowerdrill /> },

@@ -114,6 +114,7 @@ export default function BlogPostHub() {
           <p>This is where AI-assisted generation earns its place — not to replace your judgment about the client's business, but to remove the hour of manually writing commentary that follows the same pattern every cycle.</p>
           <p><em>For how anomaly detection works under the hood — the threshold, the tradeoffs, and what it can't do yet — see <Link to="/blog/anomaly-detection-in-client-reports" className="text-amber-600 hover:text-amber-700 underline">What Naxely's Anomaly Detection Actually Catches</Link>.</em></p>
           <p><em>For the mechanics of how CSV data becomes a finished PDF report, see <Link to="/blog/csv-to-pdf-report-generator" className="text-amber-600 hover:text-amber-700 underline">CSV to PDF Report Generator</Link>.</em></p>
+          <p><em>For how a connected Google Sheet stays current across scheduled report runs — the live refresh at generation time, the fallback behavior, and a real gap we fixed — see <Link to="/blog/google-sheets-client-reports" className="text-amber-600 hover:text-amber-700 underline">How Naxely Keeps Your Google Sheets Reports Current</Link>.</em></p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How does cost structure work: subscription vs AI markup vs BYOK?</h2>
           <p>Most AI-powered reporting tools charge two layers — a subscription fee plus a separate (often invisible) AI usage cost — while BYOK (bring-your-own-key) tools like Naxely charge a flat subscription with zero AI markup, letting you pay your chosen provider directly at cost.</p>
@@ -153,6 +154,8 @@ export default function BlogPostHub() {
 
           <p className="text-xs text-gray-400 space-x-2">
             <span>Related reading:</span>
+            <Link to="/blog/google-sheets-client-reports" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How Naxely Keeps Your Google Sheets Reports Current</Link>
+            <span className="text-gray-300">·</span>
             <Link to="/blog/anomaly-detection-in-client-reports" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">What Naxely's Anomaly Detection Actually Catches</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/byok-ai-reporting-tool" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Why BYOK AI Reporting Beats Built-In AI Markup</Link>

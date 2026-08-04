@@ -119,6 +119,8 @@ export default function BlogPostCsvToPdf() {
 
           <p className="text-xs text-gray-400 space-x-2">
             <span>Related reading:</span>
+            <Link to="/blog/google-sheets-client-reports" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How Naxely Keeps Your Google Sheets Reports Current</Link>
+            <span className="text-gray-300">·</span>
             <Link to="/blog/anomaly-detection-in-client-reports" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">What Naxely's Anomaly Detection Actually Catches</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/byok-ai-reporting-tool" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Why BYOK AI Reporting Beats Built-In AI Markup</Link>

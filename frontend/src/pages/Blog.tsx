@@ -13,6 +13,12 @@ interface Post {
 
 const posts: Post[] = [
   {
+    slug: 'google-sheets-client-reports',
+    title: "How Naxely Keeps Your Google Sheets Reports Current (Not Just a One-Time Import)",
+    excerpt: 'How Naxely keeps scheduled client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data, and a real gap we found and fixed.',
+    date: 'August 4, 2026',
+  },
+  {
     slug: 'anomaly-detection-in-client-reports',
     title: "What Naxely's Anomaly Detection Actually Catches (And What It Doesn't)",
     excerpt: 'How Naxely flags outliers in client reports — the 2 standard deviation threshold, the filtering that keeps flags useful, and what it can\'t do yet.',
