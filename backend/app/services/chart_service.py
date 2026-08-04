@@ -764,7 +764,8 @@ def build_chart_caption(df, x_col, y_col, chart_type) -> str:
             span = 'the period' if len(series) < 2 else f'{len(series)} points'
             return (
                 f"{y_col} {direction} from <b>{_fmt_caption_number(v0)}</b> "
-                f"to <b>{_fmt_caption_number(v1)}</b> across {span} ({sign}{pct:.0f}%)."
+                f"to <b>{_fmt_caption_number(v1)}</b> across {span} "
+                f"({sign}{pct:.0f}% from first to last)."
             )
 
         if chart_type == 'bar':

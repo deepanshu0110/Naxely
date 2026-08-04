@@ -546,3 +546,21 @@ class TestChartCaptions:
             assert "<b>" in caption, f"Bar caption should bold key figures, got: {caption!r}"
         finally:
             chart_service.cleanup_charts("test-caption-bar")
+
+
+class TestCaptionLabelsPercentageScope:
+    """Chart captions must state that the % is a first-to-last-plotted-point
+    measure, so the figure reads as a different metric from the
+    monthly-aggregate KPI trend instead of a silent contradiction."""
+
+    def test_line_caption_states_from_first_to_last(self):
+        from app.services import chart_service
+
+        df = pd.DataFrame({
+            "Date": pd.date_range("2026-01-12", periods=48, freq="D"),
+            "Revenue": list(range(348, 396)),
+        })
+        caption = chart_service.build_chart_caption(df, "Date", "Revenue", "line")
+        assert caption.startswith("Revenue rose from <b>348</b>")
+        assert "from first to last" in caption, caption
+        assert "across 48 points" in caption, caption

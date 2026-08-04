@@ -1569,6 +1569,146 @@ class TestInsightLedgerRow:
                 pass
 
 
+class TestTrendQualifierLabels:
+    """The Key Metrics % must carry a qualifier naming which calculation
+    produced it (monthly-aggregate trend vs raw first-to-last), so it never
+    silently contradicts a chart caption using the other measure."""
+
+    def test_ledger_and_cover_render_monthly_trend_qualifier(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Date": pd.date_range("2026-01-12", periods=48, freq="D"),
+            "Revenue": list(range(348, 396)),
+        })
+        config = {
+            "metric_columns": ["Revenue"],
+            "date_column": "Date",
+            "title": "Label Test",
+            "sections": ["kpi_overview"],
+            "report_id": "test-trend-label",
+        }
+        ai_content = {
+            "summary": None, "insights": [], "anomalies": [],
+            "trends": [], "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "\n".join(p.get_text() for p in doc)
+            doc.close()
+            assert "monthly trend" in text, f"trend qualifier missing from PDF:\n{text}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+
+class TestWordBoundaryTruncation:
+    """Anomaly messages and data-table cells must truncate at a word boundary
+    (the same guarantee insight cards got in da20c41), never a raw character
+    slice."""
+
+    def test_truncate_words_keeps_whole_words(self):
+        from app.services.pdf_service import _truncate_words
+
+        text = "Summer Sale Extended Launch Campaign 2026"
+        out = _truncate_words(text, 18)
+        words = text.split(' ')
+        prefixes = {' '.join(words[:i]) for i in range(len(words) + 1)}
+        assert out[:-1] in prefixes, f"mid-word cut: {out!r}"
+        assert out == "Summer Sale\u2026", out
+
+    def test_truncate_words_short_text_untouched(self):
+        from app.services.pdf_service import _truncate_words
+
+        assert _truncate_words("Short name", 18) == "Short name"
+
+    def test_truncate_words_unbreakable_word_falls_back_to_char_cut(self):
+        from app.services.pdf_service import _truncate_words
+
+        token = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        out = _truncate_words(token, 18)
+        assert out == token[:17] + '\u2026'
+
+    def test_anomaly_box_truncates_at_word_boundary_in_pdf(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        msg = ("This is an unusually long anomaly message that comfortably exceeds one "
+               "hundred twenty characters so the legacy character slice would cut straight "
+               "through the middle of a word when it reaches the end of the box budget")
+        assert len(msg) > 120, len(msg)
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Anomaly Wrap Test",
+            "sections": ["anomalies"],
+            "report_id": "test-anomaly-wrap",
+        }
+        ai_content = {
+            "summary": None, "insights": [], "trends": [], "recommendations": [],
+            "anomalies": [{"message": msg}],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df := pd.DataFrame({"Revenue": [100, 200]}), [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            page_text = "\n".join(p.get_text() for p in doc)
+            doc.close()
+            words = msg.split(' ')
+            prefixes = {' '.join(words[:i]) for i in range(len(words) + 1)}
+            found = False
+            for line in page_text.splitlines():
+                line = line.strip()
+                if line.endswith('\u2026'):
+                    core = line[:-1]
+                    assert core in prefixes, f"mid-word cut in anomaly box: {line!r}"
+                    found = True
+            assert found, f"no word-truncated anomaly line found:\n{page_text}"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+
+    def test_data_table_cell_truncates_at_word_boundary(self):
+        import fitz
+        from app.services.pdf_service import build_sync
+
+        df = pd.DataFrame({
+            "Revenue": [100, 200],
+            "Campaign Name": ["Summer Sale Extended Launch Campaign 2026", "AB" * 20],
+        })
+        config = {
+            "metric_columns": ["Revenue"],
+            "title": "Cell Wrap Test",
+            "sections": ["data_table"],
+            "report_id": "test-cell-wrap",
+        }
+        ai_content = {
+            "summary": None, "insights": [], "anomalies": [],
+            "trends": [], "recommendations": [],
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai_content, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = "\n".join(p.get_text() for p in doc)
+            doc.close()
+            assert "Summer Sale\u2026" in text, f"cell should end at a word boundary:\n{text}"
+            assert "Summer Sale Extended" not in text, "full untruncated cell leaked through"
+            assert "ABABABABABABABABA\u2026" in text, "unbreakable token fallback missing"
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+    """Recommendation numbering must be rendered in Fraunces at display size
+    (16pt), zero-padded, not the old tiny 12pt badge number."""
+
 class TestRecommendationDisplayNumbering:
     """Recommendation numbering must be rendered in Fraunces at display size
     (16pt), zero-padded, not the old tiny 12pt badge number."""

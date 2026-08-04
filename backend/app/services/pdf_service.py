@@ -145,6 +145,15 @@ class _KPIRow(Flowable):
         c.drawRightString(w, (h - 9) / 2 - 2,
                           f"{arrow} {sign} {abs(trend_pct):.1f}%")
 
+        # qualifier under the trend — labels which calculation produced the
+        # % (monthly-aggregate trend vs raw first-to-last), so the card never
+        # silently contradicts a chart caption that uses the other measure
+        qualifier = _trend_qualifier(self.kpi.get('trend_label', ''))
+        if qualifier:
+            c.setFillColor(HexColor(MUTED))
+            c.setFont('IBMPlexSans-Bold', 6.5)
+            c.drawRightString(w, 3, qualifier)
+
         c.restoreState()
 
 
@@ -179,6 +188,31 @@ def _fit_text_lines(text: str, font_name: str, font_size: float, max_width: floa
         if pdfmetrics.stringWidth(candidate, font_name, font_size) <= max_width:
             return head + [candidate]
     return head + ['\u2026']
+
+
+def _trend_qualifier(label: str) -> str:
+    """Human-readable qualifier for a KPI trend %. Maps the machine
+    `trend_label` ('recent' = monthly-aggregate trend, 'change' = raw
+    first-to-last) to the phrase printed under the Key Metrics %."""
+    return {
+        'recent': 'monthly trend',
+        'change': 'first-to-last',
+    }.get(label, label)
+
+
+def _truncate_words(text: str, limit: int) -> str:
+    """Truncate `text` to at most `limit` characters at a word boundary,
+    appending '…' — the char-based analogue of `_fit_text_lines` used where a
+    fixed budget (table cells) applies. A single unbreakable word wider than
+    the budget is cut at the limit rather than dropped."""
+    if len(text) <= limit:
+        return text
+    words = text.split(' ')
+    for n in range(len(words), 0, -1):
+        candidate = ' '.join(words[:n])
+        if len(candidate) <= limit - 1:
+            return candidate + '\u2026'
+    return text[:limit - 1] + '\u2026'
 
 
 class _InsightCard(Flowable):
@@ -365,7 +399,8 @@ class _AnomalyBox(Flowable):
         c.drawCentredString(7.5, 5.2, '!')
         c.setFillColor(HexColor(RUST))
         c.setFont('IBMPlexSans', 9.5)
-        c.drawString(20, 9, self.message[:120])
+        lines = _fit_text_lines(self.message, 'IBMPlexSans', 9.5, self._width - 20, 1)
+        c.drawString(20, 9, lines[0] if lines else '')
         c.restoreState()
 
 
@@ -767,7 +802,7 @@ def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) 
                 return f'{val:,.2f}' if val != int(val) else f'{int(val):,}'
             return f'{val:,}'
         text = str(val)
-        return text[:MAX_CELL_CHARS] + '\u2026' if len(text) > MAX_CELL_CHARS else text
+        return _truncate_words(text, MAX_CELL_CHARS)
 
     headers = [str(col).upper() for col in df.columns]
     rows = [[_fmt(row[col], col) for col in df.columns]
@@ -1023,6 +1058,11 @@ def build_sync(
                     p.close()
                 self.canv.setFillColor(self.arrow_color)
                 self.canv.drawPath(p, fill=1, stroke=0)
+                qualifier = _trend_qualifier(self.hero.get('trend_label', ''))
+                if qualifier:
+                    self.canv.setFillColor(HexColor(MUTED))
+                    self.canv.setFont('IBMPlexSans-Bold', 7.5)
+                    self.canv.drawCentredString(cx, 4, qualifier)
         story.append(_CoverHeroStat(hero, sign, trend_pct, arrow_color_hex, brand_color))
 
     story.append(Spacer(1, 24))
@@ -1136,6 +1176,10 @@ def build_sync(
                     pct = k.get('trend_pct', 0) or 0
                     sign = '+' if pct >= 0 else ''
                     trend_color = brand_color if pct >= 0 else RUST
+                    qualifier = _trend_qualifier(k.get('trend_label', ''))
+                    trend_text = f"{sign}{pct:.1f}%" + (
+                        f" ({qualifier})" if qualifier else ''
+                    )
                     stat_cols.append([
                         Paragraph(str(k['name']).upper(), ParagraphStyle(
                             'StatName',
@@ -1153,7 +1197,7 @@ def build_sync(
                             alignment=TA_CENTER,
                             leading=16,
                         )),
-                        Paragraph(f"{sign}{pct:.1f}%", ParagraphStyle(
+                        Paragraph(trend_text, ParagraphStyle(
                             'StatTrend',
                             fontName='IBMPlexSans-Bold',
                             fontSize=9,
