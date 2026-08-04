@@ -13,6 +13,12 @@ interface Post {
 
 const posts: Post[] = [
   {
+    slug: 'anomaly-detection-in-client-reports',
+    title: "What Naxely's Anomaly Detection Actually Catches (And What It Doesn't)",
+    excerpt: 'How Naxely flags outliers in client reports — the 2 standard deviation threshold, the filtering that keeps flags useful, and what it can\'t do yet.',
+    date: 'August 4, 2026',
+  },
+  {
     slug: 'two-weeks-building-naxely',
     title: 'What Two Weeks of Building a Client-Reporting Tool Actually Looked Like',
     excerpt: 'The real bugs, numbers, and decisions from the first two weeks after Naxely\'s Product Hunt launch — no polish, no inflated stats.',
