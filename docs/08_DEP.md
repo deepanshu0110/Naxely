@@ -9,8 +9,8 @@
 
 ```
 GitHub Repo (monorepo)
-├── /frontend  → Vercel (auto-deploy on push to main)
-└── /backend   → Render.com (auto-deploy on push to main)
+├── /frontend  → Vercel (auto-deploy on push to master)
+└── /backend   → Render.com (auto-deploy on push to master)
 
 External Services:
 ├── Supabase     → Database + Auth + Storage
@@ -72,7 +72,7 @@ name: Backend CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths: ['backend/**']
 
 jobs:
@@ -118,7 +118,7 @@ name: Frontend CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths: ['frontend/**']
 
 jobs:

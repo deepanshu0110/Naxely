@@ -627,7 +627,7 @@ allowed_origins = [
 
 ### 9.3 CI Pipeline (GitHub Actions)
 ```yaml
-On every push to main:
+On every push to master:
 1. Run pytest (backend)
 2. Run TypeScript type check (frontend)
 3. Run Vite build (frontend)

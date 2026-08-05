@@ -45,8 +45,8 @@ alembic upgrade head
 ```
 
 ## Deployment
-- Frontend auto-deploys to Vercel on push to `main`
-- Backend auto-deploys to Render.com on push to `main`
+- Frontend auto-deploys to Vercel on push to `master`
+- Backend auto-deploys to Render.com on push to `master`
 
 ## Environment Variables
 See `backend/.env.example` and `frontend/.env.example` for required variables.
