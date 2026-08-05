@@ -32,6 +32,8 @@ stats.json
 /tmp/
 *.pdf
 *.csv
+# Test fixtures are CSVs but must be tracked (CI checkout needs them)
+!backend/tests/fixtures/*.csv
 .vercel
 .env*
 
