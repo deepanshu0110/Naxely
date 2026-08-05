@@ -2,6 +2,8 @@ from datetime import datetime, timezone
 import logging
 import os
 
+# CI smoke-test marker: backend-ci.yml triggers on pushes touching backend/**
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
