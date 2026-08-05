@@ -1,5 +1,12 @@
 # Naxely — Master Design & Bug-Fix Prompt
 
+> [!IMPORTANT]
+> **HISTORICAL build archive — do not use for current work.** This is a
+> point-in-time prompt used for a design pass (indigo → amber rebrand era).
+> The current sources of truth are: the spec docs `docs/01_PRD.md`–
+> `docs/08_DEP.md` (with the corrected `05_ASD.md`), `DESIGN_SYSTEM.md`,
+> and `AGENTS.md`.
+
 You are executing a full design pass on Naxely, combining regression
 fixes with new visual identity work. Work through phases STRICTLY IN
 ORDER. After EACH phase: run the test suite, commit, and push so it

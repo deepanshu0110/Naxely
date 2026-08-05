@@ -207,11 +207,11 @@ DODO_AGENCY_PRODUCT_ID=prod_xxx
 
 # Email (Resend)
 RESEND_API_KEY=re_xxx
-FROM_EMAIL=hello@Naxely.io
+FROM_EMAIL=hello@naxely.com
 
 # App
 ENVIRONMENT=production
-ALLOWED_ORIGINS=https://Naxely.io,https://www.Naxely.io
+ALLOWED_ORIGINS=https://naxely.com,https://www.naxely.com
 SECRET_KEY=random-64-char-string
 TEMP_DIR=/tmp/Naxely
 
@@ -223,7 +223,7 @@ GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
 ```bash
 VITE_SUPABASE_URL=https://xxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGc...  # Anon key only (safe for frontend)
-VITE_API_BASE_URL=https://api.Naxely.io
+VITE_API_BASE_URL=https://api.naxely.com
 VITE_DODO_CLIENT_TOKEN=dodo_client_xxx
 VITE_ENVIRONMENT=production
 ```
@@ -524,7 +524,7 @@ This copies component source files into `src/components/ui/` — they become YOU
 |---|---|
 | Invalid API key | Return 400 with "Invalid API key — please check Settings" |
 | Rate limit hit | Return 429 with "AI service temporarily unavailable — try again in 60s" |
-| API key not set | Return 402 with "Add your API key in Settings to use AI features" |
+| API key not set | AI sections silently skipped — report generated without AI (no HTTP error; `ai_skipped=True`) |
 | Timeout (>30s) | Return 504 with "AI generation timed out — report saved without AI insights" |
 | Token limit exceeded | Truncate DataFrame to 1000 rows before sending to AI |
 
@@ -536,14 +536,14 @@ This copies component source files into `src/components/ui/` — they become YOU
 | Chart image resolution | 150 DPI (balance of quality vs file size) |
 | Max PDF file size | 15MB |
 | Temp chart storage | /tmp/Naxely/{report_id}/ — deleted after PDF built |
-| Font | Helvetica (built into ReportLab, no font embedding needed) |
+| Font | Fraunces (headings) + IBM Plex Sans/Mono (body) — TTFs embedded via `pdfmetrics.registerFont` (`pdf_service.py:43-52`) |
 
 ### 6.5 CORS Configuration
 ```python
 # FastAPI CORS settings
 allowed_origins = [
-    "https://Naxely.io",
-    "https://www.Naxely.io",
+    "https://naxely.com",
+    "https://www.naxely.com",
     "http://localhost:5173",  # Dev only
 ]
 # NEVER allow "*" in production
@@ -560,7 +560,7 @@ allowed_origins = [
 | 201 | Resource created |
 | 400 | Bad request (invalid file, bad CSV) |
 | 401 | Not authenticated |
-| 402 | Payment required (Pro feature, no subscription) |
+| 402 | Free monthly report cap reached (MONTHLY_LIMIT_REACHED) |
 | 403 | Forbidden (wrong tier, not authorised) |
 | 404 | Resource not found |
 | 422 | Validation error (Pydantic) |
@@ -582,7 +582,7 @@ allowed_origins = [
 - Every API call wrapped in try/catch
 - Network errors → "Connection error — please check your internet"
 - 401 errors → redirect to login
-- 402 errors → show upgrade modal
+- 402 (MONTHLY_LIMIT_REACHED) and 403 (UPGRADE_REQUIRED) errors → show upgrade modal
 - 500 errors → show "Something went wrong — our team has been notified" + Sentry capture
 - Never show raw Python tracebacks to users
 

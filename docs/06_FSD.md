@@ -21,10 +21,10 @@
 --color-text-secondary: #6B7280;
 --color-text-muted:     #9CA3AF;
 
-/* Accent (Indigo) */
---color-accent:         #6366F1;
---color-accent-hover:   #4F46E5;
---color-accent-light:   #EEF2FF;
+/* Accent (Amber) */
+--color-accent:         #D97A34;
+--color-accent-hover:   #C06A2E;
+--color-accent-light:   #FDF1E6;
 
 /* Semantic */
 --color-success:  #10B981;
@@ -45,7 +45,8 @@
 
 ### 1.2 Typography
 ```css
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+/* Display headings use 'Fraunces' (serif), per DESIGN_SYSTEM.md */
 
 --text-xs:   0.75rem;   /* 12px — labels, captions */
 --text-sm:   0.875rem;  /* 14px — body small, table */
@@ -93,8 +94,6 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 /settings/api-key          → API key management (protected)
 /settings/billing          → Billing + upgrade (protected)
 /settings/branding         → Brand settings (Pro, protected)
-/workspaces                → Workspace list (Agency, protected)
-/workspaces/:id            → Workspace detail (Agency, protected)
 /pricing                   → Pricing page (public)
 /404                       → Not found page
 ```
@@ -102,7 +101,6 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 **Route Guards:**
 - `/dashboard` and all `/report/*` → redirect to `/login` if not authenticated
 - `/settings/branding` → redirect to pricing if not Pro+
-- `/workspaces` and `/workspaces/:id` → redirect to pricing if not Agency
 - `/` → redirect to `/dashboard` if already authenticated
 - `/auth/callback` → Supabase handles the OAuth token exchange here, then redirects to `/dashboard`
 
@@ -135,13 +133,13 @@ export default function AuthCallback() {
 #### Navbar
 - Logo (left): "Naxely" wordmark
 - Links (centre): Features, Pricing, How it works
-- CTA (right): "Log in" (ghost) + "Start Free" (filled indigo button)
+- CTA (right): "Log in" (ghost) + "Start Free" (filled amber button)
 - Sticky on scroll
 
 #### Hero Section
 - Headline: "Turn raw data into a client-ready report in 2 minutes"
 - Subheadline: "Upload a CSV, get an AI-powered PDF report with insights, charts, and recommendations. No design skills needed."
-- CTA: "Start Free — No credit card required" (large indigo button)
+- CTA: "Start Free — No credit card required" (large amber button)
 - Social proof: "Join 1,000+ consultants and agencies" (update with real numbers)
 - Hero visual: Animated screenshot/mockup of a generated PDF report
 - Background: White with subtle grid pattern
@@ -228,7 +226,6 @@ export default function AuthCallback() {
   - Dashboard (all tiers)
   - New Report (all tiers)
   - Templates (Pro+ only — hidden with lock icon for free)
-  - Workspaces (Agency only — completely hidden for Free/Pro)
   - Settings (all tiers)
 - Usage bar: "2 of 3 free reports used" (progress bar, red when at 3) — Free tier only
 - Upgrade banner (if free tier): "Upgrade to Pro — Unlimited reports + AI insights"
@@ -238,7 +235,7 @@ export default function AuthCallback() {
 
 *Header row:*
 - Title: "Your Reports"
-- Button: "+ New Report" (indigo)
+- Button: "+ New Report" (amber)
 
 *If no reports (empty state):*
 - Illustration (simple SVG)
@@ -302,7 +299,7 @@ export default function AuthCallback() {
   - Company name input
   - Prepared by input
   - Preview: Mini cover page mockup updates live as they type
-- "Generate Report" button (large, indigo)
+- "Generate Report" button (large, amber)
 
 **Generation Loading Screen:**
 - Full-page loading with animated steps:
@@ -403,8 +400,6 @@ export default function AuthCallback() {
 - $79/month
 - Everything in Pro
 - White-label reports
-- 5 team seats
-- Client workspaces
 - PowerPoint export
 - API access
 - Scheduled reports

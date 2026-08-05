@@ -19,7 +19,7 @@
 - [x] **Low-risk exception:** `open(pdf_path, 'rb').read()` in `run_report_pipeline` (fast, local file)
 
 ## Security
-- [x] CORS restricted to `https://Naxely.io,https://www.Naxely.io` (production)
+- [x] CORS restricted to `https://naxely.com,https://www.naxely.com` (production)
 - [x] Rate limiting on: reports (10/min), webhook (20/min), API-key save (5/min)
 - [x] File upload validates MIME type + size cap (10MB) before storage
 - [x] No secrets hardcoded in source

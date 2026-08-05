@@ -192,7 +192,7 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: ALLOWED_ORIGINS
-        value: https://Naxely.io,https://www.Naxely.io
+        value: https://naxely.com,https://www.naxely.com
 ```
 
 ### 4.2 Render Free Tier Gotchas
@@ -238,10 +238,10 @@ services:
 ```
 
 ### 5.2 Custom Domain Setup
-1. Buy `Naxely.io` (Namecheap or Cloudflare)
+1. Buy `naxely.com` (Namecheap or Cloudflare)
 2. In Vercel: Add domain → get CNAME/A records
 3. In Namecheap: Add DNS records from Vercel
-4. In Render: Add custom domain `api.Naxely.io` → get CNAME
+4. In Render: Add custom domain `api.naxely.com` → get CNAME
 5. In Namecheap: Add CNAME `api → xxxx.onrender.com`
 6. SSL: Auto-provisioned by both Vercel and Render (Let's Encrypt)
 
@@ -258,8 +258,8 @@ services:
 ### 6.2 Auth Configuration
 ```
 Supabase Dashboard → Auth → Settings:
-- Site URL: https://Naxely.io
-- Redirect URLs: https://Naxely.io/auth/callback
+- Site URL: https://naxely.com
+- Redirect URLs: https://naxely.com/auth/callback
 - Email confirmations: ON
 - Google OAuth: Enable → add Client ID + Secret from Google Cloud Console
 ```
@@ -321,7 +321,7 @@ Product 2: Naxely Agency
 ### 7.3 Webhook Configuration
 ```
 Dodo Dashboard → Webhooks:
-- Endpoint URL: https://api.Naxely.io/payments/webhook
+- Endpoint URL: https://api.naxely.com/payments/webhook
 - Events to subscribe:
   ✅ subscription.created
   ✅ subscription.renewed
@@ -338,10 +338,10 @@ Dodo Dashboard → Webhooks:
 
 ### 8.1 Configuration
 1. Create account at resend.com
-2. Add domain: resend.com → Add `Naxely.io`
+2. Add domain: resend.com → Add `naxely.com`
 3. Add DNS records (SPF, DKIM, DMARC) in Namecheap
 4. Create API key → RESEND_API_KEY env var
-5. From address: `hello@Naxely.io`
+5. From address: `hello@naxely.com`
 
 ### 8.2 Email Templates (Transactional)
 | Template | Trigger | Subject |
@@ -375,8 +375,8 @@ sentry_sdk.init(
 ### 9.2 Uptime Robot
 ```
 Create 2 monitors:
-1. Frontend: https://Naxely.io — HTTP, every 5 min
-2. Backend: https://api.Naxely.io/health — HTTP, every 5 min
+1. Frontend: https://naxely.com — HTTP, every 5 min
+2. Backend: https://api.naxely.com/health — HTTP, every 5 min
 
 Alert: Email notification if down for 2+ consecutive checks
 ```
@@ -430,7 +430,7 @@ npm run dev  # Runs on http://localhost:5173
 ### 10.3 Development vs Production Differences
 | Setting | Development | Production |
 |---|---|---|
-| CORS origins | localhost:5173 added | Only Naxely.io |
+| CORS origins | localhost:5173 added | Only naxely.com |
 | AI calls | Real (use test key) | Real (user's key) |
 | Dodo Payments | Test mode | Live mode |
 | Sentry | Disabled | Enabled |
@@ -448,8 +448,8 @@ npm run dev  # Runs on http://localhost:5173
 - [ ] Storage buckets created + policies set
 - [ ] Google OAuth redirect URI set to production URL
 - [ ] Dodo Payments webhook pointing to production URL
-- [ ] Custom domain `Naxely.io` connected to Vercel
-- [ ] Custom domain `api.Naxely.io` connected to Render
+- [ ] Custom domain `naxely.com` connected to Vercel
+- [ ] Custom domain `api.naxely.com` connected to Render
 - [ ] SSL certificates active on both domains
 - [ ] Uptime Robot monitors active
 - [ ] Sentry project created + DSN set
@@ -575,7 +575,7 @@ DODO_AGENCY_PRODUCT_ID=prod_xxx
 
 # Email
 RESEND_API_KEY=re_xxx
-FROM_EMAIL=hello@Naxely.io
+FROM_EMAIL=hello@naxely.com
 
 # App
 ENVIRONMENT=development
@@ -601,7 +601,7 @@ VITE_ENVIRONMENT=development
 
 ---
 
-## 15. FRONTEND INDEX.HTML (Inter Font + Meta Tags)
+## 15. FRONTEND INDEX.HTML (Fraunces + IBM Plex Fonts + Meta Tags)
 
 ```html
 <!DOCTYPE html>
@@ -616,10 +616,10 @@ VITE_ENVIRONMENT=development
   <meta property="og:image" content="/og-image.png" />
   <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 
-  <!-- Inter font from Google Fonts (covers all weights needed) -->
+  <!-- Brand fonts: Fraunces (display) + IBM Plex Sans/Mono (body), per DESIGN_SYSTEM.md -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
 </head>
 <body>
   <div id="root"></div>
@@ -641,7 +641,7 @@ from app.main import app
 from app.core.config import settings
 
 TEST_USER_ID = "test-user-uuid-1234"
-TEST_USER_EMAIL = "test@Naxely.io"
+TEST_USER_EMAIL = "test@naxely.com"
 
 @pytest.fixture(scope="session")
 def anyio_backend():
@@ -729,11 +729,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Match FSD design system exactly
+        // Match DESIGN_SYSTEM.md design system exactly
         accent: {
-          DEFAULT: '#6366F1',
-          hover: '#4F46E5',
-          light: '#EEF2FF',
+          DEFAULT: '#D97A34',
+          hover: '#C06A2E',
+          light: '#FDF1E6',
         },
         brand: {
           bg: '#FFFFFF',
@@ -753,7 +753,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['IBM Plex Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
+        mono: ['IBM Plex Mono', 'monospace'],
       },
       borderRadius: {
         lg: '0.5rem',
@@ -846,7 +848,7 @@ Configure ALL of these in GitHub → Settings → Secrets → Actions:
 | `RENDER_DEPLOY_HOOK_URL` | https://api.render.com/deploy/srv-xxx?key=xxx | Backend deploy trigger |
 | `VITE_SUPABASE_URL` | https://xxxx.supabase.co | Frontend CI build |
 | `VITE_SUPABASE_ANON_KEY` | eyJhbGc... | Frontend CI build |
-| `VITE_API_BASE_URL` | https://api.Naxely.io | Frontend CI build |
+| `VITE_API_BASE_URL` | https://api.naxely.com | Frontend CI build |
 
 **How to get RENDER_DEPLOY_HOOK_URL:**
 Render.com → Your Service → Settings → Deploy Hook → Copy URL

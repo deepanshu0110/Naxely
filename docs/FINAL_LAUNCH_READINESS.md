@@ -210,12 +210,12 @@ Both wrapped in individual try/except so one failure doesn't block the other.
 
 | Item | Value |
 |------|-------|
-| `FROM_EMAIL` | `hello@Naxely.io` (custom domain) |
+| `FROM_EMAIL` | `hello@naxely.com` (custom domain) |
 | Resend requirement | Verified domain with SPF + DKIM |
 | Risk without | Payment failure/confirmation emails will be rejected or land in spam |
 
 **Action required before production deploy:**
-1. Log into Resend dashboard → Domains → verify `Naxely.io` shows "Verified" status
+1. Log into Resend dashboard → Domains → verify `naxely.com` shows "Verified" status
 2. If not verified, add the required DNS TXT records (SPF, DKIM, DMARC) to the domain's DNS provider
 3. Send a test email via Resend API to confirm deliverability
 
@@ -254,7 +254,7 @@ All 166 tests pass. All audit gap items (A1-A4) have been addressed with code ch
 ### ⚠️ Founder must do before flipping the switch
 
 1. **DATABASE_URL pooler** — change port `5432` → `6543` in Render dashboard
-2. **Resend domain verification** — verify `Naxely.io` has SPF/DKIM in Resend dashboard
+2. **Resend domain verification** — verify `naxely.com` has SPF/DKIM in Resend dashboard
 3. **Encryption key backup** — copy `MASTER_ENCRYPTION_KEY` to a password manager
 
 ### 📋 Known limitations (pre-existing, carry forward from P1-P9 audit)

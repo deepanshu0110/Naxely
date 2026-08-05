@@ -8,23 +8,41 @@
 ## 1. AUTHENTICATION SECURITY
 
 ### 1.1 JWT Token Handling
-- Tokens issued by Supabase Auth using **HS256** (HMAC-SHA256) with shared secret
-- ⚠️ NOT RS256 — the SEC doc previously stated RS256 incorrectly. Supabase uses HS256.
-- Backend validation uses `python-jose`:
+- Tokens issued by Supabase Auth using **RS256** (asymmetric)
+- ⚠️ NOT HS256 — the SEC doc previously stated HS256 incorrectly. We verify via
+  Supabase JWKS, there is no shared-secret verification.
+- Backend validation fetches the public key from Supabase's JWKS endpoint:
   ```python
-  from jose import jwt, JWTError
+  # app/core/security.py
+  import time, json
+  from urllib.request import urlopen       # module-level attribute
+  from jose import jwk, jwt, JWTError
+
+  _jwks: list[dict] = []
+  _jwks_fetched_at: float = 0
+  JWKS_CACHE_TTL = 3600                     # refetch no more than once/hour
+
+  def _get_jwks() -> list[dict]:
+      # {SUPABASE_URL}/auth/v1/.well-known/jwks.json, cached JWKS_CACHE_TTL sec
+      ...
+
   def verify_supabase_jwt(token: str) -> dict:
-      try:
-          payload = jwt.decode(
-              token,
-              settings.SUPABASE_JWT_SECRET,  # from env vars
-              algorithms=["HS256"],           # HS256 not RS256
-              options={"verify_aud": False}   # Supabase doesn't set audience
-          )
-          return payload
-      except JWTError:
-          raise HTTPException(status_code=401, detail="Invalid token")
+      header = jwt.get_unverified_header(token)
+      kid = header.get("kid")
+      keys = _get_jwks()
+      key_data = next(k for k in keys if k.get("kid") == kid)
+      key = jwk.construct(key_data)
+      payload = jwt.decode(
+          token,
+          key,
+          algorithms=[key_data["alg"]],     # RS256 (from JWK alg field)
+          options={"verify_aud": False},    # Supabase doesn't set audience
+      )
+      return payload
   ```
+  - `SUPABASE_JWT_SECRET` is NO LONGER used for JWT verification — only the
+    public JWKS key, fetched from `{SUPABASE_URL}/auth/v1/.well-known/jwks.json`
+    (cached for 1 hour, hard failure on first fetch).
 - Frontend: Store JWT in memory only (Zustand store) — NEVER in localStorage or cookies
 - Token refresh: Supabase client handles auto-refresh silently
 - Token expiry: 1 hour (Supabase default)
@@ -33,7 +51,7 @@
 ### 1.2 Google OAuth Security
 - Use Supabase's built-in Google OAuth (handles PKCE flow)
 - Never handle OAuth tokens manually in frontend code
-- Redirect URI whitelist: only `https://Naxely.io/auth/callback`
+- Redirect URI whitelist: only `https://naxely.com/auth/callback`
 
 ### 1.3 Email/Password Rules
 - Minimum password length: 8 characters
@@ -109,15 +127,16 @@ def decrypt_api_key(encrypted_b64: str, iv_b64: str, master_key: bytes) -> str:
 - Uploaded to Supabase Storage (private bucket) via FastAPI backend (streamed in memory)
 - Files stored at: `uploads/{user_id}/{upload_id}/raw.csv` — uses upload_id NOT report_id (report doesn't exist yet)
 - Access: Only via service key (backend)
-- Retention: CSV deleted from storage immediately after report generation completes
+- Retention: CSV deleted from storage immediately after report generation completes (SDD step h)
 - Never stored in database rows (only storage path stored in uploads.file_url)
 
 ### 3.2 Generated Reports (PDFs)
 - Stored at path: `reports/{user_id}/{report_id}/report.pdf` (path stored in DB, NOT signed URL)
 - Signed URL generated FRESH on every GET /reports or GET /reports/{id} request (1-hour expiry)
 - Never cache signed URLs in the database — they expire and go stale
-- Shareable links: Separate token-based access (share_token in DB)
-- Retention: Kept for 90 days after creation, then auto-deleted
+- Shareable links: Separate token-based access (share_token in DB), default 30-day expiry
+- ⚠️ NO automatic report retention job exists — no 90-day auto-delete is implemented
+  (claimed previously but never shipped; no cleanup job in the codebase)
 
 ### 3.3 Temp Files (Report Generation)
 - Charts and intermediate files written to `/tmp/Naxely/{report_id}/`
@@ -138,19 +157,30 @@ def decrypt_api_key(encrypted_b64: str, iv_b64: str, master_key: bytes) -> str:
 ### 4.1 HTTPS
 - All endpoints: HTTPS only
 - HTTP requests auto-redirected to HTTPS (Vercel + Render handle this)
-- HSTS header: max-age=31536000; includeSubDomains
+- ⚠️ HSTS header is NOT currently emitted (not implemented in the FastAPI
+  middleware or platform config) — noted in the audit (F-33), not yet shipped
 
 ### 4.2 CORS
+Origins are env-driven, not hard-coded (`app/main.py`):
 ```python
+def _resolve_origins() -> list[str]:
+    raw = [o.strip() for o in settings.resolved_allowed_origins.split(",")]
+    expanded: list[str] = []
+    for origin in raw:
+        expanded.append(origin)
+        if origin == "https://naxely.com":
+            expanded.append("https://www.naxely.com")
+        elif origin == "http://localhost:5173":
+            expanded.append("http://localhost:3000")
+    return expanded
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://Naxely.io", "https://www.Naxely.io"],
+    allow_origins=_resolve_origins(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
-    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-API-Key"],
 )
-# Development only: add http://localhost:5173
-# NEVER add "*" in production
 ```
 
 ### 4.3 Security Headers (FastAPI)
@@ -168,20 +198,33 @@ Content-Security-Policy: default-src 'self'; script-src 'self'
 ## 5. PAYMENT SECURITY
 
 ### 5.1 Webhook Verification
+Verification uses the `standardwebhooks` library (Svix Standard Webhooks), not a
+custom HMAC:
 ```python
-import hmac, hashlib
+# app/api/routes/payments.py
+from standardwebhooks import Webhook as _Webhook
 
-def verify_dodo_webhook(payload: bytes, signature: str, secret: str) -> bool:
-    expected = hmac.new(
-        secret.encode(),
-        payload,
-        hashlib.sha256
-    ).hexdigest()
-    return hmac.compare_digest(expected, signature)
+@router.post("/webhook")
+@limiter.limit("20/minute")
+async def dodo_webhook(request: Request, db: AsyncSession = Depends(get_db)):
+    body = await request.body()
+    try:
+        _Webhook(settings.DODO_WEBHOOK_SECRET).verify(
+            body,
+            {
+                "webhook-id": request.headers.get("webhook-id", ""),
+                "webhook-signature": request.headers.get("webhook-signature", ""),
+                "webhook-timestamp": request.headers.get("webhook-timestamp", ""),
+            },
+        )
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid webhook signature")
 ```
+- Headers used: `webhook-id`, `webhook-signature`, `webhook-timestamp`
+  (NOT `X-Dodo-Signature`)
 - Reject webhook if signature invalid (return 400)
-- Accept webhook only from Dodo Payments IP ranges
-- Idempotency: Check dodo_event_id before processing (prevent duplicate processing)
+- Idempotency: Check dodo_event_id (`webhook-id`) before processing (prevent
+  duplicate processing) — `payment_events.dodo_event_id` unique
 
 ### 5.2 Payment Data
 - Never store card numbers, CVV, or any PAN data
@@ -264,7 +307,7 @@ VALID_KEY_PATTERNS = {
 | CSRF | Low | JWT bearer token auth (not cookies) — CSRF not applicable |
 | Webhook replay attack | Medium | Idempotency key check (dodo_event_id unique constraint) |
 | File path traversal | Medium | report_id is UUID — no user input in file paths |
-| Rate limit bypass | Low | Rate limiting per user_id (not IP, harder to bypass) |
+| Rate limit bypass | Low | Rate limiting per IP via slowapi (`@limiter.limit`, SlowAPIMiddleware) |
 | Brute force login | Medium | Supabase built-in lockout after 5 failures |
 | Data exfiltration | Medium | RLS policies, service key only on backend |
 | Shared report access | Low | Token is 64 random chars, expires in 30 days |

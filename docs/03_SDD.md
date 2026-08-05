@@ -63,7 +63,7 @@ POST /reports/generate
 Create report row (status='pending') in DB
                   │
                   ▼
-Return 202 + report_id to frontend (async)
+Return 200 + report_id to frontend (async)
                   │
                   ▼ (background task)
 ┌─── DATA SERVICE ────────────────────────┐
@@ -181,7 +181,7 @@ User Action              Frontend                    Backend
                                                   ↓ Fetch upload row → get file_url
                                                   ↓ Download CSV from Storage into memory
                                                   ↓ Background task starts
-                    ← 202 + report_id           ←
+                    ← 200 + report_id           ←
 
 5. Poll status      → GET /reports/{id}/status  → Return progress %
    (every 3 sec)    ← {status, step, percent}   ←
@@ -424,21 +424,23 @@ async def check_report_limit(current_user: User = Depends(get_current_user)):
                 detail={
                     "code": "MONTHLY_LIMIT_REACHED",
                     "message": "You've used all 3 free reports this month.",
-                    "upgrade_url": "https://Naxely.io/pricing"
+                    "upgrade_url": "https://naxely.com/pricing"
                 }
             )
 
-async def check_pro_tier(current_user: User = Depends(get_current_user)):
+async def require_pro_or_above(current_user: User = Depends(get_current_user)) -> User:
     """Dependency — inject into Pro-only endpoints"""
     if current_user.tier not in ('pro', 'agency'):
         raise HTTPException(
-            status_code=402,
+            status_code=403,
             detail={
-                "code": "PRO_REQUIRED",
-                "message": "This feature requires a Pro subscription.",
-                "upgrade_url": "https://Naxely.io/pricing"
+                "code": "UPGRADE_REQUIRED",
+                "message": "This feature requires a Pro plan.",
+                "current_tier": current_user.tier,
+                "required_tier": "pro"
             }
         )
+    return current_user
 
 # Called after SUCCESSFUL report completion (not on start — failed reports don't count)
 async def increment_report_count(user_id: str, db: AsyncSession):

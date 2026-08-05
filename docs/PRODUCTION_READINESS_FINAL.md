@@ -133,7 +133,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
 ```
-Production: `https://Naxely.io,https://www.Naxely.io`. Dev: `http://localhost:5173`. No wildcard.
+Production: `https://naxely.com,https://www.naxely.com`. Dev: `http://localhost:5173`. No wildcard.
 
 ### Rate limiting
 **Result:** ✅ Verified
@@ -407,7 +407,7 @@ Frontend `authStore.fetchProfile()` calls `GET /auth/verify` and works correctly
 **Result:** ✅ Verified — still correct
 
 Pricing.tsx: Pro and Agency buttons link to `/settings?tab=billing`
-Settings.tsx upgrade CompactPlanCard: links to `https://Naxely.io/pricing`
+Settings.tsx upgrade CompactPlanCard: links to `https://naxely.com/pricing`
 
 ### Full manual browser walkthrough
 **Result:** ⚠️ Not Verified — No staging/deployed URL exists

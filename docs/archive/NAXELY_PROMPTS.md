@@ -2,6 +2,14 @@
 > OpenCode Desktop App + NVIDIA NIM Provider | Version: FINAL (corrected) | June 2026
 > 14 Prompts covering every section of the app from setup to deployment
 
+> [!IMPORTANT]
+> **HISTORICAL build archive — do not use for current work.** This file is a
+> point-in-time record of how the app was built (June 2026) and contains
+> outdated details (NVIDIA NIM, indigo/Inter design, HS256, gpt-4o-mini,
+> 402 tier gating, Helvetica PDF fonts, `/workspaces` routes). The current
+> sources of truth are: the spec docs `docs/01_PRD.md`–`docs/08_DEP.md`
+> (with the corrected `05_ASD.md`), `DESIGN_SYSTEM.md`, and `AGENTS.md`.
+
 ---
 
 ## BEFORE YOU START — OpenCode Desktop Setup
@@ -696,7 +704,7 @@ DELETE /reports/{report_id}:
 POST /reports/{report_id}/share (Pro only):
   - Generate random 64-char token (secrets.token_urlsafe(48))
   - Set share_token, share_expires_at in DB
-  - Return share_url = f"https://Naxely.io/share/{token}"
+  - Return share_url = f"https://naxely.com/share/{token}"
 
 GET /share/{share_token} (PUBLIC — no auth):
   - Look up report by share_token

@@ -26,8 +26,8 @@ labels: ['deployment']
 - [ ] Dodo Payments webhook pointing to production URL
 
 ### Domains & SSL
-- [ ] Custom domain `Naxely.io` connected to Vercel
-- [ ] Custom domain `api.Naxely.io` connected to Render
+- [ ] Custom domain `naxely.com` connected to Vercel
+- [ ] Custom domain `api.naxely.com` connected to Render
 - [ ] SSL certificates active on both domains
 
 ### Monitoring
