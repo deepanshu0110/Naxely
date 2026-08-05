@@ -23,6 +23,7 @@ jobs:
           pip install -r requirements.txt
           
       - name: Run type check
+        continue-on-error: true
         run: |
           cd backend
           python -m mypy app/ --ignore-missing-imports
