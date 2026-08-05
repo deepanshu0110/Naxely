@@ -917,7 +917,7 @@ def _compute_kpi_data(df: pd.DataFrame, config: dict, ai_content: dict, brand_co
 
 def build_sync(
     df: pd.DataFrame,
-    chart_paths: list[str],
+    chart_paths: list[str] | list[tuple[str, str, str, str]],
     ai_content: dict,
     config: dict,
     user_data: dict,

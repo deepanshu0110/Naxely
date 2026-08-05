@@ -12,6 +12,7 @@ from app.api.deps import get_api_user, get_db
 from app.core.supabase_helpers import _run_sync, _get_supabase
 from app.services import data_service
 from app.services.report_service import run_report_pipeline
+from app.api.routes.reports import _generate_signed_url
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +118,6 @@ async def api_get_report_status(
     response_data = {"report_id": report_id, "status": row["status"]}
 
     if row["status"] == "completed" and row.get("pdf_url"):
-        from app.api.routes.reports import _generate_signed_url
         signed_url = await _generate_signed_url(row["pdf_url"])
         response_data["pdf_url"] = signed_url
         response_data["download_url"] = f"/v1/reports/{report_id}/download"

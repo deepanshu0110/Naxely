@@ -4,7 +4,8 @@ import logging
 import re
 import time
 from dataclasses import dataclass
-from typing import Optional
+from functools import partial
+from typing import Any, Optional, cast
 
 import numpy as np
 import pandas as pd
@@ -40,7 +41,7 @@ class SummaryResult:
     def __bool__(self) -> bool:
         return bool(self.full_text.strip())
 
-PROVIDER_CONFIG = {
+PROVIDER_CONFIG: dict[str, dict[str, str | None]] = {
     "gemini":    {"base_url": None,                              "model": "gemini-2.0-flash"},
     "openai":    {"base_url": "https://api.openai.com/v1",       "model": "gpt-4o"},
     "claude":    {"base_url": None,                              "model": "claude-sonnet-4-6"},
@@ -222,7 +223,7 @@ def call_claude(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
 
 def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{settings.GEMINI_MODEL}:generateContent?key={api_key}"
-    payload = {
+    payload: dict[str, Any] = {
         "system_instruction": {"parts": [{"text": system}]},
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
@@ -294,7 +295,7 @@ def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int
 
 def _round_stats(entry: dict) -> dict:
     """Round all float values in a column stats entry to 2 decimal places."""
-    rounded = {}
+    rounded: dict = {}
     for k, v in entry.items():
         if isinstance(v, float):
             rounded[k] = round(v, 2)
@@ -366,7 +367,7 @@ def _build_column_stats(df: pd.DataFrame, null_counts_override: dict | None = No
     }
 
 
-async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Optional[str]:
+async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Optional[SummaryResult]:
     try:
         provider, api_key, _ = get_user_api_key(user)
     except HTTPException:
@@ -470,7 +471,8 @@ async def generate_summary(df: pd.DataFrame, config: dict, user: User) -> Option
 
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(
-        None, _call_ai, provider, user_prompt, system_prompt, api_key,
+        None, partial(_call_ai, timeout=25),
+        cast(str, provider), user_prompt, system_prompt, api_key,
     )
     if not result:
         return None
@@ -531,7 +533,8 @@ async def generate_recommendations(df: pd.DataFrame, config: dict, user: User) -
 
     loop = asyncio.get_event_loop()
     raw = await loop.run_in_executor(
-        None, _call_ai, provider, user_prompt, system_prompt, api_key,
+        None, partial(_call_ai, timeout=25),
+        cast(str, provider), user_prompt, system_prompt, api_key,
     )
 
     try:
@@ -598,7 +601,8 @@ async def generate_nra_insights(df: pd.DataFrame, config: dict, user: User) -> l
     try:
         loop = asyncio.get_event_loop()
         raw = await loop.run_in_executor(
-            None, _call_ai, provider, user_prompt, system_prompt, api_key,
+            None, partial(_call_ai, timeout=25),
+            cast(str, provider), user_prompt, system_prompt, api_key,
         )
     except HTTPException:
         raise
@@ -649,7 +653,7 @@ def detect_anomalies(df: pd.DataFrame) -> list[dict]:
         col = str(anomaly.get('column', ''))
         val = anomaly.get('value')
         try:
-            val_key = str(round(float(val), 4)) if val is not None else ''
+            val_key = str(round(float(cast("float | int | str", val)), 4)) if val is not None else ''
         except (TypeError, ValueError):
             val_key = str(val)
         key = (col, val_key)

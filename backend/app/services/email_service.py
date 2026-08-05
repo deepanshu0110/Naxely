@@ -1,4 +1,5 @@
 import logging
+from typing import Any, cast
 
 from app.core.config import settings
 
@@ -33,7 +34,7 @@ def send_email(
         params["attachments"] = attachments
 
     try:
-        resend.Emails.send(params)
+        resend.Emails.send(cast(Any, params))
         logger.info("Email sent to %s — subject: %s", to, subject)
         return True
     except Exception as e:

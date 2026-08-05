@@ -6,6 +6,7 @@ matplotlib.use('Agg')
 
 import shutil
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -452,7 +453,7 @@ def _generate_single_chart(
                 else:
                     grouped = df.groupby(x_col)[y_col].mean()
                 grouped = grouped.sort_values(ascending=True)
-                freq_label = {'ME': 'Month', 'W': 'Week'}.get(freq)
+                freq_label = cast("dict[str | None, str]", {"ME": "Month", "W": "Week"}).get(freq)
                 if freq_label:
                     bar_labels = [d.strftime('%b %d, %Y') for d in grouped.index]
                 else:

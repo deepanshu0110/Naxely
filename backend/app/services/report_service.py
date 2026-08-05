@@ -4,6 +4,7 @@ import json
 import os
 import time
 import logging
+from typing import cast
 
 import pandas as pd
 import sentry_sdk
@@ -186,7 +187,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         loop = asyncio.get_event_loop()
 
         df = await loop.run_in_executor(
-            None, data_service.parse_csv, csv_bytes,
+            None, data_service.parse_csv, cast(bytes, csv_bytes),
         )
 
         df, df_norm = await loop.run_in_executor(None, _process_csv, df, config)
@@ -210,8 +211,8 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 chart_specs = chart_service.select_charts_with_ai(
                     df=df_norm,
                     config=config,
-                    provider=_provider,
-                    api_key=_api_key,
+                    provider=cast(str, _provider),
+                    api_key=cast(str, _api_key),
                     max_charts=chart_service.chart_cap_for_tier(user_tier),
                 )
             except Exception as e:
@@ -392,6 +393,8 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     trend_pct = round(((last - first) / abs(first)) * 100, 2)
 
         async with AsyncSessionLocal() as db:
+            summary = ai_content.get("summary")
+            ai_summary_stored = summary.full_text if isinstance(summary, SummaryResult) else summary
             await db.execute(
                 text("""
                     UPDATE reports SET
@@ -413,9 +416,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                 {
                     "config": json.dumps(_build_stored_config(config, kpis)),
                     "pdf_url": storage_path,
-                    "ai_summary": ai_content.get("summary").full_text
-                        if isinstance(ai_content.get("summary"), SummaryResult)
-                        else ai_content.get("summary"),
+                    "ai_summary": ai_summary_stored,
                     "ai_insights": json.dumps(ai_content.get("insights") or []),
                     "ai_anomalies": json.dumps(ai_content.get("anomalies") or []),
                     "gen_time": elapsed,

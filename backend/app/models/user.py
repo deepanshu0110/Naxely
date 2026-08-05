@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Integer, Text, text
+from sqlalchemy import Boolean, Column, String, DateTime, Integer, Text, text
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from sqlalchemy.orm import relationship
@@ -39,7 +39,7 @@ class User(Base, TimestampMixin):
     theme_preference = Column(String(10), default='light')
 
     # Onboarding
-    has_completed_onboarding = Column(default=False)
+    has_completed_onboarding = Column(Boolean, default=False)
 
     # Soft delete
     deleted_at = Column(DateTime(timezone=True))

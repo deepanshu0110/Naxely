@@ -2796,7 +2796,7 @@ class TestPreviewCharts:
             patch("app.api.routes.reports._run_sync", return_value=b"a,b\n1,2"),
             patch("app.api.routes.reports._get_supabase"),
             patch("app.api.routes.reports._process_csv", return_value=(MagicMock(), MagicMock())),
-            patch("app.api.routes.reports.ai_service_mod.get_user_api_key", return_value=("openai", "sk-test")),
+            patch("app.api.routes.reports.ai_service_mod.get_user_api_key", return_value=("openai", "sk-test", None)),
             patch("app.api.routes.reports.chart_service_mod.select_charts_with_ai", return_value=ai_specs),
         ):
             result = await preview_charts(body=body, current_user=user, db=db)
@@ -2844,7 +2844,7 @@ class TestPreviewCharts:
             patch("app.api.routes.reports._run_sync", return_value=b"Date,Sales,Category\n2024-01,100,A\n2024-02,200,B"),
             patch("app.api.routes.reports._get_supabase"),
             patch("app.api.routes.reports._process_csv", return_value=(MagicMock(), df_norm)),
-            patch("app.api.routes.reports.ai_service_mod.get_user_api_key", return_value=("openai", "sk-test")),
+            patch("app.api.routes.reports.ai_service_mod.get_user_api_key", return_value=("openai", "sk-test", None)),
             patch("app.api.routes.reports.chart_service_mod.select_charts_with_ai", side_effect=Exception("AI down")),
             patch("app.api.routes.reports.chart_service_mod._select_chart_pairs", return_value=[("Date", "Sales")]),
             patch("app.api.routes.reports.chart_service_mod.select_chart_type", return_value="bar"),

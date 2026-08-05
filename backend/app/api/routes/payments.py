@@ -1,7 +1,7 @@
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Dict, Any, Literal
+from typing import Dict, Any, Literal, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
@@ -24,8 +24,22 @@ router = APIRouter()
 
 dodo = AsyncDodoPayments(
     bearer_token=settings.DODO_API_KEY,
-    environment=settings.DODO_ENVIRONMENT,
+    environment=cast(Literal["live_mode", "test_mode"], settings.DODO_ENVIRONMENT),
 )
+
+
+def _dodo_sub_id(user: User) -> str:
+    """Return the raw Dodo subscription id string.
+
+    The ORM attribute is typed Column[str] by the SQLAlchemy mypy plugin, but at
+    runtime (inside a loaded session) it is a plain str. This cast is a no-op.
+    """
+    return cast(str, user.dodo_subscription_id)
+
+
+def _dodo_customer_id(user: User) -> str:
+    """Return the raw Dodo customer id string (see _dodo_sub_id for typing note)."""
+    return cast(str, user.dodo_customer_id)
 
 
 PLANS_DATA = [
@@ -122,7 +136,7 @@ async def create_checkout_session(
             if current_user.dodo_customer_id:
                 try:
                     session = await dodo.customers.customer_portal.create(
-                        customer_id=current_user.dodo_customer_id,
+                        customer_id=_dodo_customer_id(current_user),
                         return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing",
                     )
                 except Exception as e:
@@ -140,7 +154,7 @@ async def create_checkout_session(
 
             try:
                 await dodo.subscriptions.change_plan(
-                    subscription_id=current_user.dodo_subscription_id,
+                    subscription_id=_dodo_sub_id(current_user),
                     product_id=product_id,
                     proration_billing_mode="prorated_immediately",
                     quantity=1,
@@ -152,9 +166,9 @@ async def create_checkout_session(
             return {"checkout_url": ""}
 
     try:
-        session = await dodo.checkout_sessions.create(
+        checkout_session = await dodo.checkout_sessions.create(
             product_cart=[{"product_id": product_id, "quantity": 1}],
-            customer={"email": current_user.email, "name": current_user.full_name},
+            customer={"email": cast(str, current_user.email), "name": cast("str | None", current_user.full_name)},
             metadata={"user_id": str(current_user.id)},
             return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing&checkout=complete",
         )
@@ -162,7 +176,7 @@ async def create_checkout_session(
         logger.error("Dodo checkout error: %s", e)
         raise HTTPException(status_code=502, detail="Failed to create checkout session")
 
-    return {"checkout_url": session.checkout_url}
+    return {"checkout_url": cast(str, checkout_session.checkout_url)}
 
 
 @router.post("/webhook")
@@ -345,7 +359,7 @@ async def downgrade_subscription(
     # Pre-check: fetch current subscription state for pending changes
     try:
         sub = await dodo.subscriptions.retrieve(
-            subscription_id=current_user.dodo_subscription_id,
+            subscription_id=_dodo_sub_id(current_user),
         )
     except APIStatusError as e:
         raise _dodo_error_to_http(e)
@@ -376,7 +390,7 @@ async def downgrade_subscription(
     if body.plan == "free":
         try:
             await dodo.subscriptions.update(
-                subscription_id=current_user.dodo_subscription_id,
+                subscription_id=_dodo_sub_id(current_user),
                 cancel_at_next_billing_date=True,
             )
         except APIStatusError as e:
@@ -412,7 +426,7 @@ async def downgrade_subscription(
 
         try:
             await dodo.subscriptions.change_plan(
-                subscription_id=current_user.dodo_subscription_id,
+                subscription_id=_dodo_sub_id(current_user),
                 product_id=product_id,
                 quantity=1,
                 proration_billing_mode="full_immediately",
@@ -426,7 +440,7 @@ async def downgrade_subscription(
 
         try:
             sub = await dodo.subscriptions.retrieve(
-                subscription_id=current_user.dodo_subscription_id,
+                subscription_id=_dodo_sub_id(current_user),
             )
         except Exception as e:
             logger.error("Failed to retrieve subscription after downgrade: %s", e)
@@ -458,7 +472,7 @@ async def get_subscription_state(
 
     try:
         sub = await dodo.subscriptions.retrieve(
-            subscription_id=current_user.dodo_subscription_id,
+            subscription_id=_dodo_sub_id(current_user),
         )
     except Exception as e:
         logger.error("Failed to retrieve subscription: %s", e)
@@ -496,7 +510,7 @@ async def cancel_scheduled_change(
 
     try:
         sub = await dodo.subscriptions.retrieve(
-            subscription_id=current_user.dodo_subscription_id,
+            subscription_id=_dodo_sub_id(current_user),
         )
     except Exception as e:
         logger.error("Failed to retrieve subscription: %s", e)
@@ -505,7 +519,7 @@ async def cancel_scheduled_change(
     if sub.scheduled_change:
         try:
             await dodo.subscriptions.cancel_change_plan(
-                subscription_id=current_user.dodo_subscription_id,
+                subscription_id=_dodo_sub_id(current_user),
             )
         except Exception as e:
             logger.error("Failed to cancel scheduled change: %s", e)
@@ -516,7 +530,7 @@ async def cancel_scheduled_change(
     if sub.cancel_at_next_billing_date:
         try:
             await dodo.subscriptions.update(
-                subscription_id=current_user.dodo_subscription_id,
+                subscription_id=_dodo_sub_id(current_user),
                 cancel_at_next_billing_date=False,
             )
         except Exception as e:
@@ -541,7 +555,7 @@ async def cancel_subscription(
 
     try:
         await dodo.subscriptions.update(
-            subscription_id=current_user.dodo_subscription_id,
+            subscription_id=_dodo_sub_id(current_user),
             cancel_at_next_billing_date=True,
         )
     except Exception as e:

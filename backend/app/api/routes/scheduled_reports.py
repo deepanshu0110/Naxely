@@ -218,13 +218,13 @@ async def create_scheduled_report(
             {"path": storage_path, "rid": scheduled_report_id},
         )
         await db.commit()
-        row = dict(row)
-        row["csv_storage_path"] = storage_path
+        row_data = dict(row)
+        row_data["csv_storage_path"] = storage_path
     except Exception as e:
         logger.error("Failed to copy CSV for scheduled report %s: %s", scheduled_report_id, e)
         raise HTTPException(status_code=500, detail="Failed to copy CSV source")
 
-    return _row_to_response(row)
+    return _row_to_response(row_data)
 
 
 @router.get("/scheduled-reports", response_model=list[ScheduledReportResponse])

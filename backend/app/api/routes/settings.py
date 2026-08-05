@@ -1,10 +1,11 @@
 import re
 import logging
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional, cast
 
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy import text
+from sqlalchemy.engine import CursorResult, RowMapping
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 
@@ -61,7 +62,7 @@ def extract_brand_colors(image_bytes: bytes, n: int = 3) -> list[str]:
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = img.resize((150, 150), Image.Resampling.LANCZOS)
     quantized = img.quantize(colors=n, method=Image.Quantize.FASTOCTREE)
-    palette = quantized.getpalette()
+    palette = cast(list[int], quantized.getpalette())
     colors: list[str] = []
     for i in range(n):
         r, g, b = palette[i*3], palette[i*3+1], palette[i*3+2]
@@ -454,7 +455,7 @@ async def create_api_key(
         text("SELECT COUNT(*) FROM api_keys WHERE user_id = :uid AND revoked_at IS NULL"),
         {"uid": str(current_user.id)},
     )
-    count = count_result.scalar()
+    count = cast(int, count_result.scalar())
     if count >= 10:
         raise HTTPException(status_code=400, detail="Maximum of 10 active API keys allowed")
 
@@ -473,7 +474,7 @@ async def create_api_key(
         },
     )
     await db.commit()
-    row = result.mappings().first()
+    row = cast(RowMapping, result.mappings().first())
 
     created_at = row["created_at"].isoformat() if row.get("created_at") else None
 
@@ -530,7 +531,7 @@ async def revoke_api_key(
         """),
         {"id": str(key_id), "uid": str(current_user.id)},
     )
-    if result.rowcount == 0:
+    if cast(CursorResult, result).rowcount == 0:
         raise HTTPException(status_code=404, detail="API key not found or already revoked")
     await db.commit()
     return {"success": True, "message": "API key revoked"}

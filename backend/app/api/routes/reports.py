@@ -7,7 +7,7 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Literal
+from typing import Dict, Any, Optional, List, Literal, cast
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query, File, UploadFile, Request, Response
@@ -318,7 +318,7 @@ async def upload_file(
         user_id=str(current_user.id),
         csv_bytes=content,
         source_type=source_type,
-        filename=file.filename,
+        filename=cast(str, file.filename),
         df=df,
         file_ext=file_ext,
         content_type=content_type,
@@ -656,7 +656,7 @@ async def preview_charts(
     df, df_norm = _process_csv(df, config)
 
     chart_specs = None
-    tier_cap = chart_service_mod.chart_cap_for_tier(current_user.tier)
+    tier_cap = chart_service_mod.chart_cap_for_tier(cast("str | None", current_user.tier))
     try:
         user_result = await db.execute(
             text("SELECT * FROM users WHERE id = :uid"), {"uid": str(current_user.id)}
@@ -664,16 +664,17 @@ async def preview_charts(
         user_obj = _make_user_proxy(
             dict(user_result.mappings().first() or {})
         )
-        provider, api_key = ai_service_mod.get_user_api_key(user_obj)
-        chart_specs = chart_service_mod.select_charts_with_ai(
-            df=df_norm, config=config, provider=provider, api_key=api_key, max_charts=tier_cap,
-        )
+        _provider, _api_key, _ = ai_service_mod.get_user_api_key(user_obj)
+        if _provider and _api_key:
+            chart_specs = chart_service_mod.select_charts_with_ai(
+                df=df_norm, config=config, provider=_provider, api_key=_api_key, max_charts=tier_cap,
+            )
     except Exception:
         logger.warning("[preview_charts] AI chart selection failed, using rule-based fallback")
 
     if not chart_specs:
         metric_columns = [c for c in df_norm.columns if pd.api.types.is_numeric_dtype(df_norm[c])]
-        date_column = config.get("date_column")
+        date_column = cast("str | None", config.get("date_column"))
         dimension_columns = [
             c for c in df_norm.columns
             if c != date_column and not pd.api.types.is_numeric_dtype(df_norm[c]) and df_norm[c].nunique() <= 10
@@ -830,7 +831,7 @@ async def get_report_status(
     status_val = report["status"]
 
     if status_val == "completed":
-        pdf_url = ""
+        pdf_url: str | None = ""
         if report["pdf_url"]:
             pdf_url = await _generate_signed_url(report["pdf_url"])
         return {
@@ -872,7 +873,7 @@ async def get_report_status(
     }
 
     real_step = report.get("current_step") or ""
-    defaults = (10, "Initializing...", [],
+    defaults: tuple = (10, "Initializing...", [],
                 ["parsing", "charts", "ai_insights", "pdf_build"] if has_ai else ["parsing", "charts", "pdf_build"])
     progress_percent, current_step_label, steps_completed, steps_remaining = step_map.get(real_step, defaults)  # type: ignore[misc]
 
@@ -910,7 +911,7 @@ async def export_report_pptx(
     report = result.mappings().first()
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
-    report = dict(report)
+    report_dict = dict(report)
 
     user_row = await db.execute(
         text("SELECT brand_color, company_name, logo_url, tier FROM users WHERE id = :uid"),
@@ -926,7 +927,7 @@ async def export_report_pptx(
         "tier": "agency",
     }
 
-    config = report.get("config") or {}
+    config = report_dict.get("config") or {}
     if isinstance(config, str):
         try:
             config = json.loads(config)
@@ -953,11 +954,11 @@ async def export_report_pptx(
     for col in df_norm.select_dtypes(include=["object"]).columns:
         df_norm[col] = pd.to_numeric(df_norm[col], errors="ignore")
 
-    brand_color = user_data["brand_color"]
+    brand_color = cast(str, user_data["brand_color"])
     ai_content = {
-        "summary": report.get("ai_summary"),
-        "insights": report.get("ai_insights") or [],
-        "anomalies": report.get("ai_anomalies") or [],
+        "summary": report_dict.get("ai_summary"),
+        "insights": report_dict.get("ai_insights") or [],
+        "anomalies": report_dict.get("ai_anomalies") or [],
         "trends": [],
     }
 
@@ -973,7 +974,7 @@ async def export_report_pptx(
         kpis = []
     logger.info(f"pptx export kpis: {kpis}  metric_columns={config.get('metric_columns')}  _precomputed_kpis={config.get('_precomputed_kpis')}")
     config["_precomputed_kpis"] = kpis
-    config["_ai_skipped"] = report.get("ai_skipped", False)
+    config["_ai_skipped"] = report_dict.get("ai_skipped", False)
     config["report_id"] = report_id
     config["tier"] = current_user.tier
 
@@ -990,11 +991,13 @@ async def export_report_pptx(
         chart_paths = []
 
     seen = set()
-    chart_paths = [
-        p for p in chart_paths
-        if (key := p[1] if isinstance(p, tuple) else p) not in seen
-        and not seen.add(key)
-    ]
+    deduped: list[tuple[str, str, str, str]] = []
+    for p in chart_paths:
+        key = p[1] if isinstance(p, tuple) else p
+        if key not in seen:
+            seen.add(key)
+            deduped.append(p)
+    chart_paths = deduped
 
     pptx_bytes = await loop.run_in_executor(
         None,

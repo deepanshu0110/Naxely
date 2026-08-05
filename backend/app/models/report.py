@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Integer, Float, Text, ForeignKey
+from sqlalchemy import Boolean, Column, String, DateTime, Integer, Float, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 import uuid
 from sqlalchemy.orm import relationship
@@ -45,7 +45,7 @@ class Report(Base, TimestampMixin):
     error_message = Column(Text)
 
     # Data freshness
-    data_source_stale = Column(default=False)
+    data_source_stale = Column(Boolean, default=False)
     
     # Soft delete
     deleted_at = Column(DateTime(timezone=True))
