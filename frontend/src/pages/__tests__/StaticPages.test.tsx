@@ -2,7 +2,11 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-vi.mock('vite-react-ssg', () => ({ Head: () => null }))
+vi.mock('vite-react-ssg', () => ({
+  Head: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="ssg-head">{children}</div>
+  ),
+}))
 
 vi.mock('@/components/layout/Navbar', () => ({ default: () => <div>Navbar</div> }))
 
@@ -18,6 +22,20 @@ import BlogPostClientReporting from '../BlogPostClientReporting'
 import BlogPostCsvToPdf from '../BlogPostCsvToPdf'
 import BlogPostHub from '../BlogPostHub'
 import BlogPostWhiteLabel from '../BlogPostWhiteLabel'
+import BlogPostAnomalyDetection from '../BlogPostAnomalyDetection'
+import BlogPostBestFreelanceReporting from '../BlogPostBestFreelanceReporting'
+import BlogPostClientReportChecklist from '../BlogPostClientReportChecklist'
+import BlogPostConsultantReporting from '../BlogPostConsultantReporting'
+import BlogPostFlatPricing from '../BlogPostFlatPricing'
+import BlogPostGoogleSheets from '../BlogPostGoogleSheets'
+import BlogPostPythonCsvToPdf from '../BlogPostPythonCsvToPdf'
+import BlogPostTwoWeeks from '../BlogPostTwoWeeks'
+import BlogPostUpworkReporting from '../BlogPostUpworkReporting'
+import ComparisonAgencyAnalytics from '../ComparisonAgencyAnalytics'
+import ComparisonDatabox from '../ComparisonDatabox'
+import ComparisonDashThis from '../ComparisonDashThis'
+import ComparisonPowerdrill from '../ComparisonPowerdrill'
+import ComparisonWhatagraph from '../ComparisonWhatagraph'
 
 function renderWithRouter(Component: React.ComponentType) {
   return render(
@@ -123,6 +141,129 @@ describe('BlogPostHub', () => {
 describe('BlogPostWhiteLabel', () => {
   it('renders blog post heading', () => {
     renderWithRouter(BlogPostWhiteLabel)
-    expect(screen.getByText(/White Label Client Reporting for Agencies/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 1 }),
+    ).toHaveTextContent(/White Label Client Reporting for Agencies/)
+  })
+})
+
+const seoPages: Array<{
+  name: string
+  Component: React.ComponentType
+  canonicalPath: string
+  heading: RegExp
+}> = [
+  {
+    name: 'BlogPostAnomalyDetection',
+    Component: BlogPostAnomalyDetection,
+    canonicalPath: '/blog/anomaly-detection-in-client-reports',
+    heading: /Anomaly Detection Actually Catches/,
+  },
+  {
+    name: 'BlogPostBestFreelanceReporting',
+    Component: BlogPostBestFreelanceReporting,
+    canonicalPath: '/blog/best-client-reporting-software-freelancers',
+    heading: /Best Client Reporting Software for Freelancers/,
+  },
+  {
+    name: 'BlogPostClientReportChecklist',
+    Component: BlogPostClientReportChecklist,
+    canonicalPath: '/blog/what-should-client-report-include-checklist',
+    heading: /What Should a Client Report Actually Include/,
+  },
+  {
+    name: 'BlogPostConsultantReporting',
+    Component: BlogPostConsultantReporting,
+    canonicalPath: '/blog/client-reporting-for-freelance-consultants',
+    heading: /Client Reporting for Freelance Consultants/,
+  },
+  {
+    name: 'BlogPostFlatPricing',
+    Component: BlogPostFlatPricing,
+    canonicalPath: '/blog/client-reporting-tools-flat-pricing',
+    heading: /Reporting Tools With Flat Pricing/,
+  },
+  {
+    name: 'BlogPostGoogleSheets',
+    Component: BlogPostGoogleSheets,
+    canonicalPath: '/blog/google-sheets-client-reports',
+    heading: /Keeps Your Google Sheets Reports Current/,
+  },
+  {
+    name: 'BlogPostPythonCsvToPdf',
+    Component: BlogPostPythonCsvToPdf,
+    canonicalPath: '/blog/python-csv-to-pdf-reports',
+    heading: /Python CSV to PDF Reports/,
+  },
+  {
+    name: 'BlogPostTwoWeeks',
+    Component: BlogPostTwoWeeks,
+    canonicalPath: '/blog/two-weeks-building-naxely',
+    heading: /What Two Weeks of Building a Client-Reporting Tool/,
+  },
+  {
+    name: 'BlogPostUpworkReporting',
+    Component: BlogPostUpworkReporting,
+    canonicalPath: '/blog/client-reporting-tools-for-upwork-freelancer',
+    heading: /Client Reporting Tools for Upwork/,
+  },
+  {
+    name: 'ComparisonAgencyAnalytics',
+    Component: ComparisonAgencyAnalytics,
+    canonicalPath: '/compare/agencyanalytics',
+    heading: /Agency Analytics Alternative/,
+  },
+  {
+    name: 'ComparisonDatabox',
+    Component: ComparisonDatabox,
+    canonicalPath: '/compare/databox',
+    heading: /Naxely vs Databox/,
+  },
+  {
+    name: 'ComparisonDashThis',
+    Component: ComparisonDashThis,
+    canonicalPath: '/compare/dashthis',
+    heading: /Naxely vs DashThis/,
+  },
+  {
+    name: 'ComparisonPowerdrill',
+    Component: ComparisonPowerdrill,
+    canonicalPath: '/compare/powerdrill',
+    heading: /Naxely vs Powerdrill/,
+  },
+  {
+    name: 'ComparisonWhatagraph',
+    Component: ComparisonWhatagraph,
+    canonicalPath: '/compare/whatagraph',
+    heading: /Naxely vs Whatagraph/,
+  },
+]
+
+describe.each(seoPages)('$name smoke + SEO', ({ Component, canonicalPath, heading }) => {
+  it('renders without throwing and declares canonical URL', () => {
+    const { container } = renderWithRouter(Component)
+
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(heading)
+
+    const head = container.querySelector('[data-testid="ssg-head"]')
+    expect(head).not.toBeNull()
+    expect(head?.querySelector('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://www.naxely.com${canonicalPath}`,
+    )
+  })
+
+  it('declares valid JSON-LD schema', () => {
+    const { container } = renderWithRouter(Component)
+
+    const head = container.querySelector('[data-testid="ssg-head"]')
+    const scripts = head?.querySelectorAll('script[type="application/ld+json"]') ?? []
+    expect(scripts.length).toBeGreaterThan(0)
+
+    for (const script of scripts) {
+      const parsed = JSON.parse(script.textContent ?? '{}') as Record<string, unknown>
+      expect(parsed['@context']).toBe('https://schema.org')
+      expect(parsed['@type']).toBeTruthy()
+    }
   })
 })
