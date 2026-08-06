@@ -81,11 +81,13 @@ class _AsyncDB:
         self.results = results or [MagicMock()]
         self.call_count = 0
         self.executed_queries = []
+        self.executed_params = []
         self.committed = False
 
     async def execute(self, query, params=None):
         qs = str(query)
         self.executed_queries.append(qs)
+        self.executed_params.append(params or {})
         idx = self.call_count
         self.call_count += 1
         if idx < len(self.results):
@@ -110,6 +112,8 @@ class TestReportOwnership:
         with pytest.raises(HTTPException) as exc:
             await get_report_status("report-owned-by-a", current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_get_report_returns_404_for_other_users_report(self):
@@ -119,6 +123,8 @@ class TestReportOwnership:
         with pytest.raises(HTTPException) as exc:
             await get_report("report-owned-by-a", current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_delete_report_returns_404_for_other_users_report(self):
@@ -128,6 +134,8 @@ class TestReportOwnership:
         with pytest.raises(HTTPException) as exc:
             await delete_report("report-owned-by-a", current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_share_report_returns_404_for_other_users_report(self):
@@ -138,6 +146,8 @@ class TestReportOwnership:
         with pytest.raises(HTTPException) as exc:
             await share_report("report-owned-by-a", body, current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_generate_returns_404_for_other_users_upload(self):
@@ -154,6 +164,9 @@ class TestReportOwnership:
         with pytest.raises(HTTPException) as exc:
             await generate_report(request=_make_request(), body=body, background_tasks=MagicMock(), current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        upload_idx = next(i for i, q in enumerate(db.executed_queries) if "uploads" in q)
+        assert "user_id = :owner" in db.executed_queries[upload_idx]
+        assert db.executed_params[upload_idx]["owner"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_owner_can_access_own_report_status(self):
@@ -197,6 +210,8 @@ class TestReportOwnership:
         with pytest.raises(HTTPException) as exc:
             await revoke_share("report-owned-by-a", current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_owner_revokes_own_share(self):
@@ -292,6 +307,9 @@ class TestUploadOwnership:
                     db=db,
                 )
         assert exc.value.status_code == 404
+        upload_idx = next(i for i, q in enumerate(db.executed_queries) if "uploads" in q)
+        assert "user_id = :owner" in db.executed_queries[upload_idx]
+        assert db.executed_params[upload_idx]["owner"] == str(FakeUserB.id)
 
 
 class FakeUserA:
@@ -316,6 +334,8 @@ class TestTemplateOwnership:
         with pytest.raises(HTTPException) as exc:
             await update_template("template-owned-by-a", body, current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_delete_template_other_user_returns_404(self):
@@ -325,6 +345,8 @@ class TestTemplateOwnership:
         with pytest.raises(HTTPException) as exc:
             await delete_template("template-owned-by-a", current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
     @pytest.mark.asyncio
     async def test_owner_can_update_own_template(self):
@@ -390,6 +412,8 @@ class TestTemplateDeleteProGate:
         with pytest.raises(HTTPException) as exc:
             await delete_template("template-owned-by-a", current_user=FakeUserB(), db=db)
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == str(FakeUserB.id)
 
 
 class TestApiKeyDeleteProGate:

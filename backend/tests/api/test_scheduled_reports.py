@@ -418,7 +418,7 @@ class TestScheduledReportOwnership:
     async def test_update_other_users_returns_404(self):
         from app.api.routes.scheduled_reports import update_scheduled_report
 
-        db = _AsyncDB([_NotFound()])
+        db = _AsyncDB([_Row(id="sr-owned-by-a", user_id=FakeAgencyUser.id)])
         body = ScheduledReportUpdate(name="Hacked")
         with pytest.raises(HTTPException) as exc:
             await update_scheduled_report("sr-owned-by-a", body, current_user=FakeAgencyUserB(), db=db)
@@ -428,7 +428,7 @@ class TestScheduledReportOwnership:
     async def test_delete_other_users_returns_404(self):
         from app.api.routes.scheduled_reports import delete_scheduled_report
 
-        db = _AsyncDB([_NotFound()])
+        db = _AsyncDB([_Row(id="sr-owned-by-a", user_id=FakeAgencyUser.id)])
         with pytest.raises(HTTPException) as exc:
             await delete_scheduled_report("sr-owned-by-a", current_user=FakeAgencyUserB(), db=db)
         assert exc.value.status_code == 404

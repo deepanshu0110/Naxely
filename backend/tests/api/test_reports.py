@@ -824,7 +824,12 @@ class TestSendReportToClient:
                 return None
 
         class _AsyncDB:
+            def __init__(self):
+                self.executed_queries = []
+                self.executed_params = []
             async def execute(self, query, params=None):
+                self.executed_queries.append(str(query))
+                self.executed_params.append(params or {})
                 return _NotFound()
             async def commit(self):
                 pass
@@ -840,6 +845,8 @@ class TestSendReportToClient:
                     report_id="someone-elses-report", payload=body, current_user=user, db=db,
                 )
         assert exc.value.status_code == 404
+        assert "user_id = :uid" in db.executed_queries[0]
+        assert db.executed_params[0]["uid"] == "other-user"
 
     @pytest.mark.asyncio
     async def test_send_missing_pdf_rejected(self):
