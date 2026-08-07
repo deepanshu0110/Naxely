@@ -1036,6 +1036,9 @@ export default function Landing() {
               <a href="https://wired.business" target="_blank" rel="noopener noreferrer">
                 <img src="https://wired.business/badge0-white.svg" alt="Featured on Wired Business" width="200" height="54" />
               </a>
+              <a href="https://startupbase.io/products/naxely?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-light" target="_blank" rel="noopener noreferrer">
+                <img src="https://statics.startupbase.io/site/badges/launched-on-sb.svg" alt="Launched on StartupBase" height="54" style={{ height: '54px', width: 'auto' }} />
+              </a>
               <a href="https://frogdr.com/naxely.com?utm_source=naxely.com" target="_blank" rel="noopener noreferrer">
                 <img src="https://frogdr.com/naxely.com/badge-white-sm.svg?round=1" alt="Monitor your Domain Rating with FrogDR" width="249" height="36" />
               </a>
@@ -1149,6 +1152,9 @@ export default function Landing() {
               </a>
               <a href="https://wired.business" target="_blank" rel="noopener noreferrer">
                 <img src="https://wired.business/badge0-white.svg" alt="Featured on Wired Business" width="200" height="54" />
+              </a>
+              <a href="https://startupbase.io/products/naxely?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-light" target="_blank" rel="noopener noreferrer">
+                <img src="https://statics.startupbase.io/site/badges/launched-on-sb.svg" alt="Launched on StartupBase" height="54" style={{ height: '54px', width: 'auto' }} />
               </a>
               <a href="https://frogdr.com/naxely.com?utm_source=naxely.com" target="_blank" rel="noopener noreferrer">
                 <img src="https://frogdr.com/naxely.com/badge-white-sm.svg?round=1" alt="Monitor your Domain Rating with FrogDR" width="249" height="36" />
