@@ -394,7 +394,17 @@ class TestPydanticModels:
     def test_share_request_defaults(self):
         req = ShareRequest()
         assert req.expires_days == 30
-        assert req.password is None
+
+    def test_share_request_rejects_out_of_range_expiry(self):
+        from pydantic import ValidationError
+        with pytest.raises(ValidationError):
+            ShareRequest(expires_days=0)
+        with pytest.raises(ValidationError):
+            ShareRequest(expires_days=-1)
+        with pytest.raises(ValidationError):
+            ShareRequest(expires_days=366)
+        assert ShareRequest(expires_days=1).expires_days == 1
+        assert ShareRequest(expires_days=365).expires_days == 365
 
     def test_column_config_item_defaults(self):
         item = ColumnConfigItem(original_name="col_1")
@@ -473,7 +483,7 @@ class TestSharedReportIsWhiteLabel:
         db = asyncdb([row, MagicMock()])
 
         with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
-            result = await get_shared_report(share_token="agency-token", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="agency-token", db=db)
 
         assert result["success"] is True
         assert result["data"]["is_white_label"] is True
@@ -501,7 +511,7 @@ class TestSharedReportIsWhiteLabel:
         db = asyncdb([row, MagicMock()])
 
         with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
-            result = await get_shared_report(share_token="pro-token", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="pro-token", db=db)
 
         assert result["success"] is True
         assert result["data"]["is_white_label"] is False
@@ -529,7 +539,7 @@ class TestSharedReportIsWhiteLabel:
         db = asyncdb([row, MagicMock()])
 
         with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
-            result = await get_shared_report(share_token="free-token", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="free-token", db=db)
 
         assert result["success"] is True
         assert result["data"]["is_white_label"] is False
@@ -558,7 +568,7 @@ class TestSharedReportIsWhiteLabel:
         db = asyncdb([row, MagicMock()])
 
         with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
-            result = await get_shared_report(share_token="future-token", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="future-token", db=db)
 
         assert result["success"] is True
         assert result["data"]["id"] == "rep-future-004"
@@ -590,7 +600,7 @@ class TestSharedReportIsWhiteLabel:
         db = asyncdb([row])
 
         with pytest.raises(HTTPException) as exc:
-            await get_shared_report(share_token="past-token", db=db)
+            await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="past-token", db=db)
 
         assert exc.value.status_code == 410
         assert "expired" in exc.value.detail.lower()
@@ -3388,7 +3398,7 @@ class TestGetSharedReportNotFound:
         db = _AsyncDB()
 
         with pytest.raises(HTTPException) as exc:
-            await get_shared_report(share_token="bad-token", db=db)
+            await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="bad-token", db=db)
 
         assert exc.value.status_code == 404
 
@@ -3425,7 +3435,7 @@ class TestGetSharedReportNotFound:
         db = _AsyncDB()
 
         with patch("app.api.routes.reports._generate_signed_url", return_value="https://signed.url/pdf"):
-            result = await get_shared_report(share_token="ai-token", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="ai-token", db=db)
 
         assert result["success"] is True
         assert result["data"]["ai_insights"] == ["insight a", "insight b"]
@@ -3462,7 +3472,7 @@ class TestGetSharedReportNotFound:
         db = _AsyncDB()
 
         with patch("app.api.routes.reports._generate_signed_url"):
-            result = await get_shared_report(share_token="null-token", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="null-token", db=db)
 
         assert result["success"] is True
         assert result["data"]["ai_insights"] == []
@@ -4254,7 +4264,7 @@ class TestGetSharedReportJsonParse:
         db = _AsyncDB()
 
         with patch("app.api.routes.reports._generate_signed_url"):
-            result = await get_shared_report(share_token="tok-001", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="tok-001", db=db)
 
         assert result["success"] is True
         assert result["data"]["ai_insights"] == []
@@ -4301,7 +4311,7 @@ class TestGetSharedReportJsonParse:
         db = _AsyncDB()
 
         with patch("app.api.routes.reports._generate_signed_url"):
-            result = await get_shared_report(share_token="tok-002", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="tok-002", db=db)
 
         assert result["success"] is True
         assert result["data"]["ai_insights"] == ["insight 1", "insight 2"]
@@ -4347,7 +4357,7 @@ class TestGetSharedReportJsonParse:
         db = _AsyncDB()
 
         with patch("app.api.routes.reports._generate_signed_url"):
-            result = await get_shared_report(share_token="tok-003", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="tok-003", db=db)
 
         assert result["success"] is True
         assert result["data"]["ai_anomalies"] == []
@@ -4394,7 +4404,7 @@ class TestGetSharedReportJsonParse:
         db = _AsyncDB()
 
         with patch("app.api.routes.reports._generate_signed_url"):
-            result = await get_shared_report(share_token="tok-004", db=db)
+            result = await get_shared_report(request=_make_test_request(method="GET", path="/share/test"), share_token="tok-004", db=db)
 
         assert result["success"] is True
         assert result["data"]["ai_anomalies"] == ["anomaly A", "anomaly B"]

@@ -145,7 +145,7 @@ Includes everything in Free plus:
 | P09 | Unlimited reports | No monthly report limit |
 | P10 | Google Sheets connector | Paste Google Sheets URL → auto-pulls data |
 | P11 | Report templates | Save report config as reusable template |
-| P12 | Shareable link | Password-protected URL to share report online |
+| P12 | Shareable link | Public (unauthenticated) URL to share report online — access controlled by the unguessable token itself, **not** password-protected (password protection declined Aug 7, 2026 — see audit finding F-18) |
 | P13 | In-browser preview | Preview full report before downloading |
 
 #### AGENCY TIER — $79/month

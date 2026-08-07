@@ -74,6 +74,7 @@
 
 ### F-18 🟡 Share: `password` accepted but never enforced
 - **Doc + code:** `ShareRequest.password` exists (`reports.py:120`) and ASD §3 documents it; `GET /share/{token}` (`reports.py:1411`) never checks a password. Either implement password protection or drop the field from schema + docs.
+- **RESOLVED (Aug 7, 2026):** `password` field removed from `ShareRequest` (reports.py) and the `password: null` literal removed from the frontend share flow (`ReportView.tsx` handleShare). Drove the removal (rather than implementing password protection) because the share-link token itself is the access control (384-bit `secrets.token_urlsafe(48)`, see share-token security investigation). See share-token hardening changes (rate limit + expires_days bounds + this field removal).
 
 ### F-19 🟠 Large surface undocumented (built beyond spec)
 - **Not in ASD at all:** `GET /reports/sheets-config`, `POST /reports/sample-upload`, `GET /uploads`, `POST /reports/preview-charts`, `POST /reports/{id}/retry`, `POST /reports/bulk-delete`, `GET /reports/{id}/download`, `GET /reports/{id}/export/pptx`, `POST /reports/{id}/send`, `DELETE /reports/{id}/share`, `POST /payments/checkout`, `POST /payments/downgrade`, `GET /payments/subscription`, `POST /payments/cancel-scheduled-change`, `POST /settings/theme`, `DELETE /settings/account`, `POST/GET/DELETE /settings/api-keys` (+ `/permanent`) [nax_ API keys], `GET /internal/scheduled-reports/*` (cron), `/v1/*` public API, scheduled-reports router. `POST /templates` returns 200 not 201 (`templates.py:66`) and response includes `config`.

@@ -92,8 +92,7 @@ class ReportGenerateRequest(BaseModel):
 
 
 class ShareRequest(BaseModel):
-    expires_days: int = 30
-    password: Optional[str] = None
+    expires_days: int = Field(default=30, ge=1, le=365)
 
 
 class SendReportRequest(BaseModel):
@@ -1412,7 +1411,9 @@ async def send_report_to_client(
 
 
 @router.get("/share/{share_token}")
+@limiter.limit("30/minute")
 async def get_shared_report(
+    request: Request,
     share_token: str,
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:

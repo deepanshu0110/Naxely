@@ -559,8 +559,7 @@ Create a shareable link (regenerates a new token each call).
 **Request:**
 ```json
 {
-  "expires_days": 30,
-  "password": null
+  "expires_days": 30
 }
 ```
 **Response 200:**
@@ -574,9 +573,10 @@ Create a shareable link (regenerates a new token each call).
   }
 }
 ```
-> ⚠️ **`password` is accepted but currently ignored** — it is not stored and not
-> enforced on `GET /share/{token}`. Documented per the implemented backend
-> (audit finding F-04); fixing this is a product decision, not a docs change.
+> ⚠️ **Password protection is not implemented.** A `password` field briefly
+> existed on `ShareRequest` but was removed (Aug 7, 2026 — audit finding F-18);
+> access control is the share token itself (384-bit `secrets.token_urlsafe(48)`),
+> not a password. `expires_days` is bounded 1–365.
 
 **Response 404:** Report not found
 
@@ -632,7 +632,7 @@ Public endpoint — view a shared report (no auth required). Increments
 }
 ```
 > `is_white_label` is true when the report owner's tier is `agency`.
-> No password prompt exists on this endpoint (see note on POST .../share).
+> No password protection exists on this endpoint (password field removed Aug 7, 2026 — see note on POST .../share).
 
 **Response 404:** Token not found → message `"Shared report not found"` (exact string; `reports.py:1430`)
 **Response 410:** Link expired (⚠️ quirk: the shared error handler has no mapping

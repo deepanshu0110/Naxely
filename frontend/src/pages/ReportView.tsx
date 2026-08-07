@@ -83,7 +83,7 @@ export default function ReportView() {
   const handleShare = async () => {
     if (!id) return
     try {
-      const { data } = await api.post(`/reports/${id}/share`, { expires_days: 30, password: null })
+      const { data } = await api.post(`/reports/${id}/share`, { expires_days: 30 })
       await navigator.clipboard.writeText(data.share_url)
       setReport((prev) => prev ? { ...prev, share_token: data.share_token } : null)
       toast.success('Share link copied!')

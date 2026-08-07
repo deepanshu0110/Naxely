@@ -380,7 +380,6 @@ describe('ReportView share flow', () => {
     await waitFor(() => {
       expect(mockPostFn).toHaveBeenCalledWith('/reports/rep-abc123/share', {
         expires_days: 30,
-        password: null,
       })
     })
     expect(mockWriteText).toHaveBeenCalledWith('https://naxely.com/s/abc123')
