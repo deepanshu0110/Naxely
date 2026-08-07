@@ -963,8 +963,8 @@ export default function Landing() {
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
               </a>
-              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="160" height="54" />
+              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer" title="SaasHunt Top 1 Daily Winner">
+                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="195" height="44" />
               </a>
               <a href="https://auraplusplus.com/projects/naxely-automated-client-report-generator" target="_blank" rel="noopener noreferrer">
                 <img src="/aura-plusplus-top1-dark.svg" alt="Aura++ Top 1 Daily Winner" width="195" height="44" />
@@ -1080,8 +1080,8 @@ export default function Landing() {
               <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
               </a>
-              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="160" height="54" />
+              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer" title="SaasHunt Top 1 Daily Winner">
+                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="195" height="44" />
               </a>
               <a href="https://auraplusplus.com/projects/naxely-automated-client-report-generator" target="_blank" rel="noopener noreferrer">
                 <img src="/aura-plusplus-top1-dark.svg" alt="Aura++ Top 1 Daily Winner" width="195" height="44" />
