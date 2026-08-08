@@ -1054,8 +1054,8 @@ export default function Landing() {
               <a href="https://goodaitools.com/ai/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://goodaitools.com/assets/images/badge.png" alt="Good AI Tools" width="207" height="54" loading="lazy" />
               </a>
-              <a href="https://startupfa.st" target="_blank" rel="noopener noreferrer" title="Powered by Startup Fast">
-                <img src="https://startupfa.st/images/badges/powered-by-light.svg" alt="Powered by Startup Fast" width="150" height="44" />
+              <a href="https://startupfa.st/projects/naxely" target="_blank" title="Startup Fast Top 1 Daily Winner">
+                <img src="https://startupfa.st/images/badges/top1-light.svg" alt="Startup Fast Top 1 Daily Winner" width="195" height="44" />
               </a>
               <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
                 <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
@@ -1171,8 +1171,8 @@ export default function Landing() {
               <a href="https://goodaitools.com/ai/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://goodaitools.com/assets/images/badge.png" alt="Good AI Tools" width="207" height="54" loading="lazy" />
               </a>
-              <a href="https://startupfa.st" target="_blank" rel="noopener noreferrer" title="Powered by Startup Fast">
-                <img src="https://startupfa.st/images/badges/powered-by-light.svg" alt="Powered by Startup Fast" width="150" height="44" />
+              <a href="https://startupfa.st/projects/naxely" target="_blank" title="Startup Fast Top 1 Daily Winner">
+                <img src="https://startupfa.st/images/badges/top1-light.svg" alt="Startup Fast Top 1 Daily Winner" width="195" height="44" />
               </a>
               <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
                 <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
