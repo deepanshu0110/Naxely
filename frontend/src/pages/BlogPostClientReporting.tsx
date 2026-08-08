@@ -56,6 +56,7 @@ export default function BlogPostClientReporting() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Evaluate Automation and AI Features</h2>
           <p>Not all "automation" is the same. At one end of the spectrum, a tool automatically pulls data into a template but leaves you to build charts and write commentary manually. At the other end, a tool ingests raw data and outputs a finished report with charts, KPIs, and AI-written narrative — no manual assembly required.</p>
+          <p>If you already know that's the direction you want — and you want to see how the full pipeline works end to end — our guide to <Link to="/blog/automating-client-reports" className="text-amber-600 hover:text-amber-700 underline">automated client reporting</Link> walks through the whole flow in detail.</p>
           <p>The gap between these two ends of the spectrum is where AI-powered reporting matters most. The actual work of writing executive summaries, identifying anomalies, and translating numbers into plain-language insights is the most repetitive, time-consuming part of the reporting cycle — and the part that most tools still leave to you.</p>
           <p>When evaluating AI features, look past whether a tool mentions "AI" and ask three specific questions:</p>
           <ul className="list-disc pl-5 space-y-2">

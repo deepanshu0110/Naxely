@@ -90,8 +90,8 @@ const posts: Post[] = [
   },
   {
     slug: 'automating-client-reports',
-    title: 'Automating Client Reports: The Complete Guide for Freelancers and Agencies',
-    excerpt: 'How to automate client reporting — from CSV exports to AI-generated insights, BYOK pricing, and choosing the right tool for freelance analysts and agencies.',
+    title: 'Automated Client Reporting: The Complete Guide for Freelancers and Agencies',
+    excerpt: 'How automated client reporting works end to end — CSV and Google Sheets to a branded PDF with AI-written insights, plus what still needs a human review.',
     label: 'Guide',
   },
   {
