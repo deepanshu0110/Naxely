@@ -104,7 +104,7 @@ describe('Blog', () => {
   it('renders heading and at least one post link', () => {
     renderWithRouter(Blog)
     expect(screen.getByText('Blog')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /client reporting software/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /^How to Choose Client Reporting Software$/ })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /BYOK/i })).toBeInTheDocument()
   })
 })

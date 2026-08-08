@@ -43,6 +43,12 @@ const posts: Post[] = [
     label: 'Guide',
   },
   {
+    slug: 'best-client-reporting-software-freelancers',
+    title: 'Best Client Reporting Software for Freelancers (2026)',
+    excerpt: 'The best client reporting software for freelancers depends on your data source — a five-tool comparison of Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing.',
+    label: 'Guide',
+  },
+  {
     slug: 'byok-ai-reporting-tool',
     title: 'Why Naxely Uses BYOK: Bring Your Own AI Key for Client Reports',
     excerpt: 'Most AI reporting tools bundle markups into your subscription. Naxely lets you bring your own key — you pay the provider directly, at cost, with zero markup.',
