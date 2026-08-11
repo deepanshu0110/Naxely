@@ -106,18 +106,6 @@ const posts: Post[] = [
     excerpt: 'A practical checklist for what belongs in a client-facing data report — from executive summary to next steps — and what to leave out.',
     label: 'Guide',
   },
-  {
-    slug: 'client-reporting-tools-for-upwork-freelancer',
-    title: 'Client Reporting Tools for Upwork & Freelancer.com Analysts',
-    excerpt: 'Freelance platform work means switching between clients and data formats constantly. Here\'s what to look for in a reporting tool when every contract is different.',
-    label: 'Guide',
-  },
-  {
-    slug: 'client-reporting-tools-flat-pricing',
-    title: 'Reporting Tools With Flat Pricing (Not Per-Client)',
-    excerpt: 'Some reporting tools price by dashboard or client count, which gets expensive as you scale. Here\'s how flat-rate pricing works instead, and when each model makes sense.',
-    label: 'Guide',
-  },
 ]
 
 export default function Blog() {

@@ -25,11 +25,9 @@ import BlogPostWhiteLabel from '../BlogPostWhiteLabel'
 import BlogPostAnomalyDetection from '../BlogPostAnomalyDetection'
 import BlogPostBestFreelanceReporting from '../BlogPostBestFreelanceReporting'
 import BlogPostClientReportChecklist from '../BlogPostClientReportChecklist'
-import BlogPostFlatPricing from '../BlogPostFlatPricing'
 import BlogPostGoogleSheets from '../BlogPostGoogleSheets'
 import BlogPostPythonCsvToPdf from '../BlogPostPythonCsvToPdf'
 import BlogPostTwoWeeks from '../BlogPostTwoWeeks'
-import BlogPostUpworkReporting from '../BlogPostUpworkReporting'
 import ComparisonAgencyAnalytics from '../ComparisonAgencyAnalytics'
 import ComparisonDatabox from '../ComparisonDatabox'
 import ComparisonDashThis from '../ComparisonDashThis'
@@ -171,12 +169,6 @@ const seoPages: Array<{
     heading: /What Should a Client Report Actually Include/,
   },
   {
-    name: 'BlogPostFlatPricing',
-    Component: BlogPostFlatPricing,
-    canonicalPath: '/blog/client-reporting-tools-flat-pricing',
-    heading: /Reporting Tools With Flat Pricing/,
-  },
-  {
     name: 'BlogPostGoogleSheets',
     Component: BlogPostGoogleSheets,
     canonicalPath: '/blog/google-sheets-client-reports',
@@ -193,12 +185,6 @@ const seoPages: Array<{
     Component: BlogPostTwoWeeks,
     canonicalPath: '/blog/two-weeks-building-naxely',
     heading: /What Two Weeks of Building a Client-Reporting Tool/,
-  },
-  {
-    name: 'BlogPostUpworkReporting',
-    Component: BlogPostUpworkReporting,
-    canonicalPath: '/blog/client-reporting-tools-for-upwork-freelancer',
-    heading: /Client Reporting Tools for Upwork/,
   },
   {
     name: 'ComparisonAgencyAnalytics',

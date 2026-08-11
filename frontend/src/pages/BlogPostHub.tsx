@@ -243,6 +243,8 @@ export default function BlogPostHub() {
             <Link to="/blog/white-label-client-reporting-agencies" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">White-Label Client Reporting for Agencies</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/client-reporting-software-guide" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Choose Client Reporting Software</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/what-should-client-report-include-checklist" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">What Should a Client Report Include? (Checklist)</Link>
           </p>
         </div>
       </article>
