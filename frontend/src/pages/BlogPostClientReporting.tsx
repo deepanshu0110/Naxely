@@ -7,7 +7,7 @@ export default function BlogPostClientReporting() {
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
         <title>How to Choose Client Reporting Software | Naxely</title>
-        <meta name="description" content="A practical guide to choosing client reporting tools and software: map your data sources, evaluate AI and automation, pick the right delivery method, check white-label options, set up goal tracking, assess ease of use, and compare support options." />
+        <meta name="description" content="Choose client reporting software with a six-tool comparison matrix, a two-axis decision framework, a cost worked example, and a 30-day evaluation checklist." />
         <link rel="canonical" href="https://www.naxely.com/blog/client-reporting-software-guide" />
         <meta property="og:url" content="https://www.naxely.com/blog/client-reporting-software-guide" />
         <meta property="og:type" content="article" />
@@ -20,7 +20,7 @@ export default function BlogPostClientReporting() {
         <meta name="twitter:description" content="A practical guide to choosing client reporting tools and software: map your data sources, evaluate AI and automation, pick the right delivery method, check white-label options, set up goal tracking, assess ease of use, and compare support options." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.naxely.com/blog"},{"@type":"ListItem","position":3,"name":"How to Choose Client Reporting Software","item":"https://www.naxely.com/blog/client-reporting-software-guide"}]})}</script>
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Choose Client Reporting Software","description":"A practical guide to choosing client reporting tools and software: map your data sources, evaluate AI and automation, pick the right delivery method, check white-label options, set up goal tracking, assess ease of use, and compare support options.","url":"https://www.naxely.com/blog/client-reporting-software-guide","datePublished":"2026-07-20T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Choose Client Reporting Software","description":"A practical guide to choosing client reporting tools and software: map your data sources, evaluate AI and automation, pick the right delivery method, check white-label options, set up goal tracking, assess ease of use, and compare support options.","url":"https://www.naxely.com/blog/client-reporting-software-guide","datePublished":"2026-07-20T00:00:00Z","dateModified":"2026-08-11T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"How do I choose client reporting software for my agency?","acceptedAnswer":{"@type":"Answer","text":"Start with your data source: does your agency manage live ad accounts or work from client-provided exports and spreadsheets? For live accounts, a connector-based dashboard tool like AgencyAnalytics or DashThis is likely the right fit. For file-based workflows, a tool like Naxely that generates branded PDFs from CSV and Google Sheets data avoids the friction of connector-first architecture. Also check white-label availability before you commit."}},
           {"@type":"Question","name":"Can client reporting software automate AI insights?","acceptedAnswer":{"@type":"Answer","text":"Yes, but the extent varies. Some tools offer preset AI insights like DashThis's AI Insights (4 preset types on all plans, with a paid AI chat add-on). Others like Naxely generate full narrative reports with executive summaries, anomaly detection, and recommendations on every tier via BYOK. Full AI automation — a finished written report with no manual editing — is rarer and usually requires a tool built for AI-generated narrative."}},
@@ -29,9 +29,11 @@ export default function BlogPostClientReporting() {
           {"@type":"Question","name":"Does white-label reporting cost extra?","acceptedAnswer":{"@type":"Answer","text":"In most tools, yes \u2014 though the depth of gating varies. DashThis requires the Professional plan ($139/mo) for white-label features; its Individual plan ($44/mo billed yearly) does not include it. Whatagraph includes custom branding on its Max plan (\u20AC699/month, billed annually, pricing shown in EUR). AgencyAnalytics includes white-label branding on its single Core plan ($20/client/month, billed annually), which now covers all features with no tiered gating \u2014 a change from its earlier multi-tier structure. Naxely includes white-label PDF output on its Agency tier ($79/month). Check exactly which white-label features are unlocked at each tier before committing."}},
           {"@type":"Question","name":"Can client reporting software track goals and send alerts?","acceptedAnswer":{"@type":"Answer","text":"Yes, but the approach differs by tool type. Live-dashboard tools like AgencyAnalytics and Databox let you set numeric goal thresholds per metric and show green/red indicators that update in real time. File-based tools like Naxely evaluate goals at report-generation time, surfacing overperformance and anomalies in the AI executive summary. For high-spend ad accounts, real-time alerts are non-negotiable. For periodic snapshots, per-report goal evaluation is typically sufficient."}},
           {"@type":"Question","name":"How long does it take to set up client reporting software?","acceptedAnswer":{"@type":"Answer","text":"It ranges from minutes to days. File-based tools like Naxely can produce a branded PDF in under a minute from a CSV upload \u2014 no API keys or dashboard configuration required. Dashboard tools like DashThis and AgencyAnalytics require connecting data sources and building template layouts, typically 30\u201360 minutes for a first report. BI-class tools like Tableau or Looker Studio can require hours to days of template building and learning before producing client-facing output."}},
-          {"@type":"Question","name":"What support options do client reporting tools offer?","acceptedAnswer":{"@type":"Answer","text":"Most tools offer email support as the baseline. AgencyAnalytics provides live chat and phone support on higher-tier plans. DashThis offers email support with stated SLAs. Whatagraph provides priority support on higher tiers. Naxely offers email support with same-business-day response. A useful test: ask a support question during your free trial and measure the first response time. The quality and depth of onboarding also varies \u2014 some tools offer dedicated setup specialists on mid-range plans, while others rely on self-serve documentation."}},
+          {"@type":"Question","name":"What support options do client reporting tools offer?","acceptedAnswer":{"@type":"Answer","text":"Most tools offer email support as the baseline. AgencyAnalytics provides live chat and email support on its single Core plan. DashThis offers email support with stated SLAs. Whatagraph provides priority support on higher tiers. Naxely offers email support with same-business-day response. A useful test: ask a support question during your free trial and measure the first response time. The quality and depth of onboarding also varies \u2014 some tools offer dedicated setup specialists on mid-range plans, while others rely on self-serve documentation."}},
           {"@type":"Question","name":"What does a typical client reporting process look like?","acceptedAnswer":{"@type":"Answer","text":"A typical reporting cycle follows four steps: gather your data from wherever it lives (spreadsheets, ad platforms, internal tools), generate the report using your chosen software, review and send the finished report to your client, and repeat on a recurring schedule \u2014 weekly, monthly, or per project. For a full walkthrough of each step, see The Complete Guide to Automating Client Reports."}},
           {"@type":"Question","name":"What are canned reports?","acceptedAnswer":{"@type":"Answer","text":"Canned reports are pre-built, fixed-format reports that run on a schedule with the same layout each time, rather than reports built fresh from custom data each period. They're common in dashboard-style tools where a template is configured once and reused, as opposed to file-based tools where each report is generated from that period's specific data."}},
+{"@type":"Question","name":"What is the best client reporting software?","acceptedAnswer":{"@type":"Answer","text":"There is no single best tool — the right choice tracks your data source and delivery format. If your client data arrives as CSV exports or spreadsheets and you deliver polished PDFs, a file-based generator is the direct fit. If you manage live ad accounts and clients want dashboards, a connector-based platform is the direct fit. Use the two-axis decision matrix in this guide to place your workflow, then test your top candidate with your own data."}},
+          {"@type":"Question","name":"How much does client reporting software cost?","acceptedAnswer":{"@type":"Answer","text":"Prices span free to hundreds of dollars a month. Free options: Looker Studio, Databox's Free plan, and Naxely's free tier (3 reports/month). Paid tools: DashThis from $44/mo (white-label from $139/mo, billed yearly), AgencyAnalytics $20/client/month (billed annually), Databox from $64/mo, Whatagraph from \u20AC699/mo (billed annually, shown in EUR), Naxely Pro $29/mo and Agency $79/mo. White-labeling is often the price separator — confirm the tier where it unlocks before you commit."}}
         ]})}</script>
       </Head>
       <Navbar />
@@ -95,10 +97,287 @@ export default function BlogPostClientReporting() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Check Support and Training Options</h2>
           <p>When something breaks — a connector fails to sync, a PDF won't render, an AI summary comes back garbled — how quickly you can get help determines whether the tool feels reliable or frustrating. Support quality and availability vary significantly across the reporting software category.</p>
-          <p><strong>Response channels and availability.</strong> Most dedicated reporting tools offer email-based support as their baseline. DashThis provides email support with a stated response SLA (typically 24 hours for standard inquiries). AgencyAnalytics offers email and live chat, with phone support on higher-tier plans. Whatagraph provides email support with priority response for higher pricing tiers. Naxely currently offers email support with same-business-day response. The difference to watch for is whether the tool offers live chat or phone support — email-only support can mean a full-day delay on a time-sensitive report issue. A useful benchmark: ask support a question during your free trial and measure how long the first response takes. That wait time is your baseline.</p>
+          <p><strong>Response channels and availability.</strong> Most dedicated reporting tools offer email-based support as their baseline. DashThis provides email support with a stated response SLA (typically 24 hours for standard inquiries). AgencyAnalytics offers email and live chat on its single Core plan. Whatagraph provides email support with priority response for higher pricing tiers. Naxely currently offers email support with same-business-day response. The difference to watch for is whether the tool offers live chat or phone support — email-only support can mean a full-day delay on a time-sensitive report issue. A useful benchmark: ask support a question during your free trial and measure how long the first response takes. That wait time is your baseline.</p>
           <p><strong>Onboarding and training resources.</strong> The depth of onboarding varies widely. AgencyAnalytics provides a dedicated onboarding specialist on mid-range and higher plans. DashThis offers guided setup wizards and pre-built dashboard templates. Looker Studio relies on community templates and third-party tutorials. Naxely provides a step-by-step setup guide and example data to test with. For a solo freelancer, self-serve documentation and a quick start guide may be sufficient. For an agency onboarding multiple team members, look for tools that offer live onboarding calls or dedicated success managers — the upfront investment in training pays back quickly when everyone can produce reports independently.</p>
           <p><strong>Documentation and self-help.</strong> The best support is the kind you don't need. Check whether each tool maintains up-to-date help documentation, knowledge base articles, or video walkthroughs. A comprehensive set of FAQs and troubleshooting guides can resolve most common issues without opening a ticket. Documentation quality is also a signal of product maturity — tools with thin or outdated help centers tend to produce more support tickets per task.</p>
           <p>The honest assessment: for most agencies and freelancers evaluating reporting software, support is not the deciding factor — all tools in this category provide adequate help. It becomes important in two scenarios: when you're onboarding a team (dedicated setup help saves days of trial-and-error), or when your reporting is time-sensitive and can't afford a 24-hour wait for a connector fix.</p>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">The category at a glance: six tools compared</h2>
+          <p>This table consolidates the seven criteria above for the six tools this guide covers. Prices were re-verified against each vendor's public pricing page in August 2026 — yearly-billing rates where the vendor charges a monthly premium. Where a vendor doesn't publish a detail, the cell says so instead of guessing.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Tool</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Data model</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">AI depth</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">AI cost</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Delivery</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">White-label</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Goal tracking</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Time to first report</th>
+                  <th className="py-2 font-semibold text-ink dark:text-paper">Support</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AgencyAnalytics</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Live connectors (85+)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Ask AI, AI summaries, anomaly detection, forecasting</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled in per-client price</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Dashboards, scheduled reports, client portal</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Included on the single Core plan</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Goals, alerts, anomaly detection</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">~30–60 min for a first report</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Email + live chat, free onboarding call</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">DashThis</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Live connectors (unlimited integrations)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">4 preset AI insight types on all plans; chat mode is an add-on</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled; AI chat add-on extra</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Dashboards with scheduled delivery</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Professional ($139/mo, billed yearly) and above</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Goals available, but details not on the public pricing page — check in trial</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">~30–60 min for a first report</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Email with stated SLA</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Whatagraph</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Live connectors; source credits from 50</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Whatagraph IQ — summaries, chat, report creation (all plans)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Reports + automated emails with PDF, KPI overviews</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Custom branding included in Max (€699/mo, billed annually)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Goals and alerts (KPI overviews)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Not publicly listed</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Live chat + dedicated success manager (Max)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Databox</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">130+ integrations incl. spreadsheets and databases, plus API</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Genie AI analyst + AI performance summaries</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled via monthly AI credits (50–4,000 by plan)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Dashboards, reports, scorecards, alerts</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Add-on on Analyst–Growth; included on Custom</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Goals, alerts, anomaly detection</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Not publicly listed</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Chat + email (Analyst and above)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Looker Studio</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Google connectors (free)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Gemini assistant for building reports; no scheduled AI narrative</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Dashboards (DIY)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">None natively — Google/creator branding stays on embeds; themes and logos DIY</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Target lines on charts, DIY</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Hours to days (build from scratch)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Google Help Center + community</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Naxely</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">CSV uploads + Google Sheets</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Full narrative — executive summary, insight cards, anomaly flags, chart recommendations</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK — your own key, paid to the provider at cost</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Branded PDF + shareable links; scheduled on Pro and above</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Included on Agency tier ($79/mo)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Evaluated per report inside the AI narrative</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Under a minute from upload</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Email, same-business-day</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-xs text-gray-400">Sources: each vendor's public pricing page, fetched August 11, 2026. DashThis and Whatagraph prices are billed-annually rates; Whatagraph pricing is shown in EUR. AgencyAnalytics is billed per client. "Not publicly listed" means the vendor doesn't publish the detail on its pricing or feature pages.</p>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Self-place in the decision matrix</h2>
+          <p>Two questions narrow the whole category to one row and one column: where your client data comes from (rows), and how your clients receive the report (columns).</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Data source \ Delivery</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Dashboard</th>
+                  <th className="py-2 font-semibold text-ink dark:text-paper">PDF / portal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Live connectors</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45"><strong>Connector platform.</strong> AgencyAnalytics, DashThis, Whatagraph, or Databox — decide by white-label price, AI depth, and per-client vs. flat billing.</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45"><strong>Connector tool with automated delivery.</strong> DashThis scheduled email reports, Whatagraph automated PDF emails, or AgencyAnalytics scheduled reports + client portal.</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Files and spreadsheets</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45"><strong>The awkward corner.</strong> Most connector platforms import files poorly. Looker Studio (free, DIY) or Databox (Sheets/spreadsheet connectors) if you'll build it yourself.</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45"><strong>File-based generator.</strong> Naxely — upload a CSV or Google Sheet, review the AI draft, export a branded PDF in under a minute.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>If you land near a boundary — say, eighty percent file-based but one client insists on a live view — the tie-breaker is behavior, not features: how many clients actually log in to check their data weekly? Dashboard-habit clients justify a connector platform; everything else points to file-based. Freelancers should run the same logic on a solo budget — our guide to the <Link to="/blog/best-client-reporting-software-freelancers" className="text-amber-600 hover:text-amber-700 underline">best client reporting software for freelancers</Link> does exactly that.</p>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">A worked example: twelve clients, one monthly cycle</h2>
+          <p><em>Illustrative scenario — placeholder numbers that make the arithmetic visible, not a claim about any real customer's results. Your cycle will differ; the structure is the point.</em></p>
+          <p>Take an agency with twelve clients on monthly reporting, handled by one analyst. Here's the current manual cycle per report, using the six tasks itemized in the <Link to="/blog/automating-client-reports" className="text-amber-600 hover:text-amber-700 underline">automation guide</Link>:</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Task (per report)</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">By hand</th>
+                  <th className="py-2 font-semibold text-ink dark:text-paper">With a pipeline</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Pull data</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">45 min</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Auto (upload)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Clean and map columns</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">20 min</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Auto (column detection)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Rebuild charts</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">30 min</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Auto (chart recommendations)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Write commentary</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">60 min</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">30 min (review and edit the AI draft)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Format and brand</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">20 min</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Auto (template)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Deliver</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">15 min</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">10 min (send + follow up)</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Total per report</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45"><strong>190 min (~3 h 10)</strong></td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45"><strong>45 min</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Across twelve clients that's roughly 38 hours a month by hand versus 9 hours with a pipeline — about 29 hours recovered, or three and a half working days, every month. At whatever rate the analyst bills, that's the time that returns to client work instead of assembly.</p>
+          <p>The cost side, at twelve clients, using today's published prices:</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Option</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Monthly cost at 12 clients</th>
+                  <th className="py-2 font-semibold text-ink dark:text-paper">What's included</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AgencyAnalytics</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$240 ($20 × 12, billed annually)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">White-label, client portal, AI all included — per-client billing</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">DashThis</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$44 individual (no white-label) → $139 professional (yearly rates)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">White-label and custom domain start at Professional</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Whatagraph</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">€699 (billed annually, shown in EUR)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Custom branding included; per-report volume capped by source credits</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Databox</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">From $64 (Analyst); white-label is an add-on, full white-label on Custom (contact sales)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Dashboards, reports, AI credits bundled</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Naxely</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$79 flat (Agency tier)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">White-label PDF, API, scheduled reports; AI paid at cost via BYOK</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Two things this example makes visible. First, per-client billing compounds as the roster grows — the same math at twenty clients is $400 a month on AgencyAnalytics versus a flat $79. Second, the AI-cost model matters at volume, not at twelve reports: bundled AI is folded into every subscription, while BYOK pays the provider directly at cost. At this scale the difference is small; it grows with report volume — the <Link to="/blog/byok-ai-reporting-tool" className="text-amber-600 hover:text-amber-700 underline">full BYOK breakdown</Link> shows why. Run the same arithmetic with your own client count, frequency, and rates before committing — the tool that wins the table on paper is the one that still wins with your numbers.</p>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Your 30-day evaluation checklist</h2>
+          <p>Score each criterion 0 (fails), 1 (partial), or 2 (passes) during the trial, multiply by the weight, and add the totals. Eighty points or more on your own data means the tool earns a paid tier; below that, run the runner-up in parallel while you still have trial time.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Weight</th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Criterion</th>
+                  <th className="py-2 font-semibold text-ink dark:text-paper">Passes if…</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">20</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Data-source fit</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">The last-5-reports test: at least 4 of your last 5 reports came from sources this tool ingests natively</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">15</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Time to first report</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">A client-ready report exists within the first hour of the trial</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">15</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Delivery format</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">The deliverable matches what your clients actually consume — dashboard access, PDF, or portal</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">15</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">White-label unlocks at a tier you'd actually buy, and the leak test passes — no vendor name in the report footer, share URL, or sender address</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">10</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI depth</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">The AI output matches your need: preset insights, chat, or a full narrative draft</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">10</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI cost model</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">AI cost is disclosed (bundled or BYOK) and affordable at your report volume</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">10</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Goal tracking</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">You can set targets and surface over/underperformance in the actual deliverable</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">5</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Support</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">The trial-time support test: ask a real question, measure first-response time and quality</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">100</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Total</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">80+ with your own data = shortlist; below that, trial the runner-up in parallel</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Three tests are built into the checklist — the last-5-reports data-source test, the white-label leak test (footer, browser URL, sender address), and the trial-time support-response test. Run them deliberately; they take minutes, and they're the tests that catch the expensive mistakes.</p>
+
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Common traps when choosing client reporting software</h2>
+          <p><strong>Connector-first tool, file-based reality.</strong> Symptom: importing CSV exports into a dashboard tool is a chore — reformatting, mapping, fighting the tool's assumptions. The last-5-reports test catches this before you pay. Exit: start a parallel trial of a file-based tool while the first trial still runs.</p>
+          <p><strong>The white-label surprise at upgrade time.</strong> Symptom: the first client report ships with a vendor logo or URL because white-labeling was gated behind the next tier. The leak test — footer, browser URL, sender address — catches it in minutes. Exit: confirm the exact white-label tier and price before the trial, not after; it's the single biggest price jump in this category.</p>
+          <p><strong>Setup time underestimated.</strong> Symptom: the trial expires before a client-ready report exists because the tool needed template building, connector configuration, and branding work first. That's a project, not a tool. Exit: apply the one-hour rule from the checklist — if there's no client-ready report in the first hour, the setup cost compounds with every new client.</p>
+          <p><strong>Paying per client at scale.</strong> Symptom: the per-client math from the worked example grows faster than the roster's revenue. Exit: a flat-rate tool, or renegotiate which tier owns white-labeling. The head-to-heads — <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline">Naxely vs AgencyAnalytics</Link>, <Link to="/compare/databox" className="text-amber-600 hover:text-amber-700 underline">Naxely vs Databox</Link>, <Link to="/compare/dashthis" className="text-amber-600 hover:text-amber-700 underline">Naxely vs DashThis</Link>, <Link to="/compare/powerdrill" className="text-amber-600 hover:text-amber-700 underline">Naxely vs Powerdrill</Link> — and the <Link to="/blog/client-reporting-tools-flat-pricing" className="text-amber-600 hover:text-amber-700 underline">flat-pricing guide</Link> cover the two billing models head to head.</p>
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-6 space-y-3">
             <h3 className="font-semibold text-ink dark:text-paper text-sm">Key Takeaways</h3>
@@ -138,13 +417,19 @@ export default function BlogPostClientReporting() {
           <p>It ranges from minutes to days. File-based tools like Naxely can produce a branded PDF in under a minute from a CSV upload — no API keys or dashboard configuration required. Dashboard tools like DashThis and AgencyAnalytics require connecting data sources and building template layouts, typically 30–60 minutes for a first report. BI-class tools like Tableau or Looker Studio can require hours to days of template building and learning before producing client-facing output.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What support options do client reporting tools offer?</h3>
-          <p>Most tools offer email support as the baseline. AgencyAnalytics provides live chat and phone support on higher-tier plans. DashThis offers email support with stated SLAs. Whatagraph provides priority support on higher tiers. Naxely offers email support with same-business-day response. A useful test: ask a support question during your free trial and measure the first response time. The quality and depth of onboarding also varies — some tools offer dedicated setup specialists on mid-range plans, while others rely on self-serve documentation.</p>
+          <p>Most tools offer email support as the baseline. AgencyAnalytics provides live chat and email support on its single Core plan. DashThis offers email support with stated SLAs. Whatagraph provides priority support on higher tiers. Naxely offers email support with same-business-day response. A useful test: ask a support question during your free trial and measure the first response time. The quality and depth of onboarding also varies — some tools offer dedicated setup specialists on mid-range plans, while others rely on self-serve documentation.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What does a typical client reporting process look like?</h3>
           <p>A typical reporting cycle follows four steps: gather your data from wherever it lives (spreadsheets, ad platforms, internal tools), generate the report using your chosen software, review and send the finished report to your client, and repeat on a recurring schedule — weekly, monthly, or per project. For a full walkthrough of each step, see <Link to="/blog/automating-client-reports" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">The Complete Guide to Automating Client Reports</Link>.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What are canned reports?</h3>
           <p>Canned reports are pre-built, fixed-format reports that run on a schedule with the same layout each time, rather than reports built fresh from custom data each period. They're common in dashboard-style tools where a template is configured once and reused, as opposed to file-based tools where each report is generated from that period's specific data.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What is the best client reporting software?</h3>
+          <p>There is no single best tool — the right choice tracks your data source and delivery format. If your client data arrives as CSV exports or spreadsheets and you deliver polished PDFs, a file-based generator is the direct fit. If you manage live ad accounts and clients want dashboards, a connector-based platform is the direct fit. Use the two-axis decision matrix above to place your workflow, then test your top candidate with your own data.</p>
+
+          <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">How much does client reporting software cost?</h3>
+          <p>Prices span free to hundreds of dollars a month. Free options: Looker Studio, Databox's Free plan, and Naxely's free tier (3 reports/month). Paid tools: DashThis from $44/mo (white-label from $139/mo, billed yearly), AgencyAnalytics $20/client/month (billed annually), Databox from $64/mo, Whatagraph from €699/mo (billed annually, shown in EUR), Naxely Pro $29/mo and Agency $79/mo. White-labeling is often the price separator — confirm the tier where it unlocks before you commit.</p>
 
           <div className="pt-6">
             <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try Naxely free &rarr;</Link>
@@ -161,6 +446,14 @@ export default function BlogPostClientReporting() {
             <Link to="/blog/byok-ai-reporting-tool" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Why BYOK AI Reporting Beats Built-In AI Markup</Link>
             <span className="text-gray-300">·</span>
             <Link to="/compare/dashthis" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Naxely vs DashThis</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/compare/agencyanalytics" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Naxely vs AgencyAnalytics</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/compare/databox" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Naxely vs Databox</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/compare/powerdrill" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Naxely vs Powerdrill</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/best-client-reporting-software-freelancers" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Best Client Reporting Software for Freelancers</Link>
           </p>
         </div>
       </article>
