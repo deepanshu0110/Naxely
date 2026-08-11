@@ -1066,6 +1066,9 @@ export default function Landing() {
               <a href="https://uno.directory" target="_blank" rel="noopener">
                 <img src="https://uno.directory/uno-directory.svg" alt="Listed on Uno Directory" width="120" height="30" />
               </a>
+              <a href="https://makerhunt.io/project/naxely" target="_blank" rel="noopener" title="Featured on MakerHunt">
+                <img src="https://makerhunt.io/badges/makerhunt-badge-light.svg" alt="Featured on MakerHunt" width="200" height="60" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
               </a>
@@ -1185,6 +1188,9 @@ export default function Landing() {
               </a>
               <a href="https://uno.directory" target="_blank" rel="noopener">
                 <img src="https://uno.directory/uno-directory.svg" alt="Listed on Uno Directory" width="120" height="30" />
+              </a>
+              <a href="https://makerhunt.io/project/naxely" target="_blank" rel="noopener" title="Featured on MakerHunt">
+                <img src="https://makerhunt.io/badges/makerhunt-badge-light.svg" alt="Featured on MakerHunt" width="200" height="60" />
               </a>
             </div>
           </div>
