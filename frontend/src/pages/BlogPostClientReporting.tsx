@@ -41,7 +41,7 @@ export default function BlogPostClientReporting() {
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">How to Choose Client Reporting Software</h1>
-        <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026</p>
+        <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026 &middot; Updated August 11, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
 
