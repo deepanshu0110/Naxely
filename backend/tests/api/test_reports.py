@@ -632,6 +632,25 @@ class TestChartSpecOverride:
         req = ReportGenerateRequest(upload_id="u", title="No Specs")
         assert req.chart_specs is None
 
+    def test_report_generate_request_with_chart_specs_auto(self):
+        req = ReportGenerateRequest(
+            upload_id="test-uuid",
+            title="Chart Auto Test",
+            sections=["charts"],
+            chart_specs_auto=[
+                ChartSpecOverride(x="Date", y="Revenue", type="bar", title="Rev by Date"),
+            ],
+            chart_specs_selector="rules",
+        )
+        assert len(req.chart_specs_auto) == 1
+        assert req.chart_specs_auto[0].type == "bar"
+        assert req.chart_specs_selector == "rules"
+
+    def test_chart_specs_auto_defaults_to_none(self):
+        req = ReportGenerateRequest(upload_id="u", title="No Auto Specs")
+        assert req.chart_specs_auto is None
+        assert req.chart_specs_selector is None
+
     def test_preview_charts_request_model(self):
         req = PreviewChartsRequest(
             upload_id="upload-123",
@@ -2819,6 +2838,7 @@ class TestPreviewCharts:
             result = await preview_charts(body=body, current_user=user, db=db)
 
         assert result["chart_specs"] == ai_specs
+        assert result["selector"] == "ai"
 
     @pytest.mark.asyncio
     async def test_preview_charts_ai_fallback_to_rule_based(self):
@@ -2870,6 +2890,7 @@ class TestPreviewCharts:
 
         assert len(result["chart_specs"]) >= 1
         assert result["chart_specs"][0]["y"] == "Sales"
+        assert result["selector"] == "rules"
 
 
 class TestBulkDeleteWithStorageCleanup:
@@ -3195,6 +3216,8 @@ class TestGenerateReportChartSpecsOverride:
             upload_id="up-cso-001", title="CSO Test",
             sections=["charts"],
             chart_specs=[ChartSpecOverride(x="Date", y="Sales", type="bar", title="Sales")],
+            chart_specs_auto=[ChartSpecOverride(x="Date", y="Sales", type="line", title="Sales Trend")],
+            chart_specs_selector="rules",
         )
 
         class _FoundUpload:
@@ -3213,6 +3236,7 @@ class TestGenerateReportChartSpecsOverride:
             def __init__(self):
                 self.call_count = 0
                 self.executed_queries = []
+                self.insert_params = None
             async def execute(self, query, params=None):
                 qs = str(query)
                 self.executed_queries.append(qs)
@@ -3220,6 +3244,8 @@ class TestGenerateReportChartSpecsOverride:
                 self.call_count += 1
                 if idx == 0:
                     return _FoundUpload()
+                if "INSERT INTO reports" in qs:
+                    self.insert_params = params
                 return _NotFound()
             async def commit(self): pass
             async def rollback(self): pass
@@ -3237,6 +3263,15 @@ class TestGenerateReportChartSpecsOverride:
         assert resp["success"] is True
         insert_q = [q for q in db.executed_queries if "INSERT INTO reports" in q]
         assert len(insert_q) == 1
+        assert db.insert_params is not None
+        config = json.loads(db.insert_params["config"])
+        assert config["chart_specs_override"] == [
+            {"x": "Date", "y": "Sales", "type": "bar", "title": "Sales"}
+        ]
+        assert config["chart_specs_auto"] == [
+            {"x": "Date", "y": "Sales", "type": "line", "title": "Sales Trend"}
+        ]
+        assert config["chart_specs_selector"] == "rules"
 
 
 class TestGetReportWithAnomalies:

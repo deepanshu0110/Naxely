@@ -26,6 +26,7 @@ interface ChartCustomizerProps {
   uploadId: string
   columnConfig: ColumnConfig[]
   onSpecsChange: (specs: ChartSpec[]) => void
+  onAutoSpecsChange?: (specs: ChartSpec[], selector: 'ai' | 'rules') => void
   maxCharts?: number
 }
 
@@ -33,6 +34,7 @@ export default function ChartCustomizer({
   uploadId,
   columnConfig,
   onSpecsChange,
+  onAutoSpecsChange,
   maxCharts,
 }: ChartCustomizerProps) {
   const [candidates, setCandidates] = useState<ChartSpec[]>([])
@@ -47,18 +49,24 @@ export default function ChartCustomizer({
       setError(null)
       setCapMessage(null)
       try {
-        const res = await api.post<{ chart_specs: ChartSpec[] }>('/reports/preview-charts', {
-          upload_id: uploadId,
-          column_config: columnConfig,
-        })
+        const res = await api.post<{ chart_specs: ChartSpec[]; selector?: string }>(
+          '/reports/preview-charts',
+          {
+            upload_id: uploadId,
+            column_config: columnConfig,
+          },
+        )
         const fetched = res.data.chart_specs || []
         const selected = new Set<number>()
         fetched.forEach((s, i) => {
           if (s.recommended !== false) selected.add(i)
         })
+        const recommended = fetched.filter((_, i) => selected.has(i))
+        const selector: 'ai' | 'rules' = res.data.selector === 'ai' ? 'ai' : 'rules'
         setCandidates(fetched)
         setIncluded(selected)
-        onSpecsChange(fetched.filter((_, i) => selected.has(i)))
+        onSpecsChange(recommended)
+        onAutoSpecsChange?.(recommended, selector)
         if (maxCharts && selected.size > maxCharts) {
           setCapMessage(`You can include up to ${maxCharts} charts on your plan.`)
         }
@@ -102,7 +110,7 @@ export default function ChartCustomizer({
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
-        <p className="text-sm text-gray-500 dark:text-gray-400">AI is selecting the best charts...</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Preparing chart recommendations...</p>
       </div>
     )
   }
@@ -112,7 +120,7 @@ export default function ChartCustomizer({
       <div className="flex flex-col gap-1">
         <h3 className="text-base font-semibold text-ink dark:text-gray-100">Charts & Visualizations</h3>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          AI selected these charts based on your data. Include the ones you want and change any type below.
+          These charts are recommended based on your data. Include the ones you want and change any type below.
         </p>
       </div>
 

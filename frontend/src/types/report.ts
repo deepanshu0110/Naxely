@@ -78,6 +78,8 @@ export interface ReportConfig {
   brand?: { company_name: string; prepared_by: string }
   workspace_id?: string | null
   chart_specs?: ChartSpec[]
+  chart_specs_auto?: ChartSpec[]
+  chart_specs_selector?: 'ai' | 'rules'
 }
 
 export interface GenerationStatus {

@@ -27,6 +27,8 @@ export default function NewReport() {
   const [reportDateRange, setReportDateRange] = useState<{ from: string; to: string } | undefined>(undefined)
   const [reportBrand, setReportBrand] = useState<{ company_name?: string; prepared_by?: string } | null>(null)
   const [chartSpecs, setChartSpecs] = useState<ChartSpec[]>([])
+  const [autoChartSpecs, setAutoChartSpecs] = useState<ChartSpec[]>([])
+  const [chartSpecsSelector, setChartSpecsSelector] = useState<'ai' | 'rules' | undefined>(undefined)
   const [generating, setGenerating] = useState(false)
   const [sourceType, setSourceType] = useState<'csv' | 'sheets'>('csv')
   const [sheetsUrl, setSheetsUrl] = useState('')
@@ -130,6 +132,11 @@ export default function NewReport() {
     [],
   )
 
+  const handleAutoSpecsChange = useCallback((specs: ChartSpec[], selector: 'ai' | 'rules') => {
+    setAutoChartSpecs(specs)
+    setChartSpecsSelector(selector)
+  }, [])
+
   const canProceed = () => {
     switch (currentStep) {
       case 1:
@@ -159,6 +166,8 @@ export default function NewReport() {
       column_config: columnConfig,
       workspace_id: null,
       chart_specs: chartSpecs.length > 0 ? chartSpecs : undefined,
+      chart_specs_auto: autoChartSpecs.length > 0 ? autoChartSpecs : undefined,
+      chart_specs_selector: chartSpecsSelector,
     }
 
     if (user?.tier !== 'free') {
@@ -350,6 +359,7 @@ export default function NewReport() {
                   uploadId={uploadResult.upload_id}
                   columnConfig={columnConfig}
                   onSpecsChange={setChartSpecs}
+                  onAutoSpecsChange={handleAutoSpecsChange}
                   maxCharts={user?.tier === 'agency' ? 16 : user?.tier === 'pro' ? 8 : 3}
                 />
               </div>

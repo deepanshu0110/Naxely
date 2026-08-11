@@ -42,7 +42,7 @@ describe('ChartCustomizer', () => {
   it('renders loading state initially', () => {
     mockPost.mockImplementation(() => new Promise(() => {}))
     renderChartCustomizer()
-    expect(screen.getByText('AI is selecting the best charts...')).toBeInTheDocument()
+    expect(screen.getByText('Preparing chart recommendations...')).toBeInTheDocument()
   })
 
   it('renders error state when API fails', async () => {
@@ -185,5 +185,53 @@ describe('ChartCustomizer candidate selection', () => {
     await userEvent.selectOptions(selects[0], 'histogram')
     const options = Array.from(selects[0].querySelectorAll('option')).map((o) => o.value)
     expect(options).toContain('histogram')
+  })
+})
+
+describe('ChartCustomizer auto specs capture', () => {
+  const autoSpecs: ChartSpec[] = [
+    { x: 'date', y: 'sales', type: 'line', title: 'Sales over time', recommended: true },
+    { x: 'date', y: 'sales', type: 'bar', title: 'Sales by month', recommended: true },
+    { x: 'client', y: 'sales', type: 'bar', title: 'Sales by client', recommended: false },
+  ]
+
+  it('emits untouched recommended specs and selector from the response', async () => {
+    const onAutoSpecsChange = vi.fn()
+    mockPost.mockResolvedValue({ data: { chart_specs: autoSpecs, selector: 'ai' } })
+    render(
+      <ChartCustomizer
+        uploadId="up-123"
+        columnConfig={mockColumnConfig}
+        onSpecsChange={vi.fn()}
+        onAutoSpecsChange={onAutoSpecsChange}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(onAutoSpecsChange).toHaveBeenLastCalledWith(
+        [
+          expect.objectContaining({ title: 'Sales over time' }),
+          expect.objectContaining({ title: 'Sales by month' }),
+        ],
+        'ai',
+      )
+    })
+  })
+
+  it('defaults to rules selector when response omits it', async () => {
+    const onAutoSpecsChange = vi.fn()
+    mockPost.mockResolvedValue({ data: { chart_specs: autoSpecs } })
+    render(
+      <ChartCustomizer
+        uploadId="up-123"
+        columnConfig={mockColumnConfig}
+        onSpecsChange={vi.fn()}
+        onAutoSpecsChange={onAutoSpecsChange}
+      />,
+    )
+
+    await waitFor(() => {
+      expect(onAutoSpecsChange).toHaveBeenCalledWith(expect.any(Array), 'rules')
+    })
   })
 })

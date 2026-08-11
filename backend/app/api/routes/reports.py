@@ -87,6 +87,8 @@ class ReportGenerateRequest(BaseModel):
     brand: Optional[BrandConfig] = None
     workspace_id: Optional[str] = None
     chart_specs: Optional[List[ChartSpecOverride]] = None
+    chart_specs_auto: Optional[List[ChartSpecOverride]] = None
+    chart_specs_selector: Optional[str] = None
 
     model_config = {"populate_by_name": True}
 
@@ -655,6 +657,7 @@ async def preview_charts(
     df, df_norm = _process_csv(df, config)
 
     chart_specs = None
+    selector = "rules"
     tier_cap = chart_service_mod.chart_cap_for_tier(cast("str | None", current_user.tier))
     try:
         user_result = await db.execute(
@@ -668,6 +671,8 @@ async def preview_charts(
             chart_specs = chart_service_mod.select_charts_with_ai(
                 df=df_norm, config=config, provider=_provider, api_key=_api_key, max_charts=tier_cap,
             )
+            if chart_specs:
+                selector = "ai"
     except Exception:
         logger.warning("[preview_charts] AI chart selection failed, using rule-based fallback")
 
@@ -696,7 +701,7 @@ async def preview_charts(
     for candidate in candidates:
         candidate["recommended"] = (candidate["x"], candidate["y"], candidate["type"]) in recommended
 
-    return {"chart_specs": candidates}
+    return {"chart_specs": candidates, "selector": selector}
 
 
 @router.post("/reports/generate")
@@ -751,6 +756,12 @@ async def generate_report(
 
     if body.chart_specs:
         config_json["chart_specs_override"] = [s.model_dump() for s in body.chart_specs]
+
+    if body.chart_specs_auto:
+        config_json["chart_specs_auto"] = [s.model_dump() for s in body.chart_specs_auto]
+
+    if body.chart_specs_selector:
+        config_json["chart_specs_selector"] = body.chart_specs_selector
 
     try:
         await db.execute(
