@@ -121,7 +121,7 @@ export default function BlogPostClientReporting() {
               </thead>
               <tbody>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AgencyAnalytics</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium"><Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline">AgencyAnalytics</Link></td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Live connectors (85+)</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Ask AI, AI summaries, anomaly detection, forecasting</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled in per-client price</td>
@@ -132,7 +132,7 @@ export default function BlogPostClientReporting() {
                   <td className="py-2 text-ink/55 dark:text-paper/45">Email + live chat, free onboarding call</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">DashThis</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium"><Link to="/compare/dashthis" className="text-amber-600 hover:text-amber-700 underline">DashThis</Link></td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Live connectors (unlimited integrations)</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">4 preset AI insight types on all plans; chat mode is an add-on</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled; AI chat add-on extra</td>
@@ -154,7 +154,7 @@ export default function BlogPostClientReporting() {
                   <td className="py-2 text-ink/55 dark:text-paper/45">Live chat + dedicated success manager (Max)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Databox</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium"><Link to="/compare/databox" className="text-amber-600 hover:text-amber-700 underline">Databox</Link></td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">130+ integrations incl. spreadsheets and databases, plus API</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Genie AI analyst + AI performance summaries</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled via monthly AI credits (50–4,000 by plan)</td>
