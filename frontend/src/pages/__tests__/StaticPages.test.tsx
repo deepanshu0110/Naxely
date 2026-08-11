@@ -25,7 +25,6 @@ import BlogPostWhiteLabel from '../BlogPostWhiteLabel'
 import BlogPostAnomalyDetection from '../BlogPostAnomalyDetection'
 import BlogPostBestFreelanceReporting from '../BlogPostBestFreelanceReporting'
 import BlogPostClientReportChecklist from '../BlogPostClientReportChecklist'
-import BlogPostConsultantReporting from '../BlogPostConsultantReporting'
 import BlogPostFlatPricing from '../BlogPostFlatPricing'
 import BlogPostGoogleSheets from '../BlogPostGoogleSheets'
 import BlogPostPythonCsvToPdf from '../BlogPostPythonCsvToPdf'
@@ -170,12 +169,6 @@ const seoPages: Array<{
     Component: BlogPostClientReportChecklist,
     canonicalPath: '/blog/what-should-client-report-include-checklist',
     heading: /What Should a Client Report Actually Include/,
-  },
-  {
-    name: 'BlogPostConsultantReporting',
-    Component: BlogPostConsultantReporting,
-    canonicalPath: '/blog/client-reporting-for-freelance-consultants',
-    heading: /Client Reporting for Freelance Consultants/,
   },
   {
     name: 'BlogPostFlatPricing',

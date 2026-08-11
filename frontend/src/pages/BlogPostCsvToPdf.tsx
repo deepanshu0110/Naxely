@@ -105,6 +105,7 @@ export default function BlogPostCsvToPdf() {
             <li><strong>Marketing and ops teams</strong> who need to turn raw exports (ad platforms, CRM data, analytics tools) into something a non-technical stakeholder can read without a walkthrough call</li>
             <li><strong>Agencies</strong> managing multiple client accounts who need consistent, white-labeled reporting at scale</li>
           </ul>
+          <p>If you're a developer weighing building this yourself, the DIY route still works — our walkthrough of <Link to="/blog/python-csv-to-pdf-reports" className="text-amber-600 hover:text-amber-700 underline">generating CSV-to-PDF reports with Python</Link> compares the script against a tool and shows where the script stops being worth the maintenance.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How long does it take to set up?</h2>
           <p>Report generation in Naxely needs no setup at all — upload a CSV, and Naxely handles chart selection, insight writing, and formatting automatically. For the AI features, Naxely uses a BYOK (bring-your-own-key) model: connect your own API key from one of seven supported providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, or Together AI) in about 2 minutes, and there's no markup on AI usage. <Link to="/blog/byok-ai-reporting-tool" className="text-amber-600 hover:text-amber-700 underline">Read more about how BYOK works &rarr;</Link></p>

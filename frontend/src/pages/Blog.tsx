@@ -107,12 +107,6 @@ const posts: Post[] = [
     label: 'Guide',
   },
   {
-    slug: 'client-reporting-for-freelance-consultants',
-    title: 'Client Reporting for Freelance Consultants (Not Just Marketers)',
-    excerpt: 'Most client reporting tools are built for marketing agencies with live ad accounts. Here\'s what data analysts and consultants working from spreadsheets actually need.',
-    label: 'Guide',
-  },
-  {
     slug: 'client-reporting-tools-for-upwork-freelancer',
     title: 'Client Reporting Tools for Upwork & Freelancer.com Analysts',
     excerpt: 'Freelance platform work means switching between clients and data formats constantly. Here\'s what to look for in a reporting tool when every contract is different.',

@@ -34,7 +34,6 @@ const BlogPostBestFreelanceReporting = lazy(() => import('@/pages/BlogPostBestFr
 const BlogPostPythonCsvToPdf = lazy(() => import('@/pages/BlogPostPythonCsvToPdf'))
 const BlogPostTwoWeeks = lazy(() => import('@/pages/BlogPostTwoWeeks'))
 const BlogPostClientReportChecklist = lazy(() => import('@/pages/BlogPostClientReportChecklist'))
-const BlogPostConsultantReporting = lazy(() => import('@/pages/BlogPostConsultantReporting'))
 const BlogPostUpworkReporting = lazy(() => import('@/pages/BlogPostUpworkReporting'))
 const BlogPostFlatPricing = lazy(() => import('@/pages/BlogPostFlatPricing'))
 const BlogPostAnomalyDetection = lazy(() => import('@/pages/BlogPostAnomalyDetection'))
@@ -109,7 +108,6 @@ export const routes: RouteRecord[] = [
       { path: '/blog/python-csv-to-pdf-reports', element: <BlogPostPythonCsvToPdf /> },
       { path: '/blog/two-weeks-building-naxely', element: <BlogPostTwoWeeks /> },
       { path: '/blog/what-should-client-report-include-checklist', element: <BlogPostClientReportChecklist /> },
-      { path: '/blog/client-reporting-for-freelance-consultants', element: <BlogPostConsultantReporting /> },
       { path: '/blog/client-reporting-tools-for-upwork-freelancer', element: <BlogPostUpworkReporting /> },
       { path: '/blog/client-reporting-tools-flat-pricing', element: <BlogPostFlatPricing /> },
       { path: '/blog/anomaly-detection-in-client-reports', element: <BlogPostAnomalyDetection /> },

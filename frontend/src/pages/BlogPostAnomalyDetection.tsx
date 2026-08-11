@@ -95,7 +95,7 @@ export default function BlogPostAnomalyDetection() {
 
           <p className="text-sm text-ink/55 dark:text-paper/45"><em>Naxely turns your CSV or Google Sheet into a branded, AI-narrated PDF report in under 60 seconds — including automatic anomaly detection on every numeric column. <Link to="/blog/automating-client-reports" className="text-amber-600 hover:text-amber-700 underline">Learn more about how the full pipeline works &rarr;</Link></em></p>
 
-          <p className="text-sm text-ink/55 dark:text-paper/45"><em>Related reading: <Link to="/blog/csv-to-pdf-report-generator" className="text-amber-600 hover:text-amber-700 underline">Converting CSVs into client-ready PDF reports</Link> <span className="text-gray-300">·</span> <Link to="/blog/google-sheets-client-reports" className="text-amber-600 hover:text-amber-700 underline">How Naxely Keeps Your Google Sheets Reports Current</Link></em></p>
+          <p className="text-sm text-ink/55 dark:text-paper/45"><em>Related reading: <Link to="/blog/csv-to-pdf-report-generator" className="text-amber-600 hover:text-amber-700 underline">Converting CSVs into client-ready PDF reports</Link> <span className="text-gray-300">·</span> <Link to="/blog/google-sheets-client-reports" className="text-amber-600 hover:text-amber-700 underline">How Naxely Keeps Your Google Sheets Reports Current</Link> <span className="text-gray-300">·</span> <Link to="/blog/python-csv-to-pdf-reports" className="text-amber-600 hover:text-amber-700 underline">Generating CSV-to-PDF reports with Python</Link></em></p>
         </div>
       </article>
       <footer className="border-t border-gray-200 px-6 py-12">
