@@ -143,7 +143,7 @@ export default function BlogPostClientReporting() {
                   <td className="py-2 text-ink/55 dark:text-paper/45">Email with stated SLA</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Whatagraph</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium"><Link to="/compare/whatagraph" className="text-amber-600 hover:text-amber-700 underline">Whatagraph</Link></td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Live connectors; source credits from 50</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Whatagraph IQ — summaries, chat, report creation (all plans)</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Bundled</td>
