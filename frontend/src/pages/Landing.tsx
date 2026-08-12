@@ -1072,6 +1072,9 @@ export default function Landing() {
               <a href="https://www.aidirectori.es" target="_blank" rel="noopener noreferrer">
                 <img src="https://cdn.aidirectori.es/ai-tools/badges/light-mode.png" alt="AI Directories Badge" width="200" height="54" />
               </a>
+              <a href="https://www.toolpilot.ai" target="_blank" rel="noopener noreferrer">
+                <img src="https://toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png" alt="Featured on ToolPilot" width="200" height="44" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
               </a>
@@ -1197,6 +1200,9 @@ export default function Landing() {
               </a>
               <a href="https://www.aidirectori.es" target="_blank" rel="noopener noreferrer">
                 <img src="https://cdn.aidirectori.es/ai-tools/badges/light-mode.png" alt="AI Directories Badge" width="200" height="54" />
+              </a>
+              <a href="https://www.toolpilot.ai" target="_blank" rel="noopener noreferrer">
+                <img src="https://toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png" alt="Featured on ToolPilot" width="200" height="44" />
               </a>
             </div>
           </div>
