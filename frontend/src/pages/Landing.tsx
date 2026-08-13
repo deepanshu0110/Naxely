@@ -1076,7 +1076,7 @@ export default function Landing() {
                 <img src="https://toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png" alt="Featured on ToolPilot" width="200" height="44" />
               </a>
               <a href="https://thesaasdir.com/product/naxely?ref=badge" rel="dofollow" target="_blank">
-                <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="160" height="44" />
+                <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="182" height="46" />
               </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
@@ -1208,7 +1208,7 @@ export default function Landing() {
                 <img src="https://toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png" alt="Featured on ToolPilot" width="200" height="44" />
               </a>
               <a href="https://thesaasdir.com/product/naxely?ref=badge" rel="dofollow" target="_blank">
-                <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="160" height="44" />
+                <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="182" height="46" />
               </a>
             </div>
           </div>
