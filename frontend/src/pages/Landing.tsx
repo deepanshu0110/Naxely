@@ -1078,6 +1078,9 @@ export default function Landing() {
               <a href="https://thesaasdir.com/product/naxely?ref=badge" rel="dofollow" target="_blank">
                 <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="182" height="46" />
               </a>
+              <a href="https://www.foundrlist.com/product/naxely?utm_source=badge&utm_medium=embed" target="_blank" rel="noopener">
+                <img src="https://www.foundrlist.com/api/badge/naxely" alt="Featured on FoundrList" width="150" height="48" />
+              </a>
               <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
               </a>
@@ -1209,6 +1212,9 @@ export default function Landing() {
               </a>
               <a href="https://thesaasdir.com/product/naxely?ref=badge" rel="dofollow" target="_blank">
                 <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="182" height="46" />
+              </a>
+              <a href="https://www.foundrlist.com/product/naxely?utm_source=badge&utm_medium=embed" target="_blank" rel="noopener">
+                <img src="https://www.foundrlist.com/api/badge/naxely" alt="Featured on FoundrList" width="150" height="48" />
               </a>
             </div>
           </div>
