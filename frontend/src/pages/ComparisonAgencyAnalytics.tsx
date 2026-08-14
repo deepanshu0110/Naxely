@@ -91,6 +91,43 @@ export default function ComparisonAgencyAnalytics() {
           <p>Both platforms generate client-ready PDF reports, but they approach the problem from opposite directions. <strong>Naxely is a data-input-first tool — upload a CSV or connect Google Sheets, get an AI-written PDF in minutes.</strong> <strong>AgencyAnalytics is a connector-first platform — it pulls live data from 85+ marketing integrations and lets you build dashboards and automated PDF reports on a schedule.</strong></p>
           <p>AgencyAnalytics also competes with <Link to="/compare/whatagraph" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30"><strong>Whatagraph</strong></Link>, <Link to="/compare/dashthis" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30"><strong>DashThis</strong></Link>, <Link to="/compare/databox" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30"><strong>Databox</strong></Link>, <Link to="/compare/powerdrill" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30"><strong>Powerdrill</strong></Link>, and <strong>Klipfolio</strong> for agency reporting and analysis. For users who only need PDFs from data they already have, those tools and AgencyAnalytics itself are often overkill — which is where Naxely fits. Choose based on your data source, not on feature checklists.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Integrations: What Each Tool Connects To</h2>
+          <p>Both tools connect to data — the difference is how. Naxely works from the files and spreadsheets you already have; AgencyAnalytics pulls live data through marketing connectors.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper"></th>
+                  <th className="py-2 pr-4 font-semibold text-ink dark:text-paper">Naxely</th>
+                  <th className="py-2 font-semibold text-ink dark:text-paper">AgencyAnalytics</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Data inputs</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">CSV, Excel (.xlsx), Google Sheets — anything you can export</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Live connectors (85+ sources)</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Google Sheets</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Yes — paste a Sheets URL, data refreshes on schedule (Pro and above)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Yes — Google Sheets and Google Sheets App integrations</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI providers</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">7 BYOK providers — Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI; zero markup</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">AI reporting tools, no BYOK</td>
+                </tr>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Programmatic access</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Agency tier — POST /v1/reports with an X-API-Key header</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Not advertised on their integrations page</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>AgencyAnalytics connects to 85+ marketing platforms and ad networks — if your data already lives there, that breadth is a real advantage. Naxely takes a different approach: it accepts CSV, Excel, and Google Sheets, so any platform that exports data — Google Ads, Meta, Semrush, Shopify, whatever you use — works with zero connector setup. Even Google Sheets itself is one of AgencyAnalytics' 85+ integrations, which is a fair sign that spreadsheet-driven reporting is a workflow worth covering.</p>
+
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">When to Choose Naxely</h2>
           <ul className="list-disc pl-5 space-y-2">
             <li>You work with client-provided data exports, internal spreadsheets, or Google Sheets — not live ad platforms.</li>
