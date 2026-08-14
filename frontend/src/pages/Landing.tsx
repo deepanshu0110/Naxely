@@ -270,7 +270,7 @@ export default function Landing() {
               style={{ animationDelay: '320ms' }}>
               <span>✓ No credit card required</span>
               <span>✓ Free tier available</span>
-              <span>✓ PDF ready in under 60s</span>
+              <span>✓ PDF ready in under a minute</span>
             </div>
 
           </div>
