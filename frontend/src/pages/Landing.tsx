@@ -39,7 +39,7 @@ const stepped = [
   {
     num: '3',
     icon: Download,
-    title: 'Download a professional PDF in under 2 minutes',
+    title: 'Download a professional PDF in about a minute',
   },
 ]
 
@@ -51,10 +51,10 @@ const plans = [
     highlight: false,
     features: [
       '3 reports/month',
-      'CSV upload',
+      'CSV or Excel (.xlsx) upload',
       'Basic charts (bar, line, pie)',
       'PDF with watermark',
-      'Use your own OpenAI key to keep AI costs low (optional)',
+      'Bring your own AI key (7 providers, no markup)',
       'Email support',
     ],
     cta: 'Start Free',
@@ -78,7 +78,7 @@ const plans = [
       'Google Sheets connector',
       'Scheduled reports',
       'Shareable links',
-      'Use your own OpenAI key to keep AI costs low (optional)',
+      'Bring your own AI key (7 providers, no markup)',
     ],
     cta: 'Upgrade to Pro',
     ctaVariant: 'filled' as const,
@@ -178,7 +178,7 @@ export default function Landing() {
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Naxely free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Free tier includes 3 reports/month with CSV upload and basic charts, no credit card required."}},{"@type":"Question","name":"Do I need my own AI API key?","acceptedAnswer":{"@type":"Answer","text":"Yes, on all plans (Free, Pro, Agency). Naxely supports Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, and Together AI — you pay the provider directly with no markup."}},{"@type":"Question","name":"Can I remove the Naxely branding from reports?","acceptedAnswer":{"@type":"Answer","text":"The watermark is removed on Pro and Agency plans. Agency plans also remove all Naxely branding for full white-label output."}},{"@type":"Question","name":"Does Naxely support Google Sheets?","acceptedAnswer":{"@type":"Answer","text":"Yes, on Pro and above — paste a Sheets URL directly, no CSV export needed."}},{"@type":"Question","name":"How long does report generation take?","acceptedAnswer":{"@type":"Answer","text":"Typically in under a minute."}},{"@type":"Question","name":"Does Naxely have an API for the Agency tier?","acceptedAnswer":{"@type":"Answer","text":"Yes — the Agency plan includes programmatic API access: POST /v1/reports with an X-API-Key header, so you can generate branded reports directly from your own systems."}}]})}</script>
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"Naxely Demo — CSV to Client-Ready PDF Report in Under a Minute","description":"See how Naxely turns a raw CSV or Google Sheet into a branded PDF report with AI-written insights, automatically selected charts, and anomaly flags — in under 60 seconds.","thumbnailUrl":"https://www.naxely.com/naxely-demo-poster.jpg","uploadDate":"2026-07-23T00:00:00+05:30","duration":"PT2M55S","contentUrl":"https://www.naxely.com/naxely-demo.mp4"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"VideoObject","name":"Naxely Demo — CSV to Client-Ready PDF Report in Under a Minute","description":"See how Naxely turns a raw CSV or Google Sheet into a branded PDF report with AI-written insights, automatically selected charts, and anomaly flags — in under a minute.","thumbnailUrl":"https://www.naxely.com/naxely-demo-poster.jpg","uploadDate":"2026-07-23T00:00:00+05:30","duration":"PT2M55S","contentUrl":"https://www.naxely.com/naxely-demo.mp4"})}</script>
       </Head>
       <Navbar />
       <main>
@@ -219,7 +219,7 @@ export default function Landing() {
               style={{ animationDelay: '80ms' }}>
               Turn any CSV into a branded client PDF{' '}
               <span className="text-amber-600 dark:text-amber-400">
-                — in under 60 seconds
+                — in under a minute
               </span>
             </h1>
 
@@ -230,7 +230,7 @@ export default function Landing() {
               style={{ animationDelay: '120ms' }}>
               Upload a CSV or connect Google Sheets. Naxely writes the executive
               summary, builds the charts, and delivers a branded PDF your client
-              can open in under 60 seconds. No design skills needed.
+              can open in under a minute. No design skills needed.
             </p>
 
             {/* CTAs */}
@@ -646,11 +646,11 @@ export default function Landing() {
 
               <h3 className="font-display text-xl font-semibold
                 text-ink dark:text-paper mb-2">
-                Connect Google Sheets
+                Connect Google Sheets or upload Excel
               </h3>
               <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed">
-                Paste a Sheet URL and Naxely reads it directly.
-                No CSV export needed — your data stays where it already lives.
+                Paste a Sheet URL, or drop in a CSV or .xlsx file — Naxely reads it directly.
+                No reformatting, no exporting to a different file type first.
               </p>
             </div>
 

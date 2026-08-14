@@ -40,7 +40,7 @@ describe('Landing page', () => {
   it('renders hero heading and CTA for unauthenticated', () => {
     renderPage()
     expect(screen.getByText(/Turn any CSV into a branded client PDF/)).toBeInTheDocument()
-    expect(screen.getAllByText(/in under 60 seconds/)).toHaveLength(2)
+    expect(screen.getByText(/can open in under a minute/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /generate your first report/i })).toHaveAttribute('href', '/signup')
     expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/login')
   })
@@ -57,7 +57,7 @@ describe('Landing page', () => {
     expect(screen.getByText('How it works')).toBeInTheDocument()
     expect(screen.getByText('Upload your CSV or connect Google Sheets')).toBeInTheDocument()
     expect(screen.getByText('Configure your report in seconds')).toBeInTheDocument()
-    expect(screen.getByText('Download a professional PDF in under 2 minutes')).toBeInTheDocument()
+    expect(screen.getByText('Download a professional PDF in about a minute')).toBeInTheDocument()
   })
 
   it('renders Features section', () => {
