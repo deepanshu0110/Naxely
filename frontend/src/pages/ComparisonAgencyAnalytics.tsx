@@ -135,6 +135,7 @@ export default function ComparisonAgencyAnalytics() {
             <li>You want AI-written executive summaries and anomaly detection without per-report AI markup (BYOK on every tier, including free).</li>
             <li>Budget is a priority — free tier available, flat $29/month Pro, $79/month Agency for white-label.</li>
           </ul>
+          <p className="mt-4 text-sm text-ink/55 dark:text-paper/45 leading-relaxed">For a structured evaluation framework across all these dimensions, our guide to <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">choosing client reporting software</Link> walks through the decision step by step.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">When to Choose AgencyAnalytics</h2>
           <ul className="list-disc pl-5 space-y-2">

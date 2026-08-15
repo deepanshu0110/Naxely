@@ -948,6 +948,9 @@ export default function Landing() {
               <Link to="/faq" className="hover:text-ink">
                 FAQ
               </Link>
+              <Link to="/blog" className="hover:text-ink">
+                Blog
+              </Link>
               <Link to="/changelog" className="hover:text-ink">
                 Changelog
               </Link>
