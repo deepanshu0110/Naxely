@@ -75,7 +75,7 @@ export default function ComparisonAgencyAnalytics() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Who it's for</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Freelance analysts, consultants, small agencies</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45"><Link to="/blog/best-client-reporting-software-freelancers" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Freelance analysts, consultants, small agencies</Link></td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Marketing agencies managing client ad campaigns</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
