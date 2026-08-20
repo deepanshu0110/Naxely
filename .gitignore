@@ -26,6 +26,7 @@ stats.json
 # Playwright MCP artifacts
 .playwright-mcp/
 *.png
+!frontend/public/pins/*.png
 
 # Temp files
 /tmp/
