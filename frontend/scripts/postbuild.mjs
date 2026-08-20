@@ -20,7 +20,7 @@ console.log(`[postbuild] shell.html (${clean.length} B)`)
 
 const SITE = 'https://www.naxely.com'
 const FEED_URL = `${SITE}/rss.xml`
-const IMAGE_URL = `${SITE}/og-image.png`
+const DEFAULT_IMAGE_URL = `${SITE}/og-image.png`
 
 const posts = JSON.parse(readFileSync(resolve(__dirname, '..', 'src', 'data', 'blog-posts.json'), 'utf-8'))
 
@@ -42,14 +42,16 @@ const items = posts
   .map((post) => {
     const link = `${SITE}${post.routePrefix || '/blog/'}${post.slug}`
     const pubDate = post.date ? toRfc822(post.date) : null
+    const imageUrl = `${SITE}${post.image || '/og-image.png'}`
+    const imageSize = post.image ? ' width="1000" height="1500"' : ' width="1200" height="630"'
     return `    <item>
       <title>${escapeXml(post.title)}</title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
       <description>${escapeXml(post.excerpt)}</description>
       ${pubDate ? `<pubDate>${pubDate}</pubDate>` : ''}
-      <enclosure url="${IMAGE_URL}" type="image/png" />
-      <media:content url="${IMAGE_URL}" type="image/png" />
+      <enclosure url="${imageUrl}" type="image/png"${imageSize} />
+      <media:content url="${imageUrl}" type="image/png"${imageSize} />
     </item>`
   })
   .join('\n')
@@ -63,7 +65,7 @@ const rss = `<?xml version="1.0" encoding="UTF-8"?>
     <language>en-us</language>
     <atom:link href="${FEED_URL}" rel="self" type="application/rss+xml" />
     <image>
-      <url>${IMAGE_URL}</url>
+      <url>${DEFAULT_IMAGE_URL}</url>
       <title>Naxely Blog</title>
       <link>${SITE}/blog</link>
     </image>
