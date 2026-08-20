@@ -1,0 +1,96 @@
+[
+  {
+    "slug": "google-sheets-client-reports",
+    "title": "How Naxely Keeps Your Google Sheets Reports Current (Not Just a One-Time Import)",
+    "excerpt": "How Naxely keeps scheduled client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data, and a real gap we found and fixed.",
+    "date": "August 4, 2026"
+  },
+  {
+    "slug": "anomaly-detection-in-client-reports",
+    "title": "What Naxely's Anomaly Detection Actually Catches (And What It Doesn't)",
+    "excerpt": "How Naxely flags outliers in client reports — the 2 standard deviation threshold, the filtering that keeps flags useful, and what it can't do yet.",
+    "date": "August 4, 2026"
+  },
+  {
+    "slug": "two-weeks-building-naxely",
+    "title": "What Two Weeks of Building a Client-Reporting Tool Actually Looked Like",
+    "excerpt": "The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats.",
+    "date": "July 17, 2026"
+  },
+  {
+    "slug": "python-csv-to-pdf-reports",
+    "title": "Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool",
+    "excerpt": "A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.",
+    "date": "July 14, 2026"
+  },
+  {
+    "slug": "client-reporting-software-guide",
+    "title": "How to Choose Client Reporting Software",
+    "excerpt": "A practical guide to choosing client reporting software: map your data sources, evaluate AI and automation, pick the right delivery method, and check white-label options before you commit.",
+    "label": "Guide"
+  },
+  {
+    "slug": "best-client-reporting-software-freelancers",
+    "title": "Best Client Reporting Software for Freelancers (2026)",
+    "excerpt": "The best client reporting software for freelancers depends on your data source — a five-tool comparison of Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing.",
+    "label": "Guide"
+  },
+  {
+    "slug": "byok-ai-reporting-tool",
+    "title": "Why Naxely Uses BYOK: Bring Your Own AI Key for Client Reports",
+    "excerpt": "Most AI reporting tools bundle markups into your subscription. Naxely lets you bring your own key — you pay the provider directly, at cost, with zero markup.",
+    "date": "July 4, 2026"
+  },
+  {
+    "slug": "agencyanalytics",
+    "title": "Naxely vs AgencyAnalytics: Which Client Reporting Tool Fits Your Workflow?",
+    "excerpt": "Naxely is an AI-powered CSV-to-PDF report generator for freelancers and small agencies. AgencyAnalytics is a live marketing dashboard for multi-channel campaigns.",
+    "label": "Comparison",
+    "routePrefix": "/compare/"
+  },
+  {
+    "slug": "databox",
+    "title": "Naxely vs Databox: Which Reporting Tool Fits Your Workflow?",
+    "excerpt": "Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 100+ integrations.",
+    "label": "Comparison",
+    "routePrefix": "/compare/"
+  },
+  {
+    "slug": "powerdrill",
+    "title": "Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform",
+    "excerpt": "Compare Naxely and Powerdrill. Naxely is a purpose-built AI PDF report generator for client deliverables. Powerdrill Bloom is a broader AI data analysis workspace with natural-language BI.",
+    "label": "Comparison",
+    "routePrefix": "/compare/"
+  },
+  {
+    "slug": "dashthis",
+    "title": "Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards",
+    "excerpt": "Naxely turns uploaded data into branded PDF reports in under a minute. DashThis is a customizable marketing-dashboard platform with 40+ integrations for live campaign reporting.",
+    "label": "Comparison",
+    "routePrefix": "/compare/"
+  },
+  {
+    "slug": "csv-to-pdf-report-generator",
+    "title": "CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports",
+    "excerpt": "Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.",
+    "date": "July 4, 2026"
+  },
+  {
+    "slug": "white-label-client-reporting-agencies",
+    "title": "White-Label Client Reporting for Agencies: Why \"Any-Data\" Beats Another Marketing Connector",
+    "excerpt": "Why agency reporting tools built for marketing connectors miss the mark for any-data client reporting — and what BYOK, white-label pricing actually looks like.",
+    "date": "July 5, 2026"
+  },
+  {
+    "slug": "automating-client-reports",
+    "title": "Automated Client Reporting: The Complete Guide for Freelancers and Agencies",
+    "excerpt": "How automated client reporting works end to end — CSV and Google Sheets to a branded PDF with AI-written insights, plus what still needs a human review.",
+    "label": "Guide"
+  },
+  {
+    "slug": "what-should-client-report-include-checklist",
+    "title": "What Should a Client Report Actually Include? (Checklist)",
+    "excerpt": "A practical checklist for what belongs in a client-facing data report — from executive summary to next steps — and what to leave out.",
+    "label": "Guide"
+  }
+]
