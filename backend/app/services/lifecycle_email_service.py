@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 MANUAL_OUTREACH_EXCLUDE = "u.email NOT IN ('eminefe13@gmail.com', 'jash.c.shah@gmail.com', 'ravenabianca@gmail.com')"
 
 TRIGGER_A_QUERY = f"""
-SELECT u.id, u.email, u.created_at
+SELECT u.id, u.email, u.full_name, u.created_at
 FROM users u
 LEFT JOIN reports r ON r.user_id = u.id
 LEFT JOIN email_log el ON el.user_id = u.id AND el.email_type = 'lifecycle_no_report_3d'
@@ -32,7 +32,7 @@ HAVING COUNT(r.id) = 0;
 """
 
 TRIGGER_B_QUERY = f"""
-SELECT u.id, u.email, u.onboarding_completed_at
+SELECT u.id, u.email, u.full_name, u.onboarding_completed_at
 FROM users u
 LEFT JOIN reports r ON r.user_id = u.id AND r.deleted_at IS NULL
 LEFT JOIN email_log el ON el.user_id = u.id AND el.email_type = 'lifecycle_onboarded_no_report_7d'
@@ -50,19 +50,20 @@ HAVING COUNT(r.id) = 0;
 # Plain-text-forward templates (transactional framing, no upsell)
 # Trigger A: signed up 3+ days ago, 0 reports
 TEMPLATE_A_SUBJECT = "Quick start: your first Naxely report in 2 minutes"
-TEMPLATE_A_HTML = """<p>Hi there,</p>
+
+TEMPLATE_A_HTML = """<p>Hi {full_name},</p>
 <p>You signed up for Naxely a few days ago — thanks for joining.</p>
-<p>The fastest way to your first report: upload a CSV (or connect a Google Sheet), pick a template, and hit Generate. Most people get a branded PDF in under 2 minutes.</p>
+<p>The fastest way to your first report: upload a CSV (or connect a Google Sheet), pick a template, and hit Generate. It takes about 2 minutes to get a branded PDF.</p>
 <p><a href=\"{frontend_url}/reports/new\">Create your first report</a></p>
 <p>If you hit any snags, just reply to this email — we read every reply.</p>
 <p>— The Naxely team</p>
-<p style=\"font-size:12px;color:#888\">You're receiving this because you signed up for Naxely. If you don't want these onboarding tips, reply with \"unsubscribe\" and we'll suppress future lifecycle emails.</p>"""
+<p style=\"font-size:12px;color:#888\">You're receiving this because you signed up for Naxely. Reply and let us know if you'd rather not get these onboarding tips.</p>"""
 
-TEMPLATE_A_TEXT = """Hi there,
+TEMPLATE_A_TEXT = """Hi {full_name},
 
 You signed up for Naxely a few days ago — thanks for joining.
 
-The fastest way to your first report: upload a CSV (or connect a Google Sheet), pick a template, and hit Generate. Most people get a branded PDF in under 2 minutes.
+The fastest way to your first report: upload a CSV (or connect a Google Sheet), pick a template, and hit Generate. It takes about 2 minutes to get a branded PDF.
 
 Create your first report: {frontend_url}/reports/new
 
@@ -70,19 +71,20 @@ If you hit any snags, just reply to this email — we read every reply.
 
 — The Naxely team
 
-You're receiving this because you signed up for Naxely. If you don't want these onboarding tips, reply with \"unsubscribe\" and we'll suppress future lifecycle emails."""
+You're receiving this because you signed up for Naxely. Reply and let us know if you'd rather not get these onboarding tips."""
 
 # Trigger B: onboarded, 7+ days, still 0 reports
 TEMPLATE_B_SUBJECT = "Still stuck? Tell us what's blocking your first report"
-TEMPLATE_B_HTML = """<p>Hi there,</p>
+
+TEMPLATE_B_HTML = """<p>Hi {full_name},</p>
 <p>You completed onboarding a week ago — appreciate you giving Naxely a try.</p>
 <p>We noticed you haven't generated a report yet. Is something blocking you — data format, template choice, or just timing?</p>
 <p>Reply directly to this email and tell us what's in the way. We can point you to the right template or help with your CSV/Sheet in one reply.</p>
 <p>Or jump back in when ready: <a href=\"{frontend_url}/reports/new\">Create a report</a></p>
 <p>— The Naxely team</p>
-<p style=\"font-size:12px;color:#888\">You're receiving this because you completed onboarding on Naxely. Reply \"unsubscribe\" to stop these check-ins.</p>"""
+<p style=\"font-size:12px;color:#888\">You're receiving this because you completed onboarding on Naxely. Reply and let us know if you'd rather not get these check-ins.</p>"""
 
-TEMPLATE_B_TEXT = """Hi there,
+TEMPLATE_B_TEXT = """Hi {full_name},
 
 You completed onboarding a week ago — appreciate you giving Naxely a try.
 
@@ -94,7 +96,7 @@ Or jump back in when ready: {frontend_url}/reports/new
 
 — The Naxely team
 
-You're receiving this because you completed onboarding on Naxely. Reply \"unsubscribe\" to stop these check-ins."""
+You're receiving this because you completed onboarding on Naxely. Reply and let us know if you'd rather not get these check-ins."""
 
 
 async def get_trigger_a_candidates(db: AsyncSession) -> list[dict]:
@@ -151,15 +153,17 @@ async def _send_and_log(
 
 async def send_trigger_a(db: AsyncSession, user: dict) -> bool:
     frontend_url = settings.FRONTEND_BASE_URL
-    html = TEMPLATE_A_HTML.format(frontend_url=frontend_url)
-    text_body = TEMPLATE_A_TEXT.format(frontend_url=frontend_url)
+    full_name = (user.get("full_name") or "").strip() or "there"
+    html = TEMPLATE_A_HTML.format(frontend_url=frontend_url, full_name=full_name)
+    text_body = TEMPLATE_A_TEXT.format(frontend_url=frontend_url, full_name=full_name)
     return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_no_report_3d", TEMPLATE_A_SUBJECT, html, text_body)
 
 
 async def send_trigger_b(db: AsyncSession, user: dict) -> bool:
     frontend_url = settings.FRONTEND_BASE_URL
-    html = TEMPLATE_B_HTML.format(frontend_url=frontend_url)
-    text_body = TEMPLATE_B_TEXT.format(frontend_url=frontend_url)
+    full_name = (user.get("full_name") or "").strip() or "there"
+    html = TEMPLATE_B_HTML.format(frontend_url=frontend_url, full_name=full_name)
+    text_body = TEMPLATE_B_TEXT.format(frontend_url=frontend_url, full_name=full_name)
     return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_onboarded_no_report_7d", TEMPLATE_B_SUBJECT, html, text_body)
 
 
