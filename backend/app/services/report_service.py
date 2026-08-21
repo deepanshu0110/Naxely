@@ -434,7 +434,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         try:
             async with AsyncSessionLocal() as db2:
                 await db2.execute(
-                    text("UPDATE users SET has_completed_onboarding = TRUE WHERE id = :uid"),
+                    text("UPDATE users SET has_completed_onboarding = TRUE, onboarding_completed_at = COALESCE(onboarding_completed_at, NOW()) WHERE id = :uid"),
                     {"uid": str(user_id)},
                 )
                 await db2.commit()

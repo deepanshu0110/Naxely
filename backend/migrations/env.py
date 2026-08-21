@@ -28,6 +28,7 @@ from app.models.workspace import Workspace
 from app.models.workspace_member import WorkspaceMember
 from app.models.payment_event import PaymentEvent
 from app.models.scheduled_report import ScheduledReport
+from app.models.email_log import EmailLog
 
 target_metadata = Base.metadata
 

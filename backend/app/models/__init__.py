@@ -7,6 +7,7 @@ from .workspace import Workspace
 from .workspace_member import WorkspaceMember
 from .payment_event import PaymentEvent
 from .scheduled_report import ScheduledReport
+from .email_log import EmailLog
 
 __all__ = [
     'Base',
@@ -18,5 +19,6 @@ __all__ = [
     'Workspace',
     'WorkspaceMember',
     'PaymentEvent',
-    'ScheduledReport'
+    'ScheduledReport',
+    'EmailLog',
 ]

@@ -53,7 +53,7 @@ async def complete_onboarding(
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     await db.execute(
-        text("UPDATE users SET has_completed_onboarding = TRUE WHERE id = :uid"),
+        text("UPDATE users SET has_completed_onboarding = TRUE, onboarding_completed_at = COALESCE(onboarding_completed_at, NOW()) WHERE id = :uid"),
         {"uid": str(current_user.id)},
     )
     await db.commit()
@@ -66,7 +66,7 @@ async def skip_onboarding(
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
     await db.execute(
-        text("UPDATE users SET has_completed_onboarding = TRUE WHERE id = :uid"),
+        text("UPDATE users SET has_completed_onboarding = TRUE, onboarding_completed_at = COALESCE(onboarding_completed_at, NOW()) WHERE id = :uid"),
         {"uid": str(current_user.id)},
     )
     await db.commit()

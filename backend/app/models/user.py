@@ -40,6 +40,10 @@ class User(Base, TimestampMixin):
 
     # Onboarding
     has_completed_onboarding = Column(Boolean, default=False)
+    onboarding_completed_at = Column(DateTime(timezone=True))
+
+    # Email suppression (bounce/complaint)
+    email_suppressed = Column(Boolean, default=False)
 
     # Soft delete
     deleted_at = Column(DateTime(timezone=True))

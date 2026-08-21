@@ -96,6 +96,8 @@ app.add_exception_handler(Exception, unhandled_exception_handler)
 
 from app.api.routes import auth, reports, settings as settings_router, payments, health, templates, v1 as v1_router  # noqa: E402
 from app.api.routes.scheduled_reports import router as scheduled_reports_router  # noqa: E402
+from app.api.routes.lifecycle import router as lifecycle_router  # noqa: E402
+from app.api.routes.resend_webhook import router as resend_webhook_router  # noqa: E402
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(reports.router, tags=["reports"])
@@ -104,6 +106,8 @@ app.include_router(payments.router, prefix="/payments", tags=["payments"])
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(templates.router, tags=["templates"])
 app.include_router(scheduled_reports_router, tags=["scheduled_reports"])
+app.include_router(lifecycle_router, tags=["lifecycle"])
+app.include_router(resend_webhook_router, tags=["webhooks"])
 app.include_router(v1_router.router)
 
 
@@ -132,6 +136,10 @@ async def startup_migrations():
 
     onboarding_sql = [
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS has_completed_onboarding BOOLEAN DEFAULT FALSE",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_completed_at TIMESTAMPTZ",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_suppressed BOOLEAN DEFAULT FALSE",
+        "CREATE TABLE IF NOT EXISTS email_log (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, email_type VARCHAR(50) NOT NULL, sent_at TIMESTAMPTZ DEFAULT NOW(), resend_id VARCHAR(255), status VARCHAR(20) DEFAULT 'sent', UNIQUE (user_id, email_type))",
+        "CREATE INDEX IF NOT EXISTS idx_email_log_user_id ON email_log(user_id)",
     ]
     async with AsyncSessionLocal() as db:
         for sql in onboarding_sql:

@@ -19,12 +19,14 @@ class Settings(BaseSettings):
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 
     RESEND_API_KEY: str = ""
+    RESEND_WEBHOOK_SECRET: str = ""
     FROM_EMAIL: str = "hello@naxely.com"
 
     ENVIRONMENT: str = "development"
     ALLOWED_ORIGINS: str = ""
     SECRET_KEY: str
     CRON_SECRET: str = ""
+    LIFECYCLE_CRON_SECRET: str = ""
 
     @property
     def resolved_allowed_origins(self) -> str:
