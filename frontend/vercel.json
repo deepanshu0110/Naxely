@@ -52,6 +52,6 @@
     { "src": "^/blog/client-reporting-tools-for-upwork-freelancer$", "destination": "/blog/best-client-reporting-software-freelancers", "status": 301 },
     { "src": "^/blog/client-reporting-tools-flat-pricing$", "destination": "/blog/best-client-reporting-software-freelancers", "status": 301 },
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/shell.html", "status": 404 }
+    { "src": "/(.*)", "destination": "/shell.html", "status": 404 }
   ]
 }
