@@ -80,7 +80,7 @@ export default function ComparisonKlipfolio() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$79/month (Agency tier)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Available on higher-tier plans</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">$299/mo add-on</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Setup time</td>
