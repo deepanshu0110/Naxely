@@ -33,6 +33,7 @@ import ComparisonDatabox from '../ComparisonDatabox'
 import ComparisonDashThis from '../ComparisonDashThis'
 import ComparisonPowerdrill from '../ComparisonPowerdrill'
 import ComparisonWhatagraph from '../ComparisonWhatagraph'
+import ComparisonKlipfolio from '../ComparisonKlipfolio'
 
 function renderWithRouter(Component: React.ComponentType) {
   return render(
@@ -215,6 +216,12 @@ const seoPages: Array<{
     Component: ComparisonWhatagraph,
     canonicalPath: '/compare/whatagraph',
     heading: /Naxely vs Whatagraph/,
+  },
+  {
+    name: 'ComparisonKlipfolio',
+    Component: ComparisonKlipfolio,
+    canonicalPath: '/compare/klipfolio',
+    heading: /Naxely vs Klipfolio/,
   },
 ]
 

@@ -89,6 +89,14 @@
     "image": "/pins/whatagraph.png"
   },
   {
+    "slug": "klipfolio",
+    "title": "Naxely vs Klipfolio: PDF Reports vs. Live Dashboards",
+    "excerpt": "Naxely vs Klipfolio: Naxely turns uploaded data into branded PDFs in under a minute. Klipfolio is a live KPI dashboard with 130+ native integrations.",
+    "label": "Comparison",
+    "routePrefix": "/compare/",
+    "image": "/pins/klipfolio.png"
+  },
+  {
     "slug": "csv-to-pdf-report-generator",
     "title": "CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports",
     "excerpt": "Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.",
