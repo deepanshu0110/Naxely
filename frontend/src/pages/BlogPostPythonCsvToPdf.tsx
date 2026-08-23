@@ -6,18 +6,18 @@ export default function BlogPostPythonCsvToPdf() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool | Naxely</title>
-        <meta name="description" content="A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly." />
+        <title>Python CSV to PDF Reports: DIY vs. Using a Tool</title>
+        <meta name="description" content="Practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending reports regularly." />
         <link rel="canonical" href="https://www.naxely.com/blog/python-csv-to-pdf-reports" />
         <meta property="og:url" content="https://www.naxely.com/blog/python-csv-to-pdf-reports" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool | Naxely" />
-        <meta property="og:description" content="A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly." />
+        <meta property="og:title" content="Python CSV to PDF Reports: DIY vs. Using a Tool" />
+        <meta property="og:description" content="Practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending reports regularly." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool | Naxely" />
-        <meta name="twitter:description" content="A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly." />
+        <meta name="twitter:title" content="Python CSV to PDF Reports: DIY vs. Using a Tool" />
+        <meta name="twitter:description" content="Practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending reports regularly." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool","description":"A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.","url":"https://www.naxely.com/blog/python-csv-to-pdf-reports","datePublished":"2026-07-14T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>

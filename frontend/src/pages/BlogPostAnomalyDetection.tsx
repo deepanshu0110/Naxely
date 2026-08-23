@@ -6,18 +6,18 @@ export default function BlogPostAnomalyDetection() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>What Naxely's Anomaly Detection Actually Catches (And What It Doesn't) | Naxely</title>
-        <meta name="description" content="How Naxely's anomaly detection flags outliers in client reports using z-score > 2, the filtering that keeps flags useful, and the honest limitations you should know about." />
+        <title>What Naxely's Anomaly Detection Catches (And What Doesn't)</title>
+        <meta name="description" content="How Naxely's anomaly detection flags outliers using z-score thresholds, the filtering that keeps flags useful, and the honest limitations." />
         <link rel="canonical" href="https://www.naxely.com/blog/anomaly-detection-in-client-reports" />
         <meta property="og:url" content="https://www.naxely.com/blog/anomaly-detection-in-client-reports" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="What Naxely's Anomaly Detection Actually Catches (And What It Doesn't) | Naxely" />
-        <meta property="og:description" content="How Naxely's anomaly detection flags outliers in client reports using z-score > 2, the filtering that keeps flags useful, and the honest limitations you should know about." />
+        <meta property="og:title" content="What Naxely's Anomaly Detection Catches (And What Doesn't)" />
+        <meta property="og:description" content="How Naxely's anomaly detection flags outliers using z-score thresholds, the filtering that keeps flags useful, and the honest limitations." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="What Naxely's Anomaly Detection Actually Catches (And What It Doesn't) | Naxely" />
-        <meta name="twitter:description" content="How Naxely's anomaly detection flags outliers in client reports using z-score > 2, the filtering that keeps flags useful, and the honest limitations you should know about." />
+        <meta name="twitter:title" content="What Naxely's Anomaly Detection Catches (And What Doesn't)" />
+        <meta name="twitter:description" content="How Naxely's anomaly detection flags outliers using z-score thresholds, the filtering that keeps flags useful, and the honest limitations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"What Naxely's Anomaly Detection Actually Catches (And What It Doesn't)","description":"How Naxely's anomaly detection flags outliers in client reports using z-score > 2, the filtering that keeps flags useful, and the honest limitations you should know about.","url":"https://www.naxely.com/blog/anomaly-detection-in-client-reports","datePublished":"2026-08-04T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>

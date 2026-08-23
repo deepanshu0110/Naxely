@@ -6,18 +6,18 @@ export default function BlogPostGoogleSheets() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>How Naxely Keeps Your Google Sheets Reports Current (Not Just a One-Time Import) | Naxely</title>
-        <meta name="description" content="How Naxely keeps recurring client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data, and a real gap we found and fixed." />
+        <title>How Naxely Keeps Google Sheets Reports Current</title>
+        <meta name="description" content="How Naxely keeps recurring client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data." />
         <link rel="canonical" href="https://www.naxely.com/blog/google-sheets-client-reports" />
         <meta property="og:url" content="https://www.naxely.com/blog/google-sheets-client-reports" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="How Naxely Keeps Your Google Sheets Reports Current (Not Just a One-Time Import) | Naxely" />
-        <meta property="og:description" content="How Naxely keeps recurring client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data, and a real gap we found and fixed." />
+        <meta property="og:title" content="How Naxely Keeps Google Sheets Reports Current" />
+        <meta property="og:description" content="How Naxely keeps recurring client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="How Naxely Keeps Your Google Sheets Reports Current (Not Just a One-Time Import) | Naxely" />
-        <meta name="twitter:description" content="How Naxely keeps recurring client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data, and a real gap we found and fixed." />
+        <meta name="twitter:title" content="How Naxely Keeps Google Sheets Reports Current" />
+        <meta name="twitter:description" content="How Naxely keeps recurring client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"How Naxely Keeps Your Google Sheets Reports Current (Not Just a One-Time Import)","description":"How Naxely keeps recurring client reports current from a connected Google Sheet — fresh fetch at generation time, fallback to last-known data, and a real gap we found and fixed.","url":"https://www.naxely.com/blog/google-sheets-client-reports","datePublished":"2026-08-04T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>

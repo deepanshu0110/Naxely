@@ -6,18 +6,18 @@ export default function BlogPostByok() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>BYOK AI Reporting Tool: Bring Your Own Key Explained | Naxely</title>
-        <meta name="description" content="Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
+        <title>BYOK AI Reporting Tool: Bring Your Own Key Explained</title>
+        <meta name="description" content="What BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
         <link rel="canonical" href="https://www.naxely.com/blog/byok-ai-reporting-tool" />
         <meta property="og:url" content="https://www.naxely.com/blog/byok-ai-reporting-tool" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="BYOK AI Reporting Tool: Bring Your Own Key Explained | Naxely" />
-        <meta property="og:description" content="Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
+        <meta property="og:title" content="BYOK AI Reporting Tool: Bring Your Own Key Explained" />
+        <meta property="og:description" content="What BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="BYOK AI Reporting Tool: Bring Your Own Key Explained | Naxely" />
-        <meta name="twitter:description" content="Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
+        <meta name="twitter:title" content="BYOK AI Reporting Tool: Bring Your Own Key Explained" />
+        <meta name="twitter:description" content="What BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"BYOK AI Reporting Tool: Bring Your Own Key Explained","description":"Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup.","url":"https://www.naxely.com/blog/byok-ai-reporting-tool","datePublished":"2026-07-04T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>

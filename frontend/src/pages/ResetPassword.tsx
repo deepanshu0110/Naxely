@@ -125,11 +125,11 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate px-4">
-      <Head>
-        <title>Reset Password — Naxely</title>
-        <meta name="robots" content="noindex, nofollow" />
-        <link rel="canonical" href="https://www.naxely.com/auth/reset-password" />
+<div className="flex min-h-screen items-center justify-center bg-slate px-4">
+        <Head>
+          <title>Reset Password — Naxely</title>
+          <meta name="robots" content="noindex, nofollow" />
+          <link rel="canonical" href="https://www.naxely.com/auth/reset-password" />
       </Head>
       <div className="w-full max-w-md rounded-xl bg-paper p-8 shadow-md">
         <div className="mb-8 text-center">

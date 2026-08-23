@@ -6,18 +6,18 @@ export default function BlogPostBestFreelanceReporting() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Best Client Reporting Software for Freelancers (2026) | Naxely</title>
-        <meta name="description" content="The best client reporting software for freelancers depends on your data source. Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing." />
+        <title>Best Client Reporting Software for Freelancers (2026)</title>
+        <meta name="description" content="Best client reporting software for freelancers depends on your data source. Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing." />
         <link rel="canonical" href="https://www.naxely.com/blog/best-client-reporting-software-freelancers" />
         <meta property="og:url" content="https://www.naxely.com/blog/best-client-reporting-software-freelancers" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Best Client Reporting Software for Freelancers (2026) | Naxely" />
-        <meta property="og:description" content="The best client reporting software for freelancers depends on your data source. Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing." />
+        <meta property="og:title" content="Best Client Reporting Software for Freelancers (2026)" />
+        <meta property="og:description" content="Best client reporting software for freelancers depends on your data source. Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Best Client Reporting Software for Freelancers (2026) | Naxely" />
-        <meta name="twitter:description" content="The best client reporting software for freelancers depends on your data source. Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing." />
+        <meta name="twitter:title" content="Best Client Reporting Software for Freelancers (2026)" />
+        <meta name="twitter:description" content="Best client reporting software for freelancers depends on your data source. Compare Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.naxely.com/blog"},{"@type":"ListItem","position":3,"name":"Best Client Reporting Software for Freelancers","item":"https://www.naxely.com/blog/best-client-reporting-software-freelancers"}]})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Best Client Reporting Software for Freelancers (2026)","description":"A practical comparison of the best client reporting software for freelancers: Looker Studio, DashThis, Bonsai, Plutio, and Naxely with current pricing and honest use-case fit.","url":"https://www.naxely.com/blog/best-client-reporting-software-freelancers","datePublished":"2026-07-20T00:00:00Z","dateModified":"2026-08-11T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
