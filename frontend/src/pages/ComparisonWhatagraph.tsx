@@ -6,18 +6,18 @@ export default function ComparisonWhatagraph() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard | Naxely</title>
-        <meta name="description" content="Compare Naxely and Whatagraph. Naxely turns uploaded data into branded PDF reports in under a minute. Whatagraph is a credit-based live marketing dashboard for multi-channel agency reporting." />
+        <title>Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard</title>
+        <meta name="description" content="Compare Naxely and Whatagraph. Naxely turns CSVs into branded PDFs in under a minute. Whatagraph is a credit-based dashboard for multi-channel reporting." />
         <link rel="canonical" href="https://www.naxely.com/compare/whatagraph" />
         <meta property="og:url" content="https://www.naxely.com/compare/whatagraph" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard | Naxely" />
-        <meta property="og:description" content="Compare Naxely and Whatagraph. Naxely turns uploaded data into branded PDF reports in under a minute. Whatagraph is a credit-based live marketing dashboard for multi-channel agency reporting." />
+        <meta property="og:title" content="Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard" />
+        <meta property="og:description" content="Compare Naxely and Whatagraph. Naxely turns CSVs into branded PDFs in under a minute. Whatagraph is a credit-based dashboard for multi-channel reporting." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard | Naxely" />
-        <meta name="twitter:description" content="Compare Naxely and Whatagraph. Naxely turns uploaded data into branded PDF reports in under a minute. Whatagraph is a credit-based live marketing dashboard for multi-channel agency reporting." />
+        <meta name="twitter:title" content="Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard" />
+        <meta name="twitter:description" content="Compare Naxely and Whatagraph. Naxely turns CSVs into branded PDFs in under a minute. Whatagraph is a credit-based dashboard for multi-channel reporting." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Whatagraph?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Whatagraph starts at \u20AC699/month billed annually (Max plan) with a 14-day free trial. The tradeoff: Naxely works from uploaded data (CSV/Sheets), while Whatagraph connects to live ad platforms via a credit-based model. For file-based reporting workflows, Naxely is a substantially lower-cost option."}},
@@ -34,7 +34,7 @@ export default function ComparisonWhatagraph() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard</h1>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Whatagraph is a credit-based marketing dashboard that pulls live data from connected ad accounts and analytics platforms, blends it across channels, and delivers reports through branded dashboards and automated PDFs. The core difference: Naxely works from data you already have; Whatagraph connects live to your clients' ad platforms on a credit-based model.</p>
+          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Whatagraph is a credit-based marketing dashboard that pulls live data from connected ad accounts and analytics platforms, blends it across channels, and delivers reports through branded dashboards and automated PDFs.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). Whatagraph connects to live ad platforms and analytics tools using a credit-based model, where each connected account consumes one source credit.</strong> Choosing between them comes down to whether your workflow starts with a spreadsheet export or a connected ad account — and how many data sources you manage per client.</p>
 

@@ -6,18 +6,18 @@ export default function ComparisonDatabox() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Naxely vs Databox: Which Reporting Tool Fits Your Workflow? | Naxely</title>
-        <meta name="description" content="Naxely vs Databox comparison: Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 130+ integrations." />
+        <title>Naxely vs Databox: Which Reporting Tool Fits Your Workflow?</title>
+        <meta name="description" content="Naxely vs Databox: Naxely turns uploaded data into branded PDFs in under a minute. Databox is a live KPI dashboard with 130+ integrations." />
         <link rel="canonical" href="https://www.naxely.com/compare/databox" />
         <meta property="og:url" content="https://www.naxely.com/compare/databox" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Naxely vs Databox: Which Reporting Tool Fits Your Workflow? | Naxely" />
-        <meta property="og:description" content="Naxely vs Databox comparison: Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 100+ integrations." />
+        <meta property="og:title" content="Naxely vs Databox: Which Reporting Tool Fits Your Workflow?" />
+        <meta property="og:description" content="Naxely vs Databox: Naxely turns uploaded data into branded PDFs in under a minute. Databox is a live KPI dashboard with 130+ integrations." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Naxely vs Databox: Which Reporting Tool Fits Your Workflow? | Naxely" />
-        <meta name="twitter:description" content="Naxely vs Databox comparison: Naxely turns uploaded data into branded PDF reports in under a minute. Databox is a live KPI dashboard platform with 100+ integrations." />
+        <meta name="twitter:title" content="Naxely vs Databox: Which Reporting Tool Fits Your Workflow?" />
+        <meta name="twitter:description" content="Naxely vs Databox: Naxely turns uploaded data into branded PDFs in under a minute. Databox is a live KPI dashboard with 130+ integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. The key tradeoff is output format: Naxely generates a point-in-time PDF report, while Databox provides a live, continuously-updating dashboard."}},

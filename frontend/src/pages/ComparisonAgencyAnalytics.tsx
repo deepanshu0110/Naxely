@@ -6,17 +6,17 @@ export default function ComparisonAgencyAnalytics() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Naxely: The Free Alternative to AgencyAnalytics for Client Reporting | Naxely</title>
+        <title>Naxely: The Free Alternative to AgencyAnalytics for Client Reporting</title>
         <meta name="description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 85+ integrations." />
         <link rel="canonical" href="https://www.naxely.com/compare/agencyanalytics" />
         <meta property="og:url" content="https://www.naxely.com/compare/agencyanalytics" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Naxely: The Free Alternative to AgencyAnalytics for Client Reporting | Naxely" />
+        <meta property="og:title" content="Naxely: The Free Alternative to AgencyAnalytics for Client Reporting" />
         <meta property="og:description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 85+ integrations." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Naxely: The Free Alternative to AgencyAnalytics for Client Reporting | Naxely" />
+        <meta name="twitter:title" content="Naxely: The Free Alternative to AgencyAnalytics for Client Reporting" />
         <meta name="twitter:description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 85+ integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[

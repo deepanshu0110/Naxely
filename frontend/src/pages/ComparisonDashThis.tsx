@@ -6,18 +6,18 @@ export default function ComparisonDashThis() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards | Naxely</title>
-        <meta name="description" content="Compare Naxely and DashThis. Naxely turns uploaded data into branded PDF reports in under a minute. DashThis is a marketing-dashboard platform with 30+ live integrations for campaign reporting." />
+        <title>Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards</title>
+        <meta name="description" content="Compare Naxely and DashThis. Naxely turns uploaded CSVs into branded PDFs in under a minute. DashThis is a marketing dashboard with 30+ live integrations." />
         <link rel="canonical" href="https://www.naxely.com/compare/dashthis" />
         <meta property="og:url" content="https://www.naxely.com/compare/dashthis" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards | Naxely" />
-        <meta property="og:description" content="Compare Naxely and DashThis. Naxely turns uploaded data into branded PDF reports in under a minute. DashThis is a marketing-dashboard platform with 30+ live integrations for campaign reporting." />
+        <meta property="og:title" content="Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards" />
+        <meta property="og:description" content="Compare Naxely and DashThis. Naxely turns uploaded CSVs into branded PDFs in under a minute. DashThis is a marketing dashboard with 30+ live integrations." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards | Naxely" />
-        <meta name="twitter:description" content="Compare Naxely and DashThis. Naxely turns uploaded data into branded PDF reports in under a minute. DashThis is a marketing-dashboard platform with 30+ live integrations for campaign reporting." />
+        <meta name="twitter:title" content="Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards" />
+        <meta name="twitter:description" content="Compare Naxely and DashThis. Naxely turns uploaded CSVs into branded PDFs in under a minute. DashThis is a marketing dashboard with 30+ live integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to DashThis?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month — under DashThis's $54/month monthly price ($44/month billed yearly). The tradeoff: Naxely works from uploaded data (CSV/Sheets), while DashThis pulls live data from 30+ marketing connectors for ongoing campaign visibility."}},
@@ -33,7 +33,7 @@ export default function ComparisonDashThis() {
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards</h1>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. DashThis is a marketing-dashboard platform that pulls live data from 30+ integrations and delivers it through pre-built templates designed for client reporting. The core difference: Naxely works from data you already have; DashThis pulls live campaign data through built-in marketing connectors.</p>
+          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. DashThis is a marketing-dashboard platform that pulls live data from 30+ integrations and delivers it through pre-built templates designed for client reporting.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). DashThis pulls live campaign data through built-in marketing connectors.</strong> Choosing between them comes down to whether your workflow starts with a spreadsheet export or a connected ad account.</p>
 
