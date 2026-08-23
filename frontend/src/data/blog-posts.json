@@ -81,6 +81,14 @@
     "image": "/pins/dashthis.png"
   },
   {
+    "slug": "whatagraph",
+    "title": "Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard",
+    "excerpt": "Naxely turns uploaded data into branded PDF reports in under a minute. Whatagraph is a credit-based live marketing dashboard for multi-channel agency reporting.",
+    "label": "Comparison",
+    "routePrefix": "/compare/",
+    "image": "/pins/whatagraph.png"
+  },
+  {
     "slug": "csv-to-pdf-report-generator",
     "title": "CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports",
     "excerpt": "Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.",
