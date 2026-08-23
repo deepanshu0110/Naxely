@@ -30,7 +30,7 @@ from app.services.report_service import _make_user_proxy, _process_csv
 
 from app.services.data_service import (
     parse_csv, validate_csv, validate_for_injection,
-    detect_column_types,
+    detect_column_types, get_excel_sheet_info,
 )
 
 from app.core.supabase_helpers import _get_supabase, _run_sync
@@ -136,6 +136,7 @@ async def _store_csv_upload(
     content_type: str = "text/csv",
     extra_meta: dict | None = None,
     sheets_url: str | None = None,
+    excel_sheet_info: dict | None = None,
 ) -> dict:
     """Store CSV bytes to Supabase Storage and insert into uploads table.
 
@@ -217,11 +218,11 @@ async def _store_csv_upload(
                 INSERT INTO uploads (
                     id, user_id, filename, file_url, file_size_bytes, source_type,
                     sheets_url, row_count, column_count, columns_meta, expires_at,
-                    used, created_at
+                    used, created_at, excel_sheet_info
                 ) VALUES (
                     :id, :user_id, :filename, :file_url, :file_size_bytes, :source_type,
                     :sheets_url, :row_count, :column_count, :columns_meta, :expires_at,
-                    FALSE, NOW()
+                    FALSE, NOW(), :excel_sheet_info
                 )
             """),
             {
@@ -236,6 +237,7 @@ async def _store_csv_upload(
                 "column_count": len(df.columns),
                 "columns_meta": columns_meta_json,
                 "expires_at": expires_at,
+                "excel_sheet_info": json.dumps(excel_sheet_info) if excel_sheet_info else None,
             },
         )
         await db.commit()
@@ -259,6 +261,7 @@ async def _store_csv_upload(
         "file_url": storage_path,
         "columns": columns_meta,
         "sheets_url": sheets_url,
+        "excel_sheet_info": excel_sheet_info,
     }
 
 
@@ -314,6 +317,11 @@ async def upload_file(
 
     source_type = "csv" if file_ext == "csv" else "xlsx"
 
+    # Detect multi-sheet Excel workbooks (CSV → None, single-sheet → None)
+    excel_sheet_info = None
+    if file_ext == "xlsx":
+        excel_sheet_info = get_excel_sheet_info(content)
+
     upload_record = await _store_csv_upload(
         db=db,
         user_id=str(current_user.id),
@@ -323,6 +331,7 @@ async def upload_file(
         df=df,
         file_ext=file_ext,
         content_type=content_type,
+        excel_sheet_info=excel_sheet_info,
     )
     upload_id = upload_record["id"]
     storage_path = upload_record["file_url"]
@@ -339,6 +348,11 @@ async def upload_file(
                 preview_row[str(col)] = str(val)
         preview_rows.append(preview_row)
 
+    # Build warning message if multi-sheet
+    excel_warning = None
+    if excel_sheet_info:
+        excel_warning = f"This file has {excel_sheet_info['sheet_count']} sheets — only {excel_sheet_info['used_sheet']} was used."
+
     return {
         "success": True,
         "data": {
@@ -349,6 +363,8 @@ async def upload_file(
             "column_count": len(df.columns),
             "columns": columns_meta,
             "preview_rows": preview_rows,
+            "excel_sheet_info": excel_sheet_info,
+            "excel_warning": excel_warning,
         },
     }
 
@@ -763,12 +779,24 @@ async def generate_report(
     if body.chart_specs_selector:
         config_json["chart_specs_selector"] = body.chart_specs_selector
 
+    # Copy Excel sheet info from upload to report for persistent warning
+    excel_info_for_report = None
+    try:
+        raw_excel_info = upload.get("excel_sheet_info")
+        if isinstance(raw_excel_info, str):
+            import json as _json
+            excel_info_for_report = _json.loads(raw_excel_info) if raw_excel_info else None
+        else:
+            excel_info_for_report = raw_excel_info
+    except Exception:
+        excel_info_for_report = None
+
     try:
         await db.execute(
             text("""
                 INSERT INTO reports (id, user_id, title, template_type, status, source_type,
-                    source_filename, config, created_at, updated_at)
-                VALUES (:id, :uid, :title, :template, 'pending', 'csv', :filename, :config, NOW(), NOW())
+                    source_filename, config, created_at, updated_at, excel_sheet_info)
+                VALUES (:id, :uid, :title, :template, 'pending', 'csv', :filename, :config, NOW(), NOW(), :excel_info)
             """),
             {
                 "id": report_id,
@@ -777,6 +805,7 @@ async def generate_report(
                 "template": body.template_type,
                 "filename": upload.get("filename"),
                 "config": json.dumps(config_json),
+                "excel_info": json.dumps(excel_info_for_report) if excel_info_for_report else None,
             },
         )
         await db.commit()
@@ -1187,6 +1216,22 @@ async def get_report(
         "ai_skipped": report.get("ai_skipped", False),
         "data_source_stale": report.get("data_source_stale", False),
     }
+
+    # Excel multi-sheet warning — visible to user, not just DB
+    raw_excel = report.get("excel_sheet_info")
+    excel_info = None
+    if isinstance(raw_excel, dict):
+        excel_info = raw_excel
+    elif isinstance(raw_excel, str) and raw_excel:
+        try:
+            excel_info = json.loads(raw_excel)
+        except Exception:
+            excel_info = None
+    data["excel_sheet_info"] = excel_info
+    if isinstance(excel_info, dict) and excel_info.get("sheet_count", 1) > 1:
+        data["excel_warning"] = f"This file has {excel_info['sheet_count']} sheets — only {excel_info['used_sheet']} was used."
+    else:
+        data["excel_warning"] = None
 
     return {"success": True, "data": data}
 

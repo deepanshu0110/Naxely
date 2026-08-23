@@ -258,6 +258,15 @@ export default function ReportView() {
 
           <div className="hidden lg:flex lg:w-96 overflow-y-auto border-l border-gray-200 bg-paper p-6 dark:border-gray-700 dark:bg-darkBg">
             <div className="space-y-6">
+              {report.excel_warning && (
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+                    <p className="text-sm text-yellow-800 dark:text-yellow-200">{report.excel_warning}</p>
+                  </div>
+                </div>
+              )}
+
               {report.ai_skipped && (
                 <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-800 dark:bg-orange-900/30">
                   <div className="flex items-start gap-2">

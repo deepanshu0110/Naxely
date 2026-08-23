@@ -2,7 +2,7 @@ import io
 import logging
 import pandas as pd
 import numpy as np
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import re
 
 logger = logging.getLogger(__name__)
@@ -42,6 +42,29 @@ def parse_csv(content: bytes) -> pd.DataFrame:
                 )
     except Exception as e:
         raise ValueError(f"Failed to parse file: {str(e)}")
+
+
+def get_excel_sheet_info(content: bytes) -> Optional[Dict[str, Any]]:
+    """
+    Detect if content is an Excel workbook with more than one sheet.
+
+    Returns None for CSV files or single-sheet workbooks.
+    Returns dict with sheet_count, used_sheet, all_sheets for multi-sheet workbooks.
+    Does not modify parse_csv behavior - caller decides whether to warn.
+    """
+    try:
+        with pd.ExcelFile(io.BytesIO(content), engine='openpyxl') as xls:
+            sheet_names = xls.sheet_names
+            if len(sheet_names) > 1:
+                return {
+                    "sheet_count": len(sheet_names),
+                    "used_sheet": sheet_names[0],
+                    "all_sheets": sheet_names,
+                }
+            return None
+    except Exception:
+        # Not an Excel file (likely CSV) or unreadable - no warning
+        return None
 
 
 def validate_csv(df: pd.DataFrame) -> None:

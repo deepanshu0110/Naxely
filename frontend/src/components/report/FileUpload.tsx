@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { CloudUpload, FileText, X } from 'lucide-react'
+import { CloudUpload, FileText, X, AlertTriangle } from 'lucide-react'
 import Spinner from '@/components/ui/Spinner'
 import { useReportStore } from '@/store/reportStore'
 import type { UploadResult } from '@/types/report'
@@ -86,6 +86,12 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
             <X className="h-4 w-4" />
           </button>
         </div>
+        {uploadResult.excel_warning && (
+          <div className="mt-3 flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">
+            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+            <p className="text-sm text-yellow-800 dark:text-yellow-200">{uploadResult.excel_warning}</p>
+          </div>
+        )}
       </div>
     )
   }

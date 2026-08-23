@@ -24,6 +24,9 @@ class Upload(Base):
     column_count = Column(Integer)
     columns_meta = Column(JSONB, default=list)
     
+    # Excel multi-sheet warning (stored at upload time)
+    excel_sheet_info = Column(JSONB)
+
     # Lifecycle
     expires_at = Column(DateTime(timezone=True), server_default=text("NOW() + interval '24 hours'"))
     used = Column(Boolean, default=False)

@@ -14,6 +14,14 @@ export interface Report {
   generation_time_seconds?: number
   error_message?: string | null
   ai_skipped?: boolean
+  excel_sheet_info?: ExcelSheetInfo | null
+  excel_warning?: string | null
+}
+
+export interface ExcelSheetInfo {
+  sheet_count: number
+  used_sheet: string
+  all_sheets: string[]
 }
 
 export interface AIInsight {
@@ -41,6 +49,8 @@ export interface UploadResult {
   column_count: number
   columns: ColumnInfo[]
   preview_rows: Record<string, unknown>[]
+  excel_sheet_info?: ExcelSheetInfo | null
+  excel_warning?: string | null
 }
 
 export interface ColumnInfo {

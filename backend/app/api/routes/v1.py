@@ -46,6 +46,9 @@ async def api_create_report(
             detail="File must have at least 2 columns and 1 data row.",
         )
 
+    # Detect multi-sheet Excel (CSV → None)
+    excel_sheet_info = data_service.get_excel_sheet_info(content)
+
     from app.api.routes.reports import _store_csv_upload
     upload_record = await _store_csv_upload(
         db=db,
@@ -54,6 +57,7 @@ async def api_create_report(
         source_type="api",
         filename=file.filename or "upload.csv",
         df=df,
+        excel_sheet_info=excel_sheet_info,
     )
 
     report_id = str(uuid.uuid4())
@@ -70,8 +74,8 @@ async def api_create_report(
     await db.execute(
         text("""
             INSERT INTO reports (id, user_id, title, template_type, status, source_type,
-                source_filename, config, created_at, updated_at)
-            VALUES (:id, :uid, :title, 'general', 'pending', 'api', :filename, :config, NOW(), NOW())
+                source_filename, config, created_at, updated_at, excel_sheet_info)
+            VALUES (:id, :uid, :title, 'general', 'pending', 'api', :filename, :config, NOW(), NOW(), :excel_info)
         """),
         {
             "id": report_id,
@@ -79,6 +83,7 @@ async def api_create_report(
             "title": title,
             "filename": file.filename or "upload.csv",
             "config": json.dumps(config),
+            "excel_info": json.dumps(excel_sheet_info) if excel_sheet_info else None,
         },
     )
     await db.commit()

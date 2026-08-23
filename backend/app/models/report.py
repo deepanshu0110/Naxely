@@ -46,6 +46,8 @@ class Report(Base, TimestampMixin):
 
     # Data freshness
     data_source_stale = Column(Boolean, default=False)
+    # Excel multi-sheet warning (visible to user, not just DB)
+    excel_sheet_info = Column(JSONB)
     
     # Soft delete
     deleted_at = Column(DateTime(timezone=True))

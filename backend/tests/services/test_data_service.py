@@ -13,6 +13,7 @@ from app.services.data_service import (
     detect_column_types, apply_column_config, compute_column_stats,
     normalize_for_aggregation, _is_likely_free_text,
     _detect_column_type, _try_clean_numeric, _NUMERIC_DETECTION_THRESHOLD,
+    get_excel_sheet_info,
 )
 
 
@@ -180,6 +181,48 @@ class TestDataService:
             if col['name'] == 'Date':
                 assert col['type'] == 'date'
                 break
+
+
+class TestGetExcelSheetInfo:
+    """Tests for get_excel_sheet_info — multi-sheet Excel detection."""
+
+    def _build_multi_sheet_excel(self) -> bytes:
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            pd.DataFrame({"A": [1, 2], "B": [3, 4]}).to_excel(writer, sheet_name='Sheet1', index=False)
+            pd.DataFrame({"X": [10, 20], "Y": [30, 40]}).to_excel(writer, sheet_name='Sheet2', index=False)
+        return output.getvalue()
+
+    def _build_single_sheet_excel(self) -> bytes:
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            pd.DataFrame({"A": [1, 2], "B": [3, 4]}).to_excel(writer, sheet_name='Sheet1', index=False)
+        return output.getvalue()
+
+    def test_multi_sheet_detects_extra_sheets(self):
+        content = self._build_multi_sheet_excel()
+        result = get_excel_sheet_info(content)
+        assert result is not None
+        assert result["sheet_count"] == 2
+        assert result["used_sheet"] == "Sheet1"
+        assert result["all_sheets"] == ["Sheet1", "Sheet2"]
+
+    def test_single_sheet_returns_none(self):
+        content = self._build_single_sheet_excel()
+        result = get_excel_sheet_info(content)
+        assert result is None
+
+    def test_csv_returns_none(self):
+        csv_content = b"Date,Revenue\n2024-01-01,1000"
+        result = get_excel_sheet_info(csv_content)
+        assert result is None
+
+    def test_parse_csv_behavior_unchanged(self):
+        """Verify parse_csv still returns only first sheet — regression check."""
+        content = self._build_multi_sheet_excel()
+        df = parse_csv(content)
+        assert list(df.columns) == ["A", "B"]
+        assert len(df) == 2
 
 
 FIXTURE_DIR = os.path.join(os.path.dirname(__file__), '..', 'fixtures')
