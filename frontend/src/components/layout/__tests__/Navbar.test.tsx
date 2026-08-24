@@ -61,4 +61,31 @@ describe('Navbar', () => {
     const logo = screen.getByText('Naxely')
     expect(logo.closest('a')).toHaveAttribute('href', '/dashboard')
   })
+
+  it('Guides dropdown contains 6 guide links', () => {
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false, user: null })
+    renderNavbar()
+
+    expect(screen.getByText('How to Choose Client Reporting Software')).toBeInTheDocument()
+    expect(screen.getByText('Best for Freelancers (2026)')).toBeInTheDocument()
+    expect(screen.getByText('Automated Client Reporting: Complete Guide')).toBeInTheDocument()
+    expect(screen.getByText('What Should a Client Report Include?')).toBeInTheDocument()
+    expect(screen.getByText('Excel to PDF Report Generator')).toBeInTheDocument()
+    expect(screen.getByText('Two Weeks Building Naxely')).toBeInTheDocument()
+  })
+
+  it('Compare dropdown contains 8 compare links and See all', () => {
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false, user: null })
+    renderNavbar()
+
+    expect(screen.getByText('AgencyAnalytics')).toBeInTheDocument()
+    expect(screen.getByText('Databox')).toBeInTheDocument()
+    expect(screen.getByText('Powerdrill')).toBeInTheDocument()
+    expect(screen.getByText('DashThis')).toBeInTheDocument()
+    expect(screen.getByText('Whatagraph')).toBeInTheDocument()
+    expect(screen.getByText('Klipfolio')).toBeInTheDocument()
+    expect(screen.getByText('Bonsai')).toBeInTheDocument()
+    expect(screen.getByText('Plutio')).toBeInTheDocument()
+    expect(screen.getByText('See all comparisons →')).toBeInTheDocument()
+  })
 })

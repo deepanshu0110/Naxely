@@ -925,12 +925,21 @@ export default function Landing() {
       {/* ── Footer ── */}
       <footer className="border-t border-gray-200 px-6 py-12">
         <div className="mx-auto max-w-5xl">
-          <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="font-display text-lg font-bold text-ink">Naxely</p>
               <p className="mt-1 text-sm text-gray-600">
                 Turn data into insights, instantly.
               </p>
+            </div>
+            <div className="flex flex-col gap-2 text-sm text-gray-600">
+              <p className="font-semibold text-ink">Popular Guides</p>
+              <Link to="/blog/client-reporting-software-guide" className="hover:text-ink">How to Choose Client Reporting Software</Link>
+              <Link to="/blog/best-client-reporting-software-freelancers" className="hover:text-ink">Best for Freelancers (2026)</Link>
+              <Link to="/blog/automating-client-reports" className="hover:text-ink">Automated Client Reporting</Link>
+              <Link to="/blog/what-should-client-report-include-checklist" className="hover:text-ink">What Should a Client Report Include?</Link>
+              <Link to="/blog/excel-to-pdf-report-generator" className="hover:text-ink">Excel to PDF Report Generator</Link>
+              <Link to="/blog/two-weeks-building-naxely" className="hover:text-ink">Two Weeks Building Naxely</Link>
             </div>
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
               <a href="#features" className="hover:text-ink">
