@@ -54,7 +54,7 @@ export default defineConfig({
     mock: true,
     dirStyle: 'nested',
     includedRoutes() {
-      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/cookie-policy', '/refund', '/blog', '/blog/byok-ai-reporting-tool', '/blog/csv-to-pdf-report-generator', '/blog/white-label-client-reporting-agencies', '/blog/automating-client-reports', '/blog/client-reporting-software-guide', '/blog/best-client-reporting-software-freelancers', '/blog/python-csv-to-pdf-reports', '/blog/two-weeks-building-naxely', '/blog/what-should-client-report-include-checklist', '/blog/anomaly-detection-in-client-reports', '/blog/google-sheets-client-reports', '/compare/agencyanalytics', '/compare/databox', '/compare/powerdrill', '/compare/dashthis', '/compare/whatagraph', '/compare/klipfolio', '/faq', '/changelog']
+      return ['/', '/pricing', '/contact', '/terms', '/privacy', '/cookie-policy', '/refund', '/blog', '/blog/byok-ai-reporting-tool', '/blog/csv-to-pdf-report-generator', '/blog/white-label-client-reporting-agencies', '/blog/automating-client-reports', '/blog/client-reporting-software-guide', '/blog/best-client-reporting-software-freelancers', '/blog/python-csv-to-pdf-reports', '/blog/two-weeks-building-naxely', '/blog/what-should-client-report-include-checklist', '/blog/anomaly-detection-in-client-reports', '/blog/google-sheets-client-reports', '/blog/excel-to-pdf-report-generator', '/compare/agencyanalytics', '/compare/databox', '/compare/powerdrill', '/compare/dashthis', '/compare/whatagraph', '/compare/klipfolio', '/faq', '/changelog']
     },
   },
 })

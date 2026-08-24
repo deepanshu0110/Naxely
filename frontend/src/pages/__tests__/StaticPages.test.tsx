@@ -28,6 +28,7 @@ import BlogPostClientReportChecklist from '../BlogPostClientReportChecklist'
 import BlogPostGoogleSheets from '../BlogPostGoogleSheets'
 import BlogPostPythonCsvToPdf from '../BlogPostPythonCsvToPdf'
 import BlogPostTwoWeeks from '../BlogPostTwoWeeks'
+import BlogPostExcelToPdf from '../BlogPostExcelToPdf'
 import ComparisonAgencyAnalytics from '../ComparisonAgencyAnalytics'
 import ComparisonDatabox from '../ComparisonDatabox'
 import ComparisonDashThis from '../ComparisonDashThis'
@@ -145,6 +146,13 @@ describe('BlogPostWhiteLabel', () => {
   })
 })
 
+describe('BlogPostExcelToPdf', () => {
+  it('renders blog post heading', () => {
+    renderWithRouter(BlogPostExcelToPdf)
+    expect(screen.getByText('Excel to PDF Report Generator: From Workbook to Client-Ready Report')).toBeInTheDocument()
+  })
+})
+
 const seoPages: Array<{
   name: string
   Component: React.ComponentType
@@ -186,6 +194,12 @@ const seoPages: Array<{
     Component: BlogPostTwoWeeks,
     canonicalPath: '/blog/two-weeks-building-naxely',
     heading: /What Two Weeks of Building a Client-Reporting Tool/,
+  },
+  {
+    name: 'BlogPostExcelToPdf',
+    Component: BlogPostExcelToPdf,
+    canonicalPath: '/blog/excel-to-pdf-report-generator',
+    heading: /Excel to PDF Report Generator/,
   },
   {
     name: 'ComparisonAgencyAnalytics',

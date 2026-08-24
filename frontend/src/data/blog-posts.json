@@ -97,6 +97,13 @@
     "image": "/pins/klipfolio.png"
   },
   {
+    "slug": "excel-to-pdf-report-generator",
+    "title": "Excel to PDF Report Generator with AI Insights",
+    "excerpt": "Convert Excel workbooks into branded PDF reports with AI-written insights and charts — Naxely reads the first sheet and handles .xlsx files in seconds.",
+    "date": "August 23, 2026",
+    "image": "/pins/excel-to-pdf-report-generator.png"
+  },
+  {
     "slug": "csv-to-pdf-report-generator",
     "title": "CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports",
     "excerpt": "Not all CSV-to-PDF tools are the same. Naxely reads your data, identifies trends, builds charts, and writes plain-English insights — automatically.",

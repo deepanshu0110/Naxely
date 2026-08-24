@@ -36,6 +36,7 @@ const BlogPostTwoWeeks = lazy(() => import('@/pages/BlogPostTwoWeeks'))
 const BlogPostClientReportChecklist = lazy(() => import('@/pages/BlogPostClientReportChecklist'))
 const BlogPostAnomalyDetection = lazy(() => import('@/pages/BlogPostAnomalyDetection'))
 const BlogPostGoogleSheets = lazy(() => import('@/pages/BlogPostGoogleSheets'))
+const BlogPostExcelToPdf = lazy(() => import('@/pages/BlogPostExcelToPdf'))
 const ComparisonAgencyAnalytics = lazy(() => import('@/pages/ComparisonAgencyAnalytics'))
 const ComparisonDatabox = lazy(() => import('@/pages/ComparisonDatabox'))
 const ComparisonPowerdrill = lazy(() => import('@/pages/ComparisonPowerdrill'))
@@ -109,6 +110,7 @@ export const routes: RouteRecord[] = [
       { path: '/blog/what-should-client-report-include-checklist', element: <BlogPostClientReportChecklist /> },
       { path: '/blog/anomaly-detection-in-client-reports', element: <BlogPostAnomalyDetection /> },
       { path: '/blog/google-sheets-client-reports', element: <BlogPostGoogleSheets /> },
+      { path: '/blog/excel-to-pdf-report-generator', element: <BlogPostExcelToPdf /> },
       { path: '/compare/agencyanalytics', element: <ComparisonAgencyAnalytics /> },
       { path: '/compare/databox', element: <ComparisonDatabox /> },
       { path: '/compare/powerdrill', element: <ComparisonPowerdrill /> },
