@@ -267,6 +267,15 @@ export default function ReportView() {
                 </div>
               )}
 
+              {report.data_source_stale && (
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/30">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+                    <p className="text-sm text-yellow-800 dark:text-yellow-200">This report was generated from cached data — the Google Sheet couldn't be refreshed at generation time. Data may be stale.</p>
+                  </div>
+                </div>
+              )}
+
               {report.ai_skipped && (
                 <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-800 dark:bg-orange-900/30">
                   <div className="flex items-start gap-2">

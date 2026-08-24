@@ -16,6 +16,7 @@ export interface Report {
   ai_skipped?: boolean
   excel_sheet_info?: ExcelSheetInfo | null
   excel_warning?: string | null
+  data_source_stale?: boolean
 }
 
 export interface ExcelSheetInfo {

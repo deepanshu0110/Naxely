@@ -562,6 +562,31 @@ describe('ReportView info banners', () => {
   })
 })
 
+describe('ReportView stale data banner', () => {
+  it('shows banner when data_source_stale is true', async () => {
+    mockGetFn.mockResolvedValue({ data: { ...mockReport, data_source_stale: true } })
+    renderView()
+
+    expect(await screen.findByText('This report was generated from cached data — the Google Sheet couldn\'t be refreshed at generation time. Data may be stale.')).toBeInTheDocument()
+  })
+
+  it('shows no banner when data_source_stale is false', async () => {
+    mockGetFn.mockResolvedValue({ data: { ...mockReport, data_source_stale: false } })
+    renderView()
+
+    await screen.findByText('Q2 Performance Report')
+    expect(screen.queryByText('This report was generated from cached data')).not.toBeInTheDocument()
+  })
+
+  it('shows no banner when data_source_stale is absent', async () => {
+    mockGetFn.mockResolvedValue({ data: mockReport })
+    renderView()
+
+    await screen.findByText('Q2 Performance Report')
+    expect(screen.queryByText('This report was generated from cached data')).not.toBeInTheDocument()
+  })
+})
+
 describe('ReportView anomaly alerts', () => {
   it('renders anomaly alerts with the real column/value/expected/deviation content', async () => {
     mockGetFn.mockResolvedValue({
