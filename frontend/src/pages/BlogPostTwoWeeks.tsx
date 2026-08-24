@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Head } from 'vite-react-ssg'
 import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
 
 export default function BlogPostTwoWeeks() {
   return (
@@ -84,11 +85,7 @@ export default function BlogPostTwoWeeks() {
           </p>
         </div>
       </article>
-      <footer className="border-t border-gray-200 px-6 py-12">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-600">Naxely &copy; 2026</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

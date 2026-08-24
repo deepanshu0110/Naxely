@@ -121,7 +121,7 @@ describe('BlogPostByok', () => {
 describe('BlogPostClientReporting', () => {
   it('renders blog post heading', () => {
     renderWithRouter(BlogPostClientReporting)
-    expect(screen.getByText('How to Choose Client Reporting Software')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('How to Choose Client Reporting Software')
   })
 })
 

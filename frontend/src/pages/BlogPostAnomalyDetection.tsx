@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Head } from 'vite-react-ssg'
 import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
 
 export default function BlogPostAnomalyDetection() {
   return (
@@ -98,11 +99,7 @@ export default function BlogPostAnomalyDetection() {
           <p className="text-sm text-ink/55 dark:text-paper/45"><em>Related reading: <Link to="/blog/csv-to-pdf-report-generator" className="text-amber-600 hover:text-amber-700 underline">Converting CSVs into client-ready PDF reports</Link> <span className="text-gray-300">·</span> <Link to="/blog/google-sheets-client-reports" className="text-amber-600 hover:text-amber-700 underline">How Naxely Keeps Your Google Sheets Reports Current</Link> <span className="text-gray-300">·</span> <Link to="/blog/python-csv-to-pdf-reports" className="text-amber-600 hover:text-amber-700 underline">Generating CSV-to-PDF reports with Python</Link></em></p>
         </div>
       </article>
-      <footer className="border-t border-gray-200 px-6 py-12">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs text-gray-600">Naxely © 2026</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
