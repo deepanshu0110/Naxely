@@ -97,6 +97,22 @@
     "image": "/pins/klipfolio.png"
   },
   {
+    "slug": "bonsai",
+    "title": "Naxely vs Bonsai: PDF Reports vs. Business Suite",
+    "excerpt": "Naxely vs Bonsai: Naxely turns uploaded data into branded PDFs in under a minute. Bonsai manages proposals, contracts, and billing from $9/user/mo.",
+    "label": "Comparison",
+    "routePrefix": "/compare/",
+    "image": "/pins/bonsai.png"
+  },
+  {
+    "slug": "plutio",
+    "title": "Naxely vs Plutio: PDF Reports vs. All-in-One Platform",
+    "excerpt": "Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a $9/mo white-label add-on.",
+    "label": "Comparison",
+    "routePrefix": "/compare/",
+    "image": "/pins/plutio.png"
+  },
+  {
     "slug": "excel-to-pdf-report-generator",
     "title": "Excel to PDF Report Generator with AI Insights",
     "excerpt": "Convert Excel workbooks into branded PDF reports with AI-written insights and charts — Naxely reads the first sheet and handles .xlsx files in seconds.",

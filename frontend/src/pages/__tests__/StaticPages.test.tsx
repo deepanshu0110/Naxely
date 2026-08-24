@@ -35,6 +35,8 @@ import ComparisonDashThis from '../ComparisonDashThis'
 import ComparisonPowerdrill from '../ComparisonPowerdrill'
 import ComparisonWhatagraph from '../ComparisonWhatagraph'
 import ComparisonKlipfolio from '../ComparisonKlipfolio'
+import ComparisonBonsai from '../ComparisonBonsai'
+import ComparisonPlutio from '../ComparisonPlutio'
 
 function renderWithRouter(Component: React.ComponentType) {
   return render(
@@ -236,6 +238,18 @@ const seoPages: Array<{
     Component: ComparisonKlipfolio,
     canonicalPath: '/compare/klipfolio',
     heading: /Naxely vs Klipfolio/,
+  },
+  {
+    name: 'ComparisonBonsai',
+    Component: ComparisonBonsai,
+    canonicalPath: '/compare/bonsai',
+    heading: /Naxely vs Bonsai/,
+  },
+  {
+    name: 'ComparisonPlutio',
+    Component: ComparisonPlutio,
+    canonicalPath: '/compare/plutio',
+    heading: /Naxely vs Plutio/,
   },
 ]
 

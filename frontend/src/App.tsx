@@ -43,6 +43,8 @@ const ComparisonPowerdrill = lazy(() => import('@/pages/ComparisonPowerdrill'))
 const ComparisonDashThis = lazy(() => import('@/pages/ComparisonDashThis'))
 const ComparisonWhatagraph = lazy(() => import('@/pages/ComparisonWhatagraph'))
 const ComparisonKlipfolio = lazy(() => import('@/pages/ComparisonKlipfolio'))
+const ComparisonBonsai = lazy(() => import('@/pages/ComparisonBonsai'))
+const ComparisonPlutio = lazy(() => import('@/pages/ComparisonPlutio'))
 const Faq = lazy(() => import('@/pages/Faq'))
 const Changelog = lazy(() => import('@/pages/Changelog'))
 const Login = lazy(() => import('@/pages/Login'))
@@ -117,6 +119,8 @@ export const routes: RouteRecord[] = [
       { path: '/compare/dashthis', element: <ComparisonDashThis /> },
       { path: '/compare/whatagraph', element: <ComparisonWhatagraph /> },
       { path: '/compare/klipfolio', element: <ComparisonKlipfolio /> },
+      { path: '/compare/bonsai', element: <ComparisonBonsai /> },
+      { path: '/compare/plutio', element: <ComparisonPlutio /> },
       { path: '/faq', element: <Faq /> },
       { path: '/changelog', element: <Changelog /> },
       {
