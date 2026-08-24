@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+// force rebuild to bust stale chunk cache after mobile nav deploy
 
 export default function Navbar() {
   const { isAuthenticated } = useAuthStore()

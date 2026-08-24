@@ -161,7 +161,7 @@ export default function Landing() {
   const { isAuthenticated, loading, handleCheckout } = usePricingCTA()
 
   return (
-    <div className="min-h-screen bg-paper text-ink">
+    <div className="min-h-screen bg-paper text-ink" data-bust="2026-08-24-mobile-nav">
       <Head>
         <title>Naxely — AI Client Report Generator (CSV &amp; Sheets to PDF)</title>
         <meta name="description" content="Naxely is an AI client report generator that turns CSV or Google Sheets data into branded PDF reports in under a minute — with AI insights and charts built in." />
