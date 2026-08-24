@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
 vi.mock('react-router-dom', async () => {
@@ -87,5 +88,44 @@ describe('Navbar', () => {
     expect(screen.getByText('Bonsai')).toBeInTheDocument()
     expect(screen.getByText('Plutio')).toBeInTheDocument()
     expect(screen.getByText('See all comparisons →')).toBeInTheDocument()
+  })
+
+  it('hamburger button toggles mobile drawer open and close', async () => {
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false, user: null })
+    renderNavbar()
+
+    const btn = screen.getByLabelText('Open menu')
+    expect(btn).toHaveAttribute('aria-expanded', 'false')
+    expect(btn).toHaveAttribute('aria-controls', 'mobile-nav-drawer')
+
+    await userEvent.click(btn)
+    expect(screen.getByLabelText('Close menu')).toBeInTheDocument()
+    expect(document.getElementById('mobile-nav-drawer')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByLabelText('Close menu'))
+    expect(screen.getByLabelText('Open menu')).toBeInTheDocument()
+    expect(document.getElementById('mobile-nav-drawer')).not.toBeInTheDocument()
+  })
+
+  it('mobile drawer closes on Escape key', async () => {
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false, user: null })
+    renderNavbar()
+
+    await userEvent.click(screen.getByLabelText('Open menu'))
+    expect(document.getElementById('mobile-nav-drawer')).toBeInTheDocument()
+
+    await userEvent.keyboard('{Escape}')
+    expect(document.getElementById('mobile-nav-drawer')).not.toBeInTheDocument()
+  })
+
+  it('mobile drawer closes when a link is clicked', async () => {
+    vi.mocked(useAuthStore).mockReturnValue({ isAuthenticated: false, user: null })
+    renderNavbar()
+
+    await userEvent.click(screen.getByLabelText('Open menu'))
+    const link = screen.getAllByText('AgencyAnalytics').find((el) => el.closest('#mobile-nav-drawer'))
+    expect(link).toBeDefined()
+    await userEvent.click(link!)
+    expect(document.getElementById('mobile-nav-drawer')).not.toBeInTheDocument()
   })
 })

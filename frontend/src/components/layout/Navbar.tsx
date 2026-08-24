@@ -1,8 +1,21 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 
 export default function Navbar() {
   const { isAuthenticated } = useAuthStore()
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false)
+    }
+    if (mobileOpen) document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [mobileOpen])
+
+  const closeMobile = () => setMobileOpen(false)
+
   return (
     <nav className="sticky top-0 z-50 border-b border-slate bg-paper/95 backdrop-blur dark:border-gray-700 dark:bg-darkBg/95">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -67,8 +80,56 @@ export default function Navbar() {
           >
             Start Free
           </Link>
+          <button
+            onClick={() => setMobileOpen((o) => !o)}
+            className="flex h-9 w-9 items-center justify-center rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-gray-400 dark:hover:bg-gray-700/50 md:hidden"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-drawer"
+          >
+            {mobileOpen ? (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            )}
+          </button>
         </div>
       </div>
+      {mobileOpen && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/20 dark:bg-black/40 md:hidden" onClick={closeMobile} aria-hidden="true" />
+          <div id="mobile-nav-drawer" className="fixed right-0 top-16 z-50 h-[calc(100vh-4rem)] w-72 overflow-y-auto border-l border-gray-200 bg-paper p-4 shadow-xl dark:border-gray-700 dark:bg-darkBg md:hidden">
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <a href="#features" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Features</a>
+                <a href="#pricing" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Pricing</a>
+                <a href="#how-it-works" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">How it works</a>
+              </div>
+              <div className="border-t border-gray-100 pt-3 dark:border-gray-700">
+                <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Guides</p>
+                <Link to="/blog/client-reporting-software-guide" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">How to Choose Client Reporting Software</Link>
+                <Link to="/blog/best-client-reporting-software-freelancers" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Best for Freelancers (2026)</Link>
+                <Link to="/blog/automating-client-reports" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Automated Client Reporting: Complete Guide</Link>
+                <Link to="/blog/what-should-client-report-include-checklist" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">What Should a Client Report Include?</Link>
+                <Link to="/blog/excel-to-pdf-report-generator" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Excel to PDF Report Generator</Link>
+                <Link to="/blog/two-weeks-building-naxely" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Two Weeks Building Naxely</Link>
+              </div>
+              <div className="border-t border-gray-100 pt-3 dark:border-gray-700">
+                <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Compare</p>
+                <Link to="/compare/agencyanalytics" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">AgencyAnalytics</Link>
+                <Link to="/compare/databox" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Databox</Link>
+                <Link to="/compare/powerdrill" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Powerdrill</Link>
+                <Link to="/compare/dashthis" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">DashThis</Link>
+                <Link to="/compare/whatagraph" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Whatagraph</Link>
+                <Link to="/compare/klipfolio" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Klipfolio</Link>
+                <Link to="/compare/bonsai" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Bonsai</Link>
+                <Link to="/compare/plutio" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Plutio</Link>
+                <Link to="/blog" onClick={closeMobile} className="mt-1 block rounded-lg px-3 py-2 text-sm font-medium text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20">See all comparisons →</Link>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </nav>
   )
 }
