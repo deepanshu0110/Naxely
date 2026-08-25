@@ -1246,6 +1246,7 @@ export default function Landing() {
                 <img src="https://www.verifiedtools.info/badge.svg" alt="Naxely on Verified Tools — AI & SaaS tools directory" width="200" height="54" />
               </a>
               <a href="https://toolfio.com" target="_blank" rel="noopener"><img src="https://toolfio.com/toolfio-dark-badge.png" alt="Featured on Toolfio" width="200" height="54" /></a>
+              <a href="https://ideakiln.com/ideas/naxely" target="_blank" rel="noopener"><img src="https://ideakiln.com/light.svg" alt="Featured on Idea Kiln" width="200" height="54" /></a>
             </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-600">

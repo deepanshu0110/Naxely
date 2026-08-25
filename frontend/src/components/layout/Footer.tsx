@@ -18,8 +18,9 @@ export default function Footer() {
           <Link to="/blog/two-weeks-building-naxely" className="hover:text-ink">Two Weeks Building Naxely</Link>
         </div>
         <p className="mt-4 text-xs text-gray-600">Naxely © 2026</p>
-        <div className="mt-4 flex justify-center">
+        <div className="mt-4 flex justify-center gap-4">
           <a href="https://toolfio.com" target="_blank" rel="noopener"><img src="https://toolfio.com/toolfio-dark-badge.png" alt="Featured on Toolfio" width="200" height="54" /></a>
+          <a href="https://ideakiln.com/ideas/naxely" target="_blank" rel="noopener"><img src="https://ideakiln.com/light.svg" alt="Featured on Idea Kiln" width="200" height="54" /></a>
         </div>
       </div>
     </footer>
