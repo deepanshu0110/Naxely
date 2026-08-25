@@ -1040,13 +1040,7 @@ export default function Landing() {
                   </span>
                 </span>
               </a>
-              <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
-                <img
-                  src="https://assets.dang.ai/badges/dang-verified-dark.png"
-                  alt="Verified on DANG!"
-                  width="180" height="54" style={{ display:'block', border:0, outline:'none', textDecoration:'none' }}
-                />
-              </a>
+
               {/* shipit.buzz badge removed — their badge API returns HTTP 500 as of July 2026 */}
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
                 <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="140" height="54" />
@@ -1090,9 +1084,7 @@ export default function Landing() {
               <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
               </a>
-              <a href="https://goodaitools.com/ai/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://goodaitools.com/assets/images/badge.png" alt="Good AI Tools" width="207" height="54" loading="lazy" />
-              </a>
+
               <a href="https://startupfa.st/projects/naxely" target="_blank" title="Startup Fast Top 1 Daily Winner">
                 <img src="https://startupfa.st/images/badges/top1-light.svg" alt="Startup Fast Top 1 Daily Winner" width="195" height="44" />
               </a>
@@ -1178,13 +1170,7 @@ export default function Landing() {
                   </span>
                 </span>
               </a>
-              <a href="https://dang.ai" target="_blank" rel="dofollow noopener" style={{display:'inline-block', textDecoration:'none'}}>
-                <img
-                  src="https://assets.dang.ai/badges/dang-verified-dark.png"
-                  alt="Verified on DANG!"
-                  width="180" height="54" style={{ display:'block', border:0, outline:'none', textDecoration:'none' }}
-                />
-              </a>
+
               {/* shipit.buzz badge removed — their badge API returns HTTP 500 as of July 2026 */}
               <a href="https://smollaunch.com" target="_blank" rel="noopener">
                 <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="140" height="54" />
@@ -1228,9 +1214,7 @@ export default function Landing() {
               <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
                 <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
               </a>
-              <a href="https://goodaitools.com/ai/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://goodaitools.com/assets/images/badge.png" alt="Good AI Tools" width="207" height="54" loading="lazy" />
-              </a>
+
               <a href="https://startupfa.st/projects/naxely" target="_blank" title="Startup Fast Top 1 Daily Winner">
                 <img src="https://startupfa.st/images/badges/top1-light.svg" alt="Startup Fast Top 1 Daily Winner" width="195" height="44" />
               </a>
