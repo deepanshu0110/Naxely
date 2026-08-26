@@ -1247,6 +1247,7 @@ export default function Landing() {
               </a>
               <a href="https://toolfio.com" target="_blank" rel="noopener"><img src="https://toolfio.com/toolfio-dark-badge.png" alt="Featured on Toolfio" width="200" height="54" /></a>
               <a href="https://ideakiln.com/ideas/naxely" target="_blank" rel="noopener"><img src="https://ideakiln.com/light.svg" alt="Featured on Idea Kiln" width="200" height="54" /></a>
+              <a href="https://nicklaunches.com/products/naxely/?utm_source=naxely.com&utm_medium=badge&utm_campaign=featured" target="_blank" rel="noopener"><img src="https://nicklaunches.com/badges/featured.png" alt="Naxely on Nick Launches" width="244" height="56" /></a>
             </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-600">
