@@ -1,3 +1,4 @@
+import sentry_sdk
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -45,6 +46,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 async def unhandled_exception_handler(request: Request, exc: Exception):
+    sentry_sdk.capture_exception(exc)
     return _error_response(
         "INTERNAL_ERROR",
         "An unexpected error occurred.",

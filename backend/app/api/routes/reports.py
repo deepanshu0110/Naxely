@@ -4,6 +4,8 @@ import base64
 import json
 import logging
 import os
+
+import sentry_sdk
 import secrets
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -160,6 +162,7 @@ async def _store_csv_upload(
             {"content-type": content_type},
         )
     except Exception as e:
+        sentry_sdk.capture_exception(e)
         raise HTTPException(status_code=500, detail=f"Failed to upload file to storage: {str(e)}")
 
     scheduled_source_path = f"{upload_id}/raw.{file_ext}"
@@ -177,6 +180,7 @@ async def _store_csv_upload(
             )
         except Exception:
             pass
+        sentry_sdk.capture_exception(e)
         raise HTTPException(
             status_code=500,
             detail=f"Failed to save scheduled-source copy: {str(e)}",
@@ -203,6 +207,7 @@ async def _store_csv_upload(
             )
         except Exception:
             pass
+        sentry_sdk.capture_exception(e)
         raise HTTPException(
             status_code=500,
             detail=f"Failed to save permanent copy: {str(e)}",
@@ -254,6 +259,7 @@ async def _store_csv_upload(
             )
         except Exception:
             pass
+        sentry_sdk.capture_exception(e)
         raise HTTPException(status_code=500, detail=f"Failed to save upload metadata: {str(e)}")
 
     return {
@@ -516,6 +522,7 @@ async def sample_upload(
             {"content-type": "text/csv"},
         )
     except Exception as e:
+        sentry_sdk.capture_exception(e)
         raise HTTPException(status_code=500, detail=f"Failed to upload sample to storage: {str(e)}")
 
     scheduled_source_path = f"{upload_id}/raw.{file_ext}"
@@ -533,6 +540,7 @@ async def sample_upload(
             )
         except Exception:
             pass
+        sentry_sdk.capture_exception(e)
         raise HTTPException(status_code=500, detail=f"Failed to save scheduled-source copy: {str(e)}")
 
     permanent_path = f"permanent/{current_user.id}/{upload_id}.{file_ext}"
@@ -593,6 +601,7 @@ async def sample_upload(
             )
         except Exception:
             pass
+        sentry_sdk.capture_exception(e)
         raise HTTPException(status_code=500, detail=f"Failed to save upload metadata: {str(e)}")
 
     preview_rows = []
@@ -1095,6 +1104,7 @@ async def download_report(
             resp.raise_for_status()
             pdf_bytes = resp.content
     except Exception as e:
+        sentry_sdk.capture_exception(e)
         raise HTTPException(status_code=502, detail=f"Could not retrieve PDF: {e}")
 
     filename = f"naxely_report_{report_id[:8]}.pdf"

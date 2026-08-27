@@ -1,5 +1,6 @@
 import json
 import logging
+import sentry_sdk
 from datetime import datetime, timezone
 from typing import Dict, Any, Literal, cast
 
@@ -140,6 +141,7 @@ async def create_checkout_session(
                         return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing",
                     )
                 except Exception as e:
+                    sentry_sdk.capture_exception(e)
                     logger.error("Dodo customer portal error: %s", e)
                     raise HTTPException(status_code=502, detail="Failed to create customer portal session")
                 return {"checkout_url": session.link}
@@ -160,6 +162,7 @@ async def create_checkout_session(
                     quantity=1,
                 )
             except Exception as e:
+                sentry_sdk.capture_exception(e)
                 logger.error("Dodo change plan error: %s", e)
                 raise HTTPException(status_code=502, detail="Failed to change plan")
 
@@ -173,6 +176,7 @@ async def create_checkout_session(
             return_url=f"{settings.FRONTEND_BASE_URL}/settings?tab=billing&checkout=complete",
         )
     except Exception as e:
+        sentry_sdk.capture_exception(e)
         logger.error("Dodo checkout error: %s", e)
         raise HTTPException(status_code=502, detail="Failed to create checkout session")
 
@@ -364,6 +368,7 @@ async def downgrade_subscription(
     except APIStatusError as e:
         raise _dodo_error_to_http(e)
     except Exception as e:
+        sentry_sdk.capture_exception(e)
         logger.error("Failed to retrieve subscription: %s", e)
         raise HTTPException(status_code=502, detail="Failed to verify subscription state")
 
@@ -396,6 +401,7 @@ async def downgrade_subscription(
         except APIStatusError as e:
             raise _dodo_error_to_http(e)
         except Exception as e:
+            sentry_sdk.capture_exception(e)
             logger.error("Failed to schedule downgrade to free: %s", e)
             raise HTTPException(status_code=502, detail="Failed to schedule downgrade")
 
@@ -435,6 +441,7 @@ async def downgrade_subscription(
         except APIStatusError as e:
             raise _dodo_error_to_http(e)
         except Exception as e:
+            sentry_sdk.capture_exception(e)
             logger.error("Dodo downgrade error: %s", e)
             raise HTTPException(status_code=502, detail="Failed to schedule downgrade")
 
@@ -443,6 +450,7 @@ async def downgrade_subscription(
                 subscription_id=_dodo_sub_id(current_user),
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
             logger.error("Failed to retrieve subscription after downgrade: %s", e)
             raise HTTPException(status_code=502, detail="Downgrade scheduled but failed to confirm date")
 
@@ -475,6 +483,7 @@ async def get_subscription_state(
             subscription_id=_dodo_sub_id(current_user),
         )
     except Exception as e:
+        sentry_sdk.capture_exception(e)
         logger.error("Failed to retrieve subscription: %s", e)
         raise HTTPException(status_code=502, detail="Failed to retrieve subscription state")
 
@@ -513,6 +522,7 @@ async def cancel_scheduled_change(
             subscription_id=_dodo_sub_id(current_user),
         )
     except Exception as e:
+        sentry_sdk.capture_exception(e)
         logger.error("Failed to retrieve subscription: %s", e)
         raise HTTPException(status_code=502, detail="Failed to check subscription state")
 
@@ -522,6 +532,7 @@ async def cancel_scheduled_change(
                 subscription_id=_dodo_sub_id(current_user),
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
             logger.error("Failed to cancel scheduled change: %s", e)
             raise HTTPException(status_code=502, detail="Failed to cancel scheduled downgrade")
 
@@ -534,6 +545,7 @@ async def cancel_scheduled_change(
                 cancel_at_next_billing_date=False,
             )
         except Exception as e:
+            sentry_sdk.capture_exception(e)
             logger.error("Failed to unschedule cancellation: %s", e)
             raise HTTPException(status_code=502, detail="Failed to cancel scheduled downgrade")
 
