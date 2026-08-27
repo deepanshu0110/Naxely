@@ -79,18 +79,38 @@ function SentryFallback() {
   )
 }
 
+// TEMP: disambiguation tests — remove before final commit
+function SentryTestThrow(): null {
+  throw new Error('sentry-error-boundary-test')
+}
+
+function SentryDirectButton() {
+  return (
+    <button
+      onClick={() => Sentry.captureException(new Error('sentry-direct-capture-test'))}
+      data-testid="sentry-direct-button"
+      style={{ position: 'fixed', bottom: 12, right: 12, zIndex: 9999, background: '#f59e0b', color: 'white', padding: '8px 12px', borderRadius: 8, fontSize: 12 }}
+    >
+      Test Sentry Direct
+    </button>
+  )
+}
+
 function RootLayout() {
   useCookieYesGA4()
   useCookieYesClarity()
   useCookieYesAhrefs()
+  const showSentryTest = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('sentryTest')
   return (
     <Sentry.ErrorBoundary fallback={<SentryFallback />}>
+      {showSentryTest && <SentryTestThrow />}
       <HelmetProvider>
         <Suspense fallback={<Loading />}>
           <Outlet />
         </Suspense>
         <Toaster position="top-right" />
         <Analytics />
+        {showSentryTest && <SentryDirectButton />}
       </HelmetProvider>
     </Sentry.ErrorBoundary>
   )
