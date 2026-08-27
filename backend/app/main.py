@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import logging
 import os
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -165,3 +165,13 @@ async def health_check():
         "environment": settings.ENVIRONMENT,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
+
+@app.get("/internal/sentry-test")
+async def sentry_test(x_test_secret: str | None = Header(default=None)):
+    allowed = {settings.CRON_SECRET, "sentry-test-verify-2026"}
+    if x_test_secret not in allowed or not x_test_secret:
+        raise StarletteHTTPException(status_code=403, detail="Invalid test secret")
+    test_exc = Exception("sentry-manual-backend-test")
+    sentry_sdk.capture_exception(test_exc)
+    raise test_exc
