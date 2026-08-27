@@ -79,42 +79,18 @@ function SentryFallback() {
   )
 }
 
-// TEMP: disambiguation tests — remove before final commit
-function SentryTestThrow(): null {
-  throw new Error('sentry-error-boundary-test')
-}
-
-function SentryDirectButton() {
-  return (
-    <button
-      onClick={() => Sentry.captureException(new Error('sentry-direct-capture-test'))}
-      data-testid="sentry-direct-button"
-      style={{ position: 'fixed', bottom: 12, right: 12, zIndex: 9999, background: '#f59e0b', color: 'white', padding: '8px 12px', borderRadius: 8, fontSize: 12 }}
-    >
-      Test Sentry Direct
-    </button>
-  )
-}
-
 function RootLayout() {
   useCookieYesGA4()
   useCookieYesClarity()
   useCookieYesAhrefs()
-  const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
-  const showBoundary = params.has('sentryTest') || params.has('sentryBoundary')
-  const showDirect = params.has('sentryTest') || params.has('sentryDirect')
-  // when testing direct alone, avoid boundary throw that would hide the button
-  const showBoundaryOnly = showBoundary && !params.has('sentryDirect')
   return (
     <Sentry.ErrorBoundary fallback={<SentryFallback />}>
-      {showBoundaryOnly && <SentryTestThrow />}
       <HelmetProvider>
         <Suspense fallback={<Loading />}>
           <Outlet />
         </Suspense>
         <Toaster position="top-right" />
         <Analytics />
-        {showDirect && <SentryDirectButton />}
       </HelmetProvider>
     </Sentry.ErrorBoundary>
   )
