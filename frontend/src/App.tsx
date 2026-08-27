@@ -100,17 +100,21 @@ function RootLayout() {
   useCookieYesGA4()
   useCookieYesClarity()
   useCookieYesAhrefs()
-  const showSentryTest = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('sentryTest')
+  const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
+  const showBoundary = params.has('sentryTest') || params.has('sentryBoundary')
+  const showDirect = params.has('sentryTest') || params.has('sentryDirect')
+  // when testing direct alone, avoid boundary throw that would hide the button
+  const showBoundaryOnly = showBoundary && !params.has('sentryDirect')
   return (
     <Sentry.ErrorBoundary fallback={<SentryFallback />}>
-      {showSentryTest && <SentryTestThrow />}
+      {showBoundaryOnly && <SentryTestThrow />}
       <HelmetProvider>
         <Suspense fallback={<Loading />}>
           <Outlet />
         </Suspense>
         <Toaster position="top-right" />
         <Analytics />
-        {showSentryTest && <SentryDirectButton />}
+        {showDirect && <SentryDirectButton />}
       </HelmetProvider>
     </Sentry.ErrorBoundary>
   )
