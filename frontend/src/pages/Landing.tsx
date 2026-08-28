@@ -983,272 +983,123 @@ export default function Landing() {
               </Link>
             </div>
           </div>
-          <div className="badge-marquee mt-8 pt-8 border-t border-gray-200">
-            <div className="badge-track">
-              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
-              </a>
-              <a
-                href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
-                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
-                  width="180" height="54"
-                />
-              </a>
-              <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
-              </a>
-              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer" title="SaasHunt Top 1 Daily Winner">
-                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="195" height="44" />
-              </a>
-              <a href="https://auraplusplus.com/projects/naxely-automated-client-report-generator" target="_blank" rel="noopener noreferrer">
-                <img src="/aura-plusplus-top1-dark.svg" alt="Aura++ Top 1 Daily Winner" width="195" height="44" />
-              </a>
-              <a href="https://open-launch.com/projects/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="/open-launch-top3-dark.svg" alt="Open-Launch Top 3 Daily Winner" width="195" height="44" />
-              </a>
-              <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
-                <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
-              </div>
-              <a href="https://saashive.com/products/naxely" target="_blank" rel="noopener noreferrer"
-                 style={{
-                   display: 'inline-flex', alignItems: 'center', gap: '10px',
-                   padding: '8px 18px 8px 10px', borderRadius: '10px', textDecoration: 'none',
-                   lineHeight: 1, whiteSpace: 'nowrap', background: '#1A1A2E',
-                   fontFamily: "'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                   height: '54px', boxSizing: 'border-box'
-                 }}>
-                <svg viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30" style={{ flexShrink: 0 }}>
-                  <polygon points="15,12 13.5,9.4 10.5,9.4 9,12 10.5,14.6 13.5,14.6" fill="#E5A010"/>
-                  <polygon points="15,6.4 13.5,3.8 10.5,3.8 9,6.4 10.5,9 13.5,9" fill="#F4B324"/>
-                  <polygon points="19.85,9.2 18.35,6.6 15.35,6.6 13.85,9.2 15.35,11.8 18.35,11.8" fill="#F9CC6A"/>
-                  <polygon points="19.85,14.8 18.35,12.2 15.35,12.2 13.85,14.8 15.35,17.4 18.35,17.4" fill="#FCECD2"/>
-                  <polygon points="15,17.6 13.5,15 10.5,15 9,17.6 10.5,20.2 13.5,20.2" fill="#F9CC6A"/>
-                  <polygon points="10.15,14.8 8.65,12.2 5.65,12.2 4.15,14.8 5.65,17.4 8.65,17.4" fill="#F4B324"/>
-                  <polygon points="10.15,9.2 8.65,6.6 5.65,6.6 4.15,9.2 5.65,11.8 8.65,11.8" fill="#FCECD2"/>
-                </svg>
-                <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start', textAlign: 'left' }}>
-                  <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', textAlign: 'left' }}>
-                    Listed on
-                  </span>
-                  <span style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '18px', letterSpacing: '0.01em', color: '#FFFFFF', textAlign: 'left' }}>
-                    SaaS Hive
-                  </span>
-                </span>
-              </a>
-
-              {/* shipit.buzz badge removed — their badge API returns HTTP 500 as of July 2026 */}
-              <a href="https://smollaunch.com" target="_blank" rel="noopener">
-                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="140" height="54" />
-              </a>
-              <a href="https://launchbuff.com" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
-                <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
-              </a>
-              <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
-                <img src="/launchboard-badge.webp" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" />
-              </a>
-              <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />
-              </a>
-              <a href="https://startupfa.me/s/naxely?utm_source=naxely.com" target="_blank" rel="noopener">
-                <img src="https://startupfa.me/badges/featured/default-small-rounded.webp" alt="Naxely - Featured on Startup Fame" width="240" height="37" />
-              </a>
-              <a href="https://findly.tools/naxely?utm_source=naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="Featured on Findly.tools" width="175" height="55" />
-              </a>
-              <a href="https://twelve.tools" target="_blank" rel="noopener noreferrer">
-                <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" width="200" height="54" />
-              </a>
-              <a href="https://www.saashub.com/naxely?utm_source=badge&utm_campaign=badge&utm_content=naxely&badge_variant=color&badge_kind=approved" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1" alt="Featured on SaaSHub" width="150" height="50" />
-              </a>
-              <a href="https://wired.business" target="_blank" rel="noopener noreferrer">
-                <img src="https://wired.business/badge0-white.svg" alt="Featured on Wired Business" width="200" height="54" />
-              </a>
-              <a href="https://startupbase.io/products/naxely?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-light" target="_blank" rel="noopener noreferrer">
-                <img src="https://statics.startupbase.io/site/badges/launched-on-sb.svg" alt="Launched on StartupBase" height="54" style={{ height: '54px', width: 'auto' }} />
-              </a>
-              <a href="https://frogdr.com/naxely.com?utm_source=naxely.com" target="_blank" rel="noopener noreferrer">
-                <img src="https://frogdr.com/naxely.com/badge-white-sm.svg?round=1" alt="Monitor your Domain Rating with FrogDR" width="249" height="36" />
-              </a>
-              <a href="https://showmebest.ai" target="_blank" rel="noopener noreferrer">
-                <img src="https://showmebest.ai/badge/feature-badge-white.webp" alt="Featured on ShowMeBestAI" width="220" height="60" />
-              </a>
-              <a href="https://submitaitools.org" target="_blank" rel="noopener noreferrer">
-                <img src="https://submitaitools.org/static_submitaitools/images/submitaitools.png" alt="Submit AI Tools" width="200" height="60" style={{ borderRadius: '10px' }} />
-              </a>
-              <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
-              </a>
-
-              <a href="https://startupfa.st/projects/naxely" target="_blank" title="Startup Fast Top 1 Daily Winner">
-                <img src="https://startupfa.st/images/badges/top1-light.svg" alt="Startup Fast Top 1 Daily Winner" width="195" height="44" />
-              </a>
-              <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
-                <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
-              </a>
-              <a href="https://saasfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://saasfame.com/badge-dark.svg" alt="Featured on saasfame.com" width="170" height="54" />
-              </a>
-              <a href="https://uno.directory" target="_blank" rel="noopener">
-                <img src="https://uno.directory/uno-directory.svg" alt="Listed on Uno Directory" width="120" height="30" />
-              </a>
-              <a href="https://makerhunt.io/project/naxely" target="_blank" rel="noopener" title="Featured on MakerHunt">
-                <img src="https://makerhunt.io/badges/makerhunt-badge-light.svg" alt="Featured on MakerHunt" width="200" height="60" />
-              </a>
-              <a href="https://www.aidirectori.es" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.aidirectori.es/ai-tools/badges/light-mode.png" alt="AI Directories Badge" width="200" height="54" />
-              </a>
-              <a href="https://www.toolpilot.ai" target="_blank" rel="noopener noreferrer">
-                <img src="https://toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png" alt="Featured on ToolPilot" width="200" height="44" />
-              </a>
-              <a href="https://thesaasdir.com/product/naxely?ref=badge" rel="dofollow" target="_blank">
-                <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="182" height="46" />
-              </a>
-              <a href="https://www.foundrlist.com/product/naxely?utm_source=badge&utm_medium=embed" target="_blank" rel="noopener">
-                <img src="https://www.foundrlist.com/api/badge/naxely" alt="Featured on FoundrList" width="150" height="48" />
-              </a>
-              <a href="https://www.verifiedtools.info/tools/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.verifiedtools.info/badge.svg" alt="Naxely on Verified Tools — AI & SaaS tools directory" width="200" height="54" />
-              </a>
-              <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" />
-              </a>
-              <a
-                href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt"
-                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777"
-                  width="180" height="54"
-                />
-              </a>
-              <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" />
-              </a>
-              <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer" title="SaasHunt Top 1 Daily Winner">
-                <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="195" height="44" />
-              </a>
-              <a href="https://auraplusplus.com/projects/naxely-automated-client-report-generator" target="_blank" rel="noopener noreferrer">
-                <img src="/aura-plusplus-top1-dark.svg" alt="Aura++ Top 1 Daily Winner" width="195" height="44" />
-              </a>
-              <a href="https://open-launch.com/projects/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="/open-launch-top3-dark.svg" alt="Open-Launch Top 3 Daily Winner" width="195" height="44" />
-              </a>
-              <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
-                <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
-              </div>
-              <a href="https://saashive.com/products/naxely" target="_blank" rel="noopener noreferrer"
-                 style={{
-                   display: 'inline-flex', alignItems: 'center', gap: '10px',
-                   padding: '8px 18px 8px 10px', borderRadius: '10px', textDecoration: 'none',
-                   lineHeight: 1, whiteSpace: 'nowrap', background: '#1A1A2E',
-                   fontFamily: "'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                   height: '54px', boxSizing: 'border-box'
-                 }}>
-                <svg viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30" style={{ flexShrink: 0 }}>
-                  <polygon points="15,12 13.5,9.4 10.5,9.4 9,12 10.5,14.6 13.5,14.6" fill="#E5A010"/>
-                  <polygon points="15,6.4 13.5,3.8 10.5,3.8 9,6.4 10.5,9 13.5,9" fill="#F4B324"/>
-                  <polygon points="19.85,9.2 18.35,6.6 15.35,6.6 13.85,9.2 15.35,11.8 18.35,11.8" fill="#F9CC6A"/>
-                  <polygon points="19.85,14.8 18.35,12.2 15.35,12.2 13.85,14.8 15.35,17.4 18.35,17.4" fill="#FCECD2"/>
-                  <polygon points="15,17.6 13.5,15 10.5,15 9,17.6 10.5,20.2 13.5,20.2" fill="#F9CC6A"/>
-                  <polygon points="10.15,14.8 8.65,12.2 5.65,12.2 4.15,14.8 5.65,17.4 8.65,17.4" fill="#F4B324"/>
-                  <polygon points="10.15,9.2 8.65,6.6 5.65,6.6 4.15,9.2 5.65,11.8 8.65,11.8" fill="#FCECD2"/>
-                </svg>
-                <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start', textAlign: 'left' }}>
-                  <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', textAlign: 'left' }}>
-                    Listed on
-                  </span>
-                  <span style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '18px', letterSpacing: '0.01em', color: '#FFFFFF', textAlign: 'left' }}>
-                    SaaS Hive
-                  </span>
-                </span>
-              </a>
-
-              {/* shipit.buzz badge removed — their badge API returns HTTP 500 as of July 2026 */}
-              <a href="https://smollaunch.com" target="_blank" rel="noopener">
-                <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="140" height="54" />
-              </a>
-              <a href="https://launchbuff.com" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
-                <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" />
-              </a>
-              <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer">
-                <img src="/launchboard-badge.webp" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" loading="lazy" />
-              </a>
-              <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" />
-              </a>
-              <a href="https://startupfa.me/s/naxely?utm_source=naxely.com" target="_blank" rel="noopener">
-                <img src="https://startupfa.me/badges/featured/default-small-rounded.webp" alt="Naxely - Featured on Startup Fame" width="240" height="37" />
-              </a>
-              <a href="https://findly.tools/naxely?utm_source=naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="Featured on Findly.tools" width="175" height="55" />
-              </a>
-              <a href="https://twelve.tools" target="_blank" rel="noopener noreferrer">
-                <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" width="200" height="54" />
-              </a>
-              <a href="https://www.saashub.com/naxely?utm_source=badge&utm_campaign=badge&utm_content=naxely&badge_variant=color&badge_kind=approved" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1" alt="Featured on SaaSHub" width="150" height="50" />
-              </a>
-              <a href="https://wired.business" target="_blank" rel="noopener noreferrer">
-                <img src="https://wired.business/badge0-white.svg" alt="Featured on Wired Business" width="200" height="54" />
-              </a>
-              <a href="https://startupbase.io/products/naxely?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-light" target="_blank" rel="noopener noreferrer">
-                <img src="https://statics.startupbase.io/site/badges/launched-on-sb.svg" alt="Launched on StartupBase" height="54" style={{ height: '54px', width: 'auto' }} />
-              </a>
-              <a href="https://frogdr.com/naxely.com?utm_source=naxely.com" target="_blank" rel="noopener noreferrer">
-                <img src="https://frogdr.com/naxely.com/badge-white-sm.svg?round=1" alt="Monitor your Domain Rating with FrogDR" width="249" height="36" />
-              </a>
-              <a href="https://showmebest.ai" target="_blank" rel="noopener noreferrer">
-                <img src="https://showmebest.ai/badge/feature-badge-white.webp" alt="Featured on ShowMeBestAI" width="220" height="60" />
-              </a>
-              <a href="https://submitaitools.org" target="_blank" rel="noopener noreferrer">
-                <img src="https://submitaitools.org/static_submitaitools/images/submitaitools.png" alt="Submit AI Tools" width="200" height="60" style={{ borderRadius: '10px' }} />
-              </a>
-              <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" />
-              </a>
-
-              <a href="https://startupfa.st/projects/naxely" target="_blank" title="Startup Fast Top 1 Daily Winner">
-                <img src="https://startupfa.st/images/badges/top1-light.svg" alt="Startup Fast Top 1 Daily Winner" width="195" height="44" />
-              </a>
-              <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer">
-                <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" />
-              </a>
-              <a href="https://saasfame.com/item/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://saasfame.com/badge-dark.svg" alt="Featured on saasfame.com" width="170" height="54" />
-              </a>
-              <a href="https://uno.directory" target="_blank" rel="noopener">
-                <img src="https://uno.directory/uno-directory.svg" alt="Listed on Uno Directory" width="120" height="30" />
-              </a>
-              <a href="https://makerhunt.io/project/naxely" target="_blank" rel="noopener" title="Featured on MakerHunt">
-                <img src="https://makerhunt.io/badges/makerhunt-badge-light.svg" alt="Featured on MakerHunt" width="200" height="60" />
-              </a>
-              <a href="https://www.aidirectori.es" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.aidirectori.es/ai-tools/badges/light-mode.png" alt="AI Directories Badge" width="200" height="54" />
-              </a>
-              <a href="https://www.toolpilot.ai" target="_blank" rel="noopener noreferrer">
-                <img src="https://toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png" alt="Featured on ToolPilot" width="200" height="44" />
-              </a>
-              <a href="https://thesaasdir.com/product/naxely?ref=badge" rel="dofollow" target="_blank">
-                <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="182" height="46" />
-              </a>
-              <a href="https://www.foundrlist.com/product/naxely?utm_source=badge&utm_medium=embed" target="_blank" rel="noopener">
-                <img src="https://www.foundrlist.com/api/badge/naxely" alt="Featured on FoundrList" width="150" height="48" />
-              </a>
-              <a href="https://www.verifiedtools.info/tools/naxely" target="_blank" rel="noopener noreferrer">
-                <img src="https://www.verifiedtools.info/badge.svg" alt="Naxely on Verified Tools — AI & SaaS tools directory" width="200" height="54" />
-              </a>
-              <a href="https://toolfio.com" target="_blank" rel="noopener"><img src="https://toolfio.com/toolfio-dark-badge.png" alt="Featured on Toolfio" width="200" height="54" /></a>
-              <a href="https://ideakiln.com/ideas/naxely" target="_blank" rel="noopener"><img src="https://ideakiln.com/light.svg" alt="Featured on Idea Kiln" width="200" height="54" /></a>
-              <a href="https://nicklaunches.com/products/naxely/?utm_source=naxely.com&utm_medium=badge&utm_campaign=featured" target="_blank" rel="noopener"><img src="https://nicklaunches.com/badges/featured.png" alt="Naxely on Nick Launches" width="244" height="56" /></a>
+          <div className="mt-10 pt-8 border-t border-gray-200">
+          <p className="text-center text-[11px] font-medium tracking-[0.14em] uppercase text-gray-400 mb-6">As featured on</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-4 md:gap-5 items-center justify-items-center">
+          <a href="https://fazier.com/launches/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <img src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=10201&badge_type=featured&theme=light" alt="Featured on Fazier" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://www.producthunt.com/products/naxely?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img alt="Naxely - CSV and Google Sheets to branded PDF reports with AI | Product Hunt" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1181500&theme=neutral&t=1782573416777" width="180" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://turbo0.com/item/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://img.turbo0.com/badge-listed-light.svg" alt="Listed on Turbo0" width="140" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://saashunt.best/projects/naxely" target="_blank" rel="noopener noreferrer" title="SaasHunt Top 1 Daily Winner" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://saashunt.best/images/badges/top1-light.svg" alt="SaasHunt Top 1 Daily Winner" width="195" height="44" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://auraplusplus.com/projects/naxely-automated-client-report-generator" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <img src="/aura-plusplus-top1-dark.svg" alt="Aura++ Top 1 Daily Winner" width="195" height="44" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://open-launch.com/projects/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <img src="/open-launch-top3-dark.svg" alt="Open-Launch Top 3 Daily Winner" width="195" height="44" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <div className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <div className="sf-root" data-id="4111526" data-badge="light-default" data-variant-id="sf" style={{ width: '125px' }}>
+            <a href="https://sourceforge.net/software/product/Naxely/" target="_blank" rel="noopener noreferrer">Naxely Reviews</a>
             </div>
+          </div>
+          <a href="https://saashive.com/products/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '8px 18px 8px 10px', borderRadius: '10px', textDecoration: 'none', lineHeight: 1, whiteSpace: 'nowrap', background: '#1A1A2E', fontFamily: "'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", height: '56px', boxSizing: 'border-box' }}>
+            <svg viewBox="2 2 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="30" height="30" style={{ flexShrink: 0 }}>
+              <polygon points="15,12 13.5,9.4 10.5,9.4 9,12 10.5,14.6 13.5,14.6" fill="#E5A010"/>
+            <polygon points="15,6.4 13.5,3.8 10.5,3.8 9,6.4 10.5,9 13.5,9" fill="#F4B324"/>
+              <polygon points="19.85,9.2 18.35,6.6 15.35,6.6 13.85,9.2 15.35,11.8 18.35,11.8" fill="#F9CC6A"/>
+              <polygon points="19.85,14.8 18.35,12.2 15.35,12.2 13.85,14.8 15.35,17.4 18.35,17.4" fill="#FCECD2"/>
+           <polygon points="15,17.6 13.5,15 10.5,15 9,17.6 10.5,20.2 13.5,20.2" fill="#F9CC6A"/>
+          <polygon points="10.15,14.8 8.65,12.2 5.65,12.2 4.15,14.8 5.65,17.4 8.65,17.4" fill="#F4B324"/>
+          <polygon points="10.15,9.2 8.65,6.6 5.65,6.6 4.15,9.2 5.65,11.8 8.65,11.8" fill="#FCECD2"/>
+          </svg>
+          <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'flex-start', textAlign: 'left' }}>
+          <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', textAlign: 'left' }}>Listed on</span>
+          <span style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '18px', letterSpacing: '0.01em', color: '#FFFFFF', textAlign: 'left' }}>SaaS Hive</span>
+          </span>
+          </a>
+          <a href="https://smollaunch.com" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://smollaunch.com/badges/featured.svg" alt="Naxely — Featured on Smol Launch" loading="lazy" width="140" height="54" className="max-h-10 w-auto max-w-full object-contain" />
+          </a>
+          <a href="https://launchbuff.com" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width="256" height="80" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://launchboard.dev" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="/launchboard-badge.webp" alt="Launched on LaunchBoard - Product Launch Platform" width="132" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://saasbrowser.com/en/saas/1570008/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://static-files.saasbrowser.com/saas-browser-badge-2.svg" alt="Naxely - software database" width="180" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://startupfa.me/s/naxely?utm_source=naxely.com" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://startupfa.me/badges/featured/default-small-rounded.webp" alt="Naxely - Featured on Startup Fame" width="240" height="37" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://findly.tools/naxely?utm_source=naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+                <img src="https://findly.tools/badges/findly-tools-badge-light.svg" alt="Featured on Findly.tools" width="175" height="55" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://twelve.tools" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://twelve.tools/badge0-white.svg" alt="Featured on Twelve Tools" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://www.saashub.com/naxely?utm_source=badge&utm_campaign=badge&utm_content=naxely&badge_variant=color&badge_kind=approved" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1" alt="Featured on SaaSHub" width="150" height="50" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://wired.business" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://wired.business/badge0-white.svg" alt="Featured on Wired Business" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://startupbase.io/products/naxely?utm_source=startupbase&utm_medium=badge&utm_campaign=launch-badge-light" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://statics.startupbase.io/site/badges/launched-on-sb.svg" alt="Launched on StartupBase" height="54" style={{ height: '54px', width: 'auto' }} className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://frogdr.com/naxely.com?utm_source=naxely.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://frogdr.com/naxely.com/badge-white-sm.svg?round=1" alt="Monitor your Domain Rating with FrogDR" width="249" height="36" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://showmebest.ai" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://showmebest.ai/badge/feature-badge-white.webp" alt="Featured on ShowMeBestAI" width="220" height="60" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://submitaitools.org" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://submitaitools.org/static_submitaitools/images/submitaitools.png" alt="Submit AI Tools" width="200" height="60" style={{ borderRadius: '10px' }} className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://toolfame.com/item/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://toolfame.com/badge-light.svg" alt="Featured on toolfame.com" width="160" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://startupfa.st/projects/naxely" target="_blank" title="Startup Fast Top 1 Daily Winner" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://startupfa.st/images/badges/top1-light.svg" alt="Startup Fast Top 1 Daily Winner" width="195" height="44" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://dofollow.tools" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://dofollow.tools/badge/badge_dark.svg" alt="Featured on Dofollow.Tools" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://saasfame.com/item/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://saasfame.com/badge-dark.svg" alt="Featured on saasfame.com" width="170" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://uno.directory" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://uno.directory/uno-directory.svg" alt="Listed on Uno Directory" width="120" height="30" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://makerhunt.io/project/naxely" target="_blank" rel="noopener" title="Featured on MakerHunt" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://makerhunt.io/badges/makerhunt-badge-light.svg" alt="Featured on MakerHunt" width="200" height="60" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://www.aidirectori.es" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://cdn.aidirectori.es/ai-tools/badges/light-mode.png" alt="AI Directories Badge" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+              <a href="https://www.toolpilot.ai" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <img src="https://toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png" alt="Featured on ToolPilot" width="200" height="44" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://thesaasdir.com/product/naxely?ref=badge" rel="dofollow" target="_blank" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <img src="https://thesaasdir.com/badge/naxely.svg" alt="Featured on TheSaaSDir" width="182" height="46" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://www.foundrlist.com/product/naxely?utm_source=badge&utm_medium=embed" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <img src="https://www.foundrlist.com/api/badge/naxely" alt="Featured on FoundrList" width="150" height="48" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://www.verifiedtools.info/tools/naxely" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+            <img src="https://www.verifiedtools.info/badge.svg" alt="Naxely on Verified Tools — AI & SaaS tools directory" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
+          <a href="https://toolfio.com" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"><img src="https://toolfio.com/toolfio-dark-badge.png" alt="Featured on Toolfio" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" /></a>
+          <a href="https://ideakiln.com/ideas/naxely" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"><img src="https://ideakiln.com/light.svg" alt="Featured on Idea Kiln" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" /></a>
+          <a href="https://nicklaunches.com/products/naxely/?utm_source=naxely.com&utm_medium=badge&utm_campaign=featured" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"><img src="https://nicklaunches.com/badges/featured.png" alt="Naxely on Nick Launches" width="244" height="56" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" /></a>
+          </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-600">
             Made in India 🇮🇳 · Naxely © 2026
