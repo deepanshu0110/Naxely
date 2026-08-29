@@ -105,7 +105,7 @@ describe('Blog', () => {
   it('renders heading and at least one post link', () => {
     renderWithRouter(Blog)
     expect(screen.getByText('Blog')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /^How to Choose Client Reporting Software$/ })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /^How to Choose Client Reporting Software/ })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /BYOK/i })).toBeInTheDocument()
   })
 })
@@ -121,7 +121,7 @@ describe('BlogPostByok', () => {
 describe('BlogPostClientReporting', () => {
   it('renders blog post heading', () => {
     renderWithRouter(BlogPostClientReporting)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('How to Choose Client Reporting Software')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('How to Choose Client Reporting Software (and Tools)')
   })
 })
 

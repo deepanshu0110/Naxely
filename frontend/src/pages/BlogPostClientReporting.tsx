@@ -7,7 +7,7 @@ export default function BlogPostClientReporting() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>How to Choose Client Reporting Software | Naxely</title>
+        <title>How to Choose Client Reporting Software & Tools | Naxely</title>
         <meta name="description" content="Choose client reporting software with a six-tool comparison matrix, a two-axis decision framework, a cost worked example, and a 30-day evaluation checklist." />
         <link rel="canonical" href="https://www.naxely.com/blog/client-reporting-software-guide" />
         <meta property="og:url" content="https://www.naxely.com/blog/client-reporting-software-guide" />
@@ -41,7 +41,7 @@ export default function BlogPostClientReporting() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">How to Choose Client Reporting Software</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">How to Choose Client Reporting Software (and Tools)</h1>
         <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026 &middot; Updated August 11, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
