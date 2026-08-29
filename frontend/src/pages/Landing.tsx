@@ -405,12 +405,10 @@ export default function Landing() {
 
               <h3 className="font-display text-2xl font-semibold
                 text-ink dark:text-paper mb-3">
-                Upload a CSV.<br />Get a branded PDF.
+                The alternative to AgencyAnalytics and Databox
               </h3>
               <p className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed max-w-md mb-8">
-                Drop in any CSV or connect a Google Sheet and Naxely generates a
-                fully branded, client-ready PDF report in under a minute — with
-                charts, KPI cards, and AI-written insights included.
+                A lighter, more affordable alternative to AgencyAnalytics, Databox, and Whatagraph — built for freelance analysts, consultants, and small agencies, not enterprise marketing teams.
               </p>
 
               {/* Pipeline visual */}

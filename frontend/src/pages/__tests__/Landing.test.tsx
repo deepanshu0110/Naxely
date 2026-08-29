@@ -64,7 +64,7 @@ describe('Landing page', () => {
     renderPage()
     expect(screen.getByText('Everything you need')).toBeInTheDocument()
     expect(screen.getByText(/From raw data to client-ready PDF/)).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /upload a csv/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /The alternative to AgencyAnalytics and Databox/i })).toBeInTheDocument()
   })
 
   it('renders Pricing section with plan names', () => {
