@@ -1434,8 +1434,8 @@ class TestExecutiveSummaryStatRow:
 
 
 class TestInsightLedgerRow:
-    """AI insight rows must use the ledger treatment: no card backgrounds,
-    serif index, severity tag, and an arrowed action."""
+    """AI insight rows must use tinted card treatment: severity-tinted background
+    via _brand_tint, left accent strip, serif index, severity tag, and arrowed action."""
 
     def _build_insights_pdf(self):
         import fitz
@@ -1477,7 +1477,8 @@ class TestInsightLedgerRow:
                 rect = d["rect"]
                 if rect.width > 300 and 40 < rect.height < 200:
                     filled.append((doc[2].number, rect))
-            assert not filled, f"Insight rows still have card backgrounds: {filled}"
+            assert filled, f"Insight rows should now have tinted card backgrounds (phase 2), but none found"
+            assert len(filled) == 2, f"Expected 2 insight card backgrounds, got {len(filled)}: {filled}"
         finally:
             doc.close()
             try:

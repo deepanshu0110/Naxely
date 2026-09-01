@@ -37,6 +37,9 @@ SECONDARY_PALETTE = ['#6366F1', '#0E9F6E', '#F59E0B', '#EF4444']  # INDIGO, MINT
 
 TRACK = '#E7E2D4'  # ledger light rail behind bars (track-and-fill treatment)
 
+NEUTRAL_BAR = '#CFCAB8'  # muted tan for non-highlight bars — desaturated, same family as TRACK
+DONUT_NEUTRALS = ['#D6D0C2', '#CFCAB8', '#BFB9A8', '#ABA89A', '#9E9B8E', '#8C8A7D']  # progressive muted neutrals for donut slices
+
 TIER_CHART_CAPS = {"free": 3, "pro": 8, "agency": 16}
 
 
@@ -470,8 +473,11 @@ def _generate_single_chart(
             max_val = grouped.values.max()
             ax.barh(bar_range, [max_val] * n_bars,
                     color=TRACK, height=0.7, zorder=0)
+            # Accent-vs-neutral: max bar gets brand_color, others muted
+            bar_colors = [NEUTRAL_BAR] * n_bars
+            bar_colors[-1] = brand_color
             ax.barh(bar_range, grouped.values,
-                    color=brand_color, height=0.34, zorder=1)
+                    color=bar_colors, height=0.34, zorder=1)
             label_step = max(1, n_bars // 20)
             bar_ticks = list(range(0, n_bars, label_step))
             ax.set_yticks(bar_ticks)
@@ -504,7 +510,11 @@ def _generate_single_chart(
         elif chart_type in ('pie', 'donut'):
             agg = df.groupby(x_col)[y_col].sum().sort_values(ascending=False)
             n = len(agg)
-            colors = [_lighten(brand_color, i / max(n - 1, 1) * 0.65) for i in range(n)]
+            # Accent-vs-neutral: largest slice brand_color, rest muted neutrals
+            colors = [brand_color] + (DONUT_NEUTRALS[: max(0, n-1)] if n > 1 else [])
+            # If more slices than neutrals, extend with last neutral
+            if len(colors) < n:
+                colors += [DONUT_NEUTRALS[-1]] * (n - len(colors))
             wedge_props = {'linewidth': 1.2, 'edgecolor': PAPER_BG}
             ax.pie(
                 agg.values,
@@ -812,6 +822,56 @@ def build_chart_caption(df, x_col, y_col, chart_type) -> str:
         return f"Chart of {y_col} by {x_col}."
 
 
+def _insight_title(df, x_col, y_col, chart_type) -> str:
+    """Short headline for chart title, derived from local stats already in scope."""
+    try:
+        if chart_type == 'line':
+            s = df.sort_values(x_col)
+            if pd.api.types.is_datetime64_any_dtype(s[x_col]):
+                unique_dates = s[x_col].nunique()
+                date_range_days = (s[x_col].max() - s[x_col].min()).days
+                freq = 'ME' if date_range_days > 365 else ('W' if unique_dates > 60 else None)
+                if freq:
+                    agg_func = 'mean' if any(k in y_col.lower() for k in ['%', 'percent', 'rate', 'ratio', 'score', 'pct']) else 'sum'
+                    s = s.set_index(x_col)[y_col].resample(freq).agg(agg_func).dropna().reset_index()
+            series = pd.to_numeric(s[y_col], errors='coerce').dropna()
+            if len(series) >= 2:
+                v0, v1 = series.iloc[0], series.iloc[-1]
+                pct = (v1 - v0) / v0 * 100 if v0 else 0.0
+                direction = 'rose' if pct >= 0 else 'fell'
+                return f"{y_col} {direction} {abs(pct):.0f}%"
+            elif len(series) == 1:
+                return f"{y_col} steady at {_fmt_caption_number(series.iloc[0])}"
+        elif chart_type == 'bar':
+            if pd.api.types.is_datetime64_any_dtype(df[x_col]):
+                freq = _bar_datetime_frequency(df, x_col)
+                if freq:
+                    agg_func = 'mean' if any(k in y_col.lower() for k in ['%', 'percent', 'rate', 'ratio', 'score', 'pct']) else 'sum'
+                    grouped = df.sort_values(x_col).set_index(x_col)[y_col].resample(freq).agg(agg_func).dropna()
+                else:
+                    grouped = df.groupby(x_col)[y_col].mean()
+            else:
+                grouped = df.groupby(x_col)[y_col].mean()
+            grouped = grouped.sort_values(ascending=True)
+            if len(grouped) >= 2:
+                high = grouped.index[-1]
+                return f"{high} leads {y_col}"
+            elif len(grouped) == 1:
+                return f"{grouped.index[0]} leads {y_col}"
+        elif chart_type in ('pie', 'donut'):
+            agg = df.groupby(x_col)[y_col].sum().sort_values(ascending=False)
+            if len(agg) > 0:
+                top_label = str(agg.index[0])
+                top_pct = agg.iloc[0] / agg.sum() * 100 if agg.sum() else 0
+                return f"{top_label} drives {top_pct:.1f}% of {y_col}"
+    except Exception:
+        pass
+    # fallback — short mechanical but less redundant than "HOURS BY PROJECT"
+    if y_col == x_col:
+        return y_col
+    return f"{y_col} by {x_col}"
+
+
 def generate_sync(
     df: pd.DataFrame,
     report_id: str,
@@ -858,13 +918,18 @@ def generate_sync(
         )
         if path:
             caption = build_chart_caption(df, x_col, y_col, chart_type)
-            if not title:
-                if y_col == x_col:
-                    title = y_col
-                elif date_column and x_col == date_column:
-                    title = f'{y_col} Over Time'
-                else:
-                    title = f'{y_col} by {x_col}'
+            is_mechanical = not title or title == f'{y_col} by {x_col}' or title == f'{y_col} Over Time' or title == f'{y_col} Distribution' or title == y_col
+            if is_mechanical:
+                insight = _insight_title(df, x_col, y_col, chart_type)
+                if insight and insight.strip() != '':
+                    title = insight
+                elif not title:
+                    if y_col == x_col:
+                        title = y_col
+                    elif date_column and x_col == date_column:
+                        title = f'{y_col} Over Time'
+                    else:
+                        title = f'{y_col} by {x_col}'
             chart_paths.append((path, y_col, caption, title))
 
     return chart_paths

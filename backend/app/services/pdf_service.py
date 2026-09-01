@@ -157,6 +157,69 @@ class _KPIRow(Flowable):
         c.restoreState()
 
 
+class _KPICard(Flowable):
+    """Tinted card for a single KPI — vertical layout, larger value."""
+
+    def __init__(self, kpi, index, width, brand_color_hex):
+        Flowable.__init__(self)
+        self.kpi = kpi
+        self.index = index
+        self.width = width
+        self.brand_color_hex = brand_color_hex
+        self.height = 110
+
+    def wrap(self, availWidth, availHeight):
+        return (self.width, self.height)
+
+    def draw(self):
+        kpi = self.kpi
+        w = self.width
+        h = self.height
+        c = self.canv
+        c.saveState()
+        # tinted background
+        tint = _brand_tint(self.brand_color_hex, alpha=0.07)
+        c.setFillColor(tint)
+        c.roundRect(0, 0, w, h, 8, fill=1, stroke=0)
+        # hairline border
+        c.setStrokeColor(HexColor(RULE))
+        c.setLineWidth(0.6)
+        c.roundRect(0, 0, w, h, 8, fill=0, stroke=1)
+        # index — top left, muted serif
+        c.setFillColor(HexColor(MUTED))
+        c.setFont('Fraunces-Medium', 10)
+        c.drawString(10, h - 18, str(self.index).zfill(2))
+        # name — bold sans, centered below index
+        name = str(kpi.get('name', '') or '')
+        c.setFillColor(HexColor(MUTED))
+        c.setFont('IBMPlexSans-Bold', 7.5)
+        # keep original case to match PDF text extraction (test expects 'Total Units Sold', not upper)
+        avail_name_w = w - 20
+        display_name = name
+        if c.stringWidth(display_name, 'IBMPlexSans-Bold', 7.5) > avail_name_w:
+            display_name = _truncate_words(display_name, 28)
+        c.drawCentredString(w/2, h - 30, display_name)
+        # value — large mono bold, centered
+        value = str(kpi.get('value', '') or '')
+        c.setFillColor(HexColor(INK))
+        c.setFont('IBMPlexMono-Bold', 26)
+        c.drawCentredString(w/2, h/2 + 2, value)
+        # trend — colored, centered below value
+        trend_pct = kpi.get('trend_pct', 0) or 0
+        trend_color = DELTA_UP if trend_pct >= 0 else RUST
+        sign = '+' if trend_pct >= 0 else ''
+        arrow = '\u2191' if trend_pct >= 0 else '\u2193'
+        c.setFillColor(HexColor(trend_color))
+        c.setFont('IBMPlexSans-Bold', 9)
+        c.drawCentredString(w/2, h/2 - 16, f"{arrow} {sign}{abs(trend_pct):.1f}%")
+        qualifier = _trend_qualifier(kpi.get('trend_label', ''))
+        if qualifier:
+            c.setFillColor(HexColor(MUTED))
+            c.setFont('IBMPlexSans-Bold', 6.5)
+            c.drawCentredString(w/2, h/2 - 28, qualifier)
+        c.restoreState()
+
+
 def _wrap_text_lines(text: str, font_name: str, font_size: float, max_width: float) -> list[str]:
     """Greedy word wrap of `text` to `max_width` at the given font. Returns a
     list of lines, each fitting the box; an unbreakable word wider than the box
@@ -215,11 +278,48 @@ def _truncate_words(text: str, limit: int) -> str:
     return text[:limit - 1] + '\u2026'
 
 
+def _sanitize_for_pdf(text: str) -> str:
+    """Replace Unicode chars not covered by IBMPlexSans/Fraunces.
+
+    The Groq AI model frequently emits U+2011 (non-breaking hyphen) in
+    strings like '6.54-hour', which renders as a box glyph in the PDF
+    because the TTF lacks that codepoint. Replace with the nearest
+    ASCII equivalent generically, since summary text varies per report.
+    """
+    if not text:
+        return text
+    repl = {
+        '\u2011': '-',  # non-breaking hyphen — the observed box-glyph culprit
+        '\u2010': '-',
+        '\u2012': '-',
+        '\u2013': '-',  # en dash
+        '\u2014': '-',  # em dash
+        '\u00a0': ' ',  # NBSP
+        '\u2009': ' ',  # thin space
+        '\u202f': ' ',  # narrow NBSP
+        '\u2000': ' ',
+        '\u2001': ' ',
+        '\u2002': ' ',
+        '\u2003': ' ',
+        '\u2004': ' ',
+        '\u2005': ' ',
+        '\u2006': ' ',
+        '\u2007': ' ',
+        '\u2008': ' ',
+        '\u200a': ' ',
+        '\u205f': ' ',
+        '\u2018': "'",  # left single quote
+        '\u2019': "'",  # right single quote
+        '\u201c': '"',  # left double quote
+        '\u201d': '"',  # right double quote
+    }
+    for k, v in repl.items():
+        text = text.replace(k, v)
+    return text
+
+
 class _InsightCard(Flowable):
-    """Ledger insight row: serif index, KPI name, severity tag, mono number,
-    reason, and an arrowed action — hairline rule below the row. Long
-    reason/action text wraps to a second line instead of being clipped
-    mid-word; anything still over budget truncates at a word boundary."""
+    """Tinted card with severity accent — fixes number clipping, adds background."""
 
     CARD_H = 84
     LINE_H = 10
@@ -230,6 +330,8 @@ class _InsightCard(Flowable):
     TAG_H = 13
     TEXT_FONT = 'IBMPlexSans'
     TEXT_SIZE = 8
+    NUMBER_FONT = 'IBMPlexMono-Bold'
+    NUMBER_SIZE = 13
     MAX_LINES = 2
 
     _MINT = HexColor(DELTA_UP)
@@ -244,6 +346,11 @@ class _InsightCard(Flowable):
         'medium': _AMBER,
         'low': _MINT,
     }
+    _PRIORITY_HEX = {
+        'high': RUST,
+        'medium': '#B45309',
+        'low': DELTA_UP,
+    }
 
     def __init__(self, insight, index=1, width=None):
         Flowable.__init__(self)
@@ -252,34 +359,47 @@ class _InsightCard(Flowable):
         self._width = width or (PAGE_WIDTH - 2 * MARGIN)
         self._reason_lines = []
         self._action_lines = []
+        self._number_lines = []
         self._layout_text()
 
     def _layout_text(self):
         ins = self.insight
-        reason = str(ins.get('reason', '') or '')
-        action = str(ins.get('action', '') or '')
+        number = _sanitize_for_pdf(str(ins.get('number', '') or ''))
+        reason = _sanitize_for_pdf(str(ins.get('reason', '') or ''))
+        action = _sanitize_for_pdf(str(ins.get('action', '') or ''))
         avail_w = self._width - self.PAD_LEFT - self.PAD_RIGHT
+        self._number_lines = _fit_text_lines(number, self.NUMBER_FONT, self.NUMBER_SIZE, avail_w, self.MAX_LINES)
         self._reason_lines = _fit_text_lines(
             reason, self.TEXT_FONT, self.TEXT_SIZE, avail_w, self.MAX_LINES)
         self._action_lines = _fit_text_lines(
             '\u2192 ' + action, self.TEXT_FONT, self.TEXT_SIZE, avail_w, self.MAX_LINES)
 
     def wrap(self, availWidth, availHeight):
-        extra = (len(self._reason_lines) - 1) + (len(self._action_lines) - 1)
-        return (self._width, self.CARD_H + extra * self.LINE_H)
+        extra = (len(self._number_lines) - 1) + (len(self._reason_lines) - 1) + (len(self._action_lines) - 1)
+        # number lines are taller (13pt vs 8pt) so add extra for number if needed
+        if len(self._number_lines) > 1:
+            extra += (len(self._number_lines) - 1) * 0.4
+        self.width, self.height = self._width, self.CARD_H + extra * self.LINE_H
+        return (self.width, self.height)
 
     def draw(self):
         ins = self.insight
-        kpi = str(ins.get('kpi', '') or '')
-        number = str(ins.get('number', '') or '')
+        kpi = _sanitize_for_pdf(str(ins.get('kpi', '') or ''))
         priority = str(ins.get('priority', 'medium')).lower()
 
         priority_color = self._PRIORITY_COLORS.get(priority, self._AMBER)
+        priority_hex = self._PRIORITY_HEX.get(priority, '#B45309')
         w = self._width
         c = self.canv
         h = self.height
         c.saveState()
-
+        # tinted background — alpha 0.12 matching cover hero panel for clear severity tint
+        tint = _brand_tint(priority_hex, alpha=0.12)
+        c.setFillColor(tint)
+        c.roundRect(0, 0, w, h, 6, fill=1, stroke=0)
+        # left accent strip — 5pt for clear severity cue
+        c.setFillColor(priority_color)
+        c.roundRect(0, 0, 5, h, 1.5, fill=1, stroke=0)
         # hairline below the ledger row
         c.setStrokeColor(HexColor(RULE))
         c.setLineWidth(0.4)
@@ -288,7 +408,7 @@ class _InsightCard(Flowable):
         # index — serif, muted
         c.setFillColor(self._GRAY)
         c.setFont('Fraunces-Medium', 14)
-        c.drawString(0, h - 26, str(self.index).zfill(2))
+        c.drawString(8, h - 26, str(self.index).zfill(2))
 
         text_x = self.PAD_LEFT
 
@@ -297,7 +417,7 @@ class _InsightCard(Flowable):
         c.setFont('IBMPlexSans-Bold', 9.5)
         c.drawString(text_x, h - self.PAD_TOP - 8, kpi)
 
-        # Severity tag (top right)
+        # Severity tag (top right) — keep as is
         tag_x = w - self.TAG_W - self.PAD_RIGHT
         tag_y = h - self.PAD_TOP - 11
         c.setFillColor(priority_color)
@@ -306,22 +426,24 @@ class _InsightCard(Flowable):
         c.setFont('IBMPlexSans-Bold', 6.5)
         c.drawCentredString(tag_x + self.TAG_W / 2, tag_y + 3, priority.upper())
 
-        # Number — mono bold
+        # Number — wrapped, mono bold, larger
         c.setFillColor(self._INK)
-        c.setFont('IBMPlexMono-Bold', 13)
-        c.drawString(text_x, h - self.PAD_TOP - 24, number)
+        c.setFont(self.NUMBER_FONT, self.NUMBER_SIZE)
+        number_y = h - self.PAD_TOP - 26
+        for i, line in enumerate(self._number_lines):
+            c.drawString(text_x, number_y - i * 14, line)
 
         # Reason — wrapped, muted
         c.setFillColor(self._GRAY)
         c.setFont(self.TEXT_FONT, self.TEXT_SIZE)
-        reason_y = h - self.PAD_TOP - 39
+        reason_y = number_y - len(self._number_lines) * 14 - 2
         for i, line in enumerate(self._reason_lines):
             c.drawString(text_x, reason_y - i * self.LINE_H, line)
 
         # Action — arrowed, mint, wrapped
         c.setFillColor(self._MINT)
         c.setFont(self.TEXT_FONT, self.TEXT_SIZE)
-        action_y = reason_y - len(self._reason_lines) * self.LINE_H
+        action_y = reason_y - len(self._reason_lines) * self.LINE_H - 2
         for i, line in enumerate(self._action_lines):
             c.drawString(text_x, action_y - i * self.LINE_H, line)
 
@@ -620,9 +742,9 @@ class _RecommendationCard(Flowable):
         return (self._full_width, self.height)
 
     def draw(self):
-        tint = _brand_tint(self.brand_color_hex)
+        tint = _brand_tint(self.brand_color_hex, alpha=0.12)
         self.canv.setFillColor(self.brand_color)
-        self.canv.roundRect(0, 0, 3, self.height, 1.5, fill=1, stroke=0)
+        self.canv.roundRect(0, 0, 5, self.height, 1.5, fill=1, stroke=0)
         self.canv.setFillColor(tint)
         self.canv.roundRect(0, 0, self._full_width, self.height, 6, fill=1, stroke=0)
         bs, bx = self.badge_size, self.badge_x
@@ -1000,7 +1122,7 @@ def build_sync(
         brand_color_hex=brand_color,
         white_label=is_white_label,
     ))
-    story.append(Spacer(1, int(PAGE_HEIGHT * 0.20)))
+    story.append(Spacer(1, int(PAGE_HEIGHT * 0.10)))
 
     kpis = _compute_kpi_data(df, config, ai_content, brand_color)
     revenue_kpis = [k for k in kpis if 'revenue' in k.get('name', '').lower()]
@@ -1023,8 +1145,10 @@ def build_sync(
                 self.trend_pct = trend_pct
                 self.arrow_color = HexColor(arrow_color_hex)
                 self.brand_color = HexColor(brand_color)
+                self.brand_color_hex = brand_color
                 self._width = content_width
-                self.height = 56
+                self.height = 78
+                self._font_size = 44
 
             def wrap(self, availWidth, availHeight):
                 return (self._width, self.height)
@@ -1032,12 +1156,27 @@ def build_sync(
             def draw(self):
                 cx = self._width / 2
                 label = f'{self.hero["name"]}: {self.sign}{self.trend_pct:.1f}%'
+                font_name = 'Fraunces-SemiBold'
+                font_size = self._font_size
+                # background panel — low-opacity tint of brand_color (~12%)
+                label_w = self.canv.stringWidth(label, font_name, font_size)
+                arrow_gap = 18
+                s = 10
+                panel_w = label_w + s*2 + arrow_gap + 48
+                panel_w = min(panel_w, self._width - 24)
+                panel_h = 52
+                panel_x = cx - panel_w / 2
+                panel_y = 14
+                self.canv.saveState()
+                self.canv.setFillColor(_brand_tint(self.brand_color_hex, alpha=0.12))
+                self.canv.roundRect(panel_x, panel_y, panel_w, panel_h, 10, fill=1, stroke=0)
+                self.canv.restoreState()
+                # label
                 self.canv.setFillColor(self.brand_color)
-                self.canv.setFont('Fraunces-SemiBold', 22)
-                self.canv.drawCentredString(cx, 18, label)
-                s = 9
-                arrow_x = cx + self.canv.stringWidth(label, 'Fraunces-SemiBold', 22) / 2 + 16
-                arrow_y = 28
+                self.canv.setFont(font_name, font_size)
+                self.canv.drawCentredString(cx, panel_y + 22, label)
+                arrow_x = cx + label_w / 2 + arrow_gap
+                arrow_y = panel_y + 30
                 if self.trend_pct > 0:
                     p = self.canv.beginPath()
                     p.moveTo(arrow_x - s, arrow_y - s)
@@ -1067,6 +1206,9 @@ def build_sync(
 
     story.append(Spacer(1, 24))
     story.append(_CoverRule(brand_color))
+    story.append(Spacer(1, 12))
+    story.append(_CoverMotif(brand_color))
+    story.append(Spacer(1, 12))
 
     title_style = ParagraphStyle(
         'CoverTitle',
@@ -1145,21 +1287,23 @@ def build_sync(
 
         summary = ai_content['summary']
         if summary and summary.full_text.strip():
-            # Lead sentence — Fraunces-Medium, 13pt, ink, with a serif drop cap
-            lead_style = ParagraphStyle(
-                'SummaryLead',
-                fontName='Fraunces-Medium',
-                fontSize=13,
-                textColor=HexColor(INK),
-                leading=19,
-                spaceAfter=10,
-            )
-            lead_text = (summary.lead or '').lstrip()
-            if lead_text:
-                first = lead_text[0]
-                rest = lead_text[1:].lstrip()
+            # sanitize AI text for PDF font coverage (U+2011 etc → ASCII)
+            lead_raw = _sanitize_for_pdf((summary.lead or '').lstrip())
+            if lead_raw:
+                lead_style = ParagraphStyle(
+                    'SummaryLead',
+                    fontName='Fraunces-Medium',
+                    fontSize=13,
+                    textColor=HexColor(INK),
+                    leading=19,
+                    spaceAfter=0,
+                )
+                first = lead_raw[0]
+                rest = lead_raw[1:].lstrip()
                 styled_lead = f'<font name="Fraunces-SemiBold" size="21">{first}</font>{rest}'
-                body_story.append(Paragraph(styled_lead, lead_style))
+                lead_para = Paragraph(styled_lead, lead_style)
+            else:
+                lead_para = None
 
             # Key stat row — top 3 KPIs by absolute trend magnitude,
             # as a three-column ledger band with hairline dividers
@@ -1206,7 +1350,8 @@ def build_sync(
                             leading=11,
                         )),
                     ])
-                col_w = content_width / 3.0
+                inner_w = content_width - 28
+                col_w = inner_w / 3.0
                 stat_table = Table(stat_cols, colWidths=[col_w] * 3, hAlign='CENTER')
                 stat_table.setStyle(TableStyle([
                     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -1219,11 +1364,41 @@ def build_sync(
                     ('LINEBEFORE', (1, 0), (1, -1), 0.5, HexColor(RULE)),
                     ('LINEBEFORE', (2, 0), (2, -1), 0.5, HexColor(RULE)),
                 ]))
-                body_story.append(stat_table)
+            else:
+                stat_table = None
+
+            # Unified tinted panel for lead + stat strip (variable prose stays outside)
+            panel_rows = []
+            if lead_para is not None:
+                panel_rows.append([lead_para])
+            if stat_table is not None:
+                panel_rows.append([stat_table])
+            if panel_rows:
+                # add vertical gap between lead and stat inside panel
+                if len(panel_rows) == 2:
+                    # spacer row
+                    panel_rows.insert(1, [Spacer(1, 8)])
+                    # Table with 3 rows: lead, spacer, stat
+                    panel_table = Table(panel_rows, colWidths=[content_width])
+                else:
+                    panel_table = Table(panel_rows, colWidths=[content_width])
+                panel_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, -1), _brand_tint(brand_color, alpha=0.07)),
+                    ('ROUNDEDCORNERS', [6, 6, 6, 6]),
+                    ('LEFTPADDING', (0, 0), (-1, -1), 14),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 14),
+                    ('TOPPADDING', (0, 0), (-1, -1), 14),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 14),
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ]))
+                body_story.append(panel_table)
                 body_story.append(Spacer(1, 12))
 
-            # Body prose — context, implication, action in sequence
-            body_parts = [summary.context, summary.implication, summary.action]
+            # Body prose — context, implication, action in sequence (sanitized)
+            ctx = _sanitize_for_pdf(summary.context or '')
+            imp = _sanitize_for_pdf(summary.implication or '')
+            act = _sanitize_for_pdf(summary.action or '')
+            body_parts = [ctx, imp, act]
             body_text = " ".join(p for p in body_parts if p.strip())
             if body_text:
                 body_story.append(Paragraph(body_text, body_style))
@@ -1239,9 +1414,73 @@ def build_sync(
         body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
         body_story.append(Spacer(1, 10))
 
-        for i, kpi in enumerate(kpis, start=1):
-            body_story.append(_KPIRow(kpi, i, content_width, brand_color))
-            body_story.append(Spacer(1, 8))
+        n = len(kpis)
+        if n > 0:
+            gap = 12
+            cards = []
+            for i, kpi in enumerate(kpis, start=1):
+                cards.append((kpi, i))
+            # Build grid rows
+            rows = []
+            if n <= 3:
+                # single row, 3 or fewer
+                card_w = (content_width - gap*(n-1)) / n if n > 0 else content_width
+                row = []
+                for kpi, idx in cards:
+                    row.append(_KPICard(kpi, idx, card_w, brand_color))
+                rows.append(row)
+            elif n == 4:
+                card_w = (content_width - gap) / 2
+                rows.append([_KPICard(cards[0][0], cards[0][1], card_w, brand_color), _KPICard(cards[1][0], cards[1][1], card_w, brand_color)])
+                rows.append([_KPICard(cards[2][0], cards[2][1], card_w, brand_color), _KPICard(cards[3][0], cards[3][1], card_w, brand_color)])
+            else:  # n == 5
+                card_w3 = (content_width - gap*2) / 3
+                rows.append([_KPICard(cards[0][0], cards[0][1], card_w3, brand_color), _KPICard(cards[1][0], cards[1][1], card_w3, brand_color), _KPICard(cards[2][0], cards[2][1], card_w3, brand_color)])
+                # bottom row: 2 cards centered (use wider cards with side spacers)
+                card_w2 = (content_width - gap) / 2
+                # add empty spacer columns to center 2 cards in 3-col grid width
+                # Instead create a separate table for bottom row centered
+                bottom_cards = [cards[3], cards[4]]
+                # will render bottom row as its own table centered
+                rows.append('BOTTOM2')
+            # Render rows as Tables
+            for idx, row in enumerate(rows):
+                if row == 'BOTTOM2':
+                    # centered 2-card row
+                    card_w2 = (content_width - gap) / 2
+                    t = Table([[_KPICard(bottom_cards[0][0], bottom_cards[0][1], card_w2, brand_color), _KPICard(bottom_cards[1][0], bottom_cards[1][1], card_w2, brand_color)]], colWidths=[card_w2, card_w2], hAlign='CENTER', spaceBefore=6, spaceAfter=6)
+                    t.setStyle(TableStyle([
+                        ('LEFTPADDING', (0,0), (-1,-1), 6),
+                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
+                        ('TOPPADDING', (0,0), (-1,-1), 0),
+                        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                    ]))
+                    body_story.append(t)
+                else:
+                    cols = len(row)
+                    if cols == 1:
+                        # single card centered and wider
+                        single_w = min(content_width * 0.60, 300)
+                        t = Table([[row[0]]], colWidths=[single_w], hAlign='CENTER')
+                    elif cols == 2:
+                        card_w = (content_width - gap) / 2
+                        t = Table([row], colWidths=[card_w]*2, hAlign='CENTER')
+                    elif cols == 3:
+                        card_w = (content_width - gap*2) / 3
+                        t = Table([row], colWidths=[card_w]*3, hAlign='CENTER')
+                    else:
+                        t = Table([row], hAlign='CENTER')
+                    t.setStyle(TableStyle([
+                        ('LEFTPADDING', (0,0), (-1,-1), 6),
+                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
+                        ('TOPPADDING', (0,0), (-1,-1), 6),
+                        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                    ]))
+                    body_story.append(t)
+                if idx < len(rows)-1:
+                    body_story.append(Spacer(1, gap))
         body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
@@ -1318,7 +1557,7 @@ def build_sync(
         toc_entries.append(('AI Insights', str(toc_page).zfill(2)))
         toc_page += 1
         body_story.append(_SectionHeader('AI Insights', brand_color, content_width))
-        body_story.append(Spacer(1, 10))
+        body_story.append(Spacer(1, 6))
         if ai_skipped:
             body_story.append(_AISkippedCard(width=content_width))
             body_story.append(Spacer(1, 10))
