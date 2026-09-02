@@ -635,6 +635,8 @@ def detect_anomalies(df: pd.DataFrame) -> list[dict]:
         for idx in col_data[outlier_mask].index:
             value = float(df.loc[idx, col_name])
             z = round(float(z_scores.loc[idx]), 2)
+            expected = f"{round(mean - 2 * std, 2)} – {round(mean + 2 * std, 2)}"
+            direction = "high" if value > mean else "low"
             anomalies.append({
                 "column": str(col_name),
                 "row_index": int(idx),
@@ -643,8 +645,8 @@ def detect_anomalies(df: pd.DataFrame) -> list[dict]:
                 "mean": round(float(mean), 2),
                 "std": round(float(std), 2),
                 "deviation": z,
-                "expected": f"{round(mean - 2 * std, 2)} – {round(mean + 2 * std, 2)}",
-                "message": f"{str(col_name)} value {value:.2f} is {abs(z):.1f}x the standard deviation from the mean",
+                "expected": expected,
+                "message": f"{str(col_name)} was unusually {direction} at {value:.2f} — well outside the typical range of {expected}.",
             })
     # Deduplicate by (column, value) so repeated outlier values don't flood the report
     seen = set()

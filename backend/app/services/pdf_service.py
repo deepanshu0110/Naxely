@@ -492,37 +492,115 @@ class _AISkippedCard(Flowable):
 
 
 class _AnomalyBox(Flowable):
-    def __init__(self, message, width=None):
+    """Severity-tiered anomaly row — tinted panel + left accent + triangle-! marker, matching _InsightCard."""
+    # Severity mapping mirrors _InsightCard: high→RUST, medium→#B45309, low→DELTA_UP
+    _SEV_HEX = {
+        "high": RUST,        # #A8481F
+        "medium": "#B45309",
+        "low": DELTA_UP,     # #5B7C55
+    }
+    _SEV_COLOR = {
+        "high": HexColor(RUST),
+        "medium": HexColor("#B45309"),
+        "low": HexColor(DELTA_UP),
+    }
+
+    def __init__(self, anomaly, width=None):
         Flowable.__init__(self)
-        self.message = message
+        # Backward-compat: allow passing plain string message
+        if isinstance(anomaly, dict):
+            self.message = str(anomaly.get("message", "Anomaly detected") or "Anomaly detected")
+            raw_z = anomaly.get("z_score", anomaly.get("deviation"))
+        else:
+            self.message = str(anomaly or "Anomaly detected")
+            raw_z = None
+        # Derive severity from |z_score|; detector floor is |z|>2, so tiers are 2-3 low, 3-4 medium, >=4 high
+        try:
+            z = abs(float(raw_z)) if raw_z is not None else None
+        except Exception:
+            z = None
+        if z is None:
+            tier = "medium"  # fallback matching elsewhere (unknown → medium)
+        elif z >= 4:
+            tier = "high"
+        elif z >= 3:
+            tier = "medium"
+        else:  # 2 <= z < 3 or z < 2 (should not happen as detector only emits >2, but handle)
+            tier = "low"
+        self.tier = tier
+        self.severity_hex = self._SEV_HEX[tier]
+        self.severity_color = self._SEV_COLOR[tier]
         self._width = width or (PAGE_WIDTH - 2 * MARGIN)
-        self.height = 28
+        self.width = self._width
+        # Allow up to 2 lines for longer plain-language messages (value + expected range)
+        # Matching _InsightCard MAX_LINES=2 convention; truncate with … only if still too long after 2 lines
+        self._message_lines = _fit_text_lines(self.message, 'IBMPlexSans', 9.5, self._width - 80, 2)
+        # Base height 36 for 1 line; add LINE_H per extra line (same pattern as _InsightCard extra * LINE_H)
+        base_h = 36
+        line_h = 10
+        extra = max(0, len(self._message_lines) - 1)
+        self.height = base_h + extra * line_h
 
     def wrap(self, availWidth, availHeight):
-        return (self._width, self.height)
+        self.width = self._width
+        # Recompute in case width changed; keep same logic as __init__
+        # (ensures tint/accent don't render at zero height if wrap not assigning height)
+        base_h = 36
+        line_h = 10
+        extra = max(0, len(getattr(self, '_message_lines', [])) - 1)
+        self.height = base_h + extra * line_h
+        return (self.width, self.height)
 
     def draw(self):
         c = self.canv
         c.saveState()
-        # ledger hairline below the row
+        w = self._width
+        h = self.height
+        # Tinted background — alpha 0.12, same as _InsightCard / _RecommendationCard tint
+        tint = _brand_tint(self.severity_hex, alpha=0.12)
+        c.setFillColor(tint)
+        c.roundRect(0, 0, w, h, 6, fill=1, stroke=0)
+        # Left accent strip — 5pt, matching _InsightCard
+        c.setFillColor(self.severity_color)
+        c.roundRect(0, 0, 5, h, 1.5, fill=1, stroke=0)
+        # Ledger hairline below the row
         c.setStrokeColor(HexColor(RULE))
         c.setLineWidth(0.4)
-        c.line(0, 0, self._width, 0)
-        # warning marker (triangle + '!') — U+26A0 is not covered by IBM Plex, so draw it
-        c.setFillColor(HexColor(RUST))
+        c.line(0, 0, w, 0)
+        # Warning marker (triangle + '!') — keep custom path, color now tier-varying for contrast on tint
+        c.setFillColor(self.severity_color)
         path = c.beginPath()
-        path.moveTo(3, 4)
-        path.lineTo(12, 4)
-        path.lineTo(7.5, 13)
+        path.moveTo(8, 10)
+        path.lineTo(17, 10)
+        path.lineTo(12.5, 19)
         path.close()
         c.drawPath(path, fill=1, stroke=0)
         c.setFillColor(white)
         c.setFont('IBMPlexSans-Bold', 6.5)
-        c.drawCentredString(7.5, 5.2, '!')
-        c.setFillColor(HexColor(RUST))
+        c.drawCentredString(12.5, 11.2, '!')
+        # Message text — RUST/DELTA_UP previously, now INK for readability on tint, tier color reserved for accent/marker/tag
+        c.setFillColor(HexColor(INK))
         c.setFont('IBMPlexSans', 9.5)
-        lines = _fit_text_lines(self.message, 'IBMPlexSans', 9.5, self._width - 20, 1)
-        c.drawString(20, 9, lines[0] if lines else '')
+        # Leave room for marker (0-22) and tag (w-52 to w-8) — available width ~ w-80
+        # Allow up to 2 lines for longer plain-language messages (matching wrap); single line previously clipped at w-80
+        lines = getattr(self, '_message_lines', _fit_text_lines(self.message, 'IBMPlexSans', 9.5, w - 80, 2))
+        if len(lines) == 1:
+            c.drawString(25, 14, lines[0] if lines else '')
+        else:
+            # Two lines: stack with LINE_H spacing, centered vertically in taller box
+            c.drawString(25, 18, lines[0])
+            c.drawString(25, 8, lines[1])
+        # Severity tag — small HIGH/MEDIUM/LOW pill top-right, matching _InsightCard tag style
+        tag_w = 44
+        tag_h = 13
+        tag_x = w - tag_w - 8
+        tag_y = h - 10 - tag_h
+        # Center vertically? Use top-right as in _InsightCard
+        c.setFillColor(self.severity_color)
+        c.roundRect(tag_x, tag_y, tag_w, tag_h, 6.5, fill=1, stroke=0)
+        c.setFillColor(white)
+        c.setFont('IBMPlexSans-Bold', 6.5)
+        c.drawCentredString(tag_x + tag_w / 2, tag_y + 3, self.tier.upper())
         c.restoreState()
 
 
@@ -758,6 +836,64 @@ class _RecommendationCard(Flowable):
         self.para.drawOn(self.canv, self.text_x, para_y)
 
 
+class _StatusPill(Flowable):
+    """Compact pill for Status values — fits within 18pt row height."""
+    def __init__(self, text, width=70):
+        Flowable.__init__(self)
+        raw = str(text) if text is not None else ''
+        # keep truncation consistent with MAX_CELL_CHARS = 18
+        self.text = _truncate_words(raw, 18)
+        self.status = self.text.lower().strip()
+        self.width = width
+        self.height = 13
+        self.font_name = 'IBMPlexSans-Bold'
+        self.font_size = 7
+        # color mapping: billed -> DELTA_UP solid with white text, pending/unknown -> neutral light gray with MUTED text
+        if self.status == 'billed':
+            self.bg = HexColor(DELTA_UP)
+            self.text_color = HexColor('#FFFFFF')
+        else:
+            # pending or fallback — light neutral fill with muted text for legibility at small size
+            # use _brand_tint(MUTED, alpha=0.12) blended light gray, or #E8E6E1
+            self.bg = HexColor('#E8E6E1')
+            self.text_color = HexColor(MUTED)
+        # measure to ensure pill width fits text (use truncated text)
+        text_w = pdfmetrics.stringWidth(self.text, self.font_name, self.font_size)
+        # ensure width at least covers text + padding, but cap at 85 to stay within col
+        self.width = min(max(text_w + 16, 50), 85)
+
+    def wrap(self, availWidth, availHeight):
+        return (self.width, self.height)
+
+    def draw(self):
+        c = self.canv
+        w = self.width
+        h = self.height
+        c.saveState()
+        c.setFillColor(self.bg)
+        c.roundRect(0, 0, w, h, 6, fill=1, stroke=0)
+        c.setFillColor(self.text_color)
+        c.setFont(self.font_name, self.font_size)
+        # uppercase for Billed/Pending for pill consistency, keep original for unknown
+        display = self.text.upper() if self.status in ('billed', 'pending') else self.text
+        c.drawCentredString(w/2, (h - self.font_size)/2 + 1, display)
+        c.restoreState()
+
+
+class _TocDot(Flowable):
+    def __init__(self, color_hex, size=6):
+        Flowable.__init__(self)
+        self.color = HexColor(color_hex)
+        self.size = size
+        self.width = size
+        self.height = size
+    def wrap(self, availWidth, availHeight):
+        return (self.width, self.height)
+    def draw(self):
+        self.canv.setFillColor(self.color)
+        self.canv.circle(self.width/2, self.height/2, self.size/2, fill=1, stroke=0)
+
+
 def _hex_to_reportlab(hex_str: str) -> HexColor:
     return HexColor(hex_str)
 
@@ -926,9 +1062,25 @@ def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) 
         text = str(val)
         return _truncate_words(text, MAX_CELL_CHARS)
 
+    # Identify Status column index (case-insensitive) for pill handling
+    status_idx = None
+    for idx, col in enumerate(df.columns):
+        if str(col).lower() == 'status':
+            status_idx = idx
+            break
+
     headers = [str(col).upper() for col in df.columns]
-    rows = [[_fmt(row[col], col) for col in df.columns]
-            for _, row in df.iterrows()]
+    rows = []
+    for _, row in df.iterrows():
+        r = []
+        for col in df.columns:
+            val = row[col]
+            if status_idx is not None and str(col).lower() == 'status':
+                # Use pill Flowable for Status — keep truncation via _StatusPill
+                r.append(_StatusPill(val))
+            else:
+                r.append(_fmt(val, col))
+        rows.append(r)
     data = [headers] + rows
 
     # Size each column from the *actual rendered* cell text (exact font metrics)
@@ -941,14 +1093,25 @@ def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) 
     CELL_FONT, CELL_SIZE = 'IBMPlexMono', 7.5
     col_widths = []
     for col in df.columns:
-        samples = [_fmt(v, col) for v in df[col].dropna().head(20)]
-        data_w = max(
-            (pdfmetrics.stringWidth(s, CELL_FONT, CELL_SIZE) for s in samples),
-            default=0.0,
-        )
-        hdr_w = pdfmetrics.stringWidth(str(col).upper(), HEADER_FONT, HEADER_SIZE)
-        w = min(MAX_W, max(MIN_W, max(hdr_w, data_w) + 2 * PAD + 6))
-        col_widths.append(w)
+        if str(col).lower() == 'status':
+            # Fixed width for pill — sized against longest known status plus padding, capped to MIN/MAX
+            # Longest of Billed/Pending is 7 chars -> ~35pt at 7.5pt mono + padding
+            hdr_w = pdfmetrics.stringWidth(str(col).upper(), HEADER_FONT, HEADER_SIZE)
+            pill_w = pdfmetrics.stringWidth('PENDING', 'IBMPlexSans-Bold', 7) + 16
+            w = min(MAX_W, max(MIN_W, max(hdr_w, pill_w) + 2 * PAD + 6))
+            # Ensure at least 68 to fit pill comfortably, but respect MAX_W
+            w = max(w, 68)
+            w = min(w, 80)
+            col_widths.append(w)
+        else:
+            samples = [_fmt(v, col) for v in df[col].dropna().head(20)]
+            data_w = max(
+                (pdfmetrics.stringWidth(s, CELL_FONT, CELL_SIZE) for s in samples),
+                default=0.0,
+            )
+            hdr_w = pdfmetrics.stringWidth(str(col).upper(), HEADER_FONT, HEADER_SIZE)
+            w = min(MAX_W, max(MIN_W, max(hdr_w, data_w) + 2 * PAD + 6))
+            col_widths.append(w)
 
     total = sum(col_widths)
     if total > content_width:
@@ -984,7 +1147,10 @@ def _build_data_table(df: pd.DataFrame, brand_color: str, content_width: float) 
         style_cmds.append(('BACKGROUND', (0, i), (-1, i), bg))
 
     for j, col in enumerate(df.columns):
-        if col in numeric_cols:
+        if str(col).lower() == 'status':
+            style_cmds.append(('ALIGN', (j, 1), (j, -1), 'CENTER'))
+            style_cmds.append(('VALIGN', (j, 1), (j, -1), 'MIDDLE'))
+        elif col in numeric_cols:
             style_cmds.append(('ALIGN', (j, 1), (j, -1), 'RIGHT'))
         elif col in date_cols:
             style_cmds.append(('ALIGN', (j, 1), (j, -1), 'CENTER'))
@@ -1277,9 +1443,11 @@ def build_sync(
     story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
-    # SECTION 2 — Executive Summary
+    # SECTION 2 — Executive Summary (merged with Key Metrics Overview)
     # ────────────────────────────────────────────────────────────
-    if 'executive_summary' in config.get('sections', []) and ai_content.get('summary'):
+    has_exec = 'executive_summary' in config.get('sections', []) and ai_content.get('summary')
+    has_kpi = 'kpi_overview' in config.get('sections', [])
+    if has_exec:
         toc_entries.append(('Executive Summary', str(toc_page).zfill(2)))
         toc_page += 1
         body_story.append(_SectionHeader('Executive Summary', brand_color, content_width))
@@ -1374,11 +1542,8 @@ def build_sync(
             if stat_table is not None:
                 panel_rows.append([stat_table])
             if panel_rows:
-                # add vertical gap between lead and stat inside panel
                 if len(panel_rows) == 2:
-                    # spacer row
                     panel_rows.insert(1, [Spacer(1, 8)])
-                    # Table with 3 rows: lead, spacer, stat
                     panel_table = Table(panel_rows, colWidths=[content_width])
                 else:
                     panel_table = Table(panel_rows, colWidths=[content_width])
@@ -1403,27 +1568,26 @@ def build_sync(
             if body_text:
                 body_story.append(Paragraph(body_text, body_style))
 
-        body_story.append(PageBreak())
-
-    # ────────────────────────────────────────────────────────────
-    # SECTION 3 — Key Metrics Overview
-    # ────────────────────────────────────────────────────────────
-    if 'kpi_overview' in config.get('sections', []):
-        toc_entries.append(('Key Metrics Overview', str(toc_page).zfill(2)))
-        toc_page += 1
-        body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
-        body_story.append(Spacer(1, 10))
-
-        n = len(kpis)
-        if n > 0:
+        # Merge KPI grid into same page when both sections requested
+        if has_kpi and kpis:
+            # lightweight sub-heading for merged KPI block (not a full _SectionHeader)
+            body_story.append(Spacer(1, 16))
+            kpi_subhead_style = ParagraphStyle(
+                'KPISubhead',
+                fontName='IBMPlexSans-Bold',
+                fontSize=11,
+                textColor=HexColor(INK),
+                leading=14,
+                spaceAfter=8,
+            )
+            body_story.append(Paragraph('Key Metrics', kpi_subhead_style))
+            n = len(kpis)
             gap = 12
             cards = []
             for i, kpi in enumerate(kpis, start=1):
                 cards.append((kpi, i))
-            # Build grid rows
             rows = []
             if n <= 3:
-                # single row, 3 or fewer
                 card_w = (content_width - gap*(n-1)) / n if n > 0 else content_width
                 row = []
                 for kpi, idx in cards:
@@ -1436,17 +1600,11 @@ def build_sync(
             else:  # n == 5
                 card_w3 = (content_width - gap*2) / 3
                 rows.append([_KPICard(cards[0][0], cards[0][1], card_w3, brand_color), _KPICard(cards[1][0], cards[1][1], card_w3, brand_color), _KPICard(cards[2][0], cards[2][1], card_w3, brand_color)])
-                # bottom row: 2 cards centered (use wider cards with side spacers)
                 card_w2 = (content_width - gap) / 2
-                # add empty spacer columns to center 2 cards in 3-col grid width
-                # Instead create a separate table for bottom row centered
                 bottom_cards = [cards[3], cards[4]]
-                # will render bottom row as its own table centered
                 rows.append('BOTTOM2')
-            # Render rows as Tables
             for idx, row in enumerate(rows):
                 if row == 'BOTTOM2':
-                    # centered 2-card row
                     card_w2 = (content_width - gap) / 2
                     t = Table([[_KPICard(bottom_cards[0][0], bottom_cards[0][1], card_w2, brand_color), _KPICard(bottom_cards[1][0], bottom_cards[1][1], card_w2, brand_color)]], colWidths=[card_w2, card_w2], hAlign='CENTER', spaceBefore=6, spaceAfter=6)
                     t.setStyle(TableStyle([
@@ -1460,7 +1618,6 @@ def build_sync(
                 else:
                     cols = len(row)
                     if cols == 1:
-                        # single card centered and wider
                         single_w = min(content_width * 0.60, 300)
                         t = Table([[row[0]]], colWidths=[single_w], hAlign='CENTER')
                     elif cols == 2:
@@ -1482,6 +1639,72 @@ def build_sync(
                 if idx < len(rows)-1:
                     body_story.append(Spacer(1, gap))
         body_story.append(PageBreak())
+    elif has_kpi:
+        # Standalone KPI page when executive_summary not requested — preserve data, don't silently drop
+        toc_entries.append(('Key Metrics Overview', str(toc_page).zfill(2)))
+        toc_page += 1
+        body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
+        body_story.append(Spacer(1, 10))
+        n = len(kpis)
+        if n > 0:
+            gap = 12
+            cards = []
+            for i, kpi in enumerate(kpis, start=1):
+                cards.append((kpi, i))
+            rows = []
+            if n <= 3:
+                card_w = (content_width - gap*(n-1)) / n if n > 0 else content_width
+                row = []
+                for kpi, idx in cards:
+                    row.append(_KPICard(kpi, idx, card_w, brand_color))
+                rows.append(row)
+            elif n == 4:
+                card_w = (content_width - gap) / 2
+                rows.append([_KPICard(cards[0][0], cards[0][1], card_w, brand_color), _KPICard(cards[1][0], cards[1][1], card_w, brand_color)])
+                rows.append([_KPICard(cards[2][0], cards[2][1], card_w, brand_color), _KPICard(cards[3][0], cards[3][1], card_w, brand_color)])
+            else:
+                card_w3 = (content_width - gap*2) / 3
+                rows.append([_KPICard(cards[0][0], cards[0][1], card_w3, brand_color), _KPICard(cards[1][0], cards[1][1], card_w3, brand_color), _KPICard(cards[2][0], cards[2][1], card_w3, brand_color)])
+                card_w2 = (content_width - gap) / 2
+                bottom_cards = [cards[3], cards[4]]
+                rows.append('BOTTOM2')
+            for idx, row in enumerate(rows):
+                if row == 'BOTTOM2':
+                    card_w2 = (content_width - gap) / 2
+                    t = Table([[_KPICard(bottom_cards[0][0], bottom_cards[0][1], card_w2, brand_color), _KPICard(bottom_cards[1][0], bottom_cards[1][1], card_w2, brand_color)]], colWidths=[card_w2, card_w2], hAlign='CENTER', spaceBefore=6, spaceAfter=6)
+                    t.setStyle(TableStyle([
+                        ('LEFTPADDING', (0,0), (-1,-1), 6),
+                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
+                        ('TOPPADDING', (0,0), (-1,-1), 0),
+                        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                    ]))
+                    body_story.append(t)
+                else:
+                    cols = len(row)
+                    if cols == 1:
+                        single_w = min(content_width * 0.60, 300)
+                        t = Table([[row[0]]], colWidths=[single_w], hAlign='CENTER')
+                    elif cols == 2:
+                        card_w = (content_width - gap) / 2
+                        t = Table([row], colWidths=[card_w]*2, hAlign='CENTER')
+                    elif cols == 3:
+                        card_w = (content_width - gap*2) / 3
+                        t = Table([row], colWidths=[card_w]*3, hAlign='CENTER')
+                    else:
+                        t = Table([row], hAlign='CENTER')
+                    t.setStyle(TableStyle([
+                        ('LEFTPADDING', (0,0), (-1,-1), 6),
+                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
+                        ('TOPPADDING', (0,0), (-1,-1), 6),
+                        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+                    ]))
+                    body_story.append(t)
+                if idx < len(rows)-1:
+                    body_story.append(Spacer(1, gap))
+        body_story.append(PageBreak())
+
 
     # ────────────────────────────────────────────────────────────
     # SECTION 4 — Charts
@@ -1578,8 +1801,7 @@ def build_sync(
         body_story.append(_SectionHeader('Anomaly Flags', brand_color, content_width))
         body_story.append(Spacer(1, 10))
         for anomaly in anomalies[:10]:
-            msg = anomaly.get('message', 'Anomaly detected')
-            box = _AnomalyBox(msg, width=content_width)
+            box = _AnomalyBox(anomaly, width=content_width)
             body_story.append(box)
             body_story.append(Spacer(1, 6))
         body_story.append(PageBreak())
@@ -1592,6 +1814,35 @@ def build_sync(
         toc_page += 1
         body_story.append(_SectionHeader('Data Table', brand_color, content_width))
         body_story.append(Spacer(1, 10))
+        # Provenance caption — honest row count from original df, date range from actual data, exclusion claim only if verifiable
+        n_records = len(df)
+        date_col = config.get('date_column')
+        date_range_text = ''
+        if date_col and date_col in df.columns:
+            try:
+                _dates = pd.to_datetime(df[date_col], errors='coerce').dropna()
+                if len(_dates) >= 1:
+                    _min = _dates.min()
+                    _max = _dates.max()
+                    date_range_text = f"{_min.strftime('%b %d, %Y')} \u2013 {_max.strftime('%b %d, %Y')}"
+            except Exception:
+                date_range_text = ''
+        raw_nulls = config.get('_raw_null_counts') or {}
+        is_clean = not any(v and int(v) > 0 for v in raw_nulls.values()) if isinstance(raw_nulls, dict) else True
+        # Only claim "No records excluded" when we can verify no nulls/invalid rows and not truncated for display
+        if date_range_text:
+            if is_clean:
+                _prov_text = f"Based on {n_records} records \u2022 {date_range_text} \u2022 No records excluded."
+            else:
+                _prov_text = f"Based on {n_records} records \u2022 {date_range_text}"
+        else:
+            if is_clean:
+                _prov_text = f"Based on {n_records} records \u2022 No records excluded."
+            else:
+                _prov_text = f"Based on {n_records} records"
+        _prov_style = ParagraphStyle('ProvenanceCaption', fontName='IBMPlexSans', fontSize=8, textColor=HexColor(MUTED), alignment=TA_CENTER, leading=11, spaceAfter=6)
+        body_story.append(Paragraph(_prov_text, _prov_style))
+        body_story.append(Spacer(1, 4))
 
         display_df = df.copy()
         if len(display_df) > 50:
@@ -1626,6 +1877,11 @@ def build_sync(
                     body_story.append(Spacer(1, 8))
             else:
                 body_story.append(Paragraph('No recommendations available.', body_style))
+            # Contact line — gated by prepared_by, no fallback, single appearance at end of Recommendations
+            _prepared_by = (config.get('brand') or {}).get('prepared_by', '')
+            if _prepared_by:
+                _contact_style = ParagraphStyle('ContactLine', fontName='IBMPlexSans', fontSize=9, textColor=HexColor(MUTED), alignment=TA_CENTER, leading=12, spaceBefore=12)
+                body_story.append(Paragraph(f'Questions about this report? Contact {_prepared_by}.', _contact_style))
         body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
@@ -1687,6 +1943,7 @@ def build_sync(
     toc_rows = []
     for label, pg in toc_entries:
         toc_rows.append([
+            _TocDot(brand_color, size=6),
             Paragraph(label, ParagraphStyle(
                 'TOCLabel',
                 fontName='IBMPlexSans',
@@ -1707,7 +1964,7 @@ def build_sync(
     col_w = content_width
     toc_table = Table(
         toc_rows,
-        colWidths=[col_w * 0.85, col_w * 0.15],
+        colWidths=[12, col_w * 0.85 - 12, col_w * 0.15],
     )
     toc_table.setStyle(TableStyle([
         ('VALIGN',       (0, 0), (-1, -1), 'MIDDLE'),

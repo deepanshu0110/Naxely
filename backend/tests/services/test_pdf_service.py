@@ -632,9 +632,9 @@ class TestSectionToggles:
         has_summary = "executive_summary" in sections
         ai = self._make_ai_content(with_summary=has_summary)
 
-        # Add some anomalies so anomaly section can render if toggled
+        # Add some anomalies so anomaly section can render if toggled (plain-language wording)
         if "anomalies" in sections:
-            ai["anomalies"] = [{"message": "Spike detected in Value"}]
+            ai["anomalies"] = [{"message": "Value was unusually high at 10.00 — well outside the typical range of 2.00 – 8.00.", "z_score": 3.5}]
 
         if "insights" in sections:
             ai["insights"] = [{"kpi": "Value", "number": "$300", "reason": "Steady growth", "action": "Invest", "sentiment": "positive", "priority": "high"}]
@@ -735,14 +735,14 @@ class TestSectionToggles:
         )
 
     def test_all_sections(self):
-        """Every section checked → all present, none missing."""
+        """Every section checked → all present except Key Metrics Overview which is now merged into Executive Summary."""
         self._check_pdf(
             sections=["executive_summary", "kpi_overview", "charts", "insights",
                       "anomalies", "data_table", "appendix"],
-            expect_present={"Executive Summary", "Key Metrics Overview", "Charts & Visualizations",
+            expect_present={"Executive Summary", "Charts & Visualizations",
                             "AI Insights", "Anomaly Flags", "Data Table", "Recommendations",
-                            "Appendix — Raw Data", "Cover Page"},
-            expect_absent=set(),
+                            "Appendix — Raw Data", "Cover Page", "Key Metrics"},
+            expect_absent={"Key Metrics Overview"},
         )
 
     def test_no_sections(self):
@@ -913,12 +913,12 @@ class TestAnomalyRustColor:
         ai_content = {
             "summary": None,
             "insights": [],
-            "anomalies": [{"message": "Spike detected in Revenue"}],
+            "anomalies": [{"message": "Revenue was unusually high at 9999.00 — well outside the typical range of 100.00 – 500.00.", "z_score": 5.1}],
             "trends": [],
         }
         user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
         path = build_sync(df, [], ai_content, config, user_data)
-        rust = int("A8481F", 16)
+        ink = int("1A1D24", 16)
         try:
             doc = fitz.open(path)
             found = []
@@ -926,11 +926,11 @@ class TestAnomalyRustColor:
                 for block in page.get_text("dict")["blocks"]:
                     for line in block.get("lines", []):
                         for span in line["spans"]:
-                            if "Spike detected" in span["text"]:
+                            if "unusually high" in span["text"]:
                                 found.append(span["color"])
             doc.close()
             assert found, "Anomaly message text not found"
-            assert all(c == rust for c in found), f"Anomaly text should be RUST #A8481F, got {found}"
+            assert all(c == ink for c in found), f"Anomaly text should be INK #1A1D24 (redesigned tinted row, tier-varying accent), got {found}"
         finally:
             try:
                 os.unlink(path)
@@ -947,7 +947,7 @@ class TestSectionHeaderLedger:
 
     HEADERS = [
         "Executive Summary",
-        "Key Metrics Overview",
+        # "Key Metrics Overview" is now merged into Executive Summary as "Key Metrics" subheading (IBMPlexSans, not Fraunces) — no longer a standalone Fraunces header
         "Charts & Visualizations",
         "AI Insights",
         "Anomaly Flags",
@@ -1659,14 +1659,20 @@ class TestWordBoundaryTruncation:
             doc = fitz.open(path)
             page_text = "\n".join(p.get_text() for p in doc)
             doc.close()
-            words = msg.split(' ')
-            prefixes = {' '.join(words[:i]) for i in range(len(words) + 1)}
+            msg_words = msg.split(' ')
             found = False
             for line in page_text.splitlines():
                 line = line.strip()
                 if line.endswith('\u2026'):
-                    core = line[:-1]
-                    assert core in prefixes, f"mid-word cut in anomaly box: {line!r}"
+                    core = line[:-1].strip()
+                    # Core must be a contiguous sequence of whole words from msg (1-line prefix or 2nd-line continuation)
+                    core_words = core.split()
+                    found_seq = False
+                    for i in range(len(msg_words) - len(core_words) + 1):
+                        if msg_words[i:i+len(core_words)] == core_words:
+                            found_seq = True
+                            break
+                    assert found_seq, f"mid-word cut in anomaly box: {line!r} core {core_words!r} not a word-boundary subsequence"
                     found = True
             assert found, f"no word-truncated anomaly line found:\n{page_text}"
         finally:

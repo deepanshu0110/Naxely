@@ -428,7 +428,10 @@ def _generate_single_chart(
             y = df_plot[y_col]
 
             ax.plot(x, y, color=brand_color, linewidth=1.8,
-                    marker='o', markersize=3)
+                    marker='o', markersize=3, zorder=3)
+            # Area fill beneath the line — flat alpha, proportionate to visible range
+            # Use actual axis bottom after auto-scale, not hardcoded 0 (data starts near 9)
+            ax.fill_between(x, y, ax.get_ylim()[0], color=brand_color, alpha=0.12, zorder=1)
             # Endpoint emphasis: ring the final point and label it with the
             # current value so the latest figure reads as "now".
             _emphasize_endpoint(ax, x, y, brand_color)

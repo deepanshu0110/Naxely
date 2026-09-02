@@ -65,7 +65,7 @@ def _mock_ai_content():
             }
         ],
         "anomalies": [
-            {"message": "Spike detected on 2024-03-15: Revenue +320% above baseline"}
+            {"message": "Revenue was unusually high at 9999.00 — well outside the typical range of 100.00 – 500.00."}
         ],
         "trends": [],
     }
@@ -265,7 +265,8 @@ class TestPptxServiceUnit:
             for shape in slide.shapes
             if shape.has_text_frame
         )
-        assert "Spike detected" in all_text
+        assert "unusually high" in all_text
+        assert "well outside the typical range" in all_text
 
     def test_empty_anomalies_skips_anomaly_slide(self):
         """No anomaly slide is added when anomalies list is empty."""
