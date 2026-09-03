@@ -85,6 +85,10 @@ def validate_csv(df: pd.DataFrame) -> None:
     if len(df.columns) < 2:
         raise ValueError("File must have at least 2 columns.")
 
+    # Check empty data (header-only file)
+    if len(df) == 0:
+        raise ValueError("File is empty or contains only headers.")
+
 
 def validate_for_injection(df: pd.DataFrame) -> None:
     """
@@ -311,6 +315,38 @@ def normalize_for_aggregation(df: pd.DataFrame, column_types: Dict[str, str]) ->
             normalized[col] = _try_clean_numeric(normalized[col])
 
     return normalized
+
+
+def compute_coercion_stats(df: pd.DataFrame, column_types: Dict[str, str], df_norm: pd.DataFrame) -> Dict[str, Dict[str, Any]]:
+    """
+    Compute per-column coercion delta: how many non-null values became null
+    during normalize_for_aggregation, for date and metric columns only.
+
+    This is the silent data-quality loss that is otherwise invisible to the user.
+    Text/dimension columns are not coerced, so they are excluded.
+
+    Returns dict keyed by column name -> {coerced_count, coerced_pct, before, after}
+    """
+    stats: Dict[str, Dict[str, Any]] = {}
+    total_rows = len(df)
+    for col, col_type in column_types.items():
+        if col not in df.columns or col not in df_norm.columns:
+            continue
+        if col_type not in ("date", "metric"):
+            continue
+        before = int(df[col].notna().sum())
+        after = int(df_norm[col].notna().sum())
+        coerced = max(0, before - after)
+        pct = (coerced / total_rows * 100) if total_rows else 0.0
+        if coerced > 0:
+            stats[col] = {
+                "coerced_count": coerced,
+                "coerced_pct": round(pct, 2),
+                "before_valid": before,
+                "after_valid": after,
+                "total_rows": total_rows,
+            }
+    return stats
 
 
 def _clean_column_name(col_name: str) -> str:

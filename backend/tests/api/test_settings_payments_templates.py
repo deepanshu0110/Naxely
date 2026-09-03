@@ -320,14 +320,15 @@ class TestGeminiSaveApiKey:
         from app.api.routes.settings import save_api_key, ApiKeyRequest
 
         with self._patch_limiter():
-            with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_groq", "iv_groq")):
-                with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
-                    await save_api_key(
-                        request=mock_request,
-                        body=ApiKeyRequest(provider="groq", api_key=self.VALID_GROQ_KEY),
-                        current_user=user,
-                        db=db,
-                    )
+            with patch("app.services.ai_service.validate_api_key", return_value={"valid": True, "message": ""}):
+                with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_groq", "iv_groq")):
+                    with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                        await save_api_key(
+                            request=mock_request,
+                            body=ApiKeyRequest(provider="groq", api_key=self.VALID_GROQ_KEY),
+                            current_user=user,
+                            db=db,
+                        )
 
         groq_params = self._get_executed_update(db)
         assert groq_params["encrypted"] == "enc_groq"
@@ -360,14 +361,15 @@ class TestGeminiSaveApiKey:
         from app.api.routes.settings import save_api_key, ApiKeyRequest
 
         with self._patch_limiter():
-            with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_groq", "iv_groq")):
-                with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
-                    await save_api_key(
-                        request=mock_request,
-                        body=ApiKeyRequest(provider="groq", api_key=self.VALID_GROQ_KEY),
-                        current_user=user,
-                        db=db,
-                    )
+            with patch("app.services.ai_service.validate_api_key", return_value={"valid": True, "message": ""}):
+                with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_groq", "iv_groq")):
+                    with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                        await save_api_key(
+                            request=mock_request,
+                            body=ApiKeyRequest(provider="groq", api_key=self.VALID_GROQ_KEY),
+                            current_user=user,
+                            db=db,
+                        )
 
         groq_params = self._get_executed_update(db)
         assert groq_params["provider"] == "groq"
@@ -454,14 +456,15 @@ class TestSettingsRoutes:
         mock_request.state.view_rate_limit = None
 
         with patch("slowapi.extension.Limiter._check_request_limit"):
-            with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_val", "iv_val")):
-                with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
-                    result = await save_api_key(
-                        request=mock_request,
-                        body=ApiKeyRequest(provider="openai", api_key="sk-abcdefghijklmnopqrstuvwx"),
-                        current_user=user,
-                        db=db,
-                    )
+            with patch("app.services.ai_service.validate_api_key", return_value={"valid": True, "message": ""}):
+                with patch("app.api.routes.settings.encrypt_api_key", return_value=("enc_val", "iv_val")):
+                    with patch("app.api.routes.settings.get_master_key", return_value="master" * 8):
+                        result = await save_api_key(
+                            request=mock_request,
+                            body=ApiKeyRequest(provider="openai", api_key="sk-abcdefghijklmnopqrstuvwx"),
+                            current_user=user,
+                            db=db,
+                        )
         assert result["success"] is True
         assert db.committed
 

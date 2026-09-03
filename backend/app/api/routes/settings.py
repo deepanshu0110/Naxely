@@ -204,6 +204,24 @@ async def save_api_key(
             detail=f"Invalid API key format for {body.provider}",
         )
 
+    # Live validation — uses the user's own BYOK quota (tiny "hi" probe, 10s timeout).
+    # This surfaces typos/expired keys immediately at save time rather than at report
+    # generation (which would be a confusing delayed failure). The regex above is kept
+    # as a fast first-pass filter before the more expensive network call.
+    from app.services.ai_service import validate_api_key
+
+    validation = validate_api_key(body.provider, body.api_key)
+    if not validation.get("valid"):
+        # Distinct from format error above: key is syntactically correct but provider rejected it
+        raise HTTPException(
+            status_code=400,
+            detail=f"API key validation failed: {validation.get('message', 'Invalid API key')}",
+        )
+    # If validation returned valid=True with a warning message (e.g. provider 400 non-auth,
+    # transient 503/429/timeout), we do NOT block the save — the key may be valid and
+    # the provider was just temporarily unavailable. The warning is logged inside
+    # validate_api_key; save proceeds.
+
     master_key = get_master_key()
     encrypted, iv = encrypt_api_key(body.api_key, master_key)
 

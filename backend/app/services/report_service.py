@@ -110,6 +110,19 @@ def _process_csv(df: pd.DataFrame, config: dict) -> tuple:
 
     df_norm = data_service.normalize_for_aggregation(df, column_types)
 
+    # Coercion-introduced nulls during normalization (date/metric only) — backend-only groundwork for data-quality warning
+    try:
+        coerced = data_service.compute_coercion_stats(df, column_types, df_norm)
+        # Guard against mocked data_service returning a MagicMock (not JSON-serializable) in tests
+        if not isinstance(coerced, dict):
+            coerced = {}
+        config["_coerced_counts"] = coerced
+        if coerced:
+            logger.info(f"[report_service] coercion detected: {coerced}")
+    except Exception as e:
+        logger.warning(f"Failed to compute coercion stats: {e}")
+        config["_coerced_counts"] = {}
+
     config["_raw_null_counts"] = {
         col: int(df[col].isna().sum())
         for col in df.columns

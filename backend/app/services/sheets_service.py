@@ -92,6 +92,19 @@ def fetch_sheet_as_df(sheet_id: str, credentials) -> pd.DataFrame:
             ) from e
 
     rows = result.get("values", [])
+    # Detect truncation at the hard-coded range cap A1:ZZ100000.
+    # ZZ = 26*26 + 26 = 702 columns (A=1, Z=26, AA=27, ..., ZZ=702). Exactly 100,000 rows
+    # or 702 columns means the sheet may have more data beyond the fetched range.
+    if len(rows) == 100000:
+        raise ValueError(
+            "This sheet has more than 100,000 rows or 702 columns, which exceeds what Naxely can currently process. "
+            "Please trim the sheet or split it into smaller files."
+        )
+    if rows and max(len(r) for r in rows) >= 702:
+        raise ValueError(
+            "This sheet has more than 100,000 rows or 702 columns, which exceeds what Naxely can currently process. "
+            "Please trim the sheet or split it into smaller files."
+        )
     if not rows:
         raise ValueError("The sheet appears to be empty (no data found).")
     if len(rows) < 2:

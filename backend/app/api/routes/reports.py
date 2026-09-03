@@ -214,6 +214,23 @@ async def _store_csv_upload(
         )
 
     columns_meta = detect_column_types(df)
+    # Compute coercion stats for date/metric columns (silent data-quality loss during normalization)
+    try:
+        _col_types = {c["original_name"]: c["suggested_type"] for c in columns_meta}
+        _df_norm_preview = data_service.normalize_for_aggregation(df, _col_types)
+        _coerced = data_service.compute_coercion_stats(df, _col_types, _df_norm_preview)
+        # Enrich columns_meta with per-column coerced counts for frontend preview
+        for _cm in columns_meta:
+            _cc = _coerced.get(_cm["original_name"])
+            if _cc:
+                _cm["coerced_count"] = _cc["coerced_count"]
+                _cm["coerced_pct"] = _cc["coerced_pct"]
+            else:
+                _cm["coerced_count"] = 0
+                _cm["coerced_pct"] = 0.0
+    except Exception:
+        # Non-fatal — preview should still succeed even if coercion stats fail
+        pass
     columns_meta_json = json.dumps(columns_meta)
     expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
 
@@ -359,6 +376,21 @@ async def upload_file(
     if excel_sheet_info:
         excel_warning = f"This file has {excel_sheet_info['sheet_count']} sheets — only {excel_sheet_info['used_sheet']} was used."
 
+    # Data-quality warning for silent coercion during normalization (date/metric only)
+    # Threshold: only warn if >5% of rows in any column were coerced (avoids alarming for 1-2 trivial cases out of 500)
+    data_quality_warning = None
+    try:
+        _warn_cols = []
+        for _cm in columns_meta:
+            _cc = _cm.get("coerced_count", 0) or 0
+            _pct = _cm.get("coerced_pct", 0) or 0
+            if _cc and _pct > 5.0:
+                _warn_cols.append(f"{ _cm['original_name']} ({_cc} of {len(df)} values, { _pct:.1f}%)")
+        if _warn_cols:
+            data_quality_warning = f"Some values were outside the expected format and were ignored during processing: {', '.join(_warn_cols)}. This may affect trends and date ranges."
+    except Exception:
+        data_quality_warning = None
+
     return {
         "success": True,
         "data": {
@@ -371,6 +403,7 @@ async def upload_file(
             "preview_rows": preview_rows,
             "excel_sheet_info": excel_sheet_info,
             "excel_warning": excel_warning,
+            "data_quality_warning": data_quality_warning,
         },
     }
 
@@ -456,6 +489,21 @@ async def upload_sheets(
                 preview_row[str(col)] = str(val)
         preview_rows.append(preview_row)
 
+    # Data-quality warning (same threshold as file upload: >5% coerced)
+    data_quality_warning = None
+    try:
+        _cols = upload_record.get("columns", [])
+        _warn = []
+        for _cm in _cols:
+            _cc = _cm.get("coerced_count", 0) or 0
+            _pct = _cm.get("coerced_pct", 0) or 0
+            if _cc and _pct > 5.0:
+                _warn.append(f"{ _cm['original_name']} ({_cc} of {len(df)} values, { _pct:.1f}%)")
+        if _warn:
+            data_quality_warning = f"Some values were outside the expected format and were ignored during processing: {', '.join(_warn)}. This may affect trends and date ranges."
+    except Exception:
+        data_quality_warning = None
+
     return {
         "success": True,
         "data": {
@@ -468,6 +516,7 @@ async def upload_sheets(
             "preview_rows": preview_rows,
             "source_type": "sheets",
             "sheets_url": sheets_url,
+            "data_quality_warning": data_quality_warning,
         },
     }
 
