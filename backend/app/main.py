@@ -123,6 +123,18 @@ async def startup_migrations():
             "BYOK key saving will fail with 500 errors until this is fixed"
         )
 
+    # Fail-fast hygiene for payments: Dodo client would otherwise silently accept empty key at import
+    # and only fail on first checkout. Surface misconfiguration at startup (mirrors payments.py check).
+    if not settings.DODO_API_KEY:
+        logger.error(
+            "DODO_API_KEY is not set — Dodo Payments (checkout, webhooks, plan changes) will fail "
+            "until this is fixed. Set DODO_API_KEY in environment."
+        )
+    if not settings.DODO_WEBHOOK_SECRET:
+        logger.warning(
+            "DODO_WEBHOOK_SECRET is not set — webhook signature verification will fail for all Dodo webhooks."
+        )
+
     migrations = [
         "ALTER TABLE reports ADD COLUMN IF NOT EXISTS trend_pct FLOAT",
         "ALTER TABLE reports ADD COLUMN IF NOT EXISTS ai_skipped BOOLEAN DEFAULT FALSE",

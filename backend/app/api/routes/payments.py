@@ -28,6 +28,16 @@ dodo = AsyncDodoPayments(
     environment=cast(Literal["live_mode", "test_mode"], settings.DODO_ENVIRONMENT),
 )
 
+# Fail-fast for misconfigured env: Dodo client with empty key would silently succeed at import
+# and only fail on first checkout/webhook call. Surface it immediately, especially in production.
+if not settings.DODO_API_KEY:
+    logger.critical(
+        "DODO_API_KEY is not set — Dodo Payments (checkout, webhooks, plan changes) will fail. "
+        "Set DODO_API_KEY in environment."
+    )
+    if settings.ENVIRONMENT == "production":
+        raise RuntimeError("DODO_API_KEY is required in production but is not set")
+
 
 def _dodo_sub_id(user: User) -> str:
     """Return the raw Dodo subscription id string.
@@ -167,6 +177,13 @@ async def create_checkout_session(
                 logger.error("Dodo change plan error: %s", e)
                 raise HTTPException(status_code=502, detail="Failed to change plan")
 
+            # Plan changed in-place via Dodo — no checkout redirect needed. Frontend
+            # treats a falsy checkout_url ("" or missing) as "plan changed directly,
+            # show success toast, no redirect" (see frontend/src/hooks/usePricingCTA.ts
+            # `if (data.checkout_url) redirect else toast.success` and its test
+            # "shows a success toast when checkout returns no URL"). Returning "" keeps
+            # the existing contract; changing shape to {checkout_url: null, plan_changed: true}
+            # would be more explicit but is not needed today — comment preserves intent.
             return {"checkout_url": ""}
 
     try:
@@ -185,7 +202,6 @@ async def create_checkout_session(
 
 
 @router.post("/webhook")
-@limiter.limit("20/minute")
 async def dodo_webhook(
     request: Request,
     db: AsyncSession = Depends(get_db),
@@ -283,6 +299,46 @@ async def dodo_webhook(
 
     if event_type in ("subscription.created", "subscription.renewed", "subscription.active", "subscription.plan_changed", "dunning.recovered"):
         if not user_id:
+            # Paying user not upgraded — silent drop would hide a revenue-impacting bug.
+            # Keep success:True so Dodo does not retry-storm (retries cannot fix a missing user_id
+            # without manual intervention), but alert a human immediately via the same
+            # channels used for other payment failures in this file.
+            dodo_cid_for_log = payload.get("customer_id") or (payload.get("data") or {}).get("customer_id", "")
+            sub_for_log = payload.get("subscription_id") or (payload.get("data") or {}).get("subscription_id", "")
+            prod_for_log = payload.get("product_id") or (payload.get("data") or {}).get("product_id", "")
+            logger.error(
+                "Webhook user resolution failed for tier-upgrade event_type=%s: no user_id resolved "
+                "(customer_id=%s subscription_id=%s product_id=%s dodo_event_id=%s payload_keys=%s) — user not upgraded",
+                event_type,
+                dodo_cid_for_log,
+                sub_for_log,
+                prod_for_log,
+                event_id,
+                list(payload.keys()),
+            )
+            try:
+                sentry_sdk.capture_message(
+                    f"Webhook user resolution failed: {event_type} customer_id={dodo_cid_for_log} subscription_id={sub_for_log} event_id={event_id}",
+                    level="error",
+                )
+            except Exception:
+                pass
+            try:
+                from app.utils.error_notifier import notify_telegram_error
+
+                notify_telegram_error(
+                    Exception(f"Webhook user resolution failed: {event_type} — no user_id resolved"),
+                    {
+                        "stage": "webhook_user_resolution",
+                        "event_type": event_type,
+                        "customer_id": dodo_cid_for_log,
+                        "subscription_id": sub_for_log,
+                        "product_id": prod_for_log,
+                        "event_id": event_id,
+                    },
+                )
+            except Exception:
+                pass
             await db.commit()
             return {"success": True, "data": {"status": "processed"}}
 
@@ -406,12 +462,27 @@ async def downgrade_subscription(
             logger.error("Failed to schedule downgrade to free: %s", e)
             raise HTTPException(status_code=502, detail="Failed to schedule downgrade")
 
-        result = await db.execute(
-            text("SELECT tier_expires_at FROM users WHERE id = :uid"),
-            {"uid": str(current_user.id)},
-        )
-        row = result.mappings().first()
-        effective_date = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.now(timezone.utc)
+        # Display date: prefer live Dodo next_billing_date for accuracy; fallback to local tier_expires_at
+        # so a transient Dodo fetch failure does not hard-fail the downgrade endpoint.
+        effective_date: datetime
+        try:
+            live_sub = await dodo.subscriptions.retrieve(subscription_id=_dodo_sub_id(current_user))
+            if getattr(live_sub, "next_billing_date", None) is not None:
+                effective_date = live_sub.next_billing_date  # type: ignore[assignment]
+            else:
+                raise ValueError("next_billing_date missing on live subscription")
+        except Exception as e:
+            logger.warning(
+                "Downgrade free: live fetch failed for user %s (%s) — falling back to local tier_expires_at",
+                str(current_user.id),
+                e,
+            )
+            result = await db.execute(
+                text("SELECT tier_expires_at FROM users WHERE id = :uid"),
+                {"uid": str(current_user.id)},
+            )
+            row = result.mappings().first()
+            effective_date = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.now(timezone.utc)
         month_name = f"{effective_date.strftime('%B')} {effective_date.day}, {effective_date.year}" if hasattr(effective_date, "strftime") else str(effective_date)
 
         return {
@@ -577,12 +648,27 @@ async def cancel_subscription(
             detail=f"Failed to cancel subscription with Dodo: {str(e)}",
         )
 
-    result = await db.execute(
-        text("SELECT tier_expires_at FROM users WHERE id = :uid"),
-        {"uid": str(current_user.id)},
-    )
-    row = result.mappings().first()
-    access_until = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.now(timezone.utc)
+    # Display date: prefer live Dodo next_billing_date for accuracy; fallback to local tier_expires_at
+    # so a transient API failure does not hard-fail the cancel endpoint.
+    access_until: datetime
+    try:
+        live_sub = await dodo.subscriptions.retrieve(subscription_id=_dodo_sub_id(current_user))
+        if getattr(live_sub, "next_billing_date", None) is not None:
+            access_until = live_sub.next_billing_date  # type: ignore[assignment]
+        else:
+            raise ValueError("next_billing_date missing on live subscription")
+    except Exception as e:
+        logger.warning(
+            "Cancel: live fetch failed for user %s (%s) — falling back to local tier_expires_at",
+            str(current_user.id),
+            e,
+        )
+        result = await db.execute(
+            text("SELECT tier_expires_at FROM users WHERE id = :uid"),
+            {"uid": str(current_user.id)},
+        )
+        row = result.mappings().first()
+        access_until = row["tier_expires_at"] if row and row.get("tier_expires_at") else datetime.now(timezone.utc)
 
     access_until_str = access_until.isoformat()
     month_name = f"{access_until.strftime('%B')} {access_until.day}, {access_until.year}" if hasattr(access_until, "strftime") else str(access_until)

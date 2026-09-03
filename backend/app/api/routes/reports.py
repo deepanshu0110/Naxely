@@ -18,7 +18,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field, EmailStr
 
-from app.api.deps import get_current_user, require_pro_or_above, require_byok, require_agency, check_report_limit
+from app.api.deps import get_current_user, require_pro_or_above, require_byok, require_agency, check_report_limit, try_consume_report_slot
 from app.api.routes.settings import _get_logo_signed_url
 from app.core.database import get_db
 from app.services import sheets_service
@@ -787,7 +787,8 @@ async def generate_report(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Dict[str, Any]:
-    await check_report_limit(current_user)
+    # Light validations before reserving quota (avoid burning slot on 404/403)
+    # We still keep the shape of 402 identical to the old check_report_limit path.
 
     result = await db.execute(
         text("SELECT * FROM uploads WHERE id = :uid AND user_id = :owner"),
@@ -891,6 +892,21 @@ async def generate_report(
                     "poll_url": f"/reports/{winner_row['id']}/status",
                 },
             }
+        raise
+
+    # Atomically reserve monthly quota at request time (early gate, before expensive work).
+    # This is the actual enforcement point: UPDATE ... WHERE reports_this_month < 3 RETURNING
+    # serializes concurrent requests on the row lock, so only 3 succeed.
+    try:
+        await try_consume_report_slot(db, current_user)
+    except HTTPException as e:
+        if e.status_code == 402:
+            # Refund the report row we just created — quota not consumed, no pipeline started
+            try:
+                await db.execute(text("DELETE FROM reports WHERE id = :rid"), {"rid": report_id})
+                await db.commit()
+            except Exception:
+                pass
         raise
 
     background_tasks.add_task(

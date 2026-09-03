@@ -308,176 +308,275 @@ async def delete_scheduled_report(
 
 
 async def _run_all_scheduled_reports() -> None:
-    """Runs all due scheduled reports. Called in background from the cron endpoint."""
+    """Runs all due scheduled reports. Called in background from the cron endpoint.
+
+    Uses an atomic claim via running_since to prevent duplicate processing when
+    two cron ticks overlap. The claim is UPDATE ... RETURNING with FOR UPDATE
+    SKIP LOCKED, committed immediately so a concurrent worker skips already-claimed
+    rows. Claim is cleared (running_since=NULL) on both success (alongside
+    next_run_at advance) and failure (so the schedule can be retried next tick).
+    Stale locks older than 30 minutes are reclaimable (crash recovery).
+    """
     logger.info("[scheduler] _run_all_scheduled_reports started")
+    # Phase 1: atomically claim due schedules (short transaction, no pipeline work)
+    claimed: list[dict] = []
     try:
-        async with AsyncSessionLocal() as db:
-            now = datetime.now(timezone.utc)
-            result = await db.execute(
+        async with AsyncSessionLocal() as claim_db:
+            now_claim = datetime.now(timezone.utc)
+            result = await claim_db.execute(
                 text("""
-                    SELECT * FROM scheduled_reports
-                    WHERE next_run_at <= :now AND is_active = TRUE
-                    ORDER BY next_run_at ASC
+                    UPDATE scheduled_reports SET running_since = NOW()
+                    WHERE id IN (
+                        SELECT id FROM scheduled_reports
+                        WHERE next_run_at <= :now AND is_active = TRUE
+                          AND (running_since IS NULL OR running_since < NOW() - INTERVAL '30 minutes')
+                        ORDER BY next_run_at ASC
+                        FOR UPDATE SKIP LOCKED
+                    )
+                    RETURNING *
                 """),
-                {"now": now},
+                {"now": now_claim},
             )
-            rows = result.mappings().all()
-            logger.info("[scheduler] found %s due reports", len(rows))
+            claimed_rows = result.mappings().all()
+            await claim_db.commit()
+            claimed = [dict(r) for r in claimed_rows]
+            logger.info("[scheduler] claimed %s due reports", len(claimed))
+            if not claimed:
+                return
+    except Exception as e:
+        logger.error("[scheduler] FATAL ERROR claiming due reports: %s", e, exc_info=True)
+        return
 
-            for row in rows:
-                sched = dict(row)
-                sched_id = str(sched["id"])
-                user_id = str(sched["user_id"])
-                sched_name = sched["name"]
+    # Phase 2: process each claimed schedule outside the claim transaction
+    # Use per-schedule DB sessions so one slow pipeline does not keep a single
+    # long transaction open for the whole batch.
+    for row in claimed:
+        sched = dict(row)
+        sched_id = str(sched["id"])
+        user_id = str(sched["user_id"])
+        sched_name = sched["name"]
 
-                try:
-                    # 1. Download CSV data — try live Sheets fetch first if available
-                    sheets_url = sched.get("sheets_url")
-                    data_source_stale = False
+        try:
+            async with AsyncSessionLocal() as db:
+                # 1. Download CSV data — try live Sheets fetch first if available
+                sheets_url = sched.get("sheets_url")
+                data_source_stale = False
 
-                    if sheets_url:
-                        try:
-                            sheet_id = sheets_service.extract_sheet_id(sheets_url)
-                            creds = sheets_service.build_credentials(
-                                settings.GOOGLE_SERVICE_ACCOUNT_JSON
-                            )
-                            loop = asyncio.get_event_loop()
-                            df_fresh = await loop.run_in_executor(
-                                None, sheets_service.fetch_sheet_as_df, sheet_id, creds,
-                            )
-                            csv_bytes = df_fresh.to_csv(index=False).encode("utf-8")
-                            logger.info(
-                                "[scheduler] live sheets fetch OK sched=%s sheet=%s",
-                                sched_id, sheet_id,
-                            )
-                        except Exception as e:
-                            logger.warning(
-                                "[scheduler] live sheets fetch failed sched=%s: %s — "
-                                "falling back to cached CSV",
-                                sched_id, e,
-                            )
-                            data_source_stale = True
-                            csv_bytes = None
-                    else:
+                if sheets_url:
+                    try:
+                        sheet_id = sheets_service.extract_sheet_id(sheets_url)
+                        creds = sheets_service.build_credentials(
+                            settings.GOOGLE_SERVICE_ACCOUNT_JSON
+                        )
+                        loop = asyncio.get_event_loop()
+                        df_fresh = await loop.run_in_executor(
+                            None, sheets_service.fetch_sheet_as_df, sheet_id, creds,
+                        )
+                        csv_bytes = df_fresh.to_csv(index=False).encode("utf-8")
+                        logger.info(
+                            "[scheduler] live sheets fetch OK sched=%s sheet=%s",
+                            sched_id, sheet_id,
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            "[scheduler] live sheets fetch failed sched=%s: %s — "
+                            "falling back to cached CSV",
+                            sched_id, e,
+                        )
+                        data_source_stale = True
                         csv_bytes = None
+                else:
+                    csv_bytes = None
 
-                    if csv_bytes is None:
-                        csv_storage_path = sched.get("csv_storage_path")
-                        if not csv_storage_path:
-                            logger.error("Scheduled report %s has no csv_storage_path — skipping", sched_id)
-                            continue
-                        if csv_storage_path.startswith("permanent/"):
-                            csv_bytes = await _run_sync(
-                                _get_supabase().storage.from_("uploads").download,
-                                csv_storage_path,
-                            )
-                        else:
-                            filename = csv_storage_path.split("/")[-1]
-                            csv_bytes = await _run_sync(
-                                _get_supabase().storage.from_("scheduled-sources").download,
-                                filename,
-                            )
-
-                    # 2. Create a new report record
-                    report_id = str(uuid.uuid4())
-
-                    config_raw = sched.get("config_json") or "{}"
-                    if isinstance(config_raw, str):
-                        try:
-                            config = json.loads(config_raw)
-                        except (json.JSONDecodeError, TypeError):
-                            config = {}
-                    else:
-                        config = config_raw
-
-                    config.setdefault("template_type", "professional")
-                    config.setdefault("sections", [
-                        "kpi_overview",
-                        "charts",
-                        "executive_summary",
-                        "insights",
-                        "anomalies",
-                        "recommendations",
-                        "data_table",
-                    ])
-
-                    await db.execute(
-                        text("""
-                            INSERT INTO reports
-                                (id, user_id, title, template_type, status, source_type,
-                                 source_filename, config, data_source_stale,
-                                 created_at, updated_at)
-                            VALUES (:id, :uid, :title, :template, 'pending', 'csv',
-                                    :filename, :config, :stale,
-                                    NOW(), NOW())
-                        """),
-                        {
-                            "id": report_id,
-                            "uid": user_id,
-                            "title": sched_name,
-                            "template": config.get("template_type", "professional"),
-                            "filename": f"scheduled/{sched_id}.csv",
-                            "config": json.dumps(config),
-                            "stale": data_source_stale,
-                        },
-                    )
-                    await db.commit()
-
-                    # 3. Run the report pipeline
-                    await run_report_pipeline(
-                        report_id=report_id,
-                        user_id=user_id,
-                        config=config,
-                        csv_bytes=csv_bytes,
+                if csv_bytes is None:
+                    csv_storage_path = sched.get("csv_storage_path")
+                    if not csv_storage_path:
+                        raise ValueError(f"Scheduled report {sched_id} has no csv_storage_path — cannot generate report")
+                    # Verified dead branch removed: scheduled reports always use scheduled-sources
+                    # (see copy_upload_to_scheduled_source → scheduled-sources/{id}.csv; grep confirms
+                    # no writer of scheduled_reports.csv_storage_path ever produces permanent/ prefix)
+                    filename = csv_storage_path.split("/")[-1]
+                    csv_bytes = await _run_sync(
+                        _get_supabase().storage.from_("scheduled-sources").download,
+                        filename,
                     )
 
-                    # 4. Fetch the completed report to get PDF storage path
-                    report_row = await db.execute(
-                        text("SELECT pdf_url FROM reports WHERE id = :rid"),
-                        {"rid": report_id},
-                    )
-                    report_data = report_row.mappings().first()
+                # 2. Create a new report record
+                report_id = str(uuid.uuid4())
 
-                    if report_data and report_data["pdf_url"]:
-                        pdf_bytes = await _run_sync(
-                            _get_supabase().storage.from_("reports").download,
-                            report_data["pdf_url"],
+                config_raw = sched.get("config_json") or "{}"
+                if isinstance(config_raw, str):
+                    try:
+                        config = json.loads(config_raw)
+                    except (json.JSONDecodeError, TypeError) as e:
+                        logger.error(
+                            "Failed to parse config_json for scheduled report %s: %s (raw=%r) — falling back to default config",
+                            sched_id,
+                            e,
+                            str(config_raw)[:500],
+                        )
+                        config = {}
+                else:
+                    # JSONB returns dict directly (TEXT would have been str); keep as-is
+                    config = config_raw
+
+                config.setdefault("template_type", "professional")
+                config.setdefault("sections", [
+                    "kpi_overview",
+                    "charts",
+                    "executive_summary",
+                    "insights",
+                    "anomalies",
+                    "recommendations",
+                    "data_table",
+                ])
+
+                await db.execute(
+                    text("""
+                        INSERT INTO reports
+                            (id, user_id, title, template_type, status, source_type,
+                             source_filename, config, data_source_stale,
+                             created_at, updated_at)
+                        VALUES (:id, :uid, :title, :template, 'pending', 'csv',
+                                :filename, :config, :stale,
+                                NOW(), NOW())
+                    """),
+                    {
+                        "id": report_id,
+                        "uid": user_id,
+                        "title": sched_name,
+                        "template": config.get("template_type", "professional"),
+                        "filename": f"scheduled/{sched_id}.csv",
+                        "config": json.dumps(config),
+                        "stale": data_source_stale,
+                    },
+                )
+                await db.commit()
+
+                # 3. Run the report pipeline
+                await run_report_pipeline(
+                    report_id=report_id,
+                    user_id=user_id,
+                    config=config,
+                    csv_bytes=csv_bytes,
+                )
+
+                # 4. Fetch the completed report to get PDF storage path
+                report_row = await db.execute(
+                    text("SELECT pdf_url FROM reports WHERE id = :rid"),
+                    {"rid": report_id},
+                )
+                report_data = report_row.mappings().first()
+
+                if report_data and report_data["pdf_url"]:
+                    pdf_bytes = await _run_sync(
+                        _get_supabase().storage.from_("reports").download,
+                        report_data["pdf_url"],
+                    )
+
+                    pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
+
+                    # 5. Email PDF to all recipients
+                    recipients = list(sched.get("recipient_emails", []))
+                    if recipients:
+                        send_email(
+                            to=recipients,
+                            subject=f"{sched_name} — {config.get('brand', {}).get('company_name') or config.get('title') or 'Report'} | {datetime.now().strftime('%d %b %Y')}",
+                            html=(
+                                f"<p>Your scheduled report <strong>{sched_name}</strong> "
+                                f"is ready.</p><p>The report PDF is attached.</p>"
+                            ),
+                            attachments=[{
+                                "filename": f"{sched_name}.pdf",
+                                "content": pdf_b64,
+                            }],
                         )
 
-                        pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
+                # 6. Update next_run_at and clear claim on success — reset failure state
+                next_run = _compute_next_run(sched["frequency"])
+                now_done = datetime.now(timezone.utc)
+                await db.execute(
+                    text("""
+                        UPDATE scheduled_reports
+                        SET last_run_at = :now, next_run_at = :next, running_since = NULL,
+                            consecutive_failures = 0, last_error = NULL
+                        WHERE id = :rid
+                    """),
+                    {"now": now_done, "next": next_run, "rid": sched_id},
+                )
+                await db.commit()
 
-                        # 5. Email PDF to all recipients
-                        recipients = list(sched.get("recipient_emails", []))
-                        if recipients:
-                            send_email(
-                                to=recipients,
-                                subject=f"{sched_name} — {config.get('brand', {}).get('company_name') or config.get('title') or 'Report'} | {datetime.now().strftime('%d %b %Y')}",
-                                html=(
-                                    f"<p>Your scheduled report <strong>{sched_name}</strong> "
-                                    f"is ready.</p><p>The report PDF is attached.</p>"
-                                ),
-                                attachments=[{
-                                    "filename": f"{sched_name}.pdf",
-                                    "content": pdf_b64,
-                                }],
-                            )
-
-                    # 6. Update next_run_at
-                    next_run = _compute_next_run(sched["frequency"])
-                    await db.execute(
+        except Exception as e:
+            logger.error("Failed to process scheduled report %s: %s", sched_id, e)
+            # Failure policy: advance next_run_at to next normal interval (not 15 min),
+            # increment consecutive_failures, set last_error, and auto-disable after 3.
+            # This avoids infinite 15-min retry storm while giving transient failures a chance.
+            # Clear running_since so the schedule is not stuck claimed.
+            try:
+                error_msg = str(e)[:2000] if str(e) else "Unknown error"
+                next_run_on_fail = _compute_next_run(sched.get("frequency", "daily"))
+                # Need current consecutive_failures — read from claimed row (may be stale if updated concurrently)
+                # Use atomic increment: consecutive_failures = COALESCE(consecutive_failures,0)+1
+                async with AsyncSessionLocal() as fail_db:
+                    # Fetch current failures to decide is_active
+                    cur_res = await fail_db.execute(
+                        text("SELECT consecutive_failures, is_active FROM scheduled_reports WHERE id = :rid"),
+                        {"rid": sched_id},
+                    )
+                    cur_row = cur_res.mappings().first()
+                    cur_failures = int(cur_row["consecutive_failures"] or 0) if cur_row else 0
+                    new_failures = cur_failures + 1
+                    should_disable = new_failures >= 3
+                    await fail_db.execute(
                         text("""
                             UPDATE scheduled_reports
-                            SET last_run_at = :now, next_run_at = :next
+                            SET running_since = NULL,
+                                last_error = :err,
+                                consecutive_failures = :failures,
+                                next_run_at = :next,
+                                is_active = :active
                             WHERE id = :rid
                         """),
-                        {"now": now, "next": next_run, "rid": sched_id},
+                        {
+                            "err": error_msg,
+                            "failures": new_failures,
+                            "next": next_run_on_fail,
+                            "active": not should_disable,
+                            "rid": sched_id,
+                        },
                     )
-                    await db.commit()
-
-                except Exception as e:
-                    logger.error("Failed to process scheduled report %s: %s", sched_id, e)
-    except Exception as e:
-        logger.error("[scheduler] FATAL ERROR in _run_all_scheduled_reports: %s", e, exc_info=True)
+                    await fail_db.commit()
+                    # Notify the schedule owner (not the client recipients) — owner can fix data source
+                    try:
+                        owner_res = await fail_db.execute(
+                            text("SELECT email, full_name FROM users WHERE id = :uid"),
+                            {"uid": user_id},
+                        )
+                        owner_row = owner_res.mappings().first()
+                        owner_email = owner_row["email"] if owner_row and owner_row.get("email") else None
+                        if owner_email:
+                            if should_disable:
+                                subject = f'Your scheduled report "{sched_name}" has been paused after 3 failures'
+                                html = (
+                                    f"<p>Your scheduled report <strong>{sched_name}</strong> failed 3 times in a row and has been paused.</p>"
+                                    f"<p>Last error: <code>{error_msg[:500]}</code></p>"
+                                    f"<p>Please check your data source (Google Sheet access, CSV, or AI key) and re-enable the schedule in Settings &rarr; Scheduled Reports.</p>"
+                                    f"<p>Next retry would have been {next_run_on_fail.strftime('%Y-%m-%d %H:%M UTC')}.</p>"
+                                )
+                            else:
+                                subject = f'Your scheduled report "{sched_name}" failed — will retry {next_run_on_fail.strftime("%Y-%m-%d %H:%M UTC")}'
+                                html = (
+                                    f"<p>Your scheduled report <strong>{sched_name}</strong> failed to generate.</p>"
+                                    f"<p>Error: <code>{error_msg[:500]}</code></p>"
+                                    f"<p>We will retry at the next scheduled time ({next_run_on_fail.strftime('%Y-%m-%d %H:%M UTC')}). "
+                                    f"If this was a transient issue (e.g. AI provider timeout), no action is needed. "
+                                    f"Otherwise, please check your data source.</p>"
+                                )
+                            send_email(to=owner_email, subject=subject, html=html)
+                    except Exception as email_e:
+                        logger.warning("[scheduler] failed to send failure email for %s: %s", sched_id, email_e)
+            except Exception as clear_e:
+                logger.error("[scheduler] failed to update failure state for %s: %s", sched_id, clear_e)
 
 
 @router.post("/internal/scheduled-reports/run", status_code=202)

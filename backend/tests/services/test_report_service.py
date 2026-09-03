@@ -1414,16 +1414,14 @@ class TestOnboardingUpdate:
         mock_logger = MagicMock()
 
         class OnboardFailSession:
-            def __init__(self):
-                self.enter_count = 0
             async def __aenter__(s):
-                s.enter_count += 1
-                if s.enter_count == 3:
-                    raise RuntimeError('Onboarding DB failure')
                 return s
             async def __aexit__(s, *a):
                 pass
             async def execute(s, query, params=None):
+                qs = str(query)
+                if 'has_completed_onboarding' in qs:
+                    raise RuntimeError('Onboarding DB failure')
                 return s
             async def commit(s):
                 pass
@@ -1551,6 +1549,11 @@ class TestPipelineMainExceptHandler:
             async def __aexit__(s, *a):
                 pass
             async def execute(s, query, params=None):
+                qs = str(query)
+                # Skip the refund update (release_report_slot) — let it succeed so the next
+                # UPDATE reports SET status='failed' is the one that fails as the test expects
+                if 'reports_this_month' in qs and 'GREATEST' in qs:
+                    return s
                 s.execute_count += 1
                 if s.execute_count == 1:
                     raise RuntimeError('Failed to update status to failed')

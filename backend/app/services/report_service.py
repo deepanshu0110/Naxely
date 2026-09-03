@@ -15,7 +15,7 @@ from app.core.database import AsyncSessionLocal
 from app.core.supabase_helpers import _get_supabase, _run_sync
 from app.services import data_service, chart_service, ai_service, pdf_service, sheets_service
 from app.services.ai_service import SummaryResult
-from app.api.deps import increment_report_count, mark_upload_used
+from app.api.deps import increment_report_count, mark_upload_used, release_report_slot
 from app.core.config import settings
 from app.utils.error_notifier import notify_telegram_error
 
@@ -346,9 +346,10 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             async with AsyncSessionLocal() as db:
                 await mark_upload_used(config["upload_id"], db)
 
-        async with AsyncSessionLocal() as db:
-            await increment_report_count(user_id, db)
-
+        # Quota reservation now happens atomically at request time in
+        # POST /reports/generate via try_consume_report_slot(). The old
+        # increment_report_count here has been removed to avoid double-counting
+        # and to keep the enforcement at the early gate (before expensive work).
         elapsed = round(time.monotonic() - start_time, 1)
 
         metric_cols = config.get('metric_columns') or [
@@ -458,6 +459,13 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
     except Exception as e:
         elapsed = round(time.monotonic() - start_time, 1)
         error_msg = str(e)
+
+        # Refund the early-reserved quota on pipeline failure (free tier only)
+        try:
+            async with AsyncSessionLocal() as _refund_db:
+                await release_report_slot(_refund_db, user_id)
+        except Exception:
+            pass
 
         try:
             async with AsyncSessionLocal() as db:

@@ -747,21 +747,38 @@ class TestCronEndpoint:
             mock_session_local.return_value = mock_session
 
             execute_results = [
-                due_reports,   # 0: initial SELECT
+                due_reports,   # 0: initial SELECT (now UPDATE ... RETURNING claim)
                 MagicMock(),   # 1: insert A
                 MagicMock(),   # 2: insert B
                 pdf_row_b,     # 3: pdf B
-                MagicMock(),   # 4: update B
+                MagicMock(),   # 4: update B (now includes consecutive_failures=0, last_error=NULL)
                 MagicMock(),   # 5: insert C
                 pdf_row_c,     # 6: pdf C
                 MagicMock(),   # 7: update C
             ]
 
             async def mock_execute(*a, **kw):
-                return execute_results.pop(0)
+                if execute_results:
+                    return execute_results.pop(0)
+                # Extra calls from new failure handling (SELECT consecutive_failures, UPDATE last_error, SELECT owner email)
+                # For this partial-failure test, we want the failure handling to succeed but NOT send an extra email
+                # (to keep the original assertion of 2 success emails). So return generic mocks that make
+                # the failure path clear running_since and advance next_run_at without triggering owner email.
+                qs = str(a[0]) if a else ""
+                m = MagicMock()
+                if "SELECT consecutive_failures" in qs:
+                    m.mappings.return_value.first.return_value = {"consecutive_failures": 0, "is_active": True}
+                    return m
+                if "SELECT email" in qs:
+                    # Return no owner found -> no failure email sent (keeps count at 2 for this legacy test)
+                    m.mappings.return_value.first.return_value = None
+                    return m
+                m.mappings.return_value.first.return_value = None
+                m.mappings.return_value.all.return_value = []
+                return m
             mock_session.execute = mock_execute
 
             await _run_all_scheduled_reports()
 
         assert len(call_order) == 3, "Pipeline should have been called 3 times"
-        assert mock_email.call_count == 2, "Email should be sent for 2 successful reports"
+        assert mock_email.call_count == 2, "Email should be sent for 2 successful reports (failure notification is tested separately)"

@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, Text
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, Text, Integer
+from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
+import sqlalchemy as sa
 import uuid
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -18,13 +19,16 @@ class ScheduledReport(Base):
     frequency = Column(String(20), nullable=False)
     next_run_at = Column(DateTime(timezone=True), nullable=False)
     last_run_at = Column(DateTime(timezone=True))
+    running_since = Column(DateTime(timezone=True), nullable=True)
+    consecutive_failures = Column(sa.Integer, nullable=False, server_default='0')
+    last_error = Column(Text, nullable=True)
     
     # Data source
     sheets_url = Column(Text)
     csv_storage_path = Column(Text)
     
-    # Snapshot of report config (sections, column_config, brand, etc.)
-    config_json = Column(Text)
+    # Snapshot of report config (sections, column_config, brand, etc.) — JSONB for queryability (migrated from TEXT in 020)
+    config_json = Column(JSONB)
     
     # Email recipients
     recipient_emails = Column(ARRAY(Text), nullable=False)  # type: ignore[var-annotated]
