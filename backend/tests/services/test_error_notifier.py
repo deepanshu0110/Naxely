@@ -170,6 +170,7 @@ class TestNotifyInCallOpenaiCompat:
         import httpx
         from app.services.ai_service import call_openai_compat
         from openai import AuthenticationError as OpenAIAuthError
+        from fastapi import HTTPException
 
         httpx_resp = httpx.Response(401, request=httpx.Request("POST", "https://api.openai.com/v1"))
         with patch("app.services.ai_service.OpenAI") as mock_openai:
@@ -180,8 +181,10 @@ class TestNotifyInCallOpenaiCompat:
             )
 
             with patch("app.services.ai_service.notify_telegram_error") as mock_notify:
-                with pytest.raises(ValueError):
+                with pytest.raises(HTTPException) as exc:
                     call_openai_compat("prompt", "system", "key")
+                assert exc.value.status_code == 400
+                assert "Invalid API key" in str(exc.value.detail)
                 mock_notify.assert_not_called()
 
     def test_no_notify_on_rate_limit_429(self):

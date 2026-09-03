@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { AlertTriangle } from 'lucide-react'
 import type { ColumnConfig, ColumnInfo } from '@/types/report'
 
 interface ColumnMapperProps {
@@ -43,7 +44,20 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
           {columns.map((col, idx) => (
             <tr key={col.original_name}>
-              <td className="py-3 pr-4 font-medium text-ink dark:text-paper">{col.original_name}</td>
+              <td className="py-3 pr-4 font-medium text-ink dark:text-paper">
+                <span className="inline-flex items-center gap-1.5">
+                  {col.original_name}
+                  {(col.coerced_count ?? 0) > 0 && (
+                    <span
+                      title={`${col.coerced_count} of ${col.coerced_count && col.coerced_pct ? `${col.coerced_count} values (${col.coerced_pct.toFixed(1)}%) were outside the expected format and ignored` : 'values ignored'}`}
+                      className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-normal normal-case text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                    >
+                      <AlertTriangle className="h-3 w-3" />
+                      {col.coerced_count} ignored
+                    </span>
+                  )}
+                </span>
+              </td>
               <td className="py-3 pr-4">
                 <input
                   type="text"

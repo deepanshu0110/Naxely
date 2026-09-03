@@ -52,6 +52,7 @@ export interface UploadResult {
   preview_rows: Record<string, unknown>[]
   excel_sheet_info?: ExcelSheetInfo | null
   excel_warning?: string | null
+  data_quality_warning?: string | null
 }
 
 export interface ColumnInfo {
@@ -61,6 +62,8 @@ export interface ColumnInfo {
   sample_values: (string | number | null)[]
   null_count: number
   unique_count: number
+  coerced_count?: number
+  coerced_pct?: number
 }
 
 export interface ColumnConfig {

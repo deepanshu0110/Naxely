@@ -725,6 +725,7 @@ class TestCallOpenaiCompat:
         import httpx
         from app.services.ai_service import call_openai_compat
         from openai import AuthenticationError as OpenAIAuthError
+        from fastapi import HTTPException
         httpx_resp = httpx.Response(401, request=httpx.Request("POST", "https://api.openai.com/v1"))
         with patch("app.services.ai_service.OpenAI") as mock_openai:
             mock_client = MagicMock()
@@ -732,8 +733,10 @@ class TestCallOpenaiCompat:
             mock_client.chat.completions.create.side_effect = OpenAIAuthError(
                 "401 Unauthorized", response=httpx_resp, body={}
             )
-            with pytest.raises(ValueError, match="Invalid API key"):
+            with pytest.raises(HTTPException) as exc:
                 call_openai_compat("prompt", "system", "key")
+            assert exc.value.status_code == 400
+            assert "Invalid API key" in str(exc.value.detail)
 
     def test_openai_compat_rate_limit(self):
         import httpx
@@ -1404,6 +1407,8 @@ class TestCallOpenaiCompatResultNone:
     def test_openai_compat_result_none_after_finally(self):
         from unittest.mock import patch, MagicMock
         from app.services.ai_service import call_openai_compat
+        from fastapi import HTTPException
+        import pytest
 
         mock_msg = MagicMock()
         mock_msg.content = None
@@ -1416,8 +1421,10 @@ class TestCallOpenaiCompatResultNone:
             mock_client = MagicMock()
             mock_openai.return_value = mock_client
             mock_client.chat.completions.create.return_value = mock_resp
-            result = call_openai_compat("prompt", "system", "key")
-        assert result is None
+            with pytest.raises(HTTPException) as exc:
+                call_openai_compat("prompt", "system", "key")
+            assert exc.value.status_code == 500
+            assert "empty response" in str(exc.value.detail).lower()
 
     def test_openai_compat_del_client_exception_swallowed(self):
         from unittest.mock import patch, MagicMock

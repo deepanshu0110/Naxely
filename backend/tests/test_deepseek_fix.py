@@ -53,6 +53,7 @@ class TestDeepSeekErrorHandling:
     def test_deepseek_401_raises_value_error(self):
         from app.services.ai_service import call_openai_compat
         from openai import AuthenticationError as OpenAIAuthError
+        from fastapi import HTTPException
 
         mock_response = MagicMock()
         mock_response.status_code = 401
@@ -65,12 +66,13 @@ class TestDeepSeekErrorHandling:
         with patch("app.services.ai_service.OpenAI") as MockOpenAI:
             instance = MockOpenAI.return_value
             instance.chat.completions.create = failing_create
-            with pytest.raises(ValueError) as exc_info:
+            with pytest.raises(HTTPException) as exc_info:
                 call_openai_compat(
                     prompt="hi", system="", api_key="sk-wrongkey",
                     base_url="https://api.deepseek.com/v1", model="deepseek-chat",
                 )
-        assert "Invalid API key" in str(exc_info.value)
+        assert exc_info.value.status_code == 400
+        assert "Invalid API key" in str(exc_info.value.detail)
 
     def test_deepseek_uses_correct_model_and_base_url(self):
         from app.services.ai_service import call_openai_compat

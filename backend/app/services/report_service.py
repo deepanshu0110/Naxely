@@ -281,6 +281,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
                     ai_content["recommendations"] = recommendations
                 except HTTPException as e:
                     logger.warning("AI recommendations skipped for %s: %s", report_id, str(e.detail if isinstance(e.detail, str) else e.detail))
+                    ai_skipped = True
 
                 anomalies = ai_service.detect_anomalies(df_norm)
                 ai_content["anomalies"] = anomalies

@@ -83,6 +83,42 @@ async def get_current_user(
                 detail={"code": "USER_NOT_FOUND", "message": "User not found."},
             )
 
+    # Self-healing tier expiry: if pro/agency tier has passed its tier_expires_at,
+    # downgrade to free immediately (safety net if downgrade webhook was delayed/dropped
+    # or used US spelling). This is Option A from Phase 2 P0 — enforcement-layer, per-request,
+    # not a cron sweep. Writes the correction to DB so future requests need no re-check.
+    tier_val = (row.get("tier") or "free").lower()
+    expires_at_val = row.get("tier_expires_at")
+    if tier_val in ("pro", "agency") and expires_at_val is not None:
+        try:
+            now_utc = datetime.now(timezone.utc)
+            exp = expires_at_val
+            if getattr(exp, "tzinfo", None) is None:
+                exp = exp.replace(tzinfo=timezone.utc)
+            if exp < now_utc:
+                logger.info(
+                    "get_current_user: auto-downgrading expired tier for user %s from %s (expired %s, now %s)",
+                    user_id,
+                    tier_val,
+                    exp.isoformat(),
+                    now_utc.isoformat(),
+                )
+                await db.execute(
+                    text(
+                        "UPDATE users SET tier = 'free', tier_expires_at = NULL, dodo_subscription_id = NULL, updated_at = NOW() WHERE id = :uid"
+                    ),
+                    {"uid": user_id},
+                )
+                await db.commit()
+                # Reflect downgrade in the in-memory row so the returned User is already 'free'
+                # RowMapping is immutable — build a mutable copy
+                row = dict(row)
+                row["tier"] = "free"
+                row["tier_expires_at"] = None
+                row["dodo_subscription_id"] = None
+        except Exception as e:
+            logger.warning("get_current_user: expiry self-heal failed for %s: %s", user_id, e)
+
     user = User()
     for key, value in row.items():
         setattr(user, key, value)
@@ -123,13 +159,8 @@ async def get_api_user(
     if row["revoked_at"] is not None:
         raise HTTPException(status_code=401, detail="API key has been revoked.")
 
-    tier = (row["tier"] or "free").lower()
-    if tier != "agency":
-        raise HTTPException(
-            status_code=403,
-            detail="API access requires Agency plan."
-        )
-
+    # Defer tier check until after self-heal — tier_expires_at lives on users, not api_keys
+    # (row["tier"] from the join may be stale if expired).
     try:
         await db.execute(
             text("UPDATE api_keys SET last_used_at = NOW() WHERE id = :id"),
@@ -146,6 +177,39 @@ async def get_api_user(
     user_row = user_result.mappings().first()
     if not user_row:
         raise HTTPException(status_code=401, detail="User not found.")
+
+    # Self-healing expiry for API path (mirrors get_current_user Option A)
+    user_tier = (user_row.get("tier") or "free").lower()
+    exp_val = user_row.get("tier_expires_at")
+    if user_tier in ("pro", "agency") and exp_val is not None:
+        try:
+            now_utc = datetime.now(timezone.utc)
+            exp2 = exp_val
+            if getattr(exp2, "tzinfo", None) is None:
+                exp2 = exp2.replace(tzinfo=timezone.utc)
+            if exp2 < now_utc:
+                logger.info(
+                    "get_api_user: auto-downgrading expired tier for user %s from %s (expired %s)",
+                    row["user_id"],
+                    user_tier,
+                    exp2.isoformat(),
+                )
+                await db.execute(
+                    text("UPDATE users SET tier = 'free', tier_expires_at = NULL, dodo_subscription_id = NULL, updated_at = NOW() WHERE id = :uid"),
+                    {"uid": row["user_id"]},
+                )
+                await db.commit()
+                user_row = dict(user_row)
+                user_row["tier"] = "free"
+                user_row["tier_expires_at"] = None
+                user_row["dodo_subscription_id"] = None
+                user_tier = "free"
+        except Exception as e:
+            logger.warning("get_api_user: expiry self-heal failed for %s: %s", row["user_id"], e)
+            user_tier = (user_row.get("tier") or "free").lower()
+
+    if user_tier != "agency":
+        raise HTTPException(status_code=403, detail="API access requires Agency plan.")
 
     from app.services.report_service import _make_user_proxy
     return _make_user_proxy(dict(user_row))

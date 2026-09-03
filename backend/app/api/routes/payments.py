@@ -69,6 +69,7 @@ PLANS_DATA = [
 
 _DOWNGRADE_EVENTS = frozenset({
     "subscription.cancelled",
+    "subscription.canceled",  # defensive: Dodo docs use UK 'cancelled', but US spelling seen in Stripe-heritage APIs — accept both
     "subscription.failed",
     "subscription.expired",
     "refund.succeeded",
