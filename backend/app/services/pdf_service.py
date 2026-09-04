@@ -220,6 +220,76 @@ class _KPICard(Flowable):
         c.restoreState()
 
 
+def _build_kpi_grid_flowables(kpis: list[dict], brand_color: str, content_width: float) -> list:
+    """Shared KPI grid builder — single source for merged and standalone KPI pages.
+
+    Branches: n<=3 single row (n==1 centered at 60% width), n==4 2x2, n==5 3+2 (BOTTOM2 sentinel).
+    Fixes n==1 clipping: card width must equal table cell width (single_w), not content_width.
+    Returns list of Flowables (Tables + Spacers) ready to append to story.
+    """
+    n = len(kpis)
+    if n == 0:
+        return []
+    gap = 12
+    cards = [(kpi, i) for i, kpi in enumerate(kpis, start=1)]
+    rows: list = []
+    if n == 1:
+        single_w = min(content_width * 0.60, 300)
+        rows.append([_KPICard(cards[0][0], cards[0][1], single_w, brand_color)])
+    elif n <= 3:
+        card_w = (content_width - gap * (n - 1)) / n
+        row = [_KPICard(kpi, idx, card_w, brand_color) for kpi, idx in cards]
+        rows.append(row)
+    elif n == 4:
+        card_w = (content_width - gap) / 2
+        rows.append([_KPICard(cards[0][0], cards[0][1], card_w, brand_color), _KPICard(cards[1][0], cards[1][1], card_w, brand_color)])
+        rows.append([_KPICard(cards[2][0], cards[2][1], card_w, brand_color), _KPICard(cards[3][0], cards[3][1], card_w, brand_color)])
+    else:  # n == 5
+        card_w3 = (content_width - gap * 2) / 3
+        rows.append([_KPICard(cards[0][0], cards[0][1], card_w3, brand_color), _KPICard(cards[1][0], cards[1][1], card_w3, brand_color), _KPICard(cards[2][0], cards[2][1], card_w3, brand_color)])
+        rows.append('BOTTOM2')
+    # Build flowables
+    flowables: list = []
+    # Need bottom_cards for n==5 case
+    bottom_cards = [cards[3], cards[4]] if n == 5 else []
+    for idx, row in enumerate(rows):
+        if row == 'BOTTOM2':
+            card_w2 = (content_width - gap) / 2
+            t = Table([[_KPICard(bottom_cards[0][0], bottom_cards[0][1], card_w2, brand_color), _KPICard(bottom_cards[1][0], bottom_cards[1][1], card_w2, brand_color)]], colWidths=[card_w2, card_w2], hAlign='CENTER', spaceBefore=6, spaceAfter=6)
+            t.setStyle(TableStyle([
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 0), (-1, -1), 0),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+            flowables.append(t)
+        else:
+            cols = len(row)  # type: ignore
+            if cols == 1:
+                single_w = min(content_width * 0.60, 300)
+                t = Table([[row[0]]], colWidths=[single_w], hAlign='CENTER')  # type: ignore
+            elif cols == 2:
+                card_w = (content_width - gap) / 2
+                t = Table([row], colWidths=[card_w] * 2, hAlign='CENTER')  # type: ignore
+            elif cols == 3:
+                card_w = (content_width - gap * 2) / 3
+                t = Table([row], colWidths=[card_w] * 3, hAlign='CENTER')  # type: ignore
+            else:
+                t = Table([row], hAlign='CENTER')  # type: ignore
+            t.setStyle(TableStyle([
+                ('LEFTPADDING', (0, 0), (-1, -1), 6),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+            flowables.append(t)
+        if idx < len(rows) - 1:
+            flowables.append(Spacer(1, gap))
+    return flowables
+
+
 def _wrap_text_lines(text: str, font_name: str, font_size: float, max_width: float) -> list[str]:
     """Greedy word wrap of `text` to `max_width` at the given font. Returns a
     list of lines, each fitting the box; an unbreakable word wider than the box
@@ -1581,63 +1651,7 @@ def build_sync(
                 spaceAfter=8,
             )
             body_story.append(Paragraph('Key Metrics', kpi_subhead_style))
-            n = len(kpis)
-            gap = 12
-            cards = []
-            for i, kpi in enumerate(kpis, start=1):
-                cards.append((kpi, i))
-            rows = []
-            if n <= 3:
-                card_w = (content_width - gap*(n-1)) / n if n > 0 else content_width
-                row = []
-                for kpi, idx in cards:
-                    row.append(_KPICard(kpi, idx, card_w, brand_color))
-                rows.append(row)
-            elif n == 4:
-                card_w = (content_width - gap) / 2
-                rows.append([_KPICard(cards[0][0], cards[0][1], card_w, brand_color), _KPICard(cards[1][0], cards[1][1], card_w, brand_color)])
-                rows.append([_KPICard(cards[2][0], cards[2][1], card_w, brand_color), _KPICard(cards[3][0], cards[3][1], card_w, brand_color)])
-            else:  # n == 5
-                card_w3 = (content_width - gap*2) / 3
-                rows.append([_KPICard(cards[0][0], cards[0][1], card_w3, brand_color), _KPICard(cards[1][0], cards[1][1], card_w3, brand_color), _KPICard(cards[2][0], cards[2][1], card_w3, brand_color)])
-                card_w2 = (content_width - gap) / 2
-                bottom_cards = [cards[3], cards[4]]
-                rows.append('BOTTOM2')
-            for idx, row in enumerate(rows):
-                if row == 'BOTTOM2':
-                    card_w2 = (content_width - gap) / 2
-                    t = Table([[_KPICard(bottom_cards[0][0], bottom_cards[0][1], card_w2, brand_color), _KPICard(bottom_cards[1][0], bottom_cards[1][1], card_w2, brand_color)]], colWidths=[card_w2, card_w2], hAlign='CENTER', spaceBefore=6, spaceAfter=6)
-                    t.setStyle(TableStyle([
-                        ('LEFTPADDING', (0,0), (-1,-1), 6),
-                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
-                        ('TOPPADDING', (0,0), (-1,-1), 0),
-                        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
-                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-                    ]))
-                    body_story.append(t)
-                else:
-                    cols = len(row)
-                    if cols == 1:
-                        single_w = min(content_width * 0.60, 300)
-                        t = Table([[row[0]]], colWidths=[single_w], hAlign='CENTER')
-                    elif cols == 2:
-                        card_w = (content_width - gap) / 2
-                        t = Table([row], colWidths=[card_w]*2, hAlign='CENTER')
-                    elif cols == 3:
-                        card_w = (content_width - gap*2) / 3
-                        t = Table([row], colWidths=[card_w]*3, hAlign='CENTER')
-                    else:
-                        t = Table([row], hAlign='CENTER')
-                    t.setStyle(TableStyle([
-                        ('LEFTPADDING', (0,0), (-1,-1), 6),
-                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
-                        ('TOPPADDING', (0,0), (-1,-1), 6),
-                        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-                    ]))
-                    body_story.append(t)
-                if idx < len(rows)-1:
-                    body_story.append(Spacer(1, gap))
+            body_story.extend(_build_kpi_grid_flowables(kpis, brand_color, content_width))
         body_story.append(PageBreak())
     elif has_kpi:
         # Standalone KPI page when executive_summary not requested — preserve data, don't silently drop
@@ -1645,64 +1659,8 @@ def build_sync(
         toc_page += 1
         body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
         body_story.append(Spacer(1, 10))
-        n = len(kpis)
-        if n > 0:
-            gap = 12
-            cards = []
-            for i, kpi in enumerate(kpis, start=1):
-                cards.append((kpi, i))
-            rows = []
-            if n <= 3:
-                card_w = (content_width - gap*(n-1)) / n if n > 0 else content_width
-                row = []
-                for kpi, idx in cards:
-                    row.append(_KPICard(kpi, idx, card_w, brand_color))
-                rows.append(row)
-            elif n == 4:
-                card_w = (content_width - gap) / 2
-                rows.append([_KPICard(cards[0][0], cards[0][1], card_w, brand_color), _KPICard(cards[1][0], cards[1][1], card_w, brand_color)])
-                rows.append([_KPICard(cards[2][0], cards[2][1], card_w, brand_color), _KPICard(cards[3][0], cards[3][1], card_w, brand_color)])
-            else:
-                card_w3 = (content_width - gap*2) / 3
-                rows.append([_KPICard(cards[0][0], cards[0][1], card_w3, brand_color), _KPICard(cards[1][0], cards[1][1], card_w3, brand_color), _KPICard(cards[2][0], cards[2][1], card_w3, brand_color)])
-                card_w2 = (content_width - gap) / 2
-                bottom_cards = [cards[3], cards[4]]
-                rows.append('BOTTOM2')
-            for idx, row in enumerate(rows):
-                if row == 'BOTTOM2':
-                    card_w2 = (content_width - gap) / 2
-                    t = Table([[_KPICard(bottom_cards[0][0], bottom_cards[0][1], card_w2, brand_color), _KPICard(bottom_cards[1][0], bottom_cards[1][1], card_w2, brand_color)]], colWidths=[card_w2, card_w2], hAlign='CENTER', spaceBefore=6, spaceAfter=6)
-                    t.setStyle(TableStyle([
-                        ('LEFTPADDING', (0,0), (-1,-1), 6),
-                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
-                        ('TOPPADDING', (0,0), (-1,-1), 0),
-                        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
-                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-                    ]))
-                    body_story.append(t)
-                else:
-                    cols = len(row)
-                    if cols == 1:
-                        single_w = min(content_width * 0.60, 300)
-                        t = Table([[row[0]]], colWidths=[single_w], hAlign='CENTER')
-                    elif cols == 2:
-                        card_w = (content_width - gap) / 2
-                        t = Table([row], colWidths=[card_w]*2, hAlign='CENTER')
-                    elif cols == 3:
-                        card_w = (content_width - gap*2) / 3
-                        t = Table([row], colWidths=[card_w]*3, hAlign='CENTER')
-                    else:
-                        t = Table([row], hAlign='CENTER')
-                    t.setStyle(TableStyle([
-                        ('LEFTPADDING', (0,0), (-1,-1), 6),
-                        ('RIGHTPADDING', (0,0), (-1,-1), 6),
-                        ('TOPPADDING', (0,0), (-1,-1), 6),
-                        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-                        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-                    ]))
-                    body_story.append(t)
-                if idx < len(rows)-1:
-                    body_story.append(Spacer(1, gap))
+        if kpis:
+            body_story.extend(_build_kpi_grid_flowables(kpis, brand_color, content_width))
         body_story.append(PageBreak())
 
 

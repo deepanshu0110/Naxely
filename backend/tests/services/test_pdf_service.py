@@ -1765,3 +1765,155 @@ class TestRecommendationDisplayNumbering:
                 os.unlink(path)
             except OSError:
                 pass
+
+
+class TestKpiGridCounts:
+    """Regression for KPI-count branches (1/2/4/5) never exercised before — both merged
+    exec+KPI and standalone KPI pages. Fixes n==1 clipping and deduplicates grid logic."""
+
+    def _make_df(self, n):
+        import pandas as pd
+        names = ["Revenue", "Units Sold", "Clicks", "Profit", "Cost"]
+        base = [
+            [1000, 1200, 1100, 1300, 1400, 1500, 1600, 1700, 1800, 1900],
+            [300, 290, 285, 280, 275, 270, 265, 260, 255, 250],
+            [100, 110, 105, 120, 130, 125, 140, 150, 145, 160],
+            [5000, 5200, 5100, 5300, 5400, 5500, 5600, 5700, 5800, 5900],
+            [200, 220, 210, 230, 240, 250, 260, 270, 280, 290],
+        ]
+        data = {"Date": pd.date_range("2024-01-01", periods=10, freq="D")}
+        for i in range(n):
+            data[names[i]] = base[i]
+        data["Region"] = ["North", "South"] * 5
+        return pd.DataFrame(data)
+
+    def _render(self, n, mode):
+        import fitz
+        from app.services.pdf_service import build_sync
+        from app.services.ai_service import SummaryResult
+        df = self._make_df(n)
+        metric_cols = [c for c in df.columns if c not in ("Date", "Region")][:n]
+        if mode == "merged":
+            sections = ["executive_summary", "kpi_overview"]
+            summary = SummaryResult(lead="Sales grew.", context="Ctx", implication="Imp", action="Act")
+            ai = {"summary": summary, "insights": [], "anomalies": [], "trends": [], "recommendations": []}
+            rid = f"test-kpi-n{n}-merged"
+        else:
+            sections = ["kpi_overview"]
+            ai = {"summary": None, "insights": [], "anomalies": [], "trends": [], "recommendations": []}
+            rid = f"test-kpi-n{n}-standalone"
+        config = {"metric_columns": metric_cols, "title": f"KPI {n} {mode}", "sections": sections, "report_id": rid}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test Corp"}
+        path = build_sync(df, [], ai, config, user_data)
+        doc = fitz.open(path)
+        text = " ".join(p.get_text() for p in doc)
+        pages = len(doc)
+        doc.close()
+        return path, text, pages
+
+    def test_kpi_1_merged(self):
+        import os
+        path, text, pages = self._render(1, "merged")
+        try:
+            assert pages == 4, f"merged n=1 should be 4 pages (cover,TOC,exec+KPI,pagebreak?), got {pages}"
+            assert "Total Revenue" in text
+            assert "Key Metrics" in text
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_1_standalone(self):
+        import os
+        path, text, pages = self._render(1, "standalone")
+        try:
+            assert pages == 3
+            assert "Key Metrics Overview" in text
+            assert "Total Revenue" in text
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_2_merged(self):
+        import os
+        path, text, _ = self._render(2, "merged")
+        try:
+            assert "Total Revenue" in text and "Total Units Sold" in text
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_2_standalone(self):
+        import os
+        path, text, _ = self._render(2, "standalone")
+        try:
+            assert "Total Revenue" in text and "Total Units Sold" in text
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_4_merged(self):
+        import os
+        path, text, _ = self._render(4, "merged")
+        try:
+            for name in ["Total Revenue", "Total Units Sold", "Total Clicks", "Total Profit"]:
+                assert name in text, f"missing {name}"
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_4_standalone(self):
+        import os
+        path, text, _ = self._render(4, "standalone")
+        try:
+            for name in ["Total Revenue", "Total Units Sold", "Total Clicks", "Total Profit"]:
+                assert name in text
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_5_merged(self):
+        import os
+        path, text, _ = self._render(5, "merged")
+        try:
+            for name in ["Total Revenue", "Total Units Sold", "Total Clicks", "Total Profit", "Total Cost"]:
+                assert name in text
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_5_standalone(self):
+        import os
+        path, text, _ = self._render(5, "standalone")
+        try:
+            for name in ["Total Revenue", "Total Units Sold", "Total Clicks", "Total Profit", "Total Cost"]:
+                assert name in text
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_kpi_grid_helper_deduplicated_and_n1_centered(self):
+        """Helper is single source and n==1 card width equals table cell width (no clipping)."""
+        from app.services.pdf_service import _build_kpi_grid_flowables
+        kpis = [{"name": "Total Revenue", "value": "$14.5K", "trend_pct": 90.0, "trend_label": "change"}]
+        flow = _build_kpi_grid_flowables(kpis, "#6366F1", content_width=451.28)
+        assert len(flow) == 1, f"n=1 should produce 1 Table, got {len(flow)}"
+        table = flow[0]
+        # Table colWidths should be single_w ≈ 270, and inner card width must match
+        # inspect the one _KPICard inside
+        from app.services.pdf_service import _KPICard
+        card = table._cellvalues[0][0]  # type: ignore
+        assert isinstance(card, _KPICard)
+        assert card.width == min(451.28 * 0.60, 300), f"n=1 card width should be single_w, got {card.width}"
+        assert table._argW[0] == card.width, "Table cell width must equal card width for n==1 (no overflow)"
+
+    def test_kpi_grid_helper_row_counts(self):
+        from app.services.pdf_service import _build_kpi_grid_flowables
+        def n_flow(n):
+            kpis = [{"name": f"K{i}", "value": "1K", "trend_pct": 1, "trend_label": "change"} for i in range(n)]
+            return _build_kpi_grid_flowables(kpis, "#6366F1", 451.28)
+        # n=2 → 1 row table
+        assert len([f for f in n_flow(2) if hasattr(f, '_cellvalues')]) == 1
+        # n=4 → 2 rows + 1 spacer = 3 flowables
+        assert len(n_flow(4)) == 3
+        # n=5 → 2 rows (3+2) + 1 spacer = 3 flowables
+        assert len(n_flow(5)) == 3
