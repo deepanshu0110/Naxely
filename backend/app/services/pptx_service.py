@@ -174,7 +174,13 @@ def _build_cover(prs, config, user_data, brand_color):
 def _build_executive_summary(prs, summary, brand_color):
     slide = _blank_slide(prs)
     _slide_title(slide, "Executive Summary", brand_color)
-    _add_textbox(slide, MARGIN, MARGIN + TITLE_H + Inches(0.2), CONTENT_W, Inches(5.5), summary, font_size=18, color=COLOR_INK, word_wrap=True)
+    # Handle SummaryResult object (PDF uses .lead/.context/.implication/.action via full_text) vs plain string
+    if summary is not None and not isinstance(summary, str):
+        try:
+            summary = summary.full_text if hasattr(summary, "full_text") else str(summary)
+        except Exception:
+            summary = str(summary)
+    _add_textbox(slide, MARGIN, MARGIN + TITLE_H + Inches(0.2), CONTENT_W, Inches(5.5), summary or "", font_size=18, color=COLOR_INK, word_wrap=True)
 
 
 def _build_kpi_slide(prs, kpis, brand_color):

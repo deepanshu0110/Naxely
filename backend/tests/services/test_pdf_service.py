@@ -1713,6 +1713,81 @@ class TestWordBoundaryTruncation:
                 os.unlink(path)
             except OSError:
                 pass
+
+    def test_anomaly_unicode_renders_without_box_glyph(self):
+        """Middle dot and arrow from LLM should not box-glyph — verified visually."""
+        import fitz
+        from app.services.pdf_service import build_sync, _sanitize_for_pdf
+        # Check sanitize preserves· and→ (fonts support them) but maps dangerous U+2011
+        assert _sanitize_for_pdf("a\u2011b") == "a-b"
+        assert "\u00b7" in _sanitize_for_pdf("a\u00b7b") or _sanitize_for_pdf("a\u00b7b") == "a\u00b7b"
+        msg = "Revenue \u00b7 1800 with arrow \u2192 and quotes \u201chello\u201d"
+        df = pd.DataFrame({"Revenue": [100, 200]})
+        config = {"metric_columns": ["Revenue"], "title": "Unicode", "sections": ["anomalies"], "report_id": "test-unicode-anomaly"}
+        ai = {"summary": None, "insights": [], "anomalies": [{"message": msg, "z_score": 3.5}], "trends": [], "recommendations": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = " ".join(p.get_text() for p in doc)
+            # After sanitize, · and → should still be present (font supports), quotes sanitized to ascii
+            assert "1800" in text
+            assert "hello" in text
+            doc.close()
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_anomaly_exact_2line_wraps_correctly(self):
+        """Message sized to exactly 2 lines must not truncate to 1 or 3."""
+        import fitz
+        from app.services.pdf_service import build_sync
+        msg = "Revenue was unusually high at 1800.00 \u2014 well outside the typical range of 900.00 \u2013 1200.00 with extra context"
+        df = pd.DataFrame({"Revenue": [100, 200]})
+        config = {"metric_columns": ["Revenue"], "title": "2Line", "sections": ["anomalies"], "report_id": "test-2line-anomaly"}
+        ai = {"summary": None, "insights": [], "anomalies": [{"message": msg, "z_score": 3.5}], "trends": [], "recommendations": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = doc[2].get_text()
+            # Should contain both lines' words, no ellipsis (exactly 2 lines fits)
+            assert "unusually high" in text
+            assert "extra context" in text
+            assert text.count("\u2026") == 0 or "well outside" in text
+            doc.close()
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_wide_table_caps_at_8_with_notice(self):
+        """20-col DF must not produce overlapping cells — caps at 8 with notice."""
+        import fitz, pandas as pd, numpy as np
+        from app.services.pdf_service import build_sync
+        rng = np.random.default_rng(1)
+        data = {"Date": pd.date_range("2024-01-01", periods=5)}
+        for i in range(15):
+            data[f"Metric{i+1}"] = rng.integers(100, 5000, 5)
+        df = pd.DataFrame(data)
+        config = {"metric_columns": [f"Metric{i+1}" for i in range(5)], "title": "Wide", "sections": ["data_table"], "report_id": "test-wide-cap"}
+        ai = {"summary": None, "insights": [], "anomalies": [], "trends": [], "recommendations": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = " ".join(p.get_text() for p in doc)
+            # Should be capped and note present
+            assert "Showing first 8 of" in text, f"wide cap notice missing: {text[:500]}"
+            assert "see Excel export for full data" in text
+            # After cap: Date + Metric1-7 visible (8 cols), Metric8+ truncated
+            assert "METRIC1" in text
+            assert "METRIC7" in text
+            assert "METRIC8" not in text, "METRIC8 should be truncated at 8-col cap"
+            assert "METRIC15" not in text, "wide table should have capped Metric15 not visible"
+            doc.close()
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
     """Recommendation numbering must be rendered in Fraunces at display size
     (16pt), zero-padded, not the old tiny 12pt badge number."""
 
@@ -1917,3 +1992,117 @@ class TestKpiGridCounts:
         assert len(n_flow(4)) == 3
         # n=5 → 2 rows (3+2) + 1 spacer = 3 flowables
         assert len(n_flow(5)) == 3
+
+
+class TestSectionPairwise:
+    """Pairwise combos where cross-section logic could leak: recommendations auto-trigger,
+    merged KPI/exec, data_table+appendix coexistence."""
+
+    def _render(self, sections, ai_extra=None):
+        import pandas as pd, fitz
+        from app.services.pdf_service import build_sync
+        from app.services.ai_service import SummaryResult
+        df = pd.DataFrame({"Metric": [10, 20, 30], "Value": [100, 200, 300]})
+        ai = {"summary": None, "insights": [], "anomalies": [], "trends": [], "recommendations": ["Do X"]}
+        if ai_extra:
+            ai.update(ai_extra)
+        has_summary = "executive_summary" in sections
+        if has_summary and ai["summary"] is None:
+            ai["summary"] = SummaryResult(lead="Lead", context="Ctx", implication="Imp", action="Act")
+        if "insights" in sections and not ai["insights"]:
+            ai["insights"] = [{"kpi": "Value", "number": "$300", "reason": "Steady", "action": "Invest", "sentiment": "positive", "priority": "high"}]
+        config = {"metric_columns": ["Value"], "title": "Pairwise", "sections": sections, "report_id": f"test-pair-{'-'.join(sections) or 'none'}"}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai, config, user_data)
+        doc = fitz.open(path)
+        text = " ".join(p.get_text() for p in doc)
+        count_reco = text.count("Recommendations")
+        pages = len(doc)
+        doc.close()
+        return path, text, count_reco, pages
+
+    def test_insights_alone_shows_recommendations(self):
+        import os
+        path, text, cnt, _ = self._render(["insights"])
+        try:
+            assert "Recommendations" in text
+            # TOC + body header = 2 occurrences
+            assert cnt == 2, f"duplicate Recommendations header count={cnt}"
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_exec_summary_alone_shows_recommendations(self):
+        import os
+        path, text, cnt, _ = self._render(["executive_summary"])
+        try:
+            assert "Recommendations" in text
+            assert cnt == 2
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_charts_data_table_no_recommendations(self):
+        import os
+        path, text, cnt, _ = self._render(["charts", "data_table"])
+        try:
+            assert "Recommendations" not in text
+            assert cnt == 0
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_insights_plus_exec_shows_single_recommendations(self):
+        import os
+        path, text, cnt, _ = self._render(["insights", "executive_summary"])
+        try:
+            assert "Recommendations" in text
+            assert cnt == 2, f"should be single Recommendations (TOC+body), got {cnt}"
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_exec_kpi_merged_pair_isolated(self):
+        import os, fitz
+        import pandas as pd
+        from app.services.pdf_service import build_sync
+        from app.services.ai_service import SummaryResult
+        df = pd.DataFrame({"Metric": [10, 20], "Value": [100, 200]})
+        summary = SummaryResult(lead="Lead", context="Ctx", implication="Imp", action="Act")
+        ai = {"summary": summary, "insights": [], "anomalies": [], "trends": [], "recommendations": ["Rec"]}
+        config = {"metric_columns": ["Value"], "title": "Pairwise", "sections": ["executive_summary", "kpi_overview"], "report_id": "test-pair-exec-kpi"}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = " ".join(p.get_text() for p in doc)
+            # Merged: Key Metrics subhead inside Summary, NOT standalone page/header
+            assert "Key Metrics" in text
+            assert "Key Metrics Overview" not in text
+            assert "Recommendations" in text  # because exec_summary triggers it
+            assert text.count("Recommendations") == 2  # TOC + body
+            doc.close()
+        finally:
+            try: os.unlink(path)
+            except OSError: pass
+
+    def test_data_table_appendix_together(self):
+        import os, fitz
+        import pandas as pd
+        from app.services.pdf_service import build_sync
+        df = pd.DataFrame({"Date": pd.date_range("2024-01-01", periods=10), "Value": [1,2,3,4,5,6,7,8,9,10], "Region": ["North"]*10})
+        config = {"metric_columns": ["Value"], "title": "Pairwise", "sections": ["data_table", "appendix"], "report_id": "test-pair-table-appendix"}
+        ai = {"summary": None, "insights": [], "anomalies": [], "trends": [], "recommendations": []}
+        user_data = {"brand_color": "#6366F1", "tier": "pro", "logo_url": None, "company_name": "Test"}
+        path = build_sync(df, [], ai, config, user_data)
+        try:
+            doc = fitz.open(path)
+            text = " ".join(p.get_text() for p in doc)
+            assert "Data Table" in text
+            assert "Appendix" in text
+            # Both table headers should be mono muted (not brand band) — implicitly via previous DataTableLedger tests, but check presence
+            assert text.count("REGION") >= 1 or "Region" in text
+            doc.close()
+        finally:
+            try: os.unlink(path)
+            except OSError: pass

@@ -309,3 +309,78 @@ class TestPptxPdfKpiParity:
 
         assert pdf_pcts["Avg Unit Price"] == 0.0
         assert pptx_pcts["Avg Unit Price"] == 0.0
+
+
+class TestPptxPdfContentParity:
+    """Content parity beyond trend_pct: ensures text content (summary/insights/recommendations)
+    is not silently dropped in one format — would have caught Together-provider omission."""
+
+    def _build_fixture(self):
+        import pandas as pd
+        from app.services.ai_service import SummaryResult
+        df = pd.DataFrame({
+            "Date": pd.date_range("2024-01-01", periods=5, freq="ME"),
+            "Revenue": [1000.0, 1200.0, 900.0, 1500.0, 1800.0],
+            "Units_Sold": [100, 110, 105, 120, 130],
+            "Region": ["North","South","East","West","North"],
+        })
+        summary = SummaryResult(lead="Revenue grew 33.9% reaching $9,494.", context="Ctx stable.", implication="Imp intact.", action="Act spend.")
+        ai = {
+            "summary": summary,
+            "insights": [
+                {"kpi": "Total Revenue", "number": "$9,494", "reason": "Steady growth driven by North", "action": "Invest in North", "sentiment": "positive", "priority": "high"},
+                {"kpi": "Total Units Sold", "number": "565", "reason": "Volume up", "action": "Scale ops", "sentiment": "positive", "priority": "medium"},
+            ],
+            "anomalies": [{"message": "Revenue unusually high at 1800.00 — well outside 900.00 – 1200.00.", "z_score": 3.5}],
+            "trends": [],
+            "recommendations": ["Double down on the top channel.", "Cut spend on underperformers."],
+        }
+        config = {
+            "title": "Parity Content",
+            "sections": ["executive_summary","kpi_overview","insights","anomalies","recommendations","data_table"],
+            "metric_columns": ["Revenue","Units_Sold"],
+            "date_column": "Date",
+            "report_id": "parity-content-001",
+        }
+        user_data = {"brand_color": "#6366F1", "tier": "agency", "logo_url": None, "company_name": "Acme Corp"}
+        return df, ai, config, user_data
+
+    def test_content_parity_pdf_and_pptx(self):
+        import io
+        from app.services.pdf_service import build_sync
+        from app.services.pptx_service import generate_pptx
+        df, ai, config, user_data = self._build_fixture()
+        # PDF
+        pdf_path = build_sync(df, [], ai, dict(config), user_data)
+        import fitz
+        try:
+            doc = fitz.open(pdf_path)
+            pdf_text = " ".join(p.get_text() for p in doc)
+            doc.close()
+        finally:
+            try: import os; os.unlink(pdf_path)
+            except OSError: pass
+        # PPTX
+        pptx_bytes = generate_pptx(df, [], ai, dict(config), user_data)
+        from pptx import Presentation
+        prs = Presentation(io.BytesIO(pptx_bytes))
+        pptx_text = " ".join(shape.text for slide in prs.slides for shape in slide.shapes if shape.has_text_frame)
+        # Every insight KPI must appear in both
+        for ins in ai["insights"]:
+            assert ins["kpi"] in pdf_text, f"insight {ins['kpi']} missing in PDF"
+            assert ins["kpi"] in pptx_text, f"insight {ins['kpi']} missing in PPTX — would catch Together omission"
+        # Every recommendation substring
+        for rec in ai["recommendations"]:
+            # normalize: first 10 chars enough for wrap differences
+            sub = rec[:15]
+            assert sub in pdf_text, f"recommendation '{sub}' missing in PDF"
+            assert sub in pptx_text, f"recommendation '{sub}' missing in PPTX"
+        # Summary lead numbers
+        assert "33.9%" in pdf_text and "33.9%" in pptx_text
+        assert "9,494" in pdf_text and "9,494" in pptx_text
+        # Anomaly phrase
+        assert "unusually high" in pdf_text and "unusually high" in pptx_text
+        # This asserts semantic parity — byte-identical not required —
+        # a future bug that silently skips rendering a section in one format (like Together
+        # provider code present but unreached) would fail here because its KPI/insights would
+        # be absent from that format's text extraction.

@@ -579,10 +579,10 @@ class _AnomalyBox(Flowable):
         Flowable.__init__(self)
         # Backward-compat: allow passing plain string message
         if isinstance(anomaly, dict):
-            self.message = str(anomaly.get("message", "Anomaly detected") or "Anomaly detected")
+            self.message = _sanitize_for_pdf(str(anomaly.get("message", "Anomaly detected") or "Anomaly detected"))
             raw_z = anomaly.get("z_score", anomaly.get("deviation"))
         else:
-            self.message = str(anomaly or "Anomaly detected")
+            self.message = _sanitize_for_pdf(str(anomaly or "Anomaly detected"))
             raw_z = None
         # Derive severity from |z_score|; detector floor is |z|>2, so tiers are 2-3 low, 3-4 medium, >=4 high
         try:
@@ -1805,9 +1805,18 @@ def build_sync(
         display_df = df.copy()
         if len(display_df) > 50:
             display_df = display_df.head(50)
+        # Column cap: beyond 8 cols the table becomes illegible (see wide-table visual audit)
+        MAX_DISPLAY_COLS = 8
+        cols_truncated = None
+        if len(display_df.columns) > MAX_DISPLAY_COLS:
+            cols_truncated = len(display_df.columns)
+            display_df = display_df.iloc[:, :MAX_DISPLAY_COLS]
 
         data_table = _build_data_table(display_df, brand_color, content_width)
         body_story.append(data_table)
+        if cols_truncated is not None:
+            note_style = ParagraphStyle('ColCapNote', fontName='IBMPlexSans', fontSize=7, textColor=HexColor(MUTED), alignment=TA_CENTER, leading=10, spaceBefore=6)
+            body_story.append(Paragraph(f"Showing first {MAX_DISPLAY_COLS} of {cols_truncated} columns \u2014 see Excel export for full data.", note_style))
         body_story.append(PageBreak())
 
     # ────────────────────────────────────────────────────────────
@@ -1854,6 +1863,11 @@ def build_sync(
         appendix_df = df.copy()
         if len(appendix_df) > 100:
             appendix_df = appendix_df.head(100)
+        MAX_APP_COLS = 8
+        app_cols_truncated = None
+        if len(appendix_df.columns) > MAX_APP_COLS:
+            app_cols_truncated = len(appendix_df.columns)
+            appendix_df = appendix_df.iloc[:, :MAX_APP_COLS]
 
         app_table_data = []
         app_header = [str(c).upper() for c in appendix_df.columns]
@@ -1891,6 +1905,9 @@ def build_sync(
 
         app_table.setStyle(TableStyle(app_style_commands))
         body_story.append(app_table)
+        if app_cols_truncated is not None:
+            note_style2 = ParagraphStyle('AppColCapNote', fontName='IBMPlexSans', fontSize=7, textColor=HexColor(MUTED), alignment=TA_CENTER, leading=10, spaceBefore=6)
+            body_story.append(Paragraph(f"Showing first {MAX_APP_COLS} of {app_cols_truncated} columns \u2014 see Excel export for full data.", note_style2))
 
     # ────────────────────────────────────────────────────────────
     # TOC — built from recorded entries, inserted after cover
