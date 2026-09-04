@@ -97,7 +97,7 @@ describe('ColumnMapper', () => {
     const onChange = vi.fn()
     renderMapper(mockColumns, onChange)
 
-    const toggleBtns = screen.getAllByRole('button')
+    const toggleBtns = screen.getAllByRole('switch')
     const includeBtn = toggleBtns.find(b => b.classList.contains('relative'))
     if (includeBtn) {
       await userEvent.click(includeBtn)

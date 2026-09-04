@@ -148,7 +148,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
             <option value="together">Together AI</option>
           </select>
           {errors.provider && (
-            <p className="mt-1 text-xs text-red-500">{errors.provider.message}</p>
+            <p role="alert" className="mt-1 text-xs text-red-500">{errors.provider.message}</p>
           )}
         </div>
 
@@ -166,7 +166,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
             className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900 placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
           />
           {errors.api_key && (
-            <p className="mt-1 text-xs text-red-500">{errors.api_key.message}</p>
+            <p role="alert" className="mt-1 text-xs text-red-500">{errors.api_key.message}</p>
           )}
         </div>
 

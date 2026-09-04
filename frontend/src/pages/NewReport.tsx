@@ -30,6 +30,7 @@ export default function NewReport() {
   const [autoChartSpecs, setAutoChartSpecs] = useState<ChartSpec[]>([])
   const [chartSpecsSelector, setChartSpecsSelector] = useState<'ai' | 'rules' | undefined>(undefined)
   const [generating, setGenerating] = useState(false)
+  const generatingRef = useRef(false)
   const [sourceType, setSourceType] = useState<'csv' | 'sheets'>('csv')
   const [sheetsUrl, setSheetsUrl] = useState('')
   const [sheetsConnecting, setSheetsConnecting] = useState(false)
@@ -154,6 +155,8 @@ export default function NewReport() {
 
   const handleGenerate = async () => {
     if (!uploadResult) return
+    if (generatingRef.current) return
+    generatingRef.current = true
     setGenerating(true)
 
     const payload: ReportConfigType = {
@@ -182,6 +185,7 @@ export default function NewReport() {
       setCurrentStep(5)
       startPolling(id)
     } catch (err: unknown) {
+      generatingRef.current = false
       const status = (err as any)?.response?.status
       // 401 is handled globally by axios interceptor (redirect to /login) — no local UI needed
       if (status === 401) {

@@ -139,6 +139,7 @@ async def get_profile(
             "brand_color": row.get("brand_color", "#6366F1"),
             "reports_this_month": row.get("reports_this_month", 0),
             "monthly_limit": monthly_limit,
+            "email_suppressed": bool(row.get("email_suppressed", False)),
         },
     }
 

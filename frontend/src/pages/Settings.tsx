@@ -102,6 +102,12 @@ export default function Settings() {
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-6 py-8">
           <h1 className="mb-6 font-display text-2xl font-bold text-ink dark:text-gray-100">Settings</h1>
+          {profile?.email_suppressed && (
+            <div role="alert" className="mb-6 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800 dark:bg-amber-900/30">
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+              <p className="text-sm text-amber-800 dark:text-amber-200">Emails to your address have been paused due to a delivery issue (bounce or spam report). Contact support if this seems wrong.</p>
+            </div>
+          )}
           <Tabs items={TABS} activeId={activeTab} onChange={setActiveTab}>
             {activeTab === 'profile' && <ProfileTab profile={profile} onSaved={fetchProfile} />}
             {activeTab === 'api-key' && (
@@ -447,7 +453,12 @@ function BillingTab({ profile, tier, tierExpiresAt }: { profile: ProfileResponse
     try {
       const resp = await api.post('/payments/checkout', { plan })
       const data = resp.data as CheckoutResponse
-      window.location.href = data.checkout_url
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url
+      } else {
+        toast.success(`Upgraded to ${plan === 'pro' ? 'Pro' : 'Agency'}`)
+        setIsCreatingCheckout(null)
+      }
     } catch {
       setIsCreatingCheckout(null)
     }

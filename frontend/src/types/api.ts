@@ -82,6 +82,7 @@ export interface ProfileResponse {
   theme_preference: string
   reports_this_month: number
   monthly_limit: number | null
+  email_suppressed: boolean
 }
 
 export interface DeleteResponse {

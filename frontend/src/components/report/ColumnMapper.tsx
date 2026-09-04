@@ -32,13 +32,14 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
+        <caption className="sr-only">Column mapping and type configuration</caption>
         <thead>
           <tr className="border-b border-gray-200 text-left text-xs font-medium uppercase text-gray-500 dark:border-gray-700">
-            <th className="pb-3 pr-4">Original Name</th>
-            <th className="pb-3 pr-4">Display Name</th>
-            <th className="pb-3 pr-4">Type</th>
-            <th className="pb-3 pr-4">Include</th>
-            <th className="pb-3">Sample Values</th>
+            <th scope="col" className="pb-3 pr-4">Original Name</th>
+            <th scope="col" className="pb-3 pr-4">Display Name</th>
+            <th scope="col" className="pb-3 pr-4">Type</th>
+            <th scope="col" className="pb-3 pr-4">Include</th>
+            <th scope="col" className="pb-3">Sample Values</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -81,6 +82,10 @@ export default function ColumnMapper({ columns, onChange }: ColumnMapperProps) {
               </td>
               <td className="py-3 pr-4">
                 <button
+                  type="button"
+                  role="switch"
+                  aria-checked={!!config[idx]?.include}
+                  aria-label={`Include ${col.original_name}`}
                   onClick={() => updateField(idx, 'include', !config[idx]?.include)}
                   className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer items-center rounded-full transition-colors duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
                     config[idx]?.include ? 'bg-amber-500' : 'bg-gray-200'
