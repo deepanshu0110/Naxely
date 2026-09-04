@@ -79,7 +79,17 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
       onSaved(resp)
       reset({ provider: data.provider, api_key: '' })
       toast.success(data.provider === 'gemini' ? 'Switched to Gemini' : 'API key saved')
-    } catch {
+    } catch (err: unknown) {
+      const data = (err as any)?.response?.data
+      const detail = data?.detail
+      // Two distinct 400 shapes: "Invalid API key format ..." (fast regex) vs "API key validation failed: ..." (slow live provider call)
+      const msg = detail?.message ?? data?.message ?? detail ?? (err instanceof Error ? err.message : 'Failed to save API key')
+      const status = (err as any)?.response?.status
+      if (status === 429) {
+        toast.error(msg || 'Too many attempts. Please wait a moment and try again.', { duration: 5000 })
+      } else {
+        toast.error(typeof msg === 'string' ? msg : 'Failed to save API key', { duration: 5000 })
+      }
     } finally {
       setIsSaving(false)
     }
@@ -164,6 +174,9 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
           <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
           <div className="text-xs text-amber-700">
             <p>Add your own API key to enable AI insights. All plans support BYOK — bring keys from Gemini, Groq, DeepSeek, OpenAI and more.</p>
+            <p className="mt-1 text-amber-600/80">
+              Saving will make a small test call to {provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : 'the provider'} using your key to verify it works — this uses a tiny amount of your quota and may take a few seconds.
+            </p>
             <p className="mt-1">
               New to API keys?{' '}
               <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" className="font-medium underline hover:no-underline">Get a free Groq key</a>
@@ -173,7 +186,9 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
         </div>
 
         <div className="flex items-center gap-3">
-          <Button type="submit" loading={isSaving}>{needsKey ? 'Save API Key' : 'Save Provider'}</Button>
+          <Button type="submit" loading={isSaving}>
+            {isSaving ? 'Verifying your key...' : needsKey ? 'Save API Key' : 'Save Provider'}
+          </Button>
           {hasKey && (
             <Button
               type="button"

@@ -181,7 +181,23 @@ export default function NewReport() {
       const id = await generateReport(payload)
       setCurrentStep(5)
       startPolling(id)
-    } catch {
+    } catch (err: unknown) {
+      const status = (err as any)?.response?.status
+      // 401 is handled globally by axios interceptor (redirect to /login) — no local UI needed
+      if (status === 401) {
+        setGenerating(false)
+        return
+      }
+      const data = (err as any)?.response?.data
+      const detail = data?.detail
+      // Surface the real backend message (includes MONTHLY_LIMIT_REACHED details) not a generic fallback
+      const msg = detail?.message ?? data?.message ?? (err instanceof Error ? err.message : 'Failed to generate report')
+      const url = detail?.upgrade_url ?? data?.upgrade_url
+      if (status === 402 && url) {
+        toast.error(`${msg} — Upgrade your plan to continue.`, { duration: 5000 })
+      } else {
+        toast.error(msg, { duration: 4000 })
+      }
       setGenerating(false)
     }
   }

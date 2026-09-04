@@ -14,6 +14,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [upgradeUrl, setUpgradeUrl] = useState<string | null>(null)
   const uploadFile = useReportStore((s) => s.uploadFile)
 
   const onDrop = useCallback(
@@ -28,7 +29,20 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
         onUploadComplete(result)
       } catch (err: unknown) {
         const status = (err as any)?.response?.status
-        if (status === 402 || status === 401) {
+        // 401 is handled globally by axios interceptor (redirect to /login) — intentionally no local UI
+        if (status === 401) {
+          return
+        }
+        if (status === 402) {
+          const data = (err as any)?.response?.data
+          const detail = data?.detail
+          const msg = detail?.message ?? data?.message ?? "You've reached your monthly limit."
+          const url = detail?.upgrade_url ?? data?.upgrade_url ?? null
+          setError(msg)
+          if (url) setUpgradeUrl(url)
+          // Also surface via toast for consistency with other 402 handling, using the real backend message
+          // (global interceptor will also toast, but local toast ensures visibility even if global is missed)
+          // We don't re-throw, just show local error
           return
         }
         const apiMessage = (err as any)?.response?.data?.message
@@ -67,6 +81,7 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
   const reset = () => {
     setUploadResult(null)
     setError(null)
+    setUpgradeUrl(null)
   }
 
   if (uploadResult) {
@@ -131,7 +146,14 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps) {
         )}
       </div>
       {error && (
-        <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>
+        <div className="mt-2 text-sm text-red-600 dark:text-red-400" role="alert" aria-live="polite">
+          <p>{error}</p>
+          {upgradeUrl && (
+            <a href={upgradeUrl} className="mt-1 inline-block font-medium underline hover:no-underline">
+              Upgrade your plan
+            </a>
+          )}
+        </div>
       )}
     </div>
   )

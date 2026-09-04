@@ -30,6 +30,67 @@ _CHART_EXECUTOR = concurrent.futures.ThreadPoolExecutor(
     thread_name_prefix="chart_worker",
 )
 
+# Saturation monitoring — queue depth visibility without new infrastructure.
+# With max_workers=2, a queue of 3 waiting means 5 total pending (2 running + 3 queued),
+# which is a meaningful backlog where reports are being delayed, not just momentarily busy.
+_POOL_SATURATION_THRESHOLD = 3
+_chart_saturated = False
+_pdf_saturated = False
+
+
+def _check_pool_saturation(executor: concurrent.futures.ThreadPoolExecutor, name: str) -> None:
+    """Log queue depth and alert once when crossing the saturation threshold.
+
+    Uses the private _work_queue.qsize() — pragmatic choice for Python 3.11 where no public
+    API exists; confirmed via stdlib `concurrent.futures.thread.ThreadPoolExecutor` source.
+    The check itself is O(1) and does no I/O, so overhead is negligible.
+    Alert fatigue is avoided by tracking whether the pool was already flagged as saturated
+    and only firing when transitioning from below to above threshold (mirrors
+    `_warned_telegram_missing` guard in error_notifier.py)."""
+    global _chart_saturated, _pdf_saturated
+    try:
+        qsize = executor._work_queue.qsize()  # type: ignore[attr-defined]
+    except Exception:
+        return
+    # Always log at INFO for visibility in server logs (currently not logged at all)
+    logger.info("[%s] queue depth: %s (threshold %s)", name, qsize, _POOL_SATURATION_THRESHOLD)
+    is_saturated = qsize >= _POOL_SATURATION_THRESHOLD
+    # Pick the correct flag for this pool
+    if name == "chart":
+        was_saturated = _chart_saturated
+        def set_flag(v: bool) -> None:
+            global _chart_saturated
+            _chart_saturated = v
+    elif name == "pdf":
+        was_saturated = _pdf_saturated
+        def set_flag(v: bool) -> None:
+            global _pdf_saturated
+            _pdf_saturated = v
+    else:
+        was_saturated = False
+        def set_flag(v: bool) -> None:
+            pass
+    if is_saturated and not was_saturated:
+        # Crossing threshold upward — alert once
+        set_flag(True)
+        msg = f"{name} pool saturated: queue depth {qsize} >= threshold {_POOL_SATURATION_THRESHOLD} (max_workers={executor._max_workers})"
+        logger.warning(msg)
+        try:
+            sentry_sdk.capture_message(msg, level="warning")
+        except Exception:
+            pass
+        try:
+            notify_telegram_error(
+                Exception(msg),
+                {"stage": f"thread_pool_saturation_{name}", "queue_depth": qsize, "threshold": _POOL_SATURATION_THRESHOLD},
+            )
+        except Exception:
+            pass
+    elif not is_saturated and was_saturated:
+        # Recovered below threshold — reset flag and log recovery
+        set_flag(False)
+        logger.info("[%s] queue recovered below threshold: %s < %s", name, qsize, _POOL_SATURATION_THRESHOLD)
+
 STEP_LABELS = {
     'data': 'Parsing data...',
     'charts': 'Generating charts...',
@@ -231,6 +292,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
             except Exception as e:
                 logger.warning(f"[report_service] AI chart selection skipped: {e}")
 
+        _check_pool_saturation(_CHART_EXECUTOR, "chart")
         chart_paths = await loop.run_in_executor(
             _CHART_EXECUTOR,
             chart_service.generate_sync,
@@ -328,6 +390,7 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         pdf_config["_precomputed_kpis"] = kpis
         pdf_config["_ai_skipped"] = ai_skipped
 
+        _check_pool_saturation(_PDF_EXECUTOR, "pdf")
         pdf_path = await loop.run_in_executor(
             _PDF_EXECUTOR,
             pdf_service.build_sync,
