@@ -380,7 +380,7 @@ export default function NewReport() {
                   columnConfig={columnConfig}
                   onSpecsChange={setChartSpecs}
                   onAutoSpecsChange={handleAutoSpecsChange}
-                  maxCharts={user?.tier === 'agency' ? 16 : user?.tier === 'pro' ? 8 : 3}
+                  maxCharts={user?.tier === 'agency' ? undefined : user?.tier === 'pro' ? 8 : 3}
                 />
               </div>
             )}

@@ -5,7 +5,7 @@ Spec (Part A, task):
 - preview-charts returns ALL generatable {x, y, type, title} candidates, not just 3.
 - Each candidate carries a `recommended` flag (AI/rule-picked subset).
 - generate_sync no longer hard-caps at 3: it derives the cap from tier
-  (Free=3, Pro=8, Agency=16), following the deps.py tier-check pattern.
+  (Free=3, Pro=8, Agency=unlimited), following the deps.py tier-check pattern.
 - histogram is selectable.
 - PPTX export uses chart_specs_override when present instead of re-deriving.
 """
@@ -100,9 +100,9 @@ class TestTierCaps:
         from app.services.chart_service import chart_cap_for_tier
         assert chart_cap_for_tier("pro") == 8
 
-    def test_chart_cap_for_tier_agency_is_sixteen(self):
+    def test_chart_cap_for_tier_agency_is_unlimited(self):
         from app.services.chart_service import chart_cap_for_tier
-        assert chart_cap_for_tier("agency") == 16
+        assert chart_cap_for_tier("agency") is None
 
     def test_generate_sync_pro_allows_eight_charts(self):
         """8 valid specs for a Pro user must produce 8 charts (not truncated to 3)."""
@@ -123,13 +123,13 @@ class TestTierCaps:
         finally:
             cleanup_charts("test-free3")
 
-    def test_generate_sync_agency_allows_sixteen_charts(self):
-        specs = _specs(16)
-        paths = generate_sync(_df(), "test-agency16", {"tier": "agency"}, "#0D7377", specs)
+    def test_generate_sync_agency_is_unlimited(self):
+        specs = _specs(25)
+        paths = generate_sync(_df(), "test-agency-unlimited", {"tier": "agency"}, "#0D7377", specs)
         try:
-            assert len(paths) == 16, f"Expected 16 charts for Agency, got {len(paths)}"
+            assert len(paths) == 25, f"Expected 25 charts for Agency unlimited, got {len(paths)}"
         finally:
-            cleanup_charts("test-agency16")
+            cleanup_charts("test-agency-unlimited")
 
     def test_generate_sync_default_tier_caps_at_three(self):
         """No tier in config → falls back to Free cap of 3 (backward compatible)."""
