@@ -118,6 +118,7 @@ async def _send_and_log(
     subject: str,
     html: str,
     text_body: str,
+    headers: dict[str, str] | None = None,
 ) -> bool:
     """Send email and log it. Returns True if sent, False otherwise.
     Uses UNIQUE (user_id, email_type) to prevent duplicates even if called twice.
@@ -126,7 +127,7 @@ async def _send_and_log(
     prevents a second log row but cannot unsend the first email. This is flagged
     per spec; a transactional outbox would be needed for true atomicity.
     """
-    success, resend_id = send_email_with_id(to=email, subject=subject, html=html, text=text_body)
+    success, resend_id = send_email_with_id(to=email, subject=subject, html=html, text=text_body, headers=headers)
     if not success:
         logger.warning("Lifecycle email %s failed for %s", email_type, email)
         return False
@@ -158,7 +159,14 @@ async def send_trigger_a(db: AsyncSession, user: dict) -> bool:
     full_name_esc = _html.escape(full_name, quote=False)
     html = TEMPLATE_A_HTML.format(frontend_url=frontend_url, full_name=full_name_esc)
     text_body = TEMPLATE_A_TEXT.format(frontend_url=frontend_url, full_name=full_name)
-    return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_no_report_3d", TEMPLATE_A_SUBJECT, html, text_body)
+    # List-Unsubscribe for lifecycle (recurring-adjacent) only — not for transactional emails.
+    # Using mailto: approach (simpler than one-click token endpoint) as allowed per task;
+    # one-click token endpoint is noted as future enhancement.
+    headers = {
+        "List-Unsubscribe": "<mailto:unsubscribe@naxely.com?subject=unsubscribe>",
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    }
+    return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_no_report_3d", TEMPLATE_A_SUBJECT, html, text_body, headers)
 
 
 async def send_trigger_b(db: AsyncSession, user: dict) -> bool:
@@ -167,7 +175,11 @@ async def send_trigger_b(db: AsyncSession, user: dict) -> bool:
     full_name_esc = _html.escape(full_name, quote=False)
     html = TEMPLATE_B_HTML.format(frontend_url=frontend_url, full_name=full_name_esc)
     text_body = TEMPLATE_B_TEXT.format(frontend_url=frontend_url, full_name=full_name)
-    return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_onboarded_no_report_7d", TEMPLATE_B_SUBJECT, html, text_body)
+    headers = {
+        "List-Unsubscribe": "<mailto:unsubscribe@naxely.com?subject=unsubscribe>",
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    }
+    return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_onboarded_no_report_7d", TEMPLATE_B_SUBJECT, html, text_body, headers)
 
 
 async def run_lifecycle_cycle(db: AsyncSession) -> dict:

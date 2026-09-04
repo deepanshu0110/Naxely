@@ -74,6 +74,25 @@ async def resend_webhook(
     logger.info("Resend webhook received type=%s resend_id=%s", event_type, resend_id)
 
     if event_type in BOUNCE_TYPES:
+        # For email.bounced, distinguish hard (Permanent) vs soft (Temporary) — only hard bounces
+        # indicate a permanently invalid address and should suppress future sends. Soft bounces
+        # (Temporary, e.g. mailbox full, transient DNS) may recover, so we log but do not suppress.
+        # If bounce object is missing (as in some tests), treat as hard to be safe and preserve
+        # backward compatibility with existing tests that send minimal bounced payloads.
+        if event_type == "email.bounced":
+            bounce = data.get("bounce") or {}
+            bounce_type = str(bounce.get("type", "")).lower()
+            # Only Temporary is explicitly soft; missing/empty or Permanent is treated as hard
+            if bounce_type == "temporary":
+                logger.info("Ignoring soft bounce for resend_id=%s type=%s subType=%s — not suppressing", resend_id, bounce.get("type"), bounce.get("subType"))
+                # Still update email_log to bounced for tracking, but do not set email_suppressed
+                if resend_id:
+                    await db.execute(
+                        text("UPDATE email_log SET status = :status WHERE resend_id = :rid"),
+                        {"status": "bounced", "rid": str(resend_id)},
+                    )
+                    await db.commit()
+                return {"success": True, "data": {"status": "soft_bounced_ignored"}}
         status = "bounced" if event_type == "email.bounced" else "complained"
         if not resend_id:
             # Fallback: try to find user by recipient email and suppress
