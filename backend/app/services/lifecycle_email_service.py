@@ -4,6 +4,7 @@ who have NOT already received that email_type (per email_log) and are not
 suppressed.
 """
 
+import html as _html
 import logging
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -154,7 +155,8 @@ async def _send_and_log(
 async def send_trigger_a(db: AsyncSession, user: dict) -> bool:
     frontend_url = settings.FRONTEND_BASE_URL
     full_name = (user.get("full_name") or "").strip() or "there"
-    html = TEMPLATE_A_HTML.format(frontend_url=frontend_url, full_name=full_name)
+    full_name_esc = _html.escape(full_name, quote=False)
+    html = TEMPLATE_A_HTML.format(frontend_url=frontend_url, full_name=full_name_esc)
     text_body = TEMPLATE_A_TEXT.format(frontend_url=frontend_url, full_name=full_name)
     return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_no_report_3d", TEMPLATE_A_SUBJECT, html, text_body)
 
@@ -162,7 +164,8 @@ async def send_trigger_a(db: AsyncSession, user: dict) -> bool:
 async def send_trigger_b(db: AsyncSession, user: dict) -> bool:
     frontend_url = settings.FRONTEND_BASE_URL
     full_name = (user.get("full_name") or "").strip() or "there"
-    html = TEMPLATE_B_HTML.format(frontend_url=frontend_url, full_name=full_name)
+    full_name_esc = _html.escape(full_name, quote=False)
+    html = TEMPLATE_B_HTML.format(frontend_url=frontend_url, full_name=full_name_esc)
     text_body = TEMPLATE_B_TEXT.format(frontend_url=frontend_url, full_name=full_name)
     return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_onboarded_no_report_7d", TEMPLATE_B_SUBJECT, html, text_body)
 

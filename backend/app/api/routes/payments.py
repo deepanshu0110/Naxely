@@ -387,7 +387,7 @@ async def dodo_webhook(
             )
             row = result.mappings().first()
             if row and settings.RESEND_API_KEY:
-                send_email(
+                ok = send_email(
                     to=row["email"],
                     subject="Payment failed — Naxely",
                     html=(
@@ -398,6 +398,36 @@ async def dodo_webhook(
                         "to avoid any disruption to your subscription.</p>"
                     ),
                 )
+                if not ok:
+                    logger.error(
+                        "Failed to send payment-failed email to %s for user_id=%s event_type=%s dodo_event_id=%s",
+                        row["email"],
+                        user_id,
+                        event_type,
+                        event_id,
+                    )
+                    try:
+                        sentry_sdk.capture_message(
+                            f"Failed to send payment-failed email to {row['email']} for {event_type} {event_id}",
+                            level="error",
+                        )
+                    except Exception:
+                        pass
+                    try:
+                        from app.utils.error_notifier import notify_telegram_error
+
+                        notify_telegram_error(
+                            Exception(f"Failed to send payment-failed email to {row['email']}"),
+                            {
+                                "stage": "payment_failed_email",
+                                "user_id": user_id,
+                                "event_type": event_type,
+                                "event_id": event_id,
+                                "recipient": row["email"],
+                            },
+                        )
+                    except Exception:
+                        pass
 
     await db.commit()
     return {"success": True, "data": {"status": "processed"}}

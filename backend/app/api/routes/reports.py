@@ -1,3 +1,4 @@
+import html as _html
 import uuid
 import asyncio
 import base64
@@ -1521,9 +1522,12 @@ async def send_report_to_client(
 
     subject = f"{report['title']} — from {current_user.company_name or current_user.email}"
 
-    html_parts = [f"<p>Your report <strong>{report['title']}</strong> is ready.</p>"]
+    # Escape user-controlled title/message before HTML interpolation (report title and custom message may contain <, &, etc.)
+    title_esc = _html.escape(str(report['title']), quote=False)
+    html_parts = [f"<p>Your report <strong>{title_esc}</strong> is ready.</p>"]
     if payload.message:
-        html_parts.append(f"<blockquote style='border-left:3px solid #d97706;padding-left:12px;margin:16px 0;color:#555;'><p>{payload.message}</p></blockquote>")
+        msg_esc = _html.escape(str(payload.message), quote=False)
+        html_parts.append(f"<blockquote style='border-left:3px solid #d97706;padding-left:12px;margin:16px 0;color:#555;'><p>{msg_esc}</p></blockquote>")
     html_parts.append("<p>The report PDF is attached.</p>")
 
     ok = send_email(

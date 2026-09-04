@@ -1,8 +1,11 @@
 import asyncio
 import base64
+import html as _html
 import json
 import logging
 import uuid
+
+import sentry_sdk
 from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Header
@@ -476,14 +479,18 @@ async def _run_all_scheduled_reports() -> None:
 
                     pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
 
-                    # 5. Email PDF to all recipients
+                    # 5. Email PDF to all recipients — check send_email bool (Resend may return False on 429/bad key)
+                    # A report that generated successfully but never reaches the client is a real service gap;
+                    # it has no last_error/consecutive_failures visibility, so alert strongly (Sentry + Telegram)
+                    # rather than just logging, same as pipeline failures.
                     recipients = list(sched.get("recipient_emails", []))
                     if recipients:
-                        send_email(
+                        sched_name_esc = _html.escape(str(sched_name), quote=False)
+                        ok = send_email(
                             to=recipients,
                             subject=f"{sched_name} — {config.get('brand', {}).get('company_name') or config.get('title') or 'Report'} | {datetime.now().strftime('%d %b %Y')}",
                             html=(
-                                f"<p>Your scheduled report <strong>{sched_name}</strong> "
+                                f"<p>Your scheduled report <strong>{sched_name_esc}</strong> "
                                 f"is ready.</p><p>The report PDF is attached.</p>"
                             ),
                             attachments=[{
@@ -491,6 +498,34 @@ async def _run_all_scheduled_reports() -> None:
                                 "content": pdf_b64,
                             }],
                         )
+                        if not ok:
+                            logger.error(
+                                "Failed to send scheduled report success email for sched_id=%s to=%s report_id=%s",
+                                sched_id,
+                                recipients,
+                                report_id,
+                            )
+                            try:
+                                sentry_sdk.capture_message(
+                                    f"Failed to send scheduled report email for {sched_id} to {recipients} report {report_id}",
+                                    level="error",
+                                )
+                            except Exception:
+                                pass
+                            try:
+                                from app.utils.error_notifier import notify_telegram_error
+
+                                notify_telegram_error(
+                                    Exception(f"Failed to send scheduled report email for {sched_id}"),
+                                    {
+                                        "stage": "scheduled_report_email_success",
+                                        "sched_id": sched_id,
+                                        "report_id": report_id,
+                                        "recipients": recipients,
+                                    },
+                                )
+                            except Exception:
+                                pass
 
                 # 6. Update next_run_at and clear claim on success — reset failure state
                 next_run = _compute_next_run(sched["frequency"])
@@ -555,24 +590,58 @@ async def _run_all_scheduled_reports() -> None:
                         owner_row = owner_res.mappings().first()
                         owner_email = owner_row["email"] if owner_row and owner_row.get("email") else None
                         if owner_email:
+                            sched_name_esc = _html.escape(str(sched_name), quote=False)
+                            error_esc = _html.escape(str(error_msg[:500]), quote=False)
                             if should_disable:
                                 subject = f'Your scheduled report "{sched_name}" has been paused after 3 failures'
                                 html = (
-                                    f"<p>Your scheduled report <strong>{sched_name}</strong> failed 3 times in a row and has been paused.</p>"
-                                    f"<p>Last error: <code>{error_msg[:500]}</code></p>"
+                                    f"<p>Your scheduled report <strong>{sched_name_esc}</strong> failed 3 times in a row and has been paused.</p>"
+                                    f"<p>Last error: <code>{error_esc}</code></p>"
                                     f"<p>Please check your data source (Google Sheet access, CSV, or AI key) and re-enable the schedule in Settings &rarr; Scheduled Reports.</p>"
                                     f"<p>Next retry would have been {next_run_on_fail.strftime('%Y-%m-%d %H:%M UTC')}.</p>"
                                 )
                             else:
                                 subject = f'Your scheduled report "{sched_name}" failed — will retry {next_run_on_fail.strftime("%Y-%m-%d %H:%M UTC")}'
                                 html = (
-                                    f"<p>Your scheduled report <strong>{sched_name}</strong> failed to generate.</p>"
-                                    f"<p>Error: <code>{error_msg[:500]}</code></p>"
+                                    f"<p>Your scheduled report <strong>{sched_name_esc}</strong> failed to generate.</p>"
+                                    f"<p>Error: <code>{error_esc}</code></p>"
                                     f"<p>We will retry at the next scheduled time ({next_run_on_fail.strftime('%Y-%m-%d %H:%M UTC')}). "
                                     f"If this was a transient issue (e.g. AI provider timeout), no action is needed. "
                                     f"Otherwise, please check your data source.</p>"
                                 )
-                            send_email(to=owner_email, subject=subject, html=html)
+                            # send_email returns False on Resend failure (does not raise) — must check bool explicitly,
+                            # not just the surrounding try/except. This is the "notification about a notification failing" case,
+                            # so escalate with strongest signal (Sentry + Telegram) if it fails.
+                            ok = send_email(to=owner_email, subject=subject, html=html)
+                            if not ok:
+                                logger.error(
+                                    "Failed to send scheduled report failure email for sched_id=%s to owner %s (should_disable=%s)",
+                                    sched_id,
+                                    owner_email,
+                                    should_disable,
+                                )
+                                try:
+                                    sentry_sdk.capture_message(
+                                        f"Failed to send scheduled failure email for {sched_id} to owner {owner_email} should_disable={should_disable}",
+                                        level="error",
+                                    )
+                                except Exception:
+                                    pass
+                                try:
+                                    from app.utils.error_notifier import notify_telegram_error
+
+                                    notify_telegram_error(
+                                        Exception(f"Failed to send scheduled failure email for {sched_id}"),
+                                        {
+                                            "stage": "scheduled_report_failure_email",
+                                            "sched_id": sched_id,
+                                            "owner_email": owner_email,
+                                            "should_disable": should_disable,
+                                            "error_msg": error_msg[:500],
+                                        },
+                                    )
+                                except Exception:
+                                    pass
                     except Exception as email_e:
                         logger.warning("[scheduler] failed to send failure email for %s: %s", sched_id, email_e)
             except Exception as clear_e:
