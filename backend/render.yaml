@@ -55,26 +55,3 @@ services:
       - key: LIFECYCLE_CRON_SECRET
         sync: false
 
-  - type: cron
-    name: naxely-scheduled-reports
-    runtime: python
-    region: oregon
-    plan: free
-    schedule: "*/15 * * * *"
-    buildCommand: ""
-    startCommand: 'curl -X POST http://naxely-api:8000/internal/scheduled-reports/run -H "X-Cron-Secret: $CRON_SECRET"'
-    envVars:
-      - key: CRON_SECRET
-        sync: false
-
-  - type: cron
-    name: naxely-lifecycle-emails
-    runtime: python
-    region: oregon
-    plan: free
-    schedule: "0 9 * * *"
-    buildCommand: ""
-    startCommand: 'curl -X POST http://naxely-api:8000/internal/lifecycle-emails/run -H "X-Lifecycle-Cron-Secret: $LIFECYCLE_CRON_SECRET"'
-    envVars:
-      - key: LIFECYCLE_CRON_SECRET
-        sync: false
