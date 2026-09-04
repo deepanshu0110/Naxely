@@ -290,6 +290,31 @@ def _build_kpi_grid_flowables(kpis: list[dict], brand_color: str, content_width:
     return flowables
 
 
+class _TOCPageMarker(Flowable):
+    """Zero-height marker that records its actual page number during layout.
+
+    Inserted immediately before each section's _SectionHeader. During the
+    first layout pass, draw() captures self.canv.getPageNumber() into the
+    shared page_map dict. The second pass then builds the TOC with those
+    accurate numbers, preserving all existing TOC styling.
+    """
+    def __init__(self, key: str, page_map: dict):
+        Flowable.__init__(self)
+        self.key = key
+        self.page_map = page_map
+        self.width = 0
+        self.height = 0
+
+    def wrap(self, availWidth, availHeight):
+        return (0, 0)
+
+    def draw(self):
+        try:
+            self.page_map[self.key] = int(self.canv.getPageNumber())
+        except Exception:
+            pass
+
+
 def _wrap_text_lines(text: str, font_name: str, font_size: float, max_width: float) -> list[str]:
     """Greedy word wrap of `text` to `max_width` at the given font. Returns a
     list of lines, each fitting the box; an unbreakable word wider than the box
@@ -1338,8 +1363,19 @@ def build_sync(
 
     story = []
     body_story: list = []
-    toc_entries = [('Cover Page', '01'), ('Table of Contents', '02')]
-    toc_page = 3
+    # Two-pass TOC: markers record actual pages during first layout, then TOC is built with correct numbers
+    toc_page_map: dict[str, int] = {}
+    section_order: list[str] = []
+    _TOC_LABELS: dict[str, str] = {
+        'executive_summary': 'Executive Summary',
+        'kpi_overview': 'Key Metrics Overview',
+        'charts': 'Charts & Visualizations',
+        'insights': 'AI Insights',
+        'anomalies': 'Anomaly Flags',
+        'data_table': 'Data Table',
+        'recommendations': 'Recommendations',
+        'appendix': 'Appendix — Raw Data',
+    }
 
     # ────────────────────────────────────────────────────────────
     # SECTION 1 — Cover Page (into main story)
@@ -1518,8 +1554,8 @@ def build_sync(
     has_exec = 'executive_summary' in config.get('sections', []) and ai_content.get('summary')
     has_kpi = 'kpi_overview' in config.get('sections', [])
     if has_exec:
-        toc_entries.append(('Executive Summary', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('executive_summary')
+        body_story.append(_TOCPageMarker('executive_summary', toc_page_map))
         body_story.append(_SectionHeader('Executive Summary', brand_color, content_width))
         body_story.append(Spacer(1, 10))
 
@@ -1655,8 +1691,8 @@ def build_sync(
         body_story.append(PageBreak())
     elif has_kpi:
         # Standalone KPI page when executive_summary not requested — preserve data, don't silently drop
-        toc_entries.append(('Key Metrics Overview', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('kpi_overview')
+        body_story.append(_TOCPageMarker('kpi_overview', toc_page_map))
         body_story.append(_SectionHeader('Key Metrics Overview', brand_color, content_width))
         body_story.append(Spacer(1, 10))
         if kpis:
@@ -1668,8 +1704,8 @@ def build_sync(
     # SECTION 4 — Charts
     # ────────────────────────────────────────────────────────────
     if 'charts' in config.get('sections', []):
-        toc_entries.append(('Charts & Visualizations', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('charts')
+        body_story.append(_TOCPageMarker('charts', toc_page_map))
         body_story.append(_SectionHeader('Charts & Visualizations', brand_color, content_width))
         body_story.append(Spacer(1, 10))
 
@@ -1735,8 +1771,8 @@ def build_sync(
     insights = ai_content.get('insights') or []
     ai_skipped = config.get('_ai_skipped', False)
     if 'insights' in config.get('sections', []):
-        toc_entries.append(('AI Insights', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('insights')
+        body_story.append(_TOCPageMarker('insights', toc_page_map))
         body_story.append(_SectionHeader('AI Insights', brand_color, content_width))
         body_story.append(Spacer(1, 6))
         if ai_skipped:
@@ -1754,8 +1790,8 @@ def build_sync(
     # ────────────────────────────────────────────────────────────
     anomalies = ai_content.get('anomalies') or []
     if 'anomalies' in config.get('sections', []) and anomalies:
-        toc_entries.append(('Anomaly Flags', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('anomalies')
+        body_story.append(_TOCPageMarker('anomalies', toc_page_map))
         body_story.append(_SectionHeader('Anomaly Flags', brand_color, content_width))
         body_story.append(Spacer(1, 10))
         for anomaly in anomalies[:10]:
@@ -1768,8 +1804,8 @@ def build_sync(
     # SECTION 7 — Data Table
     # ────────────────────────────────────────────────────────────
     if 'data_table' in config.get('sections', []):
-        toc_entries.append(('Data Table', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('data_table')
+        body_story.append(_TOCPageMarker('data_table', toc_page_map))
         body_story.append(_SectionHeader('Data Table', brand_color, content_width))
         body_story.append(Spacer(1, 10))
         # Provenance caption — honest row count from original df, date range from actual data, exclusion claim only if verifiable
@@ -1827,8 +1863,8 @@ def build_sync(
         or 'executive_summary' in config.get('sections', [])
     ) and not ai_skipped
     if show_recommendations:
-        toc_entries.append(('Recommendations', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('recommendations')
+        body_story.append(_TOCPageMarker('recommendations', toc_page_map))
         body_story.append(_SectionHeader('Recommendations', brand_color, content_width))
         body_story.append(Spacer(1, 10))
 
@@ -1855,8 +1891,8 @@ def build_sync(
     # SECTION 9 — Appendix
     # ────────────────────────────────────────────────────────────
     if 'appendix' in config.get('sections', []):
-        toc_entries.append(('Appendix — Raw Data', str(toc_page).zfill(2)))
-        toc_page += 1
+        section_order.append('appendix')
+        body_story.append(_TOCPageMarker('appendix', toc_page_map))
         body_story.append(_SectionHeader('Appendix — Raw Data', brand_color, content_width))
         body_story.append(Spacer(1, 10))
 
@@ -1910,52 +1946,74 @@ def build_sync(
             body_story.append(Paragraph(f"Showing first {MAX_APP_COLS} of {app_cols_truncated} columns \u2014 see Excel export for full data.", note_style2))
 
     # ────────────────────────────────────────────────────────────
-    # TOC — built from recorded entries, inserted after cover
+    # TOC — two-pass build: first pass collects actual page numbers via
+    # _TOCPageMarker, second pass renders TOC with correct numbers.
+    # Preserves all existing TOC styling; logo download and font stripping
+    # intentionally only run once (final pass) per Phase 1 cost assessment.
     # ────────────────────────────────────────────────────────────
-    story.append(_SectionHeader('Table of Contents', brand_color, content_width))
-    story.append(Spacer(1, 12))
+    cover_story = list(story)  # shallow copy of cover flowables built so far
 
-    toc_rows = []
-    for label, pg in toc_entries:
-        toc_rows.append([
-            _TocDot(brand_color, size=6),
-            Paragraph(label, ParagraphStyle(
-                'TOCLabel',
-                fontName='IBMPlexSans',
-                fontSize=10,
-                textColor=HexColor(INK),
-                leading=16,
-            )),
-            Paragraph(pg, ParagraphStyle(
-                'TOCPage',
-                fontName='IBMPlexMono',
-                fontSize=9,
-                textColor=HexColor(brand_color),
-                alignment=TA_RIGHT,
-                leading=16,
-            )),
-        ])
+    def _build_toc_block(entries: list[tuple[str, str]]) -> list:
+        rows = []
+        for label, pg in entries:
+            rows.append([
+                _TocDot(brand_color, size=6),
+                Paragraph(label, ParagraphStyle(
+                    'TOCLabel',
+                    fontName='IBMPlexSans',
+                    fontSize=10,
+                    textColor=HexColor(INK),
+                    leading=16,
+                )),
+                Paragraph(pg, ParagraphStyle(
+                    'TOCPage',
+                    fontName='IBMPlexMono',
+                    fontSize=9,
+                    textColor=HexColor(brand_color),
+                    alignment=TA_RIGHT,
+                    leading=16,
+                )),
+            ])
+        col_w2 = content_width
+        table = Table(rows, colWidths=[12, col_w2 * 0.85 - 12, col_w2 * 0.15])
+        table.setStyle(TableStyle([
+            ('VALIGN',       (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING',  (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ('TOPPADDING',   (0, 0), (-1, -1), 5),
+            ('BOTTOMPADDING',(0, 0), (-1, -1), 5),
+            ('LINEBELOW', (0, 0), (-1, -2), 0.4, HexColor(GRID_LINE)),
+        ]))
+        return [_SectionHeader('Table of Contents', brand_color, content_width), Spacer(1, 12), table, PageBreak()]
 
-    col_w = content_width
-    toc_table = Table(
-        toc_rows,
-        colWidths=[12, col_w * 0.85 - 12, col_w * 0.15],
-    )
-    toc_table.setStyle(TableStyle([
-        ('VALIGN',       (0, 0), (-1, -1), 'MIDDLE'),
-        ('LEFTPADDING',  (0, 0), (-1, -1), 0),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
-        ('TOPPADDING',   (0, 0), (-1, -1), 5),
-        ('BOTTOMPADDING',(0, 0), (-1, -1), 5),
-        ('LINEBELOW', (0, 0), (-1, -2), 0.4, HexColor(GRID_LINE)),
-    ]))
-    story.append(toc_table)
-    story.append(PageBreak())
+    # First pass: dummy TOC (same row count, '00' keeps pagination identical) to populate toc_page_map
+    dummy_entries = [('Cover Page', '01'), ('Table of Contents', '02')] + [(_TOC_LABELS[k], '00') for k in section_order]
+    toc_dummy_block = _build_toc_block(dummy_entries)
+    import io as _io
+    _temp_buf = _io.BytesIO()
+    doc_temp = SimpleDocTemplate(_temp_buf, pagesize=A4, leftMargin=MARGIN, rightMargin=MARGIN, topMargin=MARGIN, bottomMargin=MARGIN)
+    story_temp = cover_story + toc_dummy_block + body_story
+    try:
+        doc_temp.build(story_temp, onFirstPage=on_first_page, onLaterPages=on_page)
+    except Exception as e:
+        logging.warning(f"[pdf_service] first pass TOC collection failed: {e}")
 
-    story.extend(body_story)
+    # Build correct TOC from collected map (markers are zero-height, so pagination is stable)
+    toc_entries: list[tuple[str, str]] = [('Cover Page', '01'), ('Table of Contents', '02')]
+    for key in section_order:
+        pg = toc_page_map.get(key)
+        if pg is None:
+            pg = 3 + section_order.index(key)
+            logging.warning(f"[pdf_service] TOC marker missing for {key}, fallback to {pg}")
+        toc_entries.append((_TOC_LABELS[key], str(pg).zfill(2)))
 
-    doc.build(story, onFirstPage=on_first_page, onLaterPages=on_page)
-    logging.info(f"[pdf_service] build_sync completed — report_id={report_id}")
+    toc_final_block = _build_toc_block(toc_entries)
+    story_final = cover_story + toc_final_block + body_story
+
+    # Final pass: reuse doc variable pointing at real pdf_path (logo_path already cached, not re-downloaded)
+    doc = SimpleDocTemplate(pdf_path, pagesize=A4, leftMargin=MARGIN, rightMargin=MARGIN, topMargin=MARGIN, bottomMargin=MARGIN)
+    doc.build(story_final, onFirstPage=on_first_page, onLaterPages=on_page)
+    logging.info(f"[pdf_service] build_sync completed (two-pass TOC) — report_id={report_id} pages_collected={toc_page_map}")
 
     _strip_standard_fonts(pdf_path)
 
