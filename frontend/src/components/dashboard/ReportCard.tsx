@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { FileText, MoreHorizontal, Download, Trash2 } from 'lucide-react'
+import { FileText, MoreHorizontal, Download, Trash2, AlertTriangle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '@/lib/axios'
 import Modal from '@/components/ui/Modal'
@@ -115,7 +115,19 @@ export default function ReportCard({ report, onDelete, isSelected, onToggleSelec
           </div>
         </div>
 
-        <Badge variant={statusVariant(report.status)} text={statusLabel[report.status]} />
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <Badge variant={statusVariant(report.status)} text={statusLabel[report.status]} />
+          {report.data_source_stale && (
+            <span title="Data may be stale — Google Sheet couldn't refresh at generation time" aria-label="Data may be stale — Google Sheet couldn't refresh at generation time">
+              <AlertTriangle className="h-3.5 w-3.5 text-yellow-500 dark:text-yellow-400" aria-hidden="true" />
+            </span>
+          )}
+          {report.excel_warning && (
+            <span title={report.excel_warning} aria-label={report.excel_warning}>
+              <AlertTriangle className="h-3.5 w-3.5 text-yellow-500 dark:text-yellow-400" aria-hidden="true" />
+            </span>
+          )}
+        </div>
 
         {report.pdf_url && (
           <button

@@ -1219,7 +1219,22 @@ async def list_reports(
             "trend_pct": row.get("trend_pct"),
             "created_at": row["created_at"].isoformat() if row.get("created_at") else None,
             "generation_time_seconds": row.get("generation_time_seconds"),
+            "data_source_stale": bool(row.get("data_source_stale", False)),
         }
+        # Excel warning — same derivation as GET /reports/{id} detail view
+        raw_excel = row.get("excel_sheet_info")
+        excel_info = None
+        if isinstance(raw_excel, dict):
+            excel_info = raw_excel
+        elif isinstance(raw_excel, str) and raw_excel:
+            try:
+                excel_info = json.loads(raw_excel)
+            except Exception:
+                excel_info = None
+        if isinstance(excel_info, dict) and excel_info.get("sheet_count", 1) > 1:
+            item["excel_warning"] = f"This file has {excel_info['sheet_count']} sheets — only {excel_info['used_sheet']} was used."
+        else:
+            item["excel_warning"] = None
         if row["status"] == "completed" and row.get("pdf_url"):
             item["pdf_url"] = await _generate_signed_url(row["pdf_url"])
         else:

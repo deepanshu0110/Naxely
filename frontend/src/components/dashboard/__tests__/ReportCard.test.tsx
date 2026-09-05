@@ -62,3 +62,44 @@ describe('ReportCard PDF download', () => {
     expect(screen.queryByTitle('Download PDF')).not.toBeInTheDocument()
   })
 })
+
+describe('ReportCard warning indicators', () => {
+  it('renders the stale-data icon when data_source_stale is true', () => {
+    renderCard({ ...mockReport, data_source_stale: true })
+
+    expect(screen.getByLabelText('Data may be stale — Google Sheet couldn\'t refresh at generation time')).toBeInTheDocument()
+  })
+
+  it('does NOT render the stale-data icon when data_source_stale is false', () => {
+    renderCard({ ...mockReport, data_source_stale: false })
+
+    expect(screen.queryByLabelText('Data may be stale — Google Sheet couldn\'t refresh at generation time')).not.toBeInTheDocument()
+  })
+
+  it('does NOT render the stale-data icon when data_source_stale is absent', () => {
+    const { data_source_stale, ...withoutStale } = mockReport as Report & { data_source_stale?: boolean }
+    renderCard(withoutStale as Report)
+
+    expect(screen.queryByLabelText('Data may be stale — Google Sheet couldn\'t refresh at generation time')).not.toBeInTheDocument()
+  })
+
+  it('renders the Excel-warning icon when excel_warning is a non-empty string', () => {
+    const warning = 'This file has 3 sheets — only Sheet1 was used.'
+    renderCard({ ...mockReport, excel_warning: warning })
+
+    expect(screen.getByLabelText(warning)).toBeInTheDocument()
+  })
+
+  it('does NOT render the Excel-warning icon when excel_warning is null', () => {
+    renderCard({ ...mockReport, excel_warning: null })
+
+    expect(screen.queryByTitle('This file has')).not.toBeInTheDocument()
+  })
+
+  it('does NOT render the Excel-warning icon when excel_warning is absent', () => {
+    const { excel_warning, ...withoutWarning } = mockReport as Report & { excel_warning?: string | null }
+    renderCard(withoutWarning as Report)
+
+    expect(screen.queryByLabelText(/This file has/)).not.toBeInTheDocument()
+  })
+})
