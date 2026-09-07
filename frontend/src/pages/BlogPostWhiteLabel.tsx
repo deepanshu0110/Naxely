@@ -66,7 +66,7 @@ export default function BlogPostWhiteLabel() {
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">AgencyAnalytics</td>
+                  <td className="py-2 pr-4 text-ink/80 dark:text-paper/80"><Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline">AgencyAnalytics</Link></td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$20/client/month (billed annually)</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>

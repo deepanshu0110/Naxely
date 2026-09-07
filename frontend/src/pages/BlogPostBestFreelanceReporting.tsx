@@ -82,6 +82,8 @@ export default function BlogPostBestFreelanceReporting() {
 
           <p><strong>Key limitation:</strong> The Individual plan at $44/mo does not include white-labeling. A freelancer on this tier cannot deliver unbranded reports to clients — every dashboard and PDF shows DashThis branding. White-label access requires nearly tripling the monthly cost to $139/mo. Additionally, DashThis is built around live API connections; it does not handle CSV uploads or spreadsheet data as a primary input. If your clients send you exports rather than giving you platform access, the tool will feel mismatched to your workflow.</p>
 
+          <p>For a per-client pricing contrast at agency scale, see <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline">how AgencyAnalytics prices per client</Link> ($20/client/mo).</p>
+
           <p>Source: <a href="https://www.dashthis.com/pricing" className="text-amber-600 hover:text-amber-700">dashthis.com/pricing</a></p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">3. Bonsai — Best Freelancer Business Platform (with Basic Reporting)</h2>

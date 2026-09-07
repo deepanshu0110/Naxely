@@ -79,6 +79,7 @@ export default function BlogPostHub() {
             </table>
           </div>
           <p>Most agency reporting tools (Swydo, AgencyAnalytics, DashThis, Whatagraph, Databox) sit in the "templated" tier for live ad-platform data — they automate the <em>pull</em>, but leave interpretation and narrative to you. Full-pipeline tools that also generate the written analysis are rarer, and most of those are still narrowly built around ad-platform connectors.</p>
+          <p>For a file-based vs connector-based comparison, see <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline">Naxely vs AgencyAnalytics</Link>.</p>
           <p>In practice, client report automation means deciding which of those steps a tool does for you — and which you keep. The rest of this guide walks through what a full pipeline looks like, what it replaces in a manual workflow, and where your judgment still has to come in.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What are the three inputs agencies actually work with?</h2>
