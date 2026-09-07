@@ -7,18 +7,18 @@ export default function BlogPostHub() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Automated Client Reporting: Complete Guide for Freelancers</title>
-        <meta name="description" content="How automated client reporting works — CSV/Sheets in, a branded AI-narrated PDF out — plus what to automate and what still needs a human review." />
+        <title>Automated Client Reporting for Freelancers | CSV to PDF in 60s</title>
+        <meta name="description" content="Upload a CSV or Google Sheet, get a branded AI-narrated PDF client report in under a minute. No API setup. Free tier: 3 reports/month, no credit card required." />
         <link rel="canonical" href="https://www.naxely.com/blog/automating-client-reports" />
         <meta property="og:url" content="https://www.naxely.com/blog/automating-client-reports" />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Automated Client Reporting: Complete Guide for Freelancers" />
-        <meta property="og:description" content="How automated client reporting works — CSV/Sheets in, a branded AI-narrated PDF out — plus what to automate and what still needs a human review." />
+        <meta property="og:title" content="Automated Client Reporting for Freelancers | CSV to PDF in 60s" />
+        <meta property="og:description" content="Upload a CSV or Google Sheet, get a branded AI-narrated PDF client report in under a minute. No API setup. Free tier: 3 reports/month, no credit card required." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Automated Client Reporting: Complete Guide for Freelancers" />
-        <meta name="twitter:description" content="How automated client reporting works — CSV/Sheets in, a branded AI-narrated PDF out — plus what to automate and what still needs a human review." />
+        <meta name="twitter:title" content="Automated Client Reporting for Freelancers | CSV to PDF in 60s" />
+        <meta name="twitter:description" content="Upload a CSV or Google Sheet, get a branded AI-narrated PDF client report in under a minute. No API setup. Free tier: 3 reports/month, no credit card required." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Automated Client Reporting: The Complete Guide for Freelancers and Agencies","description":"How automated client reporting works end to end — CSV and Google Sheets in, a branded AI-narrated PDF out — plus what to automate and what still needs a human review.","url":"https://www.naxely.com/blog/automating-client-reports","datePublished":"2026-07-05T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[

@@ -96,6 +96,7 @@ export default function BlogPostWhiteLabel() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does "any-data" reporting actually mean?</h2>
           <p>"Any-data" reporting means you upload a CSV or paste a Google Sheets URL — no OAuth into a client's ad account, no connector setup, no waiting on a client to grant API access — and Naxely handles charts, KPI extraction, AI executive summary, anomaly detection, and plain-language recommendations from there.</p>
+          <p>For the full pipeline this sits in, see our{' '}<Link to="/blog/automating-client-reports" className="text-amber-600 hover:text-amber-700 underline">automated client reporting guide</Link>.</p>
           <p>The goal isn't to replace your judgment as the person who understands the client's business. It's to remove the one to two hours of rebuilding the same report shape every cycle, so the time you do spend goes into the parts a client actually pays for: interpretation, strategy, the actual conversation.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What is BYOK and why does it matter for agencies?</h2>

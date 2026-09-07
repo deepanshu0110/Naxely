@@ -85,6 +85,7 @@ export default function BlogPostCsvToPdf() {
             <li><strong>Branding</strong> — your logo, brand color, and company name are applied to every page automatically</li>
             <li><strong>Output</strong> — a client-ready PDF, typically ready in under a minute</li>
           </ol>
+          <p>For how this fits into a scheduled, recurring workflow, see{' '}<Link to="/blog/automating-client-reports" className="text-amber-600 hover:text-amber-700 underline">Automated Client Reporting: The Complete Guide</Link>.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does a real CSV-to-PDF report look like?</h2>
           <p>A concrete example: upload a CSV of monthly billable hours across client projects (columns for date, client name, project, hours logged, rate, billable amount, and status), and Naxely delivers a PDF with a KPI summary card, line chart of hours trending, bar chart by client, and an AI-written insight flagging anomalies — not just a static table.</p>

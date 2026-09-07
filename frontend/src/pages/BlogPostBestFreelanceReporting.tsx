@@ -160,6 +160,8 @@ export default function BlogPostBestFreelanceReporting() {
             </ul>
           </div>
 
+          <p>See{' '}<Link to="/blog/automating-client-reports" className="text-amber-600 hover:text-amber-700 underline">how automated reporting works end to end</Link>{' '}for the full pipeline behind these options.</p>
+
           <p>No single tool covers every freelancer reporting scenario. The right combination often involves using a business management platform (Bonsai or Plutio) for operations alongside a dedicated reporting tool (DashThis for live data, Naxely for file-based data) for client deliverables. A free trial with your own data will reveal workflow fit faster than any feature comparison — test two tools that match your data source and delivery format before committing to an annual plan.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Flat-Rate vs Per-Client Pricing for Freelancer Reporting</h2>
