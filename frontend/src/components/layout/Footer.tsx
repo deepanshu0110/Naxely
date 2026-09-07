@@ -15,6 +15,8 @@ export default function Footer() {
           <span className="text-gray-300">·</span>
           <Link to="/blog/excel-to-pdf-report-generator" className="hover:text-ink">Excel to PDF Report Generator</Link>
           <span className="text-gray-300">·</span>
+          <Link to="/blog/python-csv-to-pdf-reports" className="hover:text-ink">Python CSV to PDF: DIY Script vs. Tool</Link>
+          <span className="text-gray-300">·</span>
           <Link to="/blog/two-weeks-building-naxely" className="hover:text-ink">Two Weeks Building Naxely</Link>
         </div>
         <p className="mt-4 text-xs text-gray-600">Naxely © 2026</p>

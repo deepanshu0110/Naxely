@@ -45,6 +45,7 @@ export default function Navbar() {
               <Link to="/blog/automating-client-reports" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Automated Client Reporting: Complete Guide</Link>
               <Link to="/blog/what-should-client-report-include-checklist" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">What Should a Client Report Include?</Link>
               <Link to="/blog/excel-to-pdf-report-generator" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Excel to PDF Report Generator</Link>
+              <Link to="/blog/python-csv-to-pdf-reports" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Python CSV to PDF: DIY Script vs. Tool</Link>
               <Link to="/blog/two-weeks-building-naxely" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Two Weeks Building Naxely</Link>
             </div>
           </div>
@@ -113,6 +114,7 @@ export default function Navbar() {
                 <Link to="/blog/automating-client-reports" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Automated Client Reporting: Complete Guide</Link>
                 <Link to="/blog/what-should-client-report-include-checklist" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">What Should a Client Report Include?</Link>
                 <Link to="/blog/excel-to-pdf-report-generator" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Excel to PDF Report Generator</Link>
+                <Link to="/blog/python-csv-to-pdf-reports" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Python CSV to PDF: DIY Script vs. Tool</Link>
                 <Link to="/blog/two-weeks-building-naxely" onClick={closeMobile} className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100">Two Weeks Building Naxely</Link>
               </div>
               <div className="border-t border-gray-100 pt-3 dark:border-gray-700">
