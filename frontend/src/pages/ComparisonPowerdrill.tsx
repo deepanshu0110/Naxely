@@ -7,17 +7,17 @@ export default function ComparisonPowerdrill() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform</title>
+        <title>Naxely vs Powerdrill: Purpose-Built Reports vs. AI Platform</title>
         <meta name="description" content="Compare Naxely and Powerdrill. Naxely is a PDF generator for client deliverables. Powerdrill Bloom is a broader AI workspace with natural-language BI." />
         <link rel="canonical" href="https://www.naxely.com/compare/powerdrill" />
         <meta property="og:url" content="https://www.naxely.com/compare/powerdrill" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform" />
+        <meta property="og:title" content="Naxely vs Powerdrill: Purpose-Built Reports vs. AI Platform" />
         <meta property="og:description" content="Compare Naxely and Powerdrill. Naxely is a PDF generator for client deliverables. Powerdrill Bloom is a broader AI workspace with natural-language BI." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform" />
+        <meta name="twitter:title" content="Naxely vs Powerdrill: Purpose-Built Reports vs. AI Platform" />
         <meta name="twitter:description" content="Compare Naxely and Powerdrill. Naxely is a PDF generator for client deliverables. Powerdrill Bloom is a broader AI workspace with natural-language BI." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
