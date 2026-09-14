@@ -41,12 +41,15 @@ async def preview_lifecycle_emails(
     """Preview candidates without sending. Useful for manual testing."""
     if x_lifecycle_cron_secret != settings.LIFECYCLE_CRON_SECRET:
         raise HTTPException(status_code=403, detail="Invalid cron secret")
-    from app.services.lifecycle_email_service import get_trigger_a_candidates, get_trigger_b_candidates
+    from app.services.lifecycle_email_service import get_trigger_a_candidates, get_trigger_b_candidates, get_trigger_c_candidates
     a = await get_trigger_a_candidates(db)
     b = await get_trigger_b_candidates(db)
+    c = await get_trigger_c_candidates(db)
     return {
         "trigger_a_candidates": len(a),
         "trigger_b_candidates": len(b),
+        "trigger_c_candidates": len(c),
         "trigger_a_sample": [{"id": str(x["id"]), "email": x["email"][:3] + "***"} for x in a[:3]],
         "trigger_b_sample": [{"id": str(x["id"]), "email": x["email"][:3] + "***"} for x in b[:3]],
+        "trigger_c_sample": [{"id": str(x["id"]), "email": x["email"][:3] + "***"} for x in c[:3]],
     }

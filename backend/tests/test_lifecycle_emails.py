@@ -65,6 +65,66 @@ class TestTriggerQueries:
         mock_db.execute.assert_called_once()
 
 
+class TestTriggerC:
+    def test_trigger_c_query_has_required_clauses(self):
+        from app.services.lifecycle_email_service import TRIGGER_C_QUERY
+        q = TRIGGER_C_QUERY
+        assert "lifecycle_one_report_stale_30d" in q
+        assert "email_suppressed" in q
+        assert "COALESCE" in q
+        assert "INTERVAL '25 days'" in q
+        assert "HAVING COUNT(r.id) = 1" in q
+        assert "MAX(r.created_at)" in q
+        assert "el.id IS NULL" in q
+        for email in ["eminefe13@gmail.com", "jash.c.shah@gmail.com", "ravenabianca@gmail.com"]:
+            assert email in q
+        assert "NOT IN" in q
+
+    @pytest.mark.asyncio
+    async def test_trigger_c_candidates_executed(self):
+        from app.services.lifecycle_email_service import get_trigger_c_candidates
+        mock_db = AsyncMock()
+        mock_result = MagicMock()
+        mock_result.mappings.return_value.all.return_value = [
+            {"id": str(uuid.uuid4()), "email": "stale@test.com",
+             "last_report_at": datetime.now(timezone.utc)}
+        ]
+        mock_db.execute.return_value = mock_result
+        result = await get_trigger_c_candidates(mock_db)
+        assert len(result) == 1
+        sql_str = str(mock_db.execute.call_args[0][0])
+        assert "lifecycle_one_report_stale_30d" in sql_str
+
+    @pytest.mark.asyncio
+    async def test_send_trigger_c_uses_stale_type_and_date(self):
+        from app.services import lifecycle_email_service as svc
+        mock_db = AsyncMock()
+        mock_db.execute.return_value = MagicMock()
+        mock_db.commit = AsyncMock()
+        user = {"id": str(uuid.uuid4()), "email": "stale@test.com",
+                "full_name": "Stale User",
+                "last_report_at": datetime(2026, 7, 4, 9, 0, tzinfo=timezone.utc)}
+        with patch.object(svc, "send_email_with_id", return_value=(True, "re_c123")) as mock_send:
+            ok = await svc.send_trigger_c(mock_db, user)
+        assert ok is True
+        params = mock_db.execute.call_args[0][1]
+        assert params["etype"] == "lifecycle_one_report_stale_30d"
+        assert params["rid"] == "re_c123"
+        sent_kwargs = mock_send.call_args.kwargs
+        assert sent_kwargs["to"] == "stale@test.com"
+        assert "July 4, 2026" in sent_kwargs["html"] or "July 4, 2026" in sent_kwargs["text"]
+        assert sent_kwargs["headers"]["List-Unsubscribe"].startswith("<mailto:")
+
+    def test_trigger_c_template_no_upsell(self):
+        from app.services.lifecycle_email_service import TEMPLATE_C_HTML, TEMPLATE_C_SUBJECT, TEMPLATE_C_TEXT
+        combined = (TEMPLATE_C_HTML + TEMPLATE_C_SUBJECT + TEMPLATE_C_TEXT).lower()
+        assert "upgrade" not in combined
+        assert "pro plan" not in combined
+        assert "buy now" not in combined
+        assert "we miss you" not in combined
+        assert "/reports/new" in TEMPLATE_C_HTML
+
+
 # ---- Duplicate prevention ----
 
 class TestDuplicatePrevention:
@@ -130,10 +190,12 @@ class TestSuppressionFlag:
         mock_db = AsyncMock()
         # get_trigger_* will be patched to return empty for suppressed case
         with patch.object(svc, "get_trigger_a_candidates", return_value=[]) as mock_a, \
-             patch.object(svc, "get_trigger_b_candidates", return_value=[]) as mock_b:
+             patch.object(svc, "get_trigger_b_candidates", return_value=[]) as mock_b, \
+             patch.object(svc, "get_trigger_c_candidates", return_value=[]) as mock_c:
             stats = await svc.run_lifecycle_cycle(mock_db)
         assert stats["trigger_a_candidates"] == 0
         assert stats["trigger_b_candidates"] == 0
+        assert stats["trigger_c_candidates"] == 0
 
 
 # ---- Templates are non-promotional ----

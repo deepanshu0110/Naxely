@@ -48,6 +48,19 @@ GROUP BY u.id
 HAVING COUNT(r.id) = 0;
 """
 
+TRIGGER_C_QUERY = f"""
+SELECT u.id, u.email, u.full_name, MAX(r.created_at) AS last_report_at
+FROM users u
+JOIN reports r ON r.user_id = u.id AND r.deleted_at IS NULL
+LEFT JOIN email_log el ON el.user_id = u.id AND el.email_type = 'lifecycle_one_report_stale_30d'
+WHERE u.deleted_at IS NULL
+  AND COALESCE(u.email_suppressed, FALSE) = FALSE
+  AND {MANUAL_OUTREACH_EXCLUDE}
+  AND el.id IS NULL
+GROUP BY u.id
+HAVING COUNT(r.id) = 1 AND MAX(r.created_at) <= NOW() - INTERVAL '25 days';
+"""
+
 # Plain-text-forward templates (transactional framing, no upsell)
 # Trigger A: signed up 3+ days ago, 0 reports
 TEMPLATE_A_SUBJECT = "Quick start: your first Naxely report in 2 minutes"
@@ -100,6 +113,32 @@ Or jump back in when ready: {frontend_url}/reports/new
 You're receiving this because you completed onboarding on Naxely. Reply and let us know if you'd rather not get these check-ins."""
 
 
+# Trigger C: exactly 1 report, 25+ days stale, no repeat since
+TEMPLATE_C_SUBJECT = "Your data has changed since your last report — refresh it in 2 minutes"
+
+TEMPLATE_C_HTML = """<p>Hi {full_name},</p>
+<p>You generated a report on {last_report_date} — since then, your underlying data has likely moved on.</p>
+<p>Upload a fresh CSV (or reconnect your Google Sheet) and generate an updated PDF in about 2 minutes. Same template, current numbers.</p>
+<p><a href=\"{frontend_url}/reports/new\">Generate a fresh report</a></p>
+<p>If the first report wasn't useful, reply and tell us why — that feedback shapes what we build next.</p>
+<p>— The Naxely team</p>
+<p style=\"font-size:12px;color:#888\">You're receiving this because you generated a report on Naxely. Reply and let us know if you'd rather not get these check-ins.</p>"""
+
+TEMPLATE_C_TEXT = """Hi {full_name},
+
+You generated a report on {last_report_date} — since then, your underlying data has likely moved on.
+
+Upload a fresh CSV (or reconnect your Google Sheet) and generate an updated PDF in about 2 minutes. Same template, current numbers.
+
+Generate a fresh report: {frontend_url}/reports/new
+
+If the first report wasn't useful, reply and tell us why — that feedback shapes what we build next.
+
+— The Naxely team
+
+You're receiving this because you generated a report on Naxely. Reply and let us know if you'd rather not get these check-ins."""
+
+
 async def get_trigger_a_candidates(db: AsyncSession) -> list[dict]:
     result = await db.execute(text(TRIGGER_A_QUERY))
     return [dict(r) for r in result.mappings().all()]
@@ -107,6 +146,11 @@ async def get_trigger_a_candidates(db: AsyncSession) -> list[dict]:
 
 async def get_trigger_b_candidates(db: AsyncSession) -> list[dict]:
     result = await db.execute(text(TRIGGER_B_QUERY))
+    return [dict(r) for r in result.mappings().all()]
+
+
+async def get_trigger_c_candidates(db: AsyncSession) -> list[dict]:
+    result = await db.execute(text(TRIGGER_C_QUERY))
     return [dict(r) for r in result.mappings().all()]
 
 
@@ -182,9 +226,27 @@ async def send_trigger_b(db: AsyncSession, user: dict) -> bool:
     return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_onboarded_no_report_7d", TEMPLATE_B_SUBJECT, html, text_body, headers)
 
 
+async def send_trigger_c(db: AsyncSession, user: dict) -> bool:
+    from datetime import timezone
+    frontend_url = settings.FRONTEND_BASE_URL
+    full_name = (user.get("full_name") or "").strip() or "there"
+    full_name_esc = _html.escape(full_name, quote=False)
+    last_report_at = user.get("last_report_at")
+    if last_report_at is not None and getattr(last_report_at, "tzinfo", None) is None:
+        last_report_at = last_report_at.replace(tzinfo=timezone.utc)
+    last_report_date = f"{last_report_at:%B} {last_report_at.day}, {last_report_at.year}" if last_report_at else "a while back"
+    html = TEMPLATE_C_HTML.format(frontend_url=frontend_url, full_name=full_name_esc, last_report_date=last_report_date)
+    text_body = TEMPLATE_C_TEXT.format(frontend_url=frontend_url, full_name=full_name, last_report_date=last_report_date)
+    headers = {
+        "List-Unsubscribe": "<mailto:unsubscribe@naxely.com?subject=unsubscribe>",
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    }
+    return await _send_and_log(db, str(user["id"]), user["email"], "lifecycle_one_report_stale_30d", TEMPLATE_C_SUBJECT, html, text_body, headers)
+
+
 async def run_lifecycle_cycle(db: AsyncSession) -> dict:
-    """Run both triggers once. Returns counts."""
-    stats = {"trigger_a_sent": 0, "trigger_b_sent": 0, "trigger_a_candidates": 0, "trigger_b_candidates": 0}
+    """Run all triggers once. Returns counts."""
+    stats = {"trigger_a_sent": 0, "trigger_b_sent": 0, "trigger_c_sent": 0, "trigger_a_candidates": 0, "trigger_b_candidates": 0, "trigger_c_candidates": 0}
     # Trigger A
     candidates_a = await get_trigger_a_candidates(db)
     stats["trigger_a_candidates"] = len(candidates_a)
@@ -197,4 +259,10 @@ async def run_lifecycle_cycle(db: AsyncSession) -> dict:
     for user in candidates_b:
         if await send_trigger_b(db, user):
             stats["trigger_b_sent"] += 1
+    # Trigger C
+    candidates_c = await get_trigger_c_candidates(db)
+    stats["trigger_c_candidates"] = len(candidates_c)
+    for user in candidates_c:
+        if await send_trigger_c(db, user):
+            stats["trigger_c_sent"] += 1
     return stats
