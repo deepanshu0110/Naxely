@@ -204,6 +204,9 @@ export default function BlogPostHub() {
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I get started with automated client reporting?</h2>
           <p>If your reporting workflow is mostly CSV exports and spreadsheets, and you're tired of rebuilding the same report by hand every cycle, <Link to="/signup" className="text-amber-600 hover:text-amber-700 underline">try it free</Link> — three reports a month, no credit card required. You can also see <a href="/sample/report.pdf" className="text-amber-600 hover:text-amber-700 underline">an unedited sample report</a> before deciding anything.</p>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What automated reporting for clients actually replaces</h2>
+          <p>For most agencies, automated reporting for clients replaces the assembly, not the judgment. Naxely drafts the full report — charts, KPIs, AI-written narrative — from a CSV or Google Sheet in under a minute, and you review the draft before it goes out. The client gets a branded PDF; you get back the hours of rebuilding the same document every cycle.</p>
+
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What is automated client reporting?</h3>
