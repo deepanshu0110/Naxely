@@ -1100,7 +1100,7 @@ export default function Landing() {
           <a href="https://openhunts.com" target="_blank" rel="noopener" title="OpenHunts Club" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"><img src="https://cdn.openhunts.com/badges/club.webp" alt="OpenHunts Club Member" width="486" height="105" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" /></a>
           <div className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
           <a href="https://codehype.ai/product/naxely?utm_source=codehype_badge" target="_blank" rel="noopener noreferrer">
-            <img src="https://codehype.ai/badges/naxely.svg?variant=find-us&v=20" alt="Featured on CodeHype" width="180" height="65" loading="lazy" decoding="async" style="display:inline-block;border:0;width:100%;max-width:180px;height:auto;max-height:65px;" />
+            <img src="https://codehype.ai/badges/naxely.svg?variant=find-us&v=20" alt="Featured on CodeHype" width="180" height="65" loading="lazy" decoding="async" style={{ display: 'inline-block', border: 0, width: '100%', maxWidth: '180px', height: 'auto', maxHeight: '65px' }} />
           </a>
           </div>
           </div>
