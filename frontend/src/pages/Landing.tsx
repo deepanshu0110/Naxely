@@ -1098,6 +1098,11 @@ export default function Landing() {
           <a href="https://ideakiln.com/ideas/naxely" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"><img src="https://ideakiln.com/light.svg" alt="Featured on Idea Kiln" width="200" height="54" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" /></a>
           <a href="https://nicklaunches.com/products/naxely/?utm_source=naxely.com&utm_medium=badge&utm_campaign=featured" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"><img src="https://nicklaunches.com/badges/featured.png" alt="Naxely on Nick Launches" width="244" height="56" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" /></a>
           <a href="https://openhunts.com" target="_blank" rel="noopener" title="OpenHunts Club" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200"><img src="https://cdn.openhunts.com/badges/club.webp" alt="OpenHunts Club Member" width="486" height="105" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" /></a>
+          <div className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <a href="https://codehype.ai/product/naxely?utm_source=codehype_badge" target="_blank" rel="noopener noreferrer">
+            <img src="https://codehype.ai/badges/naxely.svg?variant=find-us&v=20" alt="Featured on CodeHype" width="180" height="65" loading="lazy" decoding="async" style="display:inline-block;border:0;width:100%;max-width:180px;height:auto;max-height:65px;" />
+          </a>
+          </div>
           </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-600">
