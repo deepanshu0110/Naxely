@@ -306,6 +306,7 @@ export default function Landing() {
             className="w-full rounded-xl shadow-lg"
           >
             <source src="/naxely-demo.mp4" type="video/mp4" />
+            <track kind="captions" src="/naxely-demo.vtt" srcLang="en" label="English" />
             Your browser does not support the video tag.
           </video>
         </div>
