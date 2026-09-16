@@ -47,7 +47,6 @@
     { "src": "^/scheduled-reports(?:/.*)?$", "destination": "/shell.html" },
     { "src": "^/settings(?:/.*)?$", "destination": "/shell.html" },
     { "src": "^/templates(?:/.*)?$", "destination": "/shell.html" },
-    { "src": "^/forgot-password(?:/.*)?$", "destination": "/shell.html" },
     { "src": "^/share(?:/.*)?$", "destination": "/shell.html" },
     { "src": "^/blog/client-reporting-for-freelance-consultants$", "destination": "/blog/best-client-reporting-software-freelancers", "status": 301 },
     { "src": "^/blog/client-reporting-tools-for-upwork-freelancer$", "destination": "/blog/best-client-reporting-software-freelancers", "status": 301 },
