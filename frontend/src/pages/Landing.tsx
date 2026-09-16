@@ -345,6 +345,9 @@ export default function Landing() {
               </div>
             ))}
           </div>
+          <p className="text-center text-sm text-ink/55 dark:text-paper/45 mt-10">
+            Want the ROI math? See <Link to="/blog/automating-client-reports#why-agencies-that-auto-generate-client-reports-win-back-hours" className="text-amber-600 hover:text-amber-700 underline">why agencies that auto-generate client reports win back hours</Link>.
+          </p>
         </div>
       </section>
 
