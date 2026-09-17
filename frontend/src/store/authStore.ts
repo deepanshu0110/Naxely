@@ -91,8 +91,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   fetchProfile: async () => {
-    if (fetchProfilePromise) return fetchProfilePromise
-    if (get().user && Date.now() - lastFetchAt < 30000) return
+    if (fetchProfilePromise) {
+      console.log('[auth] fetchProfile deduped (in-flight)')
+      return fetchProfilePromise
+    }
+    if (get().user && Date.now() - lastFetchAt < 30000) {
+      console.log('[auth] fetchProfile skipped (cached)')
+      return
+    }
+    console.log('[auth] fetchProfile start')
     fetchProfilePromise = (async () => {
       try {
         const { data } = await api.get<AuthVerifyResponse>('/auth/verify')
