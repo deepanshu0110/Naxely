@@ -33,6 +33,8 @@ class Report(Base, TimestampMixin):
     share_token = Column(String(64))
     share_expires_at = Column(DateTime(timezone=True))
     share_view_count = Column(Integer, default=0)
+    pdf_signed_url = Column(Text)
+    pdf_signed_url_expires_at = Column(DateTime(timezone=True))
     
     # AI Content
     ai_summary = Column(Text)

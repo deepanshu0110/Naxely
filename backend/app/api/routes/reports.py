@@ -1211,6 +1211,7 @@ async def list_reports(
     reports = []
     pdf_url_tasks: list = []
     pdf_url_indices: list[int] = []
+    pdf_url_needs_update: list[tuple[int, str]] = []  # (idx, pdf_url)
     for idx, row in enumerate(rows):
         item = {
             "id": str(row["id"]),
@@ -1238,9 +1239,29 @@ async def list_reports(
         else:
             item["excel_warning"] = None
         if row["status"] == "completed" and row.get("pdf_url"):
-            reports.append(item)
-            pdf_url_tasks.append(_generate_signed_url(row["pdf_url"]))
-            pdf_url_indices.append(idx)
+            # expiry-aware cache: reuse if cached and not within 5min of expiry
+            cached_url = row.get("pdf_signed_url")
+            expires_at = row.get("pdf_signed_url_expires_at")
+            use_cached = False
+            if cached_url and expires_at:
+                try:
+                    # expires_at may be datetime or string
+                    if isinstance(expires_at, str):
+                        expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+                    if expires_at.tzinfo is None:
+                        expires_at = expires_at.replace(tzinfo=timezone.utc)
+                    if expires_at > datetime.now(timezone.utc) + timedelta(minutes=5):
+                        use_cached = True
+                except Exception:
+                    use_cached = False
+            if use_cached:
+                item["pdf_url"] = cached_url
+                reports.append(item)
+            else:
+                reports.append(item)
+                pdf_url_tasks.append(_generate_signed_url(row["pdf_url"]))
+                pdf_url_indices.append(idx)
+                pdf_url_needs_update.append((idx, str(row["id"])))
         else:
             item["pdf_url"] = None
             reports.append(item)
@@ -1249,6 +1270,20 @@ async def list_reports(
         signed_urls = await asyncio.gather(*pdf_url_tasks)
         for s_idx, signed in zip(pdf_url_indices, signed_urls):
             reports[s_idx]["pdf_url"] = signed
+        # persist newly generated signed URLs with expiry
+        try:
+            now = datetime.now(timezone.utc)
+            expires = now + timedelta(seconds=3600)
+            for (s_idx, report_id), signed in zip(pdf_url_needs_update, signed_urls):
+                if signed:
+                    await db.execute(
+                        text("UPDATE reports SET pdf_signed_url = :url, pdf_signed_url_expires_at = :exp WHERE id = :rid"),
+                        {"url": signed, "exp": expires, "rid": report_id},
+                    )
+            await db.commit()
+        except Exception as e:
+            logger.warning(f"[reports] failed to cache signed URLs: {e}")
+            await db.rollback()
 
     return {
         "success": True,
