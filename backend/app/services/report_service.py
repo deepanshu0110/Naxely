@@ -400,10 +400,12 @@ async def run_report_pipeline(report_id: str, user_id: str, config: dict, csv_by
         storage_path = f"reports/{user_id}/{report_id}/report.pdf"
         with open(pdf_path, 'rb') as f:
             pdf_bytes = f.read()
-        await _run_sync(
+        upload_result = await _run_sync(
             _get_supabase().storage.from_("reports").upload, storage_path, pdf_bytes,
             {"content-type": "application/pdf"},
         )
+        if isinstance(upload_result, dict) and upload_result.get("error"):
+            raise RuntimeError(f"Storage upload failed for {storage_path}: {upload_result['error']}")
 
         if _use_default_path:
             async with AsyncSessionLocal() as db:
