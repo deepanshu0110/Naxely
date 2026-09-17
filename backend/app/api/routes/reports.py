@@ -1209,7 +1209,9 @@ async def list_reports(
     rows = result.mappings().all()
 
     reports = []
-    for row in rows:
+    pdf_url_tasks: list = []
+    pdf_url_indices: list[int] = []
+    for idx, row in enumerate(rows):
         item = {
             "id": str(row["id"]),
             "title": row["title"],
@@ -1236,10 +1238,17 @@ async def list_reports(
         else:
             item["excel_warning"] = None
         if row["status"] == "completed" and row.get("pdf_url"):
-            item["pdf_url"] = await _generate_signed_url(row["pdf_url"])
+            reports.append(item)
+            pdf_url_tasks.append(_generate_signed_url(row["pdf_url"]))
+            pdf_url_indices.append(idx)
         else:
             item["pdf_url"] = None
-        reports.append(item)
+            reports.append(item)
+
+    if pdf_url_tasks:
+        signed_urls = await asyncio.gather(*pdf_url_tasks)
+        for s_idx, signed in zip(pdf_url_indices, signed_urls):
+            reports[s_idx]["pdf_url"] = signed
 
     return {
         "success": True,
