@@ -13,6 +13,7 @@ export default function WelcomeModal({ onClose }: WelcomeModalProps) {
   const navigate = useNavigate()
   const fetchProfile = useAuthStore((s) => s.fetchProfile)
   const [loading, setLoading] = useState<'sample' | 'upload' | null>(null)
+  const [skipping, setSkipping] = useState(false)
 
   const handleSampleData = async () => {
     setLoading('sample')
@@ -36,11 +37,14 @@ export default function WelcomeModal({ onClose }: WelcomeModalProps) {
   }
 
   const handleSkip = async () => {
+    if (skipping) return
+    setSkipping(true)
     try {
       await api.post('/auth/skip-onboarding')
       await fetchProfile()
       onClose()
     } catch {
+      setSkipping(false)
     }
   }
 
@@ -77,7 +81,8 @@ export default function WelcomeModal({ onClose }: WelcomeModalProps) {
 
         <button
           onClick={handleSkip}
-          className="mx-auto mt-6 block text-sm text-gray-400 underline-offset-2 hover:text-gray-600 hover:underline dark:text-gray-500 dark:hover:text-gray-300"
+          disabled={skipping}
+          className="mx-auto mt-6 block text-sm text-gray-400 underline-offset-2 hover:text-gray-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-500 dark:hover:text-gray-300"
         >
           Skip for now
         </button>

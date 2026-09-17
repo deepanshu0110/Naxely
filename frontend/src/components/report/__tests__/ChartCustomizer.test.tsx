@@ -170,7 +170,9 @@ describe('ChartCustomizer candidate selection', () => {
     renderCustomizer({ maxCharts: 2 })
 
     await screen.findByText('Sales by client')
-    await userEvent.click(screen.getAllByRole('checkbox')[2])
+    const checkboxes = screen.getAllByRole('checkbox')
+    expect(checkboxes[2]).toBeDisabled()
+    await userEvent.click(screen.getByText('Sales by client'))
 
     expect(
       screen.getByText('You can include up to 2 charts on your plan.'),

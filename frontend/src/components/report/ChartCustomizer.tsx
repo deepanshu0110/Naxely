@@ -142,19 +142,35 @@ export default function ChartCustomizer({
       <div className="flex flex-col gap-3">
         {candidates.map((spec, i) => {
           const checked = included.has(i)
+          const atCap = !!(maxCharts && !checked && included.size >= maxCharts)
           return (
             <div
               key={i}
+              onClickCapture={() => {
+                if (atCap) setCapMessage(`You can include up to ${maxCharts} charts on your plan.`)
+              }}
+              onClick={() => {
+                if (atCap) setCapMessage(`You can include up to ${maxCharts} charts on your plan.`)
+              }}
+              onMouseDown={() => {
+                if (atCap) setCapMessage(`You can include up to ${maxCharts} charts on your plan.`)
+              }}
               className={`flex items-center justify-between gap-4 rounded-xl border border-transparent bg-gray-50 p-4 transition hover:border-amber-500/30 dark:bg-gray-800 ${
                 checked ? '' : 'opacity-60'
               }`}
             >
-              <label className="flex min-w-0 cursor-pointer items-center gap-3">
+              <label
+                onClick={() => {
+                  if (atCap) setCapMessage(`You can include up to ${maxCharts} charts on your plan.`)
+                }}
+                className="flex min-w-0 cursor-pointer items-center gap-3">
                 <input
                   type="checkbox"
                   checked={checked}
+                  disabled={atCap}
                   onChange={() => toggleInclude(i)}
-                  className="h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-amber-500"
+                  style={atCap ? { pointerEvents: 'none' } : undefined}
+                  className="h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label={`Include ${spec.title}`}
                 />
                 <span className="flex min-w-0 flex-col gap-0.5">

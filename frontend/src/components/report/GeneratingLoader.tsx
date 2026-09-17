@@ -59,7 +59,7 @@ export default function GeneratingLoader({ currentStep, progress, isPolling, tim
   }, [filled])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper dark:bg-darkBg">
+    <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-paper dark:bg-darkBg">
       <div className="w-full max-w-md px-6 text-center">
         <h2 className="mb-2 text-2xl font-bold text-ink dark:text-paper">Generating your report</h2>
         <p className="mb-10 text-sm text-gray-500 dark:text-gray-400">This usually takes 30–90 seconds</p>
