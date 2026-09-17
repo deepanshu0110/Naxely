@@ -48,11 +48,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     if (!authListenerSubscribed) {
       authListenerSubscribed = true
-      supabase.auth.onAuthStateChange((_event, newSession) => {
+      supabase.auth.onAuthStateChange((event, newSession) => {
         set({ session: newSession, isAuthenticated: !!newSession })
-        if (newSession) {
+        if (newSession && event !== 'INITIAL_SESSION') {
           get().fetchProfile()
-        } else {
+        } else if (!newSession) {
           set({ user: null })
         }
       })
