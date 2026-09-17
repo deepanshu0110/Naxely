@@ -19,6 +19,10 @@ interface AuthStore {
   fetchProfile: () => Promise<void>
 }
 
+let fetchProfilePromise: Promise<void> | null = null
+let lastFetchAt = 0
+let authListenerSubscribed = false
+
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   session: null,
@@ -42,14 +46,17 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ session: null, isAuthenticated: false, isLoading: false })
     }
 
-    supabase.auth.onAuthStateChange((_event, newSession) => {
-      set({ session: newSession, isAuthenticated: !!newSession })
-      if (newSession) {
-        get().fetchProfile()
-      } else {
-        set({ user: null })
-      }
-    })
+    if (!authListenerSubscribed) {
+      authListenerSubscribed = true
+      supabase.auth.onAuthStateChange((_event, newSession) => {
+        set({ session: newSession, isAuthenticated: !!newSession })
+        if (newSession) {
+          get().fetchProfile()
+        } else {
+          set({ user: null })
+        }
+      })
+    }
   },
 
   loginWithGoogle: async () => {
@@ -84,11 +91,19 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   fetchProfile: async () => {
-    try {
-      const { data } = await api.get<AuthVerifyResponse>('/auth/verify')
-      set({ user: data })
-    } catch {
-      set({ user: null, isAuthenticated: false, session: null })
-    }
+    if (fetchProfilePromise) return fetchProfilePromise
+    if (get().user && Date.now() - lastFetchAt < 30000) return
+    fetchProfilePromise = (async () => {
+      try {
+        const { data } = await api.get<AuthVerifyResponse>('/auth/verify')
+        set({ user: data })
+        lastFetchAt = Date.now()
+      } catch {
+        set({ user: null, isAuthenticated: false, session: null })
+      } finally {
+        fetchProfilePromise = null
+      }
+    })()
+    return fetchProfilePromise
   },
 }))
