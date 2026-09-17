@@ -9,7 +9,7 @@ from app.core.config import settings
 _supabase_client: Client | None = None
 
 _SUPABASE_EXECUTOR = concurrent.futures.ThreadPoolExecutor(
-    max_workers=4,
+    max_workers=10,
     thread_name_prefix="supabase_worker",
 )
 
