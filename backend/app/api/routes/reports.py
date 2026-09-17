@@ -1159,6 +1159,16 @@ async def download_report(
     if row["status"] != "completed":
         raise HTTPException(status_code=409, detail="Report is not yet completed")
 
+    # Download tracking — owner-only, separate from share_view_count
+    try:
+        await db.execute(
+            text("UPDATE reports SET download_count = COALESCE(download_count,0)+1, last_downloaded_at = NOW() WHERE id = :rid"),
+            {"rid": report_id},
+        )
+        await db.commit()
+    except Exception:
+        await db.rollback()
+
     import httpx
     signed_url = await _generate_signed_url(row["pdf_url"])
     if not signed_url:
@@ -1309,6 +1319,16 @@ async def get_report(
     report = result.mappings().first()
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
+
+    # Owner view tracking — not for shared-link views (share_view_count is separate)
+    try:
+        await db.execute(
+            text("UPDATE reports SET owner_view_count = COALESCE(owner_view_count,0)+1, owner_last_viewed_at = NOW() WHERE id = :rid"),
+            {"rid": report_id},
+        )
+        await db.commit()
+    except Exception:
+        await db.rollback()
 
     ai_insights_raw = report.get("ai_insights")
     if isinstance(ai_insights_raw, str):
