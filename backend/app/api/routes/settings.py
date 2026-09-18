@@ -1,5 +1,6 @@
 import re
 import logging
+import sentry_sdk
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional, cast
 
@@ -435,6 +436,27 @@ async def delete_account(
                 )
     except Exception as e:
         logger.warning("Storage cleanup during account deletion (non-fatal): %s", e)
+
+    # Lightweight audit log before cascade — so a delete shortly after a failed download is visible next time
+    try:
+        audit_rows = await db.execute(
+            text("SELECT id, status, download_count, owner_view_count, owner_last_viewed_at, last_downloaded_at FROM reports WHERE user_id = :uid AND deleted_at IS NULL"),
+            {"uid": uid},
+        )
+        audit_data = audit_rows.mappings().all()
+        logger.info(
+            "account deletion: user_id=%s email=%s reports=%d details=%s",
+            uid,
+            current_user.email,
+            len(audit_data),
+            [{"id": str(r["id"]), "status": r["status"], "download_count": r.get("download_count"), "owner_view_count": r.get("owner_view_count"), "owner_last_viewed_at": r.get("owner_last_viewed_at").isoformat() if r.get("owner_last_viewed_at") else None, "last_downloaded_at": r.get("last_downloaded_at").isoformat() if r.get("last_downloaded_at") else None} for r in audit_data],
+        )
+        try:
+            sentry_sdk.capture_message(f"account deletion: {uid} {current_user.email} reports={len(audit_data)}", level="info")
+        except Exception:
+            pass
+    except Exception as e:
+        logger.warning("account deletion audit log failed for %s: %s", uid, e)
 
     try:
         _get_supabase().auth.admin.delete_user(uid)

@@ -68,9 +68,12 @@ class TestDeleteAccount:
         report_result = MagicMock()
         report_result.mappings.return_value.all.return_value = [report_pdf_row]
 
+        audit_result = MagicMock()
+        audit_result.mappings.return_value.all.return_value = []
+
         delete_result = MagicMock()
 
-        db = _AsyncDB([upload_result, report_result, delete_result])
+        db = _AsyncDB([upload_result, report_result, audit_result, delete_result])
 
         mock_supabase = MagicMock()
         mock_storage = MagicMock()
@@ -138,9 +141,12 @@ class TestDeleteAccount:
         empty_report_result = MagicMock()
         empty_report_result.mappings.return_value.all.return_value = []
 
+        audit_result = MagicMock()
+        audit_result.mappings.return_value.all.return_value = []
+
         delete_result = MagicMock()
 
-        db = _AsyncDB([empty_upload_result, empty_report_result, delete_result])
+        db = _AsyncDB([empty_upload_result, empty_report_result, audit_result, delete_result])
 
         mock_supabase = MagicMock()
         mock_storage = MagicMock()
@@ -183,7 +189,10 @@ class TestDeleteAccount:
         report_result = MagicMock()
         report_result.mappings.return_value.all.return_value = []
 
-        db = _AsyncDB([upload_result, report_result])
+        audit_result = MagicMock()
+        audit_result.mappings.return_value.all.return_value = []
+
+        db = _AsyncDB([upload_result, report_result, audit_result])
 
         mock_supabase = MagicMock()
         mock_storage = MagicMock()
@@ -228,9 +237,12 @@ class TestDeleteAccount:
         report_result = MagicMock()
         report_result.mappings.return_value.all.return_value = []
 
+        audit_result = MagicMock()
+        audit_result.mappings.return_value.all.return_value = []
+
         delete_result = MagicMock()
 
-        db = _AsyncDB([upload_result, report_result, delete_result])
+        db = _AsyncDB([upload_result, report_result, audit_result, delete_result])
 
         mock_supabase = MagicMock()
         mock_storage = MagicMock()
