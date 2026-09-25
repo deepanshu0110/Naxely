@@ -19,8 +19,11 @@ class Settings(BaseSettings):
     # House AI keys for Free tier (BYOK not required). Backend-only secrets —
     # never sent to the frontend, never logged. Kill switch: when
     # FREE_TIER_HOUSE_KEY_ENABLED is false, Free falls back to BYOK-required.
-    HOUSE_AI_KEY_MISTRAL: str = ""
+    # Groq primary, Cerebras fallback — both free, no card. (Mistral needs
+    # PAYG and is deliberately NOT in the house path; it stays available
+    # as a Pro/Agency BYOK option via PROVIDER_CONFIG.)
     HOUSE_AI_KEY_GROQ: str = ""
+    HOUSE_AI_KEY_CEREBRAS: str = ""
     FREE_TIER_HOUSE_KEY_ENABLED: bool = True
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 

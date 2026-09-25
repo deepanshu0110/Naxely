@@ -38,7 +38,7 @@ export default function Privacy() {
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">How We Use Your Data</h2>
           <p>We use your data solely to provide and improve the service: generate PDF reports, process AI insights, manage your account, communicate with you about service-related updates, and understand product usage through analytics.</p>
           <p>Your uploaded data (CSV, Sheets, report content) is used only to generate the reports you request. We do not sell your data or your reports to third parties.</p>
-          <p>When you use a BYOK AI provider (Groq, OpenAI, Gemini, Claude, DeepSeek, Mistral, or Together AI), your report data is sent to that provider to generate insights. Each provider has its own data usage and retention policy, which may differ from ours — we encourage you to review the policy of whichever provider you choose to connect, since Naxely cannot control or guarantee how a third-party AI provider uses data once it's sent to them.</p>
+          <p>When you use a BYOK AI provider (Groq, OpenAI, Gemini, Claude, DeepSeek, Mistral, or Together AI), your report data is sent to that provider to generate insights. On the Free tier without your own key, Naxely supplies AI generation through its own provider accounts instead. Each provider has its own data usage and retention policy, which may differ from ours — we encourage you to review the policy of whichever provider processes your data, since Naxely cannot control or guarantee how a third-party AI provider uses data once it's sent to them.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-6">Data Storage & Security</h2>
           <p>Your reports and uploaded data are stored securely on Supabase (PostgreSQL) and Supabase Storage. We use encryption in transit (TLS) and encrypt stored API keys at rest.</p>
@@ -50,7 +50,7 @@ export default function Privacy() {
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>Supabase</strong> — authentication, database, and file storage</li>
             <li><strong>Dodo Payments</strong> — payment processing (we do not store credit card details)</li>
-            <li><strong>Groq, OpenAI, Gemini, Claude, DeepSeek, Mistral, Together AI</strong> — AI analysis, only when you provide your own API key</li>
+            <li><strong>Groq, OpenAI, Gemini, Claude, DeepSeek, Mistral, Together AI</strong> — AI analysis via your own API key, or via Naxely's own provider accounts on the Free tier</li>
             <li><strong>Google Sheets</strong> — data import (read-only, with your explicit authorization)</li>
             <li><strong>Resend</strong> — transactional email delivery</li>
             <li><strong>Google Analytics (GA4)</strong> — site usage analytics</li>

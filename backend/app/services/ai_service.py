@@ -63,6 +63,7 @@ PROVIDER_CONFIG: dict[str, dict[str, str | None]] = {
     "groq":      {"base_url": "https://api.groq.com/openai/v1",  "model": "openai/gpt-oss-120b"},
     "deepseek":  {"base_url": "https://api.deepseek.com/v1",     "model": "deepseek-chat"},
     "mistral":   {"base_url": "https://api.mistral.ai/v1",       "model": "mistral-large-latest"},
+    "cerebras":  {"base_url": "https://api.cerebras.ai/v1",     "model": "gpt-oss-120b"},
     "together":  {"base_url": "https://api.together.xyz/v1",     "model": "meta-llama/Meta-Llama-3.3-70B-Instruct-Turbo"},
 }
 
@@ -82,31 +83,32 @@ def _get_user_provider_config(user) -> tuple[str, str, str | None]:
 # House AI keys for the Free tier: Naxely supplies AI generation so free users
 # don't need their own key before their first report. A stored user key always
 # takes precedence (BYOK); Pro/Agency never use house keys.
-HOUSE_PRIMARY_PROVIDER = "mistral"
-HOUSE_FALLBACK_PROVIDER = "groq"
+# Groq primary, Cerebras fallback — both free tiers, no card anywhere.
+HOUSE_PRIMARY_PROVIDER = "groq"
+HOUSE_FALLBACK_PROVIDER = "cerebras"
 HOUSE_MAX_CONCURRENT = 4
 HOUSE_SEMAPHORE_TIMEOUT_S = 30
 
 _HOUSE_SEMAPHORE = threading.BoundedSemaphore(HOUSE_MAX_CONCURRENT)
 _HOUSE_STATS_LOCK = threading.Lock()
 HOUSE_KEY_STATS: dict[str, int] = {
-    "mistral_ok": 0,
-    "mistral_fail": 0,
     "groq_ok": 0,
     "groq_fail": 0,
+    "cerebras_ok": 0,
+    "cerebras_fail": 0,
     "semaphore_timeout": 0,
 }
 
 
 def house_key_enabled() -> bool:
     """Kill switch + key presence: False means Free falls back to BYOK-required."""
-    return bool(settings.FREE_TIER_HOUSE_KEY_ENABLED) and bool(settings.HOUSE_AI_KEY_MISTRAL)
+    return bool(settings.FREE_TIER_HOUSE_KEY_ENABLED) and bool(settings.HOUSE_AI_KEY_GROQ)
 
 
 def _is_house_key(api_key: str | None) -> bool:
     if not api_key:
         return False
-    for house_key in (settings.HOUSE_AI_KEY_MISTRAL, settings.HOUSE_AI_KEY_GROQ):
+    for house_key in (settings.HOUSE_AI_KEY_GROQ, settings.HOUSE_AI_KEY_CEREBRAS):
         if house_key and hmac.compare_digest(api_key.encode(), house_key.encode()):
             return True
     return False
@@ -158,7 +160,7 @@ def _house_provider_attempt(label: str, api_key: str, base_url: str | None, mode
 
 
 def _call_house_ai(prompt: str, system: str, timeout: int = 25) -> str:
-    """Free-tier house-key call: Mistral primary, Groq fallback on any failure.
+    """Free-tier house-key call: Groq primary, Cerebras fallback on any failure.
 
     Concurrency-guarded so a burst of free users degrades to skipped-AI
     (HTTPException → ai_skipped in the pipeline) instead of hard-failing
@@ -170,29 +172,29 @@ def _call_house_ai(prompt: str, system: str, timeout: int = 25) -> str:
         logger.warning("house_ai semaphore timeout — skipping AI")
         raise HTTPException(status_code=429, detail="AI busy — report saved without AI insights")
     try:
-        mistral_cfg = PROVIDER_CONFIG[HOUSE_PRIMARY_PROVIDER]
-        groq_cfg = PROVIDER_CONFIG[HOUSE_FALLBACK_PROVIDER]
+        primary_cfg = PROVIDER_CONFIG[HOUSE_PRIMARY_PROVIDER]
+        fallback_cfg = PROVIDER_CONFIG[HOUSE_FALLBACK_PROVIDER]
         start = time.time()
         result = _house_provider_attempt(
-            "mistral", settings.HOUSE_AI_KEY_MISTRAL,
-            mistral_cfg["base_url"], mistral_cfg["model"],
+            HOUSE_PRIMARY_PROVIDER, settings.HOUSE_AI_KEY_GROQ,
+            primary_cfg["base_url"], primary_cfg["model"],
             prompt, system, timeout,
         )
         if result:
-            logger.info("house_ai provider=mistral ok latency=%.1fs", time.time() - start)
+            logger.info("house_ai provider=%s ok latency=%.1fs", HOUSE_PRIMARY_PROVIDER, time.time() - start)
             return result
-        logger.warning("house_ai mistral failed — trying groq fallback")
-        if not settings.HOUSE_AI_KEY_GROQ:
+        logger.warning("house_ai %s failed — trying %s fallback", HOUSE_PRIMARY_PROVIDER, HOUSE_FALLBACK_PROVIDER)
+        if not settings.HOUSE_AI_KEY_CEREBRAS:
             return ""
         result = _house_provider_attempt(
-            "groq", settings.HOUSE_AI_KEY_GROQ,
-            groq_cfg["base_url"], groq_cfg["model"],
+            HOUSE_FALLBACK_PROVIDER, settings.HOUSE_AI_KEY_CEREBRAS,
+            fallback_cfg["base_url"], fallback_cfg["model"],
             prompt, system, timeout,
         )
         if result:
-            logger.info("house_ai provider=groq ok latency=%.1fs", time.time() - start)
+            logger.info("house_ai provider=%s ok latency=%.1fs", HOUSE_FALLBACK_PROVIDER, time.time() - start)
             return result
-        logger.warning("house_ai groq fallback failed — skipping AI")
+        logger.warning("house_ai %s fallback failed — skipping AI", HOUSE_FALLBACK_PROVIDER)
         return ""
     finally:
         _HOUSE_SEMAPHORE.release()
@@ -214,7 +216,7 @@ def get_user_api_key(user: User) -> tuple[str | None, str | None, str | None]:
 
     if tier == "free" and house_key_enabled():
         cfg = PROVIDER_CONFIG.get(HOUSE_PRIMARY_PROVIDER, {})
-        return (HOUSE_PRIMARY_PROVIDER, settings.HOUSE_AI_KEY_MISTRAL, cfg.get("base_url"))
+        return (HOUSE_PRIMARY_PROVIDER, settings.HOUSE_AI_KEY_GROQ, cfg.get("base_url"))
 
     return None, None, None
 
@@ -248,6 +250,8 @@ def _infer_provider(base_url: str | None) -> str:
         return "deepseek"
     if "mistral.ai" in base_url:
         return "mistral"
+    if "cerebras.ai" in base_url:
+        return "cerebras"
     if "together.xyz" in base_url or "together.ai" in base_url:
         return "together"
     return "openai_compat"

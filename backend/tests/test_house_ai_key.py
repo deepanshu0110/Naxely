@@ -25,8 +25,8 @@ def _user(
 @pytest.fixture
 def house_env(monkeypatch):
     from app.core.config import settings
-    monkeypatch.setattr(settings, "HOUSE_AI_KEY_MISTRAL", "hk-mistral-test")
     monkeypatch.setattr(settings, "HOUSE_AI_KEY_GROQ", "hk-groq-test")
+    monkeypatch.setattr(settings, "HOUSE_AI_KEY_CEREBRAS", "hk-cerebras-test")
     monkeypatch.setattr(settings, "FREE_TIER_HOUSE_KEY_ENABLED", True)
     from app.services import ai_service
     for k in list(ai_service.HOUSE_KEY_STATS.keys()):
@@ -35,12 +35,12 @@ def house_env(monkeypatch):
 
 
 class TestHouseKeyGating:
-    def test_free_no_key_gets_house_mistral(self, house_env):
+    def test_free_no_key_gets_house_groq(self, house_env):
         from app.services.ai_service import get_user_api_key
         provider, key, base_url = get_user_api_key(_user("free"))
-        assert provider == "mistral"
-        assert key == "hk-mistral-test"
-        assert base_url == "https://api.mistral.ai/v1"
+        assert provider == "groq"
+        assert key == "hk-groq-test"
+        assert base_url == "https://api.groq.com/openai/v1"
 
     def test_free_own_key_takes_precedence(self, house_env):
         from app.services.ai_service import get_user_api_key
@@ -73,8 +73,8 @@ class TestHouseKeyGating:
     def test_no_house_keys_configured_falls_back_to_none(self, monkeypatch):
         from app.core.config import settings
         from app.services.ai_service import get_user_api_key
-        monkeypatch.setattr(settings, "HOUSE_AI_KEY_MISTRAL", "")
         monkeypatch.setattr(settings, "HOUSE_AI_KEY_GROQ", "")
+        monkeypatch.setattr(settings, "HOUSE_AI_KEY_CEREBRAS", "")
         monkeypatch.setattr(settings, "FREE_TIER_HOUSE_KEY_ENABLED", True)
         provider, key, _ = get_user_api_key(_user("free"))
         assert provider is None
@@ -110,72 +110,82 @@ class TestFreeAiSectionsGate:
 
 
 class TestHouseKeyFallback:
-    def test_mistral_ok_no_fallback(self, house_env):
+    def test_groq_ok_no_fallback(self, house_env):
         from app.services import ai_service
         with patch.object(ai_service, "call_openai_compat", return_value="summary text") as m:
-            out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
+            out = ai_service._call_ai("groq", "p", "s", "hk-groq-test")
         assert out == "summary text"
         assert m.call_count == 1
-        assert ai_service.HOUSE_KEY_STATS["mistral_ok"] == 1
-        assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 0
+        assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 1
+        assert ai_service.HOUSE_KEY_STATS["cerebras_ok"] == 0
 
-    def test_mistral_429_retried_once_then_falls_back_to_groq(self, house_env):
+    def test_groq_429_retried_once_then_falls_back_to_cerebras(self, house_env):
         from app.services import ai_service
         calls = []
         def fake(prompt, system, key, timeout, base_url=None, model=None):
             calls.append(base_url)
-            if "mistral" in (base_url or ""):
+            if "groq" in (base_url or ""):
                 raise HTTPException(status_code=429, detail="rate limit")
-            return "groq text"
+            return "cerebras text"
         with patch("time.sleep") as mock_sleep, \
              patch.object(ai_service, "call_openai_compat", side_effect=fake):
-            out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
-        assert out == "groq text"
-        assert len(calls) == 3  # mistral, mistral retry, groq
+            out = ai_service._call_ai("groq", "p", "s", "hk-groq-test")
+        assert out == "cerebras text"
+        assert len(calls) == 3  # groq, groq retry, cerebras
         assert mock_sleep.call_count == 1
-        assert ai_service.HOUSE_KEY_STATS["mistral_fail"] == 1
-        assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 1
+        assert ai_service.HOUSE_KEY_STATS["groq_fail"] == 1
+        assert ai_service.HOUSE_KEY_STATS["cerebras_ok"] == 1
 
-    def test_mistral_429_then_ok_no_fallback(self, house_env):
+    def test_groq_429_then_ok_no_fallback(self, house_env):
         from app.services import ai_service
         calls = []
         def fake(prompt, system, key, timeout, base_url=None, model=None):
             calls.append(base_url)
             if len(calls) == 1:
                 raise HTTPException(status_code=429, detail="rate limit")
-            return "mistral text"
+            return "groq text"
         with patch("time.sleep") as mock_sleep, \
              patch.object(ai_service, "call_openai_compat", side_effect=fake):
-            out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
-        assert out == "mistral text"
+            out = ai_service._call_ai("groq", "p", "s", "hk-groq-test")
+        assert out == "groq text"
         assert len(calls) == 2
         assert mock_sleep.call_count == 1
-        assert ai_service.HOUSE_KEY_STATS["mistral_ok"] == 1
-        assert ai_service.HOUSE_KEY_STATS["mistral_fail"] == 0
-        assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 0
+        assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 1
+        assert ai_service.HOUSE_KEY_STATS["groq_fail"] == 0
+        assert ai_service.HOUSE_KEY_STATS["cerebras_ok"] == 0
 
-    def test_mistral_403_fails_fast_no_retry(self, house_env):
+    def test_groq_403_fails_fast_no_retry(self, house_env):
         from app.services import ai_service
         calls = []
         def fake(prompt, system, key, timeout, base_url=None, model=None):
             calls.append(base_url)
-            if "mistral" in (base_url or ""):
+            if "groq" in (base_url or ""):
                 raise HTTPException(status_code=403, detail="forbidden")
-            return "groq text"
+            return "cerebras text"
         with patch("time.sleep") as mock_sleep, \
              patch.object(ai_service, "call_openai_compat", side_effect=fake):
-            out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
-        assert out == "groq text"
-        assert len(calls) == 2  # mistral once (no retry), then groq
+            out = ai_service._call_ai("groq", "p", "s", "hk-groq-test")
+        assert out == "cerebras text"
+        assert len(calls) == 2  # groq once (no retry), then cerebras
         assert mock_sleep.call_count == 0
-        assert ai_service.HOUSE_KEY_STATS["mistral_fail"] == 1
+        assert ai_service.HOUSE_KEY_STATS["groq_fail"] == 1
 
     def test_both_fail_returns_empty(self, house_env):
         from app.services import ai_service
         with patch.object(ai_service, "call_openai_compat", side_effect=Exception("down")):
-            out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
+            out = ai_service._call_ai("groq", "p", "s", "hk-groq-test")
         assert out == ""
-        assert ai_service.HOUSE_KEY_STATS["mistral_fail"] == 1
+        assert ai_service.HOUSE_KEY_STATS["groq_fail"] == 1
+        assert ai_service.HOUSE_KEY_STATS["cerebras_fail"] == 1
+
+    def test_cerebras_key_absent_skips_without_call(self, house_env, monkeypatch):
+        from app.core.config import settings
+        from app.services import ai_service
+        monkeypatch.setattr(settings, "HOUSE_AI_KEY_CEREBRAS", "")
+        with patch.object(ai_service, "call_openai_compat", side_effect=Exception("down")) as m:
+            out = ai_service._call_ai("groq", "p", "s", "hk-groq-test")
+        assert out == ""
+        assert m.call_count == 1  # groq only, no cerebras attempt
         assert ai_service.HOUSE_KEY_STATS["groq_fail"] == 1
 
     def test_user_byok_key_never_touches_house_path(self, house_env):
@@ -208,5 +218,5 @@ class TestHouseKeyFallback:
     def test_stats_snapshot(self, house_env):
         from app.services.ai_service import get_house_key_stats
         snap = get_house_key_stats()
-        assert set(snap) == {"mistral_ok", "mistral_fail", "groq_ok", "groq_fail", "semaphore_timeout"}
+        assert set(snap) == {"groq_ok", "groq_fail", "cerebras_ok", "cerebras_fail", "semaphore_timeout"}
         assert all(v == 0 for v in snap.values())
