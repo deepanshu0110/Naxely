@@ -296,6 +296,21 @@ def _has_ai_sections(sections: list) -> bool:
     return bool(set(sections) & AI_SECTIONS)
 
 
+def _free_may_use_ai_sections(user) -> bool:
+    """Free-tier gate for AI sections: allowed with own BYOK key or house coverage.
+
+    Pro/Agency are handled by require_pro_or_above, never reach here as False.
+    Without either, the caller raises 403 via require_pro_or_above (unchanged shape).
+    """
+    has_stored_key = bool(
+        getattr(user, "encrypted_api_key", None) and getattr(user, "api_key_iv", None)
+    )
+    if has_stored_key:
+        return True
+    tier = (getattr(user, "tier", None) or getattr(user, "subscription_tier", None) or "free").lower()
+    return tier == "free" and ai_service_mod.house_key_enabled()
+
+
 @router.post("/reports/upload")
 @limiter.limit("10/minute")
 async def upload_file(
@@ -800,7 +815,9 @@ async def generate_report(
         raise HTTPException(status_code=404, detail="Upload not found")
 
     if _has_ai_sections(body.sections):
-        require_pro_or_above(current_user)
+        tier = (getattr(current_user, "tier", None) or "free").lower()
+        if tier not in ("pro", "agency") and not _free_may_use_ai_sections(current_user):
+            require_pro_or_above(current_user)
 
     existing = await db.execute(
         text("""

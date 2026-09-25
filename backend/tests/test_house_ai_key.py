@@ -81,6 +81,34 @@ class TestHouseKeyGating:
         assert key is None
 
 
+class TestFreeAiSectionsGate:
+    """generate_report's AI-section gate: free users pass with own key or house coverage."""
+
+    def test_free_no_key_house_on_allowed(self, house_env):
+        from app.api.routes.reports import _free_may_use_ai_sections
+        assert _free_may_use_ai_sections(_user("free")) is True
+
+    def test_free_no_key_house_off_denied(self, house_env, monkeypatch):
+        from app.core.config import settings
+        from app.api.routes.reports import _free_may_use_ai_sections
+        monkeypatch.setattr(settings, "FREE_TIER_HOUSE_KEY_ENABLED", False)
+        assert _free_may_use_ai_sections(_user("free")) is False
+
+    def test_free_own_key_allowed_without_house(self, house_env, monkeypatch):
+        from app.core.config import settings
+        from app.api.routes.reports import _free_may_use_ai_sections
+        monkeypatch.setattr(settings, "FREE_TIER_HOUSE_KEY_ENABLED", False)
+        free = _user("free", encrypted_api_key=b"ekey", api_key_iv=b"eiv")
+        assert _free_may_use_ai_sections(free) is True
+
+    def test_pro_never_uses_helper_allow(self, house_env):
+        # Pro/Agency are allowed upstream by require_pro_or_above; the helper
+        # only answers the free-tier question.
+        from app.api.routes.reports import _free_may_use_ai_sections
+        assert _free_may_use_ai_sections(_user("pro")) is False
+        assert _free_may_use_ai_sections(_user("agency")) is False
+
+
 class TestHouseKeyFallback:
     def test_mistral_ok_no_fallback(self, house_env):
         from app.services import ai_service
