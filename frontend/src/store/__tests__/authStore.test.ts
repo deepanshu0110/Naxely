@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { useAuthStore } from '@/store/authStore'
+import { useAuthStore, __resetAuthStoreForTests } from '@/store/authStore'
+
+// Reset module-level guards (fetchProfile dedupe cache, subscribe-once flag)
+// before every test — zustand setState alone cannot clear them.
+beforeEach(() => {
+  __resetAuthStoreForTests()
+})
 
 const {
   mockGetSession,

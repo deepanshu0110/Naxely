@@ -23,6 +23,19 @@ let fetchProfilePromise: Promise<void> | null = null
 let lastFetchAt = 0
 let authListenerSubscribed = false
 
+/**
+ * TEST-ONLY resetter for the module-level dedupe/subscription guards above.
+ * Never call from production code — it is a no-op in production builds.
+ * Exists so unit tests can start each case from a clean slate without
+ * changing the store's runtime behavior (30s fetch cache, subscribe-once).
+ */
+export function __resetAuthStoreForTests(): void {
+  if (import.meta.env.PROD) return
+  fetchProfilePromise = null
+  lastFetchAt = 0
+  authListenerSubscribed = false
+}
+
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   session: null,
