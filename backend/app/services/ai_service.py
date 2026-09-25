@@ -141,6 +141,13 @@ def _house_provider_attempt(label: str, api_key: str, base_url: str | None, mode
     """
     for attempt in (1, 2):
         try:
+            # TEMPORARY fallback-verification (revert after): force the Groq
+            # primary to fail for the single probe report (identified by a
+            # marker column name in its prompt) so the Mistral fallback path
+            # executes live. No other report contains this marker.
+            if label == "groq" and "FALLBACK-TEST-PROBE" in prompt:
+                logger.warning("house_ai groq forcibly failed (fallback verification)")
+                raise HTTPException(status_code=429, detail="forced fallback verification")
             result = call_openai_compat(
                 prompt, system, api_key, timeout, base_url=base_url, model=model,
             )
