@@ -284,6 +284,12 @@ def select_charts_with_ai(
     Returns list of {x, y, type, title} dicts, or None on failure.
     Falls back to None so caller can use rule-based selection.
     """
+    # TEMPORARY fallback-verification test (revert after): force the rule-based
+    # path for the single verification report only. Title-gated so no other
+    # request is affected.
+    if str((config or {}).get("title", "")).startswith("FALLBACK-TEST-"):
+        logger.warning("house_ai chart selection forcibly skipped (fallback verification) — using rule-based path")
+        return None
     from app.services.ai_service import _call_ai
 
     SUPPORTED = [
