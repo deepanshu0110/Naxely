@@ -119,7 +119,7 @@ class TestHouseKeyFallback:
         assert ai_service.HOUSE_KEY_STATS["mistral_ok"] == 1
         assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 0
 
-    def test_mistral_429_falls_back_to_groq(self, house_env):
+    def test_mistral_429_retried_once_then_falls_back_to_groq(self, house_env):
         from app.services import ai_service
         calls = []
         def fake(prompt, system, key, timeout, base_url=None, model=None):
@@ -127,12 +127,48 @@ class TestHouseKeyFallback:
             if "mistral" in (base_url or ""):
                 raise HTTPException(status_code=429, detail="rate limit")
             return "groq text"
-        with patch.object(ai_service, "call_openai_compat", side_effect=fake):
+        with patch("time.sleep") as mock_sleep, \
+             patch.object(ai_service, "call_openai_compat", side_effect=fake):
             out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
         assert out == "groq text"
-        assert len(calls) == 2
+        assert len(calls) == 3  # mistral, mistral retry, groq
+        assert mock_sleep.call_count == 1
         assert ai_service.HOUSE_KEY_STATS["mistral_fail"] == 1
         assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 1
+
+    def test_mistral_429_then_ok_no_fallback(self, house_env):
+        from app.services import ai_service
+        calls = []
+        def fake(prompt, system, key, timeout, base_url=None, model=None):
+            calls.append(base_url)
+            if len(calls) == 1:
+                raise HTTPException(status_code=429, detail="rate limit")
+            return "mistral text"
+        with patch("time.sleep") as mock_sleep, \
+             patch.object(ai_service, "call_openai_compat", side_effect=fake):
+            out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
+        assert out == "mistral text"
+        assert len(calls) == 2
+        assert mock_sleep.call_count == 1
+        assert ai_service.HOUSE_KEY_STATS["mistral_ok"] == 1
+        assert ai_service.HOUSE_KEY_STATS["mistral_fail"] == 0
+        assert ai_service.HOUSE_KEY_STATS["groq_ok"] == 0
+
+    def test_mistral_403_fails_fast_no_retry(self, house_env):
+        from app.services import ai_service
+        calls = []
+        def fake(prompt, system, key, timeout, base_url=None, model=None):
+            calls.append(base_url)
+            if "mistral" in (base_url or ""):
+                raise HTTPException(status_code=403, detail="forbidden")
+            return "groq text"
+        with patch("time.sleep") as mock_sleep, \
+             patch.object(ai_service, "call_openai_compat", side_effect=fake):
+            out = ai_service._call_ai("mistral", "p", "s", "hk-mistral-test")
+        assert out == "groq text"
+        assert len(calls) == 2  # mistral once (no retry), then groq
+        assert mock_sleep.call_count == 0
+        assert ai_service.HOUSE_KEY_STATS["mistral_fail"] == 1
 
     def test_both_fail_returns_empty(self, house_env):
         from app.services import ai_service

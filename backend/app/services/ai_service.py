@@ -123,6 +123,40 @@ def _house_stat(counter: str) -> None:
         HOUSE_KEY_STATS[counter] = HOUSE_KEY_STATS.get(counter, 0) + 1
 
 
+def _house_provider_attempt(label: str, api_key: str, base_url: str | None, model: str | None,
+                            prompt: str, system: str, timeout: int) -> str | None:
+    """One house provider: try, retry once on 429 only, then give up.
+
+    403/400/500 fail fast (retrying a forbidden key is pointless); empty
+    responses count as failure. Stats record the final per-provider outcome.
+    Runs inside the executor thread, so the short backoff sleep is safe.
+    """
+    for attempt in (1, 2):
+        try:
+            result = call_openai_compat(
+                prompt, system, api_key, timeout, base_url=base_url, model=model,
+            )
+            if result and result.strip():
+                _house_stat(f"{label}_ok")
+                return result
+            raise ValueError("empty response")
+        except HTTPException as e:
+            detail = e.detail if isinstance(e.detail, str) else str(e.detail)
+            if e.status_code == 429 and attempt == 1:
+                logger.warning("house_ai %s rate-limited — retrying once after backoff", label)
+                time.sleep(5)
+                continue
+            logger.warning("house_ai %s failed (%s: %.120s)", label, type(e).__name__, detail)
+            _house_stat(f"{label}_fail")
+            return None
+        except Exception as e:
+            logger.warning("house_ai %s failed (%s)", label, type(e).__name__)
+            _house_stat(f"{label}_fail")
+            return None
+    _house_stat(f"{label}_fail")
+    return None
+
+
 def _call_house_ai(prompt: str, system: str, timeout: int = 25) -> str:
     """Free-tier house-key call: Mistral primary, Groq fallback on any failure.
 
@@ -139,35 +173,27 @@ def _call_house_ai(prompt: str, system: str, timeout: int = 25) -> str:
         mistral_cfg = PROVIDER_CONFIG[HOUSE_PRIMARY_PROVIDER]
         groq_cfg = PROVIDER_CONFIG[HOUSE_FALLBACK_PROVIDER]
         start = time.time()
-        try:
-            result = call_openai_compat(
-                prompt, system, settings.HOUSE_AI_KEY_MISTRAL, timeout,
-                base_url=mistral_cfg["base_url"], model=mistral_cfg["model"],
-            )
-            if result and result.strip():
-                _house_stat("mistral_ok")
-                logger.info("house_ai provider=mistral ok latency=%.1fs", time.time() - start)
-                return result
-            raise ValueError("empty response")
-        except Exception as e:
-            _house_stat("mistral_fail")
-            logger.warning("house_ai mistral failed (%s) — trying groq fallback", type(e).__name__)
+        result = _house_provider_attempt(
+            "mistral", settings.HOUSE_AI_KEY_MISTRAL,
+            mistral_cfg["base_url"], mistral_cfg["model"],
+            prompt, system, timeout,
+        )
+        if result:
+            logger.info("house_ai provider=mistral ok latency=%.1fs", time.time() - start)
+            return result
+        logger.warning("house_ai mistral failed — trying groq fallback")
         if not settings.HOUSE_AI_KEY_GROQ:
             return ""
-        try:
-            result = call_openai_compat(
-                prompt, system, settings.HOUSE_AI_KEY_GROQ, timeout,
-                base_url=groq_cfg["base_url"], model=groq_cfg["model"],
-            )
-            if result and result.strip():
-                _house_stat("groq_ok")
-                logger.info("house_ai provider=groq ok latency=%.1fs", time.time() - start)
-                return result
-            raise ValueError("empty response")
-        except Exception as e:
-            _house_stat("groq_fail")
-            logger.warning("house_ai groq fallback failed (%s) — skipping AI", type(e).__name__)
-            return ""
+        result = _house_provider_attempt(
+            "groq", settings.HOUSE_AI_KEY_GROQ,
+            groq_cfg["base_url"], groq_cfg["model"],
+            prompt, system, timeout,
+        )
+        if result:
+            logger.info("house_ai provider=groq ok latency=%.1fs", time.time() - start)
+            return result
+        logger.warning("house_ai groq fallback failed — skipping AI")
+        return ""
     finally:
         _HOUSE_SEMAPHORE.release()
 
