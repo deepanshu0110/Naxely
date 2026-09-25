@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { Download, Share2, Trash2, Clock, FileText, AlertTriangle, X, Presentation, Send } from 'lucide-react'
+import { Download, Share2, Trash2, Clock, FileText, AlertTriangle, X, Presentation, Send, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Sidebar from '@/components/layout/Sidebar'
 import Badge from '@/components/ui/Badge'
@@ -206,11 +206,21 @@ export default function ReportView() {
                 <Button variant="danger" size="sm" onClick={handleRevokeShare}>
                   <X className="mr-1.5 h-4 w-4" /> Revoke
                 </Button>
+                <span data-testid="share-views" className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                  <Eye className="h-3.5 w-3.5" />
+                  {report.share_view_count} {report.share_view_count === 1 ? 'view' : 'views'}
+                </span>
               </div>
             ) : isPro && (
               <Button variant="ghost" size="sm" onClick={handleShare}>
                 <Share2 className="mr-1.5 h-4 w-4" /> Share
               </Button>
+            )}
+            {!isPro && report.share_token && (
+              <span data-testid="share-views" className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                <Eye className="h-3.5 w-3.5" />
+                {report.share_view_count} {report.share_view_count === 1 ? 'view' : 'views'}
+              </span>
             )}
             {isPro && (
               <Button variant="outline" size="sm" onClick={() => setSendToClientOpen(true)}>
