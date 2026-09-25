@@ -71,7 +71,7 @@ export default function ComparisonAgencyAnalytics() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI / BYOK</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">AI insights included, BYOK on all tiers, zero markup</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">AI insights included, BYOK on Pro/Agency, zero markup; Free includes AI</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">AI Summary, Ask AI, Anomaly Detection, MCP access included; paid AI Tracker add-on; no BYOK</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">

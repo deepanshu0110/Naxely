@@ -32,7 +32,7 @@ export default function BlogPostByok() {
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>If you've shopped for an AI-powered reporting tool recently, you've probably run into the same wall: a $29 or $49/month subscription that bundles in "AI credits" you can't fully see, control, or predict. Hit your limit mid-report, and you're stuck waiting for next month's reset.</p>
 
-          <p>Naxely works differently. It's a <strong>BYOK (Bring Your Own Key) reporting tool</strong> — you connect your own API key from a supported AI provider, and you pay that provider directly. Naxely never marks up your AI usage.</p>
+          <p>Naxely works differently. It's a <strong>BYOK (Bring Your Own Key) reporting tool</strong> on Pro and Agency — you connect your own API key from a supported AI provider, and you pay that provider directly. Naxely never marks up your AI usage. The Free tier includes AI with no key needed.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What does BYOK actually mean?</h2>
           <p>BYOK (bring your own key) means you generate your own API key from an AI provider — Google Gemini, Groq, OpenAI, Anthropic, DeepSeek, Mistral, or Together AI — and paste it into the tool you're using. The tool then uses <em>your</em> key to make AI calls on your behalf. You pay the AI provider directly, at their actual cost, with zero markup from the software layer.</p>

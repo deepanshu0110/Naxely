@@ -72,7 +72,7 @@ export default function ComparisonWhatagraph() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI cost model</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK — zero markup on any tier</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK on Pro/Agency, zero markup; Free includes AI</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Included on both plans; IQ+ as paid add-on</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -98,7 +98,7 @@ export default function ComparisonWhatagraph() {
           <ul className="list-disc pl-5 space-y-2">
             <li>You work with client-provided data exports or internal spreadsheets — not live ad-platform connections.</li>
             <li>You want a polished, brandable PDF to hand off or email, not a dashboard your client logs into.</li>
-            <li>AI-written insights matter — Naxely generates executive summaries, anomaly detection, and recommendations with zero AI markup (BYOK on every tier).</li>
+            <li>AI-written insights matter — Naxely generates executive summaries, anomaly detection, and recommendations with zero AI markup (BYOK on Pro/Agency; Free includes AI with no key needed).</li>
             <li>You want predictable, flat-rate pricing with a free tier: $0 for 3 reports/month, $29 for Pro, $79 for white-label Agency.</li>
             <li>No integration setup — just upload a CSV or connect Google Sheets and generate.</li>
           </ul>

@@ -75,7 +75,7 @@ export default function ComparisonPlutio() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI cost model</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK — zero markup on any tier</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK on Pro/Agency, zero markup; Free includes AI</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Included AI credits per plan (800 Core / 2,500 Pro / 10,000 Max)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -104,7 +104,7 @@ export default function ComparisonPlutio() {
           <ul className="list-disc pl-5 space-y-2">
             <li>You work with data exports or client-provided spreadsheets rather than a single workspace's internal data.</li>
             <li>You want a polished, brandable PDF to hand off or email — not a portal your client has to log into.</li>
-            <li>You value AI-written insights without a per-use AI markup, since Naxely is BYOK on every tier including free.</li>
+            <li>You value AI-written insights without a per-use AI markup, since Naxely includes AI on every tier (BYOK on Pro/Agency, no key needed on Free).</li>
             <li>You need something fast — no workspace or client setup, just upload and generate.</li>
           </ul>
 

@@ -97,7 +97,7 @@ export default function ComparisonPowerdrill() {
           <ul className="list-disc pl-5 space-y-2">
             <li>You need polished, branded PDF reports to send to clients — not an internal dashboard or analysis workspace.</li>
             <li>White-label output matters — every trace of platform branding removed from what your client sees.</li>
-            <li>You want AI-generated insights without per-report AI markup (bring your own API key, pay the provider directly).</li>
+            <li>You want AI-generated insights without per-report AI markup (bring your own API key on Pro/Agency and pay the provider directly; Free includes AI with no key needed).</li>
             <li>You need programmatic report generation or send-to-client email built into the workflow.</li>
             <li>Simple, predictable pricing — you pay per report tier, not per credit consumed.</li>
           </ul>

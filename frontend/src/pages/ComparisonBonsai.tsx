@@ -75,7 +75,7 @@ export default function ComparisonBonsai() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI cost model</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK — zero markup on any tier</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK on Pro/Agency, zero markup; Free includes AI</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">N/A</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">

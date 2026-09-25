@@ -5,6 +5,11 @@ import Navbar from '@/components/layout/Navbar'
 const entries = [
   {
     date: 'September 25, 2026',
+    title: 'Free Tier Works Without an API Key',
+    description: 'The Free tier no longer asks for your own AI API key up front — Naxely supplies AI generation for your 3 monthly reports. You can still connect your own provider key in Settings if you prefer. Pro and Agency continue to use bring-your-own-key with zero markup. No other behavior changed.',
+  },
+  {
+    date: 'September 25, 2026',
     title: 'Report Open Tracking',
     description: 'Shared report links now show an open count next to the Share button and on the dashboard card — an eye icon with the number of times a client has opened the link, so you can see at a glance whether your report has been read.',
   },

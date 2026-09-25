@@ -23,7 +23,7 @@ export default function ComparisonKlipfolio() {
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Klipfolio?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Klipfolio starts at $120/month (Base plan, billed annually) with no permanent free tier — only a 14-day free trial."}},
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Klipfolio?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished PDF report from data you already have. Klipfolio is designed for always-on KPI dashboards with 130+ live integrations pulling data continuously."}},
-          {"@type":"Question","name":"Does Klipfolio have AI features?","acceptedAnswer":{"@type":"Answer","text":"Klipfolio's Klips product (the dashboard being compared here) does not offer AI-generated insights or commentary. Klipfolio's separate PowerMetrics product has some AI framing but is a distinct product line. Naxely includes AI-written executive summaries, anomaly detection, and recommendations on every tier via BYOK."}}
+          {"@type":"Question","name":"Does Klipfolio have AI features?","acceptedAnswer":{"@type":"Answer","text":"Klipfolio's Klips product (the dashboard being compared here) does not offer AI-generated insights or commentary. Klipfolio's separate PowerMetrics product has some AI framing but is a distinct product line. Naxely includes AI-written executive summaries, anomaly detection, and recommendations on every tier — via BYOK on Pro and above, included with no key needed on Free."}}
         ]})}</script>
       </Head>
       <Navbar />
@@ -70,7 +70,7 @@ export default function ComparisonKlipfolio() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI cost model</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK — zero markup on any tier</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK on Pro/Agency, zero markup; Free includes AI</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">N/A</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -101,7 +101,7 @@ export default function ComparisonKlipfolio() {
           <ul className="list-disc pl-5 space-y-2">
             <li>You work with data exports or client-provided spreadsheets rather than live-connected tools.</li>
             <li>You want a polished, brandable PDF to hand off or email — not a dashboard your client has to log into.</li>
-            <li>You value AI-written insights without a per-use AI markup, since Naxely is BYOK on every tier including free.</li>
+            <li>You value AI-written insights without a per-use AI markup, since Naxely includes AI on every tier (BYOK on Pro/Agency, no key needed on Free).</li>
             <li>You need something fast — no integration setup, just upload and generate.</li>
           </ul>
 
@@ -120,7 +120,7 @@ export default function ComparisonKlipfolio() {
           <p>Not for real-time monitoring. Naxely is built for generating a polished PDF report from data you already have. Klipfolio is designed for always-on KPI dashboards with 130+ live integrations pulling data continuously.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Klipfolio have AI features?</h3>
-          <p>Klipfolio's Klips product (the dashboard being compared here) does not offer AI-generated insights or commentary. Klipfolio's separate PowerMetrics product has some AI framing but is a distinct product line. Naxely includes AI-written executive summaries, anomaly detection, and recommendations on every tier via BYOK.</p>
+          <p>Klipfolio's Klips product (the dashboard being compared here) does not offer AI-generated insights or commentary. Klipfolio's separate PowerMetrics product has some AI framing but is a distinct product line. Naxely includes AI-written executive summaries, anomaly detection, and recommendations on every tier — via BYOK on Pro and above, included with no key needed on Free.</p>
 
           <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re also comparing live dashboard tools, see <Link to="/compare/databox" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Databox</Link> or <Link to="/compare/whatagraph" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Whatagraph</Link> for another perspective.</p>
 

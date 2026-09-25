@@ -23,7 +23,7 @@ export default function ComparisonDatabox() {
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. The key tradeoff is output format: Naxely generates a point-in-time PDF report, while Databox provides a live, continuously-updating dashboard."}},
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Databox?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished report from data you already have — it doesn't pull live data from connected platforms the way Databox does. If your workflow needs always-on visibility into KPIs, Databox's integration model fits that better."}},
-          {"@type":"Question","name":"Does Naxely offer BYOK like Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on every pricing tier, so there's no AI markup. Databox offers no BYOK API-key option (its LLM connectivity is via MCP, not user-supplied keys)."}} 
+          {"@type":"Question","name":"Does Naxely offer BYOK like Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on Pro and Agency, so there's no AI markup; Free includes AI with no key needed. Databox offers no BYOK API-key option (its LLM connectivity is via MCP, not user-supplied keys)."}} 
         ]})}</script>
       </Head>
       <Navbar />
@@ -70,7 +70,7 @@ export default function ComparisonDatabox() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI cost model</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK — zero markup on any tier</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">BYOK on Pro/Agency, zero markup; Free includes AI</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">No BYOK API-key option (LLM connectivity via MCP, not user-supplied keys)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -96,7 +96,7 @@ export default function ComparisonDatabox() {
           <ul className="list-disc pl-5 space-y-2">
             <li>You work with data exports or client-provided spreadsheets rather than live-connected tools.</li>
             <li>You want a polished, brandable PDF to hand off or email — not a dashboard your client has to log into.</li>
-            <li>You value AI-written insights without a per-use AI markup, since Naxely is BYOK on every tier including free.</li>
+            <li>You value AI-written insights without a per-use AI markup, since Naxely includes AI on every tier (BYOK on Pro/Agency, no key needed on Free).</li>
             <li>You need something fast — no integration setup, just upload and generate.</li>
           </ul>
 
@@ -115,7 +115,7 @@ export default function ComparisonDatabox() {
           <p>Not for real-time monitoring. Naxely is built for generating a polished report from data you already have — it doesn't pull live data from connected platforms the way Databox does. If your workflow needs always-on visibility into KPIs, Databox's integration model fits that better.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Naxely offer BYOK like Databox?</h3>
-          <p>Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on every pricing tier, so there's no AI markup. Databox offers no BYOK API-key option (its LLM connectivity is via MCP, not user-supplied keys).</p>
+          <p>Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on Pro and Agency, so there's no AI markup; Free includes AI with no key needed. Databox offers no BYOK API-key option (its LLM connectivity is via MCP, not user-supplied keys).</p>
 
           <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re also comparing live dashboard tools, see <Link to="/compare/dashthis" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs DashThis</Link> or <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs AgencyAnalytics</Link> for another perspective.</p>
 

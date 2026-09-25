@@ -173,7 +173,7 @@ export default function ApiKeyForm({ hasKey, provider, keyPreview, onSaved, onDe
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
           <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
           <div className="text-xs text-amber-700">
-            <p>Add your own API key to enable AI insights. All plans support BYOK — bring keys from Gemini, Groq, DeepSeek, OpenAI and more.</p>
+            <p>Add your own API key to use your own provider for AI insights. All plans support BYOK — bring keys from Gemini, Groq, DeepSeek, OpenAI and more. (Free tier includes AI with no key needed.)</p>
             <p className="mt-1 text-amber-600/80">
               Saving will make a small test call to {provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : 'the provider'} using your key to verify it works — this uses a tiny amount of your quota and may take a few seconds.
             </p>
