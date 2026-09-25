@@ -8,6 +8,7 @@ const mockUser = vi.hoisted(() => ({
   full_name: 'Free User',
   tier: 'free',
   has_api_key: false,
+  free_house_ai: false,
 }))
 
 vi.mock('@/store/authStore', () => ({
@@ -37,6 +38,7 @@ function renderForm(overrides: Record<string, unknown> = {}) {
 describe('ReportConfig Groq guidance', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUser.free_house_ai = false
   })
 
   it('shows Groq guidance link when free tier with no stored key', () => {
@@ -77,5 +79,24 @@ describe('ReportConfig Groq guidance', () => {
     expect(screen.queryAllByText('Get a free Groq key').length).toBe(0)
     expect(screen.queryAllByText('Add API key').length).toBe(0)
     expect(screen.getAllByLabelText('Included in plan').length).toBeGreaterThan(0)
+  })
+
+  it('unlocks AI sections for free tier with house-key coverage and no stored key', () => {
+    mockUser.tier = 'free'
+    mockUser.has_api_key = false
+    mockUser.free_house_ai = true
+    renderForm()
+    expect(screen.queryAllByText('Get a free Groq key').length).toBe(0)
+    expect(screen.queryAllByText('Add API key').length).toBe(0)
+    expect(screen.getAllByLabelText('Included in plan').length).toBeGreaterThan(0)
+  })
+
+  it('keeps AI sections locked for free tier when house key disabled and no stored key', () => {
+    mockUser.tier = 'free'
+    mockUser.has_api_key = false
+    mockUser.free_house_ai = false
+    renderForm()
+    expect(screen.getAllByText('Get a free Groq key').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Add API key').length).toBeGreaterThan(0)
   })
 })

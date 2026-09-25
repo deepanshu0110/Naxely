@@ -23,8 +23,11 @@ async def verify_auth(
         {"uid": str(current_user.id)},
     )
     row = result.mappings().first()
+    # Lazy import: ai_service pulls heavy SDKs; single source of truth for the flag.
+    from app.services.ai_service import house_key_enabled
+    free_house_ai = house_key_enabled()
     if not row:
-        return {"id": str(current_user.id), "email": "", "full_name": "", "avatar_url": None, "tier": "free", "tier_expires_at": None, "has_api_key": False, "ai_provider": None, "logo_url": None, "brand_color": "#6366F1", "company_name": None, "reports_this_month": 0, "monthly_limit": 3, "theme_preference": "light", "has_completed_onboarding": False}
+        return {"id": str(current_user.id), "email": "", "full_name": "", "avatar_url": None, "tier": "free", "tier_expires_at": None, "has_api_key": False, "ai_provider": None, "logo_url": None, "brand_color": "#6366F1", "company_name": None, "reports_this_month": 0, "monthly_limit": 3, "theme_preference": "light", "has_completed_onboarding": False, "free_house_ai": free_house_ai}
 
     monthly_limit = MONTHLY_LIMITS.get(row.get("tier", "free"), 3)
 
@@ -44,6 +47,7 @@ async def verify_auth(
         "monthly_limit": monthly_limit,
         "theme_preference": row.get("theme_preference", "light"),
         "has_completed_onboarding": row.get("has_completed_onboarding", False),
+        "free_house_ai": free_house_ai,
     }
 
 

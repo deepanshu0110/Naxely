@@ -54,4 +54,14 @@ services:
         sync: false
       - key: LIFECYCLE_CRON_SECRET
         sync: false
+      # Free-tier house AI keys (BYOK not required on Free). Values live ONLY
+      # in the Render dashboard as secret env vars — never committed here.
+      # Without these, house_key_enabled() is false and Free falls back to
+      # BYOK-required. FREE_TIER_HOUSE_KEY_ENABLED is the kill switch.
+      - key: HOUSE_AI_KEY_MISTRAL
+        sync: false
+      - key: HOUSE_AI_KEY_GROQ
+        sync: false
+      - key: FREE_TIER_HOUSE_KEY_ENABLED
+        value: true
 

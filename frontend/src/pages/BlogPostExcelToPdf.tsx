@@ -48,7 +48,7 @@ export default function BlogPostExcelToPdf() {
             <li><strong>Supported format:</strong> .xlsx (the current Excel workbook format). Legacy .xls is not supported — re-save the file as .xlsx if needed.</li>
             <li><strong>What gets parsed:</strong> The first sheet's tabular data — column headers in row 1, records in subsequent rows, same 2-column minimum and 50,000-row limit as CSV.</li>
             <li><strong>What happens next:</strong> Column types are detected (dates, currencies, percentages, categories), 16+ chart types are auto-selected, and AI-written insights and anomaly flags are generated — identical to the CSV flow from there onward.</li>
-            <li><strong>What stays the same:</strong> Branding (logo, brand color, company name), BYOK AI (seven providers, zero markup), and PDF output timing — still under a minute.</li>
+            <li><strong>What stays the same:</strong> Branding (logo, brand color, company name), AI included on Free with no key needed (BYOK with seven providers and zero markup on Pro and above), and PDF output timing — still under a minute.</li>
           </ul>
           <p>If your data already lives in Excel, there's no need to export to CSV first — uploading the .xlsx directly is faster and avoids the formatting shifts that come with an extra export step.</p>
 

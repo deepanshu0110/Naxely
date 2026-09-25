@@ -102,10 +102,10 @@ export default function BlogPostByok() {
           <p>The same 2-3 minute process applies to any of the other six supported providers if you'd rather use one you already have an account with.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Is BYOK right for everyone?</h2>
-          <p>BYOK is not right for everyone. The tradeoff is simple: you save significant money over time, but you do need to create one API key one time as a one-time setup step. For most freelancers and small agencies, this two-minute setup pays for itself within the first month through avoided markup — but if you'd genuinely rather not manage any external account at all, a fully bundled tool may suit you better.</p>
+          <p>BYOK is not right for everyone. The tradeoff is simple: on Pro and Agency you save significant money over time, but you do need to create one API key one time as a one-time setup step. For most freelancers and small agencies, this two-minute setup pays for itself within the first month through avoided markup — but if you'd genuinely rather not manage any external account at all, Naxely's Free tier includes AI with no key needed, and a fully bundled tool may suit you better.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How do I try BYOK with Naxely?</h2>
-          <p>Sign up for Naxely's free tier (no credit card required), paste your AI provider's API key into Settings, upload a CSV (or Google Sheets URL on Pro and above), and Naxely generates a branded client-ready PDF report in under a minute using your key at cost — with 16+ chart types, AI-written insights, and zero markup.</p>
+          <p>Sign up for Naxely's free tier (no credit card required, no API key needed — AI is included), upload a CSV (or Google Sheets URL on Pro and above), and Naxely generates a branded client-ready PDF report in under a minute — with 16+ chart types, AI-written insights, and zero markup. On Pro and above you can paste your own provider key into Settings to use it at cost instead.</p>
           <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Start free &rarr;</Link>
 
           <hr className="border-gray-200 dark:border-gray-700 my-8" />

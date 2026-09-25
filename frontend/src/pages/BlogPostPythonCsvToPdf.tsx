@@ -71,7 +71,7 @@ export default function BlogPostPythonCsvToPdf() {
           <p>But if the pattern is "different client, same rough structure, every week or every month," that's the exact scenario where hand-rolling it in Python stops paying off. You're not solving a new problem each time — you're re-solving the same formatting problem with slightly different data.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Where a tool like Naxely fits</h2>
-          <p>Naxely takes CSV or Google Sheets input and turns it into a branded PDF report — charts, anomaly detection, an AI-written summary — without you touching ReportLab. You bring your own AI API key (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, or any OpenAI-compatible provider), so there's no markup on AI usage and no shared quota to run out of.</p>
+          <p>Naxely takes CSV or Google Sheets input and turns it into a branded PDF report — charts, anomaly detection, an AI-written summary — without you touching ReportLab. On Pro and above you bring your own AI API key (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, or any OpenAI-compatible provider), so there's no markup on AI usage and no shared quota to run out of. The Free tier includes AI with no key needed.</p>
 
           <p>It's built for the freelance analysts and small agencies doing exactly the report-every-week grind described above — not as a replacement for a custom Python pipeline when you actually need one, but for the version of this task that's become pure repetition.</p>
 

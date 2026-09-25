@@ -104,7 +104,7 @@ export default function ComparisonBonsai() {
           <ul className="list-disc pl-5 space-y-2">
             <li>You work with data exports or client-provided spreadsheets rather than a single business suite's internal data.</li>
             <li>You want a polished, brandable PDF to hand off or email — not a portal your client has to log into.</li>
-            <li>You value AI-written insights without a per-use AI markup, since Naxely is BYOK on every tier including free.</li>
+            <li>You value AI-written insights without a per-use AI markup, since Naxely includes AI on every tier (BYOK on Pro/Agency, no key needed on Free).</li>
             <li>You need something fast — no client or project setup, just upload and generate.</li>
           </ul>
 

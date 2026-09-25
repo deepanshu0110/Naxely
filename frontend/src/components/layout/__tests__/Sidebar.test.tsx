@@ -44,6 +44,7 @@ const freeUser: User = {
   tier: 'free',
   tier_expires_at: null,
   has_api_key: false,
+  free_house_ai: false,
   ai_provider: null,
   logo_url: null,
   brand_color: null,

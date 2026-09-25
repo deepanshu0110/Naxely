@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     DODO_ENVIRONMENT: str = "test_mode"
     GEMINI_MODEL: str = "gemini-2.0-flash"
     GEMINI_API_KEY: str = ""
+    # House AI keys for Free tier (BYOK not required). Backend-only secrets —
+    # never sent to the frontend, never logged. Kill switch: when
+    # FREE_TIER_HOUSE_KEY_ENABLED is false, Free falls back to BYOK-required.
+    HOUSE_AI_KEY_MISTRAL: str = ""
+    HOUSE_AI_KEY_GROQ: str = ""
+    FREE_TIER_HOUSE_KEY_ENABLED: bool = True
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 
     RESEND_API_KEY: str = ""

@@ -1,7 +1,9 @@
 import asyncio
+import hmac
 import json
 import logging
 import re
+import threading
 import time
 from dataclasses import dataclass
 from functools import partial
@@ -77,6 +79,99 @@ def _get_user_provider_config(user) -> tuple[str, str, str | None]:
     return (provider, plaintext_key, base_url)
 
 
+# House AI keys for the Free tier: Naxely supplies AI generation so free users
+# don't need their own key before their first report. A stored user key always
+# takes precedence (BYOK); Pro/Agency never use house keys.
+HOUSE_PRIMARY_PROVIDER = "mistral"
+HOUSE_FALLBACK_PROVIDER = "groq"
+HOUSE_MAX_CONCURRENT = 4
+HOUSE_SEMAPHORE_TIMEOUT_S = 30
+
+_HOUSE_SEMAPHORE = threading.BoundedSemaphore(HOUSE_MAX_CONCURRENT)
+_HOUSE_STATS_LOCK = threading.Lock()
+HOUSE_KEY_STATS: dict[str, int] = {
+    "mistral_ok": 0,
+    "mistral_fail": 0,
+    "groq_ok": 0,
+    "groq_fail": 0,
+    "semaphore_timeout": 0,
+}
+
+
+def house_key_enabled() -> bool:
+    """Kill switch + key presence: False means Free falls back to BYOK-required."""
+    return bool(settings.FREE_TIER_HOUSE_KEY_ENABLED) and bool(settings.HOUSE_AI_KEY_MISTRAL)
+
+
+def _is_house_key(api_key: str | None) -> bool:
+    if not api_key:
+        return False
+    for house_key in (settings.HOUSE_AI_KEY_MISTRAL, settings.HOUSE_AI_KEY_GROQ):
+        if house_key and hmac.compare_digest(api_key.encode(), house_key.encode()):
+            return True
+    return False
+
+
+def get_house_key_stats() -> dict[str, int]:
+    """Snapshot of house-key usage counters (per-process, resets on deploy)."""
+    with _HOUSE_STATS_LOCK:
+        return dict(HOUSE_KEY_STATS)
+
+
+def _house_stat(counter: str) -> None:
+    with _HOUSE_STATS_LOCK:
+        HOUSE_KEY_STATS[counter] = HOUSE_KEY_STATS.get(counter, 0) + 1
+
+
+def _call_house_ai(prompt: str, system: str, timeout: int = 25) -> str:
+    """Free-tier house-key call: Mistral primary, Groq fallback on any failure.
+
+    Concurrency-guarded so a burst of free users degrades to skipped-AI
+    (HTTPException → ai_skipped in the pipeline) instead of hard-failing
+    anyone's first report. Never logs key material — provider names only.
+    """
+    acquired = _HOUSE_SEMAPHORE.acquire(timeout=HOUSE_SEMAPHORE_TIMEOUT_S)
+    if not acquired:
+        _house_stat("semaphore_timeout")
+        logger.warning("house_ai semaphore timeout — skipping AI")
+        raise HTTPException(status_code=429, detail="AI busy — report saved without AI insights")
+    try:
+        mistral_cfg = PROVIDER_CONFIG[HOUSE_PRIMARY_PROVIDER]
+        groq_cfg = PROVIDER_CONFIG[HOUSE_FALLBACK_PROVIDER]
+        start = time.time()
+        try:
+            result = call_openai_compat(
+                prompt, system, settings.HOUSE_AI_KEY_MISTRAL, timeout,
+                base_url=mistral_cfg["base_url"], model=mistral_cfg["model"],
+            )
+            if result and result.strip():
+                _house_stat("mistral_ok")
+                logger.info("house_ai provider=mistral ok latency=%.1fs", time.time() - start)
+                return result
+            raise ValueError("empty response")
+        except Exception as e:
+            _house_stat("mistral_fail")
+            logger.warning("house_ai mistral failed (%s) — trying groq fallback", type(e).__name__)
+        if not settings.HOUSE_AI_KEY_GROQ:
+            return ""
+        try:
+            result = call_openai_compat(
+                prompt, system, settings.HOUSE_AI_KEY_GROQ, timeout,
+                base_url=groq_cfg["base_url"], model=groq_cfg["model"],
+            )
+            if result and result.strip():
+                _house_stat("groq_ok")
+                logger.info("house_ai provider=groq ok latency=%.1fs", time.time() - start)
+                return result
+            raise ValueError("empty response")
+        except Exception as e:
+            _house_stat("groq_fail")
+            logger.warning("house_ai groq fallback failed (%s) — skipping AI", type(e).__name__)
+            return ""
+    finally:
+        _HOUSE_SEMAPHORE.release()
+
+
 def get_user_api_key(user: User) -> tuple[str | None, str | None, str | None]:
     tier = (
         getattr(user, 'subscription_tier', None)
@@ -88,10 +183,14 @@ def get_user_api_key(user: User) -> tuple[str | None, str | None, str | None]:
         getattr(user, 'api_key_iv', None)
     )
 
-    if not has_stored_key:
-        return None, None, None
+    if has_stored_key:
+        return _get_user_provider_config(user)
 
-    return _get_user_provider_config(user)
+    if tier == "free" and house_key_enabled():
+        cfg = PROVIDER_CONFIG.get(HOUSE_PRIMARY_PROVIDER, {})
+        return (HOUSE_PRIMARY_PROVIDER, settings.HOUSE_AI_KEY_MISTRAL, cfg.get("base_url"))
+
+    return None, None, None
 
 
 def call_openai(prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
@@ -328,6 +427,8 @@ def call_gemini(prompt: str, system: str, api_key: str, timeout: int = 25) -> st
 
 
 def _call_ai(provider: str, prompt: str, system: str, api_key: str, timeout: int = 25) -> str:
+    if _is_house_key(api_key):
+        return _call_house_ai(prompt, system, timeout)
     if provider == "claude":
         return call_claude(prompt, system, api_key, timeout)
     if provider == "gemini":

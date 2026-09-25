@@ -22,6 +22,7 @@ export interface AuthVerifyResponse {
   tier: User['tier']
   tier_expires_at: string | null
   has_api_key: boolean
+  free_house_ai: boolean
   ai_provider: User['ai_provider']
   logo_url: string | null
   brand_color: string | null

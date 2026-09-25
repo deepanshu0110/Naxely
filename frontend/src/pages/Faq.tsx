@@ -12,11 +12,11 @@ const faqs = [
   },
   {
     q: 'Which AI tool is free to generate reports?',
-    a: 'Naxely\'s free tier includes 3 reports a month with no AI markup — you bring your own API key (BYOK), and Groq offers a free API key with no credit card required, so you can run the whole thing at zero cost.',
+    a: 'Naxely\'s free tier includes 3 reports a month with AI included — no API key needed, no credit card required, so you can run the whole thing at zero cost. (You can still connect your own provider key in Settings if you prefer.)',
   },
   {
     q: 'Is there a free AI tool to generate reports without a credit card?',
-    a: 'Yes. Naxely\'s free tier doesn\'t require a credit card, and if you use Groq as your AI provider, their free tier doesn\'t either. You\'ll need a Groq account to get an API key, but there\'s no payment info involved.',
+    a: 'Yes. Naxely\'s free tier requires no credit card and no API key — AI generation is included for your 3 monthly reports, with no payment info involved anywhere.',
   },
   {
     q: 'How can I tell if a report is AI-generated?',
@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     q: 'Do I need to pay for the AI, or does Naxely charge for it?',
-    a: 'Naxely uses a bring-your-own-key model — you connect your own API key from a provider like Groq, OpenAI, or Gemini, and Naxely never marks up or charges extra on top of what your AI provider charges you. Most freelancers and small agencies pay very little to nothing per report, since AI providers like Groq offer generous free tiers.',
+    a: 'On Pro and Agency, Naxely uses a bring-your-own-key model — you connect your own API key from a provider like Groq, OpenAI, or Gemini, and Naxely never marks up or charges extra on top of what your AI provider charges you. Most freelancers and small agencies pay very little to nothing per report, since AI providers like Groq offer generous free tiers. The Free tier includes AI generation with no key needed.',
   },
   {
     q: 'Can I use AI to write a report from a Google Sheet?',

@@ -133,7 +133,7 @@ export default function ComparisonAgencyAnalytics() {
           <ul className="list-disc pl-5 space-y-2">
             <li>You work with client-provided data exports, internal spreadsheets, or Google Sheets — not live ad platforms.</li>
             <li>You need a polished, brandable PDF to hand off or email, not a dashboard your client logs into.</li>
-            <li>You want AI-written executive summaries and anomaly detection without per-report AI markup (BYOK on every tier, including free).</li>
+            <li>You want AI-written executive summaries and anomaly detection without per-report AI markup (BYOK on Pro/Agency with zero markup; Free includes AI with no key needed).</li>
             <li>Budget is a priority — free tier available, flat $29/month Pro, $79/month Agency for white-label.</li>
           </ul>
           <p className="mt-4 text-sm text-ink/55 dark:text-paper/45 leading-relaxed">For a structured evaluation framework across all these dimensions, our guide to <Link to="/blog/client-reporting-software-guide" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">choosing client reporting software</Link> walks through the decision step by step.</p>

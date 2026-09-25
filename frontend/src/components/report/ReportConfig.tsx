@@ -37,7 +37,7 @@ const proSections = [
 
 export default function ReportConfigForm({ tone, sections, onToneChange, onSectionsChange, onConfigChange }: ReportConfigProps) {
   const user = useAuthStore((s) => s.user)
-  const isAiLocked = user?.tier === 'free' && !user?.has_api_key
+  const isAiLocked = user?.tier === 'free' && !user?.has_api_key && user?.free_house_ai !== true
 
   const [title, setTitle] = useState('')
   const [dateFrom, setDateFrom] = useState('')
