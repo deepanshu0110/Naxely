@@ -4,6 +4,46 @@ import Navbar from '@/components/layout/Navbar'
 
 const entries = [
   {
+    date: 'September 25, 2026',
+    title: 'Report Open Tracking',
+    description: 'Shared report links now show an open count next to the Share button and on the dashboard card — an eye icon with the number of times a client has opened the link, so you can see at a glance whether your report has been read.',
+  },
+  {
+    date: 'September 14, 2026',
+    title: 'Lifecycle Re-engagement Emails',
+    description: 'Naxely now sends occasional helpful emails to keep reporting on track — including a nudge when your report has gone stale. Expanded in September with stale-report reminders.',
+  },
+  {
+    date: 'September 9, 2026',
+    title: 'Clickable PDF Footer Links',
+    description: 'Links in the PDF footer are now clickable, so clients reading a report on-screen can follow them directly instead of copying plain text.',
+  },
+  {
+    date: 'September 5, 2026',
+    title: 'Dashboard Data Warnings',
+    description: 'The dashboard report list now flags reports built from stale Google Sheets data or multi-sheet Excel files, so data issues are visible before you even open the report.',
+  },
+  {
+    date: 'September 3, 2026',
+    title: 'Together AI + Live Key Validation',
+    description: 'Together AI joins the supported bring-your-own-key providers, and API keys are now validated live when you save them — you know immediately whether a key works.',
+  },
+  {
+    date: 'August 24, 2026',
+    title: 'Stale-Data Banner',
+    description: 'Reports generated from cached data — when a Google Sheet could not be refreshed at generation time — now show a clear banner in the report view, so you always know how fresh the underlying data is.',
+  },
+  {
+    date: 'August 24, 2026',
+    title: 'Mobile Navigation Drawer',
+    description: 'Site navigation now collapses into a mobile drawer menu with Guides and Compare sections on small screens.',
+  },
+  {
+    date: 'August 23, 2026',
+    title: 'Excel Multi-Sheet Warning',
+    description: 'Uploading an Excel workbook with more than one sheet now shows a notice naming which sheet was used, so no data is silently skipped.',
+  },
+  {
     date: 'August 1, 2026',
     title: 'Redesigned PDF Reports',
     description: 'Every generated report now uses a new visual system - cleaner charts, better-aligned data tables, and clearer typography throughout. You can also choose which charts appear in your report instead of Naxely picking a fixed set: Free includes 3, Pro up to 8, Agency unlimited.',
@@ -22,6 +62,21 @@ const entries = [
     date: 'July 7, 2026',
     title: 'Send-to-Client Email',
     description: 'Email completed PDF reports directly to clients from inside Naxely. Add recipient email addresses and an optional message, and Naxely sends the report as a PDF attachment — no download-and-forward step needed.',
+  },
+  {
+    date: 'June 24, 2026',
+    title: 'PowerPoint Export',
+    description: 'Agency-tier users can export any report as an editable PowerPoint (.pptx) presentation, with the cover, KPIs, charts, and insights carried over from the PDF.',
+  },
+  {
+    date: 'June 24, 2026',
+    title: 'Google Sheets Connector',
+    description: 'Connect a Google Sheet directly as a report data source on Pro and above — paste a Sheet URL instead of exporting CSVs first.',
+  },
+  {
+    date: 'June 24, 2026',
+    title: 'Programmatic API Access',
+    description: 'Agency-tier users can generate branded reports programmatically via the API, using a personal key managed from the new API Keys tab in Settings.',
   },
 ]
 
