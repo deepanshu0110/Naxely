@@ -82,12 +82,16 @@ def _get_user_provider_config(user) -> tuple[str, str, str | None]:
 # House AI keys for the Free tier: Naxely supplies AI generation so free users
 # don't need their own key before their first report. A stored user key always
 # takes precedence (BYOK); Pro/Agency never use house keys.
-# Groq only — no fallback provider. Every free alternative needed a card, a
-# phone number, or trained on the data (Mistral PAYG, Cerebras PAYG, GitHub
-# Models retired, ModelScope CN phone, Gemini trains on free-tier data).
-# On Groq failure the pipeline degrades gracefully (AI sections skip,
+# Groq primary (free), Mistral fallback (PAYG Tier 1 — every fallback call is
+# real spend, hence the small mistral-small-2603, not medium/large).
+# On both failing the pipeline degrades gracefully (AI sections skip,
 # chart selection falls back to rules), which the existing callers handle.
 HOUSE_PRIMARY_PROVIDER = "groq"
+HOUSE_FALLBACK_PROVIDER = "mistral"
+# House fallback model is deliberately smaller than PROVIDER_CONFIG's mistral
+# entry (mistral-large-latest, kept for Pro/Agency BYOK): fallback volume is
+# paid per-token, so size to the job.
+HOUSE_FALLBACK_MODEL = "mistral-small-2603"
 HOUSE_MAX_CONCURRENT = 4
 HOUSE_SEMAPHORE_TIMEOUT_S = 30
 
@@ -96,6 +100,8 @@ _HOUSE_STATS_LOCK = threading.Lock()
 HOUSE_KEY_STATS: dict[str, int] = {
     "groq_ok": 0,
     "groq_fail": 0,
+    "mistral_ok": 0,
+    "mistral_fail": 0,
     "semaphore_timeout": 0,
 }
 
@@ -108,8 +114,10 @@ def house_key_enabled() -> bool:
 def _is_house_key(api_key: str | None) -> bool:
     if not api_key:
         return False
-    house_key = settings.HOUSE_AI_KEY_GROQ
-    return bool(house_key) and hmac.compare_digest(api_key.encode(), house_key.encode())
+    for house_key in (settings.HOUSE_AI_KEY_GROQ, settings.HOUSE_AI_KEY_MISTRAL):
+        if house_key and hmac.compare_digest(api_key.encode(), house_key.encode()):
+            return True
+    return False
 
 
 def get_house_key_stats() -> dict[str, int]:
@@ -158,7 +166,7 @@ def _house_provider_attempt(label: str, api_key: str, base_url: str | None, mode
 
 
 def _call_house_ai(prompt: str, system: str, timeout: int = 25) -> str:
-    """Free-tier house-key call: Groq only, no fallback provider.
+    """Free-tier house-key call: Groq primary, Mistral fallback on any failure.
 
     Concurrency-guarded so a burst of free users degrades to skipped-AI
     (HTTPException → ai_skipped in the pipeline) instead of hard-failing
@@ -180,7 +188,18 @@ def _call_house_ai(prompt: str, system: str, timeout: int = 25) -> str:
         if result:
             logger.info("house_ai provider=%s ok latency=%.1fs", HOUSE_PRIMARY_PROVIDER, time.time() - start)
             return result
-        logger.warning("house_ai %s failed (no fallback configured) — skipping AI", HOUSE_PRIMARY_PROVIDER)
+        logger.warning("house_ai %s failed — trying %s fallback", HOUSE_PRIMARY_PROVIDER, HOUSE_FALLBACK_PROVIDER)
+        if not settings.HOUSE_AI_KEY_MISTRAL:
+            return ""
+        result = _house_provider_attempt(
+            HOUSE_FALLBACK_PROVIDER, settings.HOUSE_AI_KEY_MISTRAL,
+            PROVIDER_CONFIG[HOUSE_FALLBACK_PROVIDER]["base_url"], HOUSE_FALLBACK_MODEL,
+            prompt, system, timeout,
+        )
+        if result:
+            logger.info("house_ai provider=%s ok latency=%.1fs", HOUSE_FALLBACK_PROVIDER, time.time() - start)
+            return result
+        logger.warning("house_ai %s fallback failed — skipping AI", HOUSE_FALLBACK_PROVIDER)
         return ""
     finally:
         _HOUSE_SEMAPHORE.release()

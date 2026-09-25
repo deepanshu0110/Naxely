@@ -19,10 +19,10 @@ class Settings(BaseSettings):
     # House AI key for Free tier (BYOK not required). Backend-only secret —
     # never sent to the frontend, never logged. Kill switch: when
     # FREE_TIER_HOUSE_KEY_ENABLED is false, Free falls back to BYOK-required.
-    # Groq only, no fallback (Mistral/Cerebras need PAYG, GitHub Models is
-    # retired, ModelScope needs a CN phone, Gemini trains on free-tier data).
-    # Mistral stays available as a Pro/Agency BYOK option via PROVIDER_CONFIG.
+    # Groq primary, Mistral fallback (PAYG Tier 1, card on file). Mistral
+    # also stays available as a Pro/Agency BYOK option via PROVIDER_CONFIG.
     HOUSE_AI_KEY_GROQ: str = ""
+    HOUSE_AI_KEY_MISTRAL: str = ""
     FREE_TIER_HOUSE_KEY_ENABLED: bool = True
     FRONTEND_BASE_URL: str = "http://localhost:5173"
 
