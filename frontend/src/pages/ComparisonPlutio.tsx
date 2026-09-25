@@ -8,22 +8,22 @@ export default function ComparisonPlutio() {
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
         <title>Naxely vs Plutio: PDF Reports vs. All-in-One Platform</title>
-        <meta name="description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a $9/mo white-label add-on." />
+        <meta name="description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a paid white-label add-on." />
         <link rel="canonical" href="https://www.naxely.com/compare/plutio" />
         <meta property="og:url" content="https://www.naxely.com/compare/plutio" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:title" content="Naxely vs Plutio: PDF Reports vs. All-in-One Platform" />
-        <meta property="og:description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a $9/mo white-label add-on." />
+        <meta property="og:description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a paid white-label add-on." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Naxely vs Plutio: PDF Reports vs. All-in-One Platform" />
-        <meta name="twitter:description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a $9/mo white-label add-on." />
+        <meta name="twitter:description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a paid white-label add-on." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Plutio?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core, billed monthly; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$159/mo billed annually) with a 7-day free trial."}},
           {"@type":"Question","name":"Can Naxely replace Plutio?","acceptedAnswer":{"@type":"Answer","text":"They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Plutio is an all-in-one business management platform for projects, invoicing, proposals, contracts, and scheduling. If you need client-ready reports from existing data, Naxely fits; if you need an all-in-one operations suite, Plutio fits — many freelancers use both."}},
-          {"@type":"Question","name":"Does Plutio offer white-label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes — white-label is a $9/mo add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$159/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier."}}
+          {"@type":"Question","name":"Does Plutio offer white-label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$159/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier."}}
         ]})}</script>
       </Head>
       <Navbar />
@@ -81,7 +81,7 @@ export default function ComparisonPlutio() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$79/month (Agency tier)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">$9/mo add-on (Core/Pro), included on Max ($199/mo)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Paid add-on (Core/Pro), included on Max ($199/mo)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Setup time</td>
@@ -123,7 +123,7 @@ export default function ComparisonPlutio() {
           <p>They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Plutio is an all-in-one business management platform for projects, invoicing, proposals, contracts, and scheduling. If you need client-ready reports from existing data, Naxely fits; if you need an all-in-one operations suite, Plutio fits — many freelancers use both.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Plutio offer white-label reporting?</h3>
-          <p>Yes — white-label is a $9/mo add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$159/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier.</p>
+          <p>Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$159/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier.</p>
 
           <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re also comparing business management suites, see <Link to="/compare/bonsai" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Bonsai</Link> or <Link to="/compare/klipfolio" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Klipfolio</Link> for another perspective.</p>
 

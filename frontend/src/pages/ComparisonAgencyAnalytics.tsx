@@ -72,7 +72,7 @@ export default function ComparisonAgencyAnalytics() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI / BYOK</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">AI insights included, BYOK on all tiers, zero markup</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Limited AI features, no BYOK</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">AI Summary, Ask AI, Anomaly Detection, MCP access included; paid AI Tracker add-on; no BYOK</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Who it's for</td>
@@ -82,7 +82,7 @@ export default function ComparisonAgencyAnalytics() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$79/month (Agency tier)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Included in Core plan</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Included in their single all-features plan</td>
                 </tr>
               </tbody>
             </table>
@@ -122,7 +122,7 @@ export default function ComparisonAgencyAnalytics() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Programmatic access</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Agency tier — POST /v1/reports with an X-API-Key header</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Not advertised on their integrations page</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Included</td>
                 </tr>
               </tbody>
             </table>

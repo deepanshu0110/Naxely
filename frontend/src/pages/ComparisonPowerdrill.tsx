@@ -57,12 +57,12 @@ export default function ComparisonPowerdrill() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Data sources</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">CSV, Google Sheets</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Excel, CSV, TSV, PDF, Word, PPT, SQL databases, images, audio</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Excel, CSV, PDF, and docs</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Report output</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Branded PDF (white-label available)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">PDF, Word, PPT, Notion, Google Docs, infographics</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Slides, Office docs, sheets, and images</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label / remove branding</td>
@@ -105,8 +105,8 @@ export default function ComparisonPowerdrill() {
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">When to Choose Powerdrill Bloom</h2>
           <ul className="list-disc pl-5 space-y-2">
             <li>You need a broad data analysis platform — chat with your data, build visualizations, query SQL databases, search open datasets.</li>
-            <li>Your workflow involves multiple data formats beyond CSV: Excel, PDF, Word, databases, images, audio.</li>
-            <li>You want to generate internal presentations, infographics, or Notion pages from your analysis.</li>
+            <li>Your workflow involves multiple data formats beyond CSV: Excel, PDF, and docs.</li>
+            <li>You want to generate internal slides, docs, sheets, and images from your analysis.</li>
             <li>You're doing exploratory data analysis and need AI agent teams to find trends and patterns automatically.</li>
             <li>You prefer built-in AI models without managing your own API keys.</li>
           </ul>
@@ -119,7 +119,7 @@ export default function ComparisonPowerdrill() {
           <p>Powerdrill can generate reports and presentations, but it doesn't offer white-label output, programmatic API access, or built-in send-to-client email delivery. Naxely is purpose-built for the agency workflow: upload data, get a branded PDF, send it to your client — end to end. If your primary need is client-facing deliverables, Naxely is the focused solution.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Naxely replace Powerdrill for data analysis?</h3>
-          <p>No — Naxely is a report generator, not a BI platform. It doesn't support live SQL database queries, multi-format data ingestion (PDFs, images, audio), open-data search, or interactive dashboards. For exploratory data analysis, charting, and internal BI, Powerdrill is the broader tool. For turning data into a client-ready PDF, Naxely is faster and more purpose-built.</p>
+          <p>No — Naxely is a report generator, not a BI platform. It doesn't support live SQL database queries, multi-format data ingestion, open-data search, or interactive dashboards. For exploratory data analysis, charting, and internal BI, Powerdrill is the broader tool. For turning data into a client-ready PDF, Naxely is faster and more purpose-built.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Powerdrill offer white-label reports?</h3>
           <p>No. Powerdrill has no white-label or branding-removal features. Naxely's Agency tier ($79/month) removes all platform branding from client-facing output.</p>

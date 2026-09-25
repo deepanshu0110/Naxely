@@ -24,7 +24,7 @@ export default function ComparisonDashThis() {
           {"@type":"Question","name":"Is there a cheaper alternative to DashThis?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month — under DashThis's $54/month monthly price ($44/month billed yearly). The tradeoff: Naxely works from uploaded data (CSV/Sheets), while DashThis pulls live data from 30+ marketing connectors for ongoing campaign visibility."}},
           {"@type":"Question","name":"Does Naxely offer BYOK AI like DashThis includes AI Insights?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key across seven providers (OpenAI, Claude, Gemini, Groq, DeepSeek, Mistral, Together AI) on every tier including free — you pay the provider directly with zero markup. DashThis includes preset AI Insights on all plans, with a paid AI chat add-on. Naxely's BYOK model avoids per-report AI costs for high-volume users."}},
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like DashThis?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time campaign monitoring. Naxely is built for generating a polished PDF report from data you already have — it doesn't pull live data from connected platforms the way DashThis does. If your workflow needs always-on visibility into campaign KPIs across multiple channels, DashThis's dashboard model fits that better."}},
-          {"@type":"Question","name":"Does DashThis support white-label PDF reports?","acceptedAnswer":{"@type":"Answer","text":"DashThis offers white-labeling (custom domain, remove DashThis branding, custom logo and theme) on its Professional plan ($139/mo) and above — not on the Individual ($44/mo) entry tier. PDF export and automated email dispatch are available on all plans. Naxely's Agency tier ($79/month) includes white-label PDF output, send-to-client email, and programmatic API access at roughly half DashThis's white-label entry price."}}
+          {"@type":"Question","name":"Does DashThis support white-label PDF reports?","acceptedAnswer":{"@type":"Answer","text":"DashThis includes white-labeling (custom domain, remove DashThis branding, custom logo and theme) on all plans, starting at the Individual tier ($44/mo billed yearly). PDF export and automated email dispatch are available on all plans. Naxely's Agency tier ($79/month) includes white-label PDF output, send-to-client email, and programmatic API access."}}
         ]})}</script>
       </Head>
       <Navbar />
@@ -77,7 +77,7 @@ export default function ComparisonDashThis() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$79/month (Agency tier)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Available on Professional plan ($139/mo) and up — custom domain, remove DashThis branding, custom logo and theme</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Included on all plans from Individual ($44/mo) — custom domain, remove DashThis branding, custom logo and theme</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Setup time</td>
@@ -121,7 +121,7 @@ export default function ComparisonDashThis() {
           <p>Not for real-time campaign monitoring. Naxely is built for generating a polished PDF report from data you already have — it doesn't pull live data from connected platforms the way DashThis does. If your workflow needs always-on visibility into campaign KPIs across multiple channels, DashThis's dashboard model fits that better.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does DashThis support white-label PDF reports?</h3>
-          <p>DashThis offers white-labeling (custom domain, remove DashThis branding, custom logo and theme) on its Professional plan ($139/mo) and above — not on the Individual ($44/mo) entry tier. PDF export and automated email dispatch are available on all plans. Naxely's Agency tier ($79/month) includes white-label PDF output, send-to-client email, and programmatic API access at roughly half DashThis's white-label entry price.</p>
+          <p>DashThis includes white-labeling (custom domain, remove DashThis branding, custom logo and theme) on all plans, starting at the Individual tier ($44/mo billed yearly). PDF export and automated email dispatch are available on all plans. Naxely's Agency tier ($79/month) includes white-label PDF output, send-to-client email, and programmatic API access.</p>
 
           <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re evaluating live campaign dashboards rather than CSV-based reports, see how Naxely compares to <Link to="/compare/agencyanalytics" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">AgencyAnalytics</Link> and <Link to="/compare/whatagraph" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Whatagraph</Link> too.</p>
 
