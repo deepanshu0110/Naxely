@@ -27,6 +27,13 @@ logger = logging.getLogger(__name__)
 # (column-count, not character truncation which risks invalid CSV/JSON).
 MAX_CHART_AI_COLS = 15
 
+# Per-cell cap for the 5-row CSV sample sent to AI chart selection.
+# Column-count caps bound wide datasets, but long text cells (survey
+# responses, comments) are unbounded — ~800-char cells across 12 text
+# columns measured 11.6K prompt tokens. 200 chars is plenty to pick a
+# chart type by; full values never matter for type selection.
+MAX_SAMPLE_CELL_CHARS = 200
+
 
 def _sanitize_text_for_prompt(text: str) -> str:
     # Generic text sanitization for AI prompts (column names and cell values).
@@ -310,6 +317,11 @@ def select_charts_with_ai(
         else:
             nunique = df[col].nunique()
             sample_vals = df[col].unique()[:4].tolist()
+            sample_vals = [
+                _sanitize_text_for_prompt(str(v))[:MAX_SAMPLE_CELL_CHARS]
+                if isinstance(v, str) else v
+                for v in sample_vals
+            ]
             dtype = f"categorical ({nunique} unique values, e.g. {sample_vals})"
         col_meta.append(f"- {sanitized_col}: {dtype}")
 
@@ -320,9 +332,13 @@ def select_charts_with_ai(
     df_sanitized_for_csv = df_capped.rename(columns=lambda c: _sanitize_text_for_prompt(str(c)))
     # Sanitize string cell values on the prompt-only copy (mimics column-name logic);
     # applied BEFORE to_csv so newlines become spaces and don't create extra CSV rows.
+    # Truncate to MAX_SAMPLE_CELL_CHARS: chart-type selection needs the gist of a
+    # cell, never its full text — unbounded cells blew the sample past 11K tokens.
     # Original df remains unmodified for PDF/display pipeline.
     df_sanitized_for_csv = df_sanitized_for_csv.apply(
-        lambda col: col.map(lambda v: _sanitize_text_for_prompt(v) if isinstance(v, str) else v)
+        lambda col: col.map(
+            lambda v: _sanitize_text_for_prompt(v)[:MAX_SAMPLE_CELL_CHARS] if isinstance(v, str) else v
+        )
     )
     sample_csv = df_sanitized_for_csv.head(5).to_csv(index=False)
 
