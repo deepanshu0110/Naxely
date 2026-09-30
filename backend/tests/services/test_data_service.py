@@ -95,13 +95,35 @@ class TestDataService:
         validate_for_injection(df)
     
     def test_validate_for_injection_dangerous(self):
-        """Test injection validation with dangerous content."""
+        """Test injection validation with real formula-injection shapes."""
         df = pd.DataFrame({
-            'A': ['safe', '=cmd', '+dangerous', '@formula']
+            'A': [
+                'safe',
+                "=cmd|'/c calc'!A1",
+                '=SUM(A1:A10)',
+                '+HYPERLINK("http://evil.com","click")',
+                "@SUM(1+1)*cmd|'/c calc'!A1",
+                "-2+3+cmd|' /c calc'!A1",
+            ]
         })
-        
-        with pytest.raises(ValueError, match="dangerous formula"):
-            validate_for_injection(df)
+
+        # Non-blocking: returns the count, never raises
+        assert validate_for_injection(df) == 5
+
+    def test_validate_for_injection_false_positives(self):
+        """Legit content must not flag — incl. the real incident cell."""
+        df = pd.DataFrame({
+            'A': [
+                '-\u03a0\u03bb\u03b1\u03c3\u03c4\u03b9\u03ba\u03ae \u03c7\u03b5\u03b9\u03c1\u03bf\u03c5\u03c1\u03b3\u03b9\u03ba\u03ae '
+                '\u03b3\u03b9\u03b1 \u03b1\u03c0\u03bf\u03ba\u03b1\u03c4\u03ac\u03c3\u03c4\u03b1\u03c3\u03b7 \u03bc\u03b1\u03c3\u03c4\u03ce\u03bd',
+                '-5 apples',
+                '+1 234 567 890',
+                '@mention this in review',
+                '-20% discount',
+            ]
+        })
+
+        assert validate_for_injection(df) == 0
     
     def test_detect_column_types(self):
         """Test column type detection."""

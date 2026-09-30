@@ -343,9 +343,11 @@ async def upload_file(
     try:
         df = parse_csv(content)
         validate_csv(df)
-        validate_for_injection(df)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    # Non-blocking formula-shape scan (observability only, never rejects).
+    validate_for_injection(df)
 
     if file.content_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         file_ext = "xlsx"
@@ -475,9 +477,11 @@ async def upload_sheets(
 
     try:
         validate_csv(df)
-        validate_for_injection(df)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    # Non-blocking formula-shape scan (observability only, never rejects).
+    validate_for_injection(df)
 
     import io as _io
     csv_bytes = df.to_csv(index=False).encode("utf-8")
@@ -568,9 +572,11 @@ async def sample_upload(
     try:
         df = parse_csv(content)
         validate_csv(df)
-        validate_for_injection(df)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    # Non-blocking formula-shape scan (observability only, never rejects).
+    validate_for_injection(df)
 
     columns_meta = detect_column_types(df)
     upload_id = str(uuid.uuid4())

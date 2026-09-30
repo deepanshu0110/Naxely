@@ -90,18 +90,44 @@ def validate_csv(df: pd.DataFrame) -> None:
         raise ValueError("File is empty or contains only headers.")
 
 
-def validate_for_injection(df: pd.DataFrame) -> None:
+# A leading =+-@ alone is not a formula (bullets, phone numbers, @mentions
+# all match it). Require actual formula shape after the trigger character:
+#   - FUNC( — function call: SUM(, HYPERLINK(, cmd(
+#   - CELL reference: A1, BC23
+#   - DDE pipe: a non-space run ending in | (e.g. =cmd|'...)
+# Plain arithmetic with no function, reference, or pipe (e.g. "=1+1")
+# evaluates but cannot exfiltrate or execute, so it is intentionally out.
+FORMULA_SHAPE_PATTERN = re.compile(
+    r'^[=+\-@]\s*(?:'
+    r'[A-Za-z_][A-Za-z0-9_.]*\('
+    r'|[A-Za-z]{1,3}\d{1,7}\b'
+    r'|\S+\|'
+    r')'
+)
+
+# Cap logged findings per file so a bullet-heavy upload can't spam the logs.
+MAX_FORMULA_LOG_FINDINGS = 5
+
+
+def validate_for_injection(df: pd.DataFrame) -> int:
     """
-    Scan string cells for formula injection patterns.
-    
+    Scan string cells for formula-injection shapes.
+
+    Non-blocking observability only: returns the count of suspicious cells
+    and logs the first few (column, row, short snippet). Never raises —
+    Naxely never re-exports raw cells into a downloadable spreadsheet file
+    (outputs are PDF via reportlab and PPTX via python-pptx text runs,
+    neither of which executes formulas), so rejecting uploads on the
+    client's behalf was pure false-positive cost with no matching benefit.
+
     Args:
         df: DataFrame to validate
-        
-    Raises:
-        ValueError: If dangerous content detected
+
+    Returns:
+        int: number of cells matching a real formula shape
     """
-    injection_pattern = re.compile(r'^[=+\-@].*', re.IGNORECASE)
-    
+    findings = 0
+
     for col in df.columns:
         # Only check string columns
         if df[col].dtype == 'object':
@@ -109,14 +135,26 @@ def validate_for_injection(df: pd.DataFrame) -> None:
             for idx, cell in df[col].items():
                 if pd.isna(cell):
                     continue
-                    
+
                 # Convert to string if needed
                 cell_str = str(cell).strip()
-                if injection_pattern.match(cell_str):
-                    raise ValueError(
-                        f"File contains potentially dangerous formula content. "
-                        f"Found in column '{col}', row {idx + 2}: '{cell_str}'"
-                    )
+                if FORMULA_SHAPE_PATTERN.match(cell_str):
+                    findings += 1
+                    if findings <= MAX_FORMULA_LOG_FINDINGS:
+                        logger.warning(
+                            "formula-shape cell detected (non-blocking): "
+                            "column='%s', row=%d, snippet='%s'",
+                            col, idx + 2, cell_str[:80],
+                        )
+
+    if findings > MAX_FORMULA_LOG_FINDINGS:
+        logger.warning(
+            "formula-shape scan complete: %d suspicious cells "
+            "(logged first %d)",
+            findings, MAX_FORMULA_LOG_FINDINGS,
+        )
+
+    return findings
 
 
 def detect_column_types(df: pd.DataFrame) -> List[Dict[str, Any]]:
