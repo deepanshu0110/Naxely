@@ -18,17 +18,17 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-paper dark:bg-darkBg">
       <Head>
-        <title>Blog — Naxely</title>
+        <title>Naxely Blog — Client Reporting Guides & Comparisons</title>
         <meta name="description" content="Learn about AI-powered PDF report generation, BYOK pricing, and tips for automating client reports on the Naxely blog." />
         <link rel="canonical" href="https://www.naxely.com/blog" />
         <meta property="og:url" content="https://www.naxely.com/blog" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Blog — Naxely" />
+        <meta property="og:title" content="Naxely Blog — Client Reporting Guides & Comparisons" />
         <meta property="og:description" content="Learn about AI-powered PDF report generation, BYOK pricing, and tips for automating client reports." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Blog — Naxely" />
+        <meta name="twitter:title" content="Naxely Blog — Client Reporting Guides & Comparisons" />
         <meta name="twitter:description" content="Learn about AI-powered PDF report generation, BYOK pricing, and tips for automating client reports." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
       </Head>

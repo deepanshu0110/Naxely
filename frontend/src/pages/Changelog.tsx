@@ -89,17 +89,17 @@ export default function Changelog() {
   return (
     <div className="min-h-screen bg-paper text-ink">
       <Head>
-        <title>Changelog — Naxely</title>
+        <title>Naxely Changelog — New Features & Product Updates</title>
         <meta name="description" content="See what's new at Naxely — the latest features, improvements, and product updates for AI-powered PDF report generation." />
         <link rel="canonical" href="https://www.naxely.com/changelog" />
         <meta property="og:url" content="https://www.naxely.com/changelog" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:title" content="Changelog — Naxely" />
+        <meta property="og:title" content="Naxely Changelog — New Features & Product Updates" />
         <meta property="og:description" content="See what's new at Naxely — the latest features, improvements, and product updates for AI-powered PDF report generation." />
         <meta property="og:image" content="https://www.naxely.com/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Changelog — Naxely" />
+        <meta name="twitter:title" content="Naxely Changelog — New Features & Product Updates" />
         <meta name="twitter:description" content="See what's new at Naxely — the latest features, improvements, and product updates for AI-powered PDF report generation." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
       </Head>
