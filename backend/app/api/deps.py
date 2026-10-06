@@ -56,11 +56,14 @@ async def get_current_user(
         )
         auth_provider = "google" if payload.get("app_metadata", {}).get("provider") == "google" else "email"
 
+        # No conflict target: every unique index (id AND email) is an arbiter.
+        # With ON CONFLICT (id), concurrent first-login inserts for the same
+        # id raised users_email_key on the losers (NAXELY-BACKEND-8).
         await db.execute(
             text("""
                 INSERT INTO users (id, email, full_name, avatar_url, auth_provider, tier)
                 VALUES (:uid, :email, :full_name, :avatar_url, :auth_provider, 'free')
-                ON CONFLICT (id) DO NOTHING
+                ON CONFLICT DO NOTHING
             """),
             {
                 "uid": user_id,
@@ -78,9 +81,23 @@ async def get_current_user(
         )
         row = result.mappings().first()
         if not row:
+            # Email belongs to a different id — true identity mismatch.
+            # Never 500 here; the user needs a human, not a retry.
+            await db.rollback()
+            try:
+                from app.utils.error_notifier import notify_telegram_error
+                notify_telegram_error(
+                    Exception("users_email_key identity mismatch"),
+                    {"stage": "get_current_user:email_conflict", "user_id": user_id},
+                )
+            except Exception:
+                logger.warning(
+                    "get_current_user: email conflict alert failed for user %s",
+                    user_id,
+                )
             raise HTTPException(
-                status_code=401,
-                detail={"code": "USER_NOT_FOUND", "message": "User not found."},
+                status_code=409,
+                detail="This email is linked to another account. Contact support.",
             )
 
     # Self-healing tier expiry: if pro/agency tier has passed its tier_expires_at,

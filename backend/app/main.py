@@ -32,7 +32,14 @@ logging.basicConfig(
 )
 
 if settings.ENVIRONMENT == "production" and settings.SENTRY_DSN:
-    sentry_sdk.init(dsn=settings.SENTRY_DSN, send_default_pii=False)
+    # include_local_variables=False: locals carry emails, names, avatar URLs
+    # and tokens (NAXELY-BACKEND-8). A before_send regex scrub would miss
+    # those shapes; dropping locals loses little for this app.
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        send_default_pii=False,
+        include_local_variables=False,
+    )
     logger.info(f"Sentry initialized: dsn_configured={bool(settings.SENTRY_DSN)} environment={settings.ENVIRONMENT}")
 
 if os.getenv("RENDER") and not os.getenv("ENVIRONMENT"):

@@ -1,3 +1,9 @@
+-- NOT APPLIED IN PROD. The "Run in Supabase SQL editor" manual step was
+-- never executed (no on_auth_user_created trigger exists in production),
+-- and it must stay that way: app/api/deps.py get_current_user is the sole
+-- writer of public.users (with ON CONFLICT DO NOTHING covering all unique
+-- indexes since NAXELY-BACKEND-8). Applying this trigger would reintroduce
+-- a second writer and the exact race it caused. Kept on disk for reference.
 -- Run in Supabase SQL editor BEFORE any users sign up
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$

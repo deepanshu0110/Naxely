@@ -11,6 +11,9 @@ engine = create_async_engine(
     pool_pre_ping=True,
     pool_size=5,
     max_overflow=10,
+    # Bound SQL parameters (emails, names, tokens) stay out of
+    # exception messages — and therefore out of Sentry events.
+    hide_parameters=True,
 )
 
 AsyncSessionLocal = async_sessionmaker(
