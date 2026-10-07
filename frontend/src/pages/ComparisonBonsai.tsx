@@ -39,6 +39,7 @@ export default function ComparisonBonsai() {
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets) to produce a polished deliverable. Bonsai manages the client workflow that produces the data in the first place.</strong> Choosing between them comes down to whether you need a report from existing data or a suite to run the client operation itself — many freelancers use both.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Quick Comparison</h2>
+          <p className="text-xs text-gray-500">Prices checked on the vendor's own pricing page on 7 October 2026.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>

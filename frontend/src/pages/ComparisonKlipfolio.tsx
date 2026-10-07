@@ -39,6 +39,7 @@ export default function ComparisonKlipfolio() {
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). Klipfolio works from data pulled continuously through live integrations.</strong> Choosing between them comes down to whether your reporting need is a periodic client deliverable or an always-on dashboard.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Quick Comparison</h2>
+          <p className="text-xs text-gray-500">Prices checked on the vendor's own pricing page on 7 October 2026.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>

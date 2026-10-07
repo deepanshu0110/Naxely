@@ -21,9 +21,9 @@ export default function ComparisonPlutio() {
         <meta name="twitter:description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a paid white-label add-on." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
-          {"@type":"Question","name":"Is there a cheaper alternative to Plutio?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core, billed monthly; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$159/mo billed annually) with a 7-day free trial."}},
+          {"@type":"Question","name":"Is there a cheaper alternative to Plutio?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core, billed monthly; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$166/mo billed annually) with a 7-day free trial."}},
           {"@type":"Question","name":"Can Naxely replace Plutio?","acceptedAnswer":{"@type":"Answer","text":"They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Plutio is an all-in-one business management platform for projects, invoicing, proposals, contracts, and scheduling. If you need client-ready reports from existing data, Naxely fits; if you need an all-in-one operations suite, Plutio fits — many freelancers use both."}},
-          {"@type":"Question","name":"Does Plutio offer white-label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$159/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier."}}
+          {"@type":"Question","name":"Does Plutio offer white-label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$166/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier."}}
         ]})}</script>
       </Head>
       <Navbar />
@@ -39,6 +39,7 @@ export default function ComparisonPlutio() {
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets) to produce a polished deliverable. Plutio runs the daily client operations that generate and manage that data in the first place.</strong> Choosing between them comes down to whether you need a report from existing data or a suite to run the client operation itself — many freelancers use both.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Quick Comparison</h2>
+          <p className="text-xs text-gray-500">Prices checked on the vendor's own pricing page on 7 October 2026.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
@@ -52,7 +53,7 @@ export default function ComparisonPlutio() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Starting price</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free (3 reports/month)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">$19/mo (Core); Max $199/mo (billed monthly; ~$159/mo billed annually)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">$19/mo (Core); Max $199/mo (billed monthly; ~$166/mo billed annually)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Free tier / trial</td>
@@ -118,13 +119,13 @@ export default function ComparisonPlutio() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a cheaper alternative to Plutio?</h3>
-          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$159/mo billed annually) with a 7-day free trial.</p>
+          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$166/mo billed annually) with a 7-day free trial.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Naxely replace Plutio?</h3>
           <p>They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Plutio is an all-in-one business management platform for projects, invoicing, proposals, contracts, and scheduling. If you need client-ready reports from existing data, Naxely fits; if you need an all-in-one operations suite, Plutio fits — many freelancers use both.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Plutio offer white-label reporting?</h3>
-          <p>Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$159/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier.</p>
+          <p>Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$166/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier.</p>
 
           <p className="text-xs text-ink/50 dark:text-paper/40">If you&rsquo;re also comparing business management suites, see <Link to="/compare/bonsai" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Bonsai</Link> or <Link to="/compare/klipfolio" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">Naxely vs Klipfolio</Link> for another perspective.</p>
 

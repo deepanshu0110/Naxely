@@ -21,7 +21,7 @@ export default function ComparisonPowerdrill() {
         <meta name="twitter:description" content="Compare Naxely and Powerdrill. Naxely is a PDF generator for client deliverables. Powerdrill Bloom is a broader AI workspace with natural-language BI." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
-          {"@type":"Question","name":"Which is more affordable, Naxely or Powerdrill?","acceptedAnswer":{"@type":"Answer","text":"Both offer free tiers. Naxely Free includes 3 reports/month with no credit card. Powerdrill Free gives 1,000 daily credits for exploration. For paid plans, Naxely Pro ($29/mo) covers 30 branded reports, while Powerdrill Pro ($16.58/mo) gives 5,000 monthly credits for analysis — but doesn't include white-label output, API access, or client delivery features."}},
+          {"@type":"Question","name":"Which is more affordable, Naxely or Powerdrill?","acceptedAnswer":{"@type":"Answer","text":"Both offer free tiers. Naxely Free includes 3 reports/month with no credit card. Powerdrill Free gives 1,000 daily credits for exploration. For paid plans, Naxely Pro ($29/mo) covers unlimited branded reports, while Powerdrill Pro ($16.58/mo, or $19.90 billed monthly) gives 5,000 monthly credits for analysis — but doesn't include white-label output, API access, or client delivery features."}},
           {"@type":"Question","name":"Can Powerdrill replace Naxely for client reporting?","acceptedAnswer":{"@type":"Answer","text":"Powerdrill can generate reports and presentations, but it doesn't offer white-label output, programmatic API access, or built-in send-to-client email delivery. Naxely is purpose-built for the agency workflow: upload data, get a branded PDF, send it to your client — end to end."}},
           {"@type":"Question","name":"Can Naxely replace Powerdrill for data analysis?","acceptedAnswer":{"@type":"Answer","text":"No — Naxely is a report generator, not a BI platform. It doesn't support live SQL database queries, multi-format data ingestion, open-data search, or interactive dashboards. For exploratory data analysis and internal BI, Powerdrill is the broader tool."}},
           {"@type":"Question","name":"Does Powerdrill offer white-label reports?","acceptedAnswer":{"@type":"Answer","text":"No. Powerdrill has no white-label or branding-removal features. Naxely's Agency tier ($79/month) removes all platform branding from client-facing output."}}
@@ -40,6 +40,7 @@ export default function ComparisonPowerdrill() {
           <p>The core difference: <strong>Naxely is built for sending branded deliverables to clients. Powerdrill is built for exploring and understanding data internally.</strong> Powerdrill runs on a credit-based system (daily + monthly allocation), while Naxely uses simple report-count tiers. Powerdrill doesn't offer white-label output, programmatic API access, or send-to-client email — these are Naxely-specific features for the agency and consultant workflow.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Quick Comparison</h2>
+          <p className="text-xs text-gray-500">Prices checked on the vendor's own pricing page on 7 October 2026.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
@@ -72,8 +73,8 @@ export default function ComparisonPowerdrill() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Pricing model</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Report-count tiers: Free (3/mo), Pro $29/mo (30/mo), Agency $79/mo (unlimited)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Credit-based: Free (1,000 daily), Pro $16.58/mo, Plus $33.25/mo, Premium $165.83/mo</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Report-count tiers: Free (3/mo), Pro $29/mo (unlimited), Agency $79/mo (unlimited)</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Credit-based: Free (1,000 daily), Pro $16.58/mo ($19.90 billed monthly), Plus $33.25/mo ($39.90 billed monthly), Premium $165.83/mo ($199.90 billed monthly)</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">AI model</td>
@@ -114,7 +115,7 @@ export default function ComparisonPowerdrill() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Which is more affordable, Naxely or Powerdrill?</h3>
-          <p>Both offer free tiers. Naxely Free includes 3 reports/month with no credit card. Powerdrill Free gives 1,000 daily credits for exploration. For paid plans, Naxely Pro ($29/mo) covers 30 branded reports, while Powerdrill Pro ($16.58/mo) gives 5,000 monthly credits for analysis — but doesn't include white-label output, API access, or client delivery features. The right choice depends on whether you need client-facing deliverables or internal analysis capacity.</p>
+          <p>Both offer free tiers. Naxely Free includes 3 reports/month with no credit card. Powerdrill Free gives 1,000 daily credits for exploration. For paid plans, Naxely Pro ($29/mo) covers unlimited branded reports, while Powerdrill Pro ($16.58/mo, or $19.90 billed monthly) gives 5,000 monthly credits for analysis — but doesn't include white-label output, API access, or client delivery features. The right choice depends on whether you need client-facing deliverables or internal analysis capacity.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Powerdrill replace Naxely for client reporting?</h3>
           <p>Powerdrill can generate reports and presentations, but it doesn't offer white-label output, programmatic API access, or built-in send-to-client email delivery. Naxely is purpose-built for the agency workflow: upload data, get a branded PDF, send it to your client — end to end. If your primary need is client-facing deliverables, Naxely is the focused solution.</p>
