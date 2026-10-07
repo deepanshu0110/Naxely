@@ -50,7 +50,17 @@ if os.getenv("RENDER") and not os.getenv("ENVIRONMENT"):
     )
     raise SystemExit(1)
 
-app = FastAPI(title="Naxely API", version="1.0.0")
+# Interactive API docs are a development aid, not a production surface
+# (they enumerate every route including /internal/*). Same production
+# check as the Sentry init above.
+_is_production = settings.ENVIRONMENT == "production" and settings.SENTRY_DSN
+app = FastAPI(
+    title="Naxely API",
+    version="1.0.0",
+    docs_url=None if _is_production else "/docs",
+    redoc_url=None if _is_production else "/redoc",
+    openapi_url=None if _is_production else "/openapi.json",
+)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]

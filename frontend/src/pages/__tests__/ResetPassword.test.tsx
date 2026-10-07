@@ -147,3 +147,16 @@ describe('ResetPassword page', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/login')
   })
 })
+
+describe('ResetPassword autocomplete tokens', () => {
+  it('both password fields use autocomplete="new-password"', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    renderPage()
+
+    const callback = authStateHelpers.getCallback()
+    callback!('PASSWORD_RECOVERY')
+
+    expect(await screen.findByLabelText('New password')).toHaveAttribute('autocomplete', 'new-password')
+    expect(screen.getByLabelText('Confirm new password')).toHaveAttribute('autocomplete', 'new-password')
+  })
+})

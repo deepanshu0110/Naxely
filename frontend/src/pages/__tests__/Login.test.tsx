@@ -169,3 +169,15 @@ describe('Login page', () => {
     expect(screen.getByRole('button', { name: /log in/i })).toBeDisabled()
   })
 })
+
+describe('Login autocomplete tokens', () => {
+  it('email field uses autocomplete="email"', () => {
+    renderPage()
+    expect(screen.getByLabelText('Email')).toHaveAttribute('autocomplete', 'email')
+  })
+
+  it('password field uses autocomplete="current-password"', () => {
+    renderPage()
+    expect(screen.getByLabelText('Password')).toHaveAttribute('autocomplete', 'current-password')
+  })
+})

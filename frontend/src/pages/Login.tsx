@@ -105,6 +105,7 @@ export default function Login() {
             <input
               id="email"
               type="email"
+              autoComplete="email"
               {...register('email')}
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-ink placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
               placeholder="you@example.com"
@@ -122,6 +123,7 @@ export default function Login() {
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 {...register('password')}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm text-ink placeholder-gray-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
                 placeholder="Min. 8 characters"

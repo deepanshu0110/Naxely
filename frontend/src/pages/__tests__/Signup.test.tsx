@@ -219,3 +219,15 @@ describe('Signup page', () => {
     expect(toggleBtn).toHaveAttribute('aria-label', 'Show password')
   })
 })
+
+describe('Signup autocomplete tokens', () => {
+  it('email field uses autocomplete="email"', () => {
+    renderPage()
+    expect(screen.getByLabelText('Email')).toHaveAttribute('autocomplete', 'email')
+  })
+
+  it('password field uses autocomplete="new-password"', () => {
+    renderPage()
+    expect(screen.getByLabelText('Password')).toHaveAttribute('autocomplete', 'new-password')
+  })
+})
