@@ -19,11 +19,12 @@ export default function About() {
         <meta name="twitter:description" content="Naxely is built by Deepanshu Garg, a freelance data analyst in India. Who builds it, why, and how to reach the founder directly." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"About","item":"https://www.naxely.com/about"}]})}</script>
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about","jobTitle":"Founder, Naxely","sameAs":["https://www.linkedin.com/in/deepanshu-datascientist"]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about","image":"https://www.naxely.com/deepanshu.jpg","jobTitle":"Founder, Naxely","sameAs":["https://www.linkedin.com/in/deepanshu-datascientist"]})}</script>
       </Head>
       <div className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Home</Link>
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">About Naxely</h1>
+        <img src="/deepanshu.jpg" alt="Deepanshu Garg, founder of Naxely" width="400" height="400" className="rounded-xl mb-6" />
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Naxely is built and run by one person, Deepanshu Garg, a freelance data analyst and data scientist based in India.</p>
           <p>I built Naxely after spending too many hours turning client spreadsheets into reports by hand. You upload a CSV, Excel file or Google Sheet, and Naxely turns it into a branded PDF or PPTX report with charts and a written summary.</p>

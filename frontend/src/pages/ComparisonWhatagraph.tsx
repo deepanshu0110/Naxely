@@ -36,7 +36,7 @@ export default function ComparisonWhatagraph() {
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Whatagraph is a credit-based marketing dashboard that pulls live data from connected ad accounts and analytics platforms, blends it across channels, and delivers reports through branded dashboards and automated PDFs.</p>
+          <p>Naxely is built for file-based workflows. It converts a CSV or Google Sheet you already have into a branded, client-ready PDF in under a minute, with no credits and no connectors to manage. Whatagraph is a credit-based marketing dashboard that pulls live data from connected ad accounts and analytics platforms, blends it across channels, and delivers reports through branded dashboards and automated PDFs.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). Whatagraph connects to live ad platforms and analytics tools using a credit-based model, where each connected account consumes one source credit.</strong> Choosing between them comes down to whether your workflow starts with a spreadsheet export or a connected ad account — and how many data sources you manage per client.</p>
 

@@ -34,7 +34,7 @@ export default function ComparisonDatabox() {
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Databox is a live business-metrics dashboard platform built for tracking KPIs across connected tools in real time.</p>
+          <p>If your reporting ends with a PDF you email to a client, Naxely is built for that step. Upload a spreadsheet and get a branded report with charts and an AI-written summary in under a minute. Databox is a live business-metrics dashboard platform built for tracking KPIs across connected tools in real time.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). Databox works from data pulled continuously through live integrations.</strong> Choosing between them comes down to whether your reporting need is a periodic deliverable or an always-on dashboard.</p>
 

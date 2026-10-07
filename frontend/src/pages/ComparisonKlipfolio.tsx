@@ -34,7 +34,7 @@ export default function ComparisonKlipfolio() {
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Klipfolio is a live KPI dashboard platform built for monitoring metrics across 130+ connected tools in real time.</p>
+          <p>Naxely turns data you already hold into a point-in-time PDF report. You upload, add your branding and download in under a minute, with an AI summary included. Klipfolio is a live KPI dashboard platform built for monitoring metrics across 130+ connected tools in real time.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). Klipfolio works from data pulled continuously through live integrations.</strong> Choosing between them comes down to whether your reporting need is a periodic client deliverable or an always-on dashboard.</p>
 

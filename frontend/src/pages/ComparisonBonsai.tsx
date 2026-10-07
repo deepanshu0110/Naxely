@@ -34,7 +34,7 @@ export default function ComparisonBonsai() {
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Bonsai is an all-in-one business management suite for freelancers and agencies — proposals, contracts, time tracking, invoicing, and client management in one place.</p>
+          <p>Naxely does one job. It turns a spreadsheet you already have into a branded client report with charts and AI insights in under a minute. Bonsai is an all-in-one business management suite for freelancers and agencies, covering proposals, contracts, time tracking, invoicing and client management in one place.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets) to produce a polished deliverable. Bonsai manages the client workflow that produces the data in the first place.</strong> Choosing between them comes down to whether you need a report from existing data or a suite to run the client operation itself — many freelancers use both.</p>
 

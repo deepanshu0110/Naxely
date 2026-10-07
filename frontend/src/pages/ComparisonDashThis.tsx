@@ -35,7 +35,7 @@ export default function ComparisonDashThis() {
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. DashThis is a marketing-dashboard platform that pulls live data from 30+ integrations and delivers it through pre-built templates designed for client reporting.</p>
+          <p>Naxely needs no marketing connectors. Upload a CSV or connect a Google Sheet, and it builds a branded, client-ready PDF in under a minute, with no dashboard to set up. DashThis is a marketing-dashboard platform that pulls live data from 30+ integrations and delivers it through pre-built templates designed for client reporting.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets). DashThis pulls live campaign data through built-in marketing connectors.</strong> Choosing between them comes down to whether your workflow starts with a spreadsheet export or a connected ad account.</p>
 

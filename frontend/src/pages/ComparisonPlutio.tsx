@@ -34,7 +34,7 @@ export default function ComparisonPlutio() {
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
-          <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Plutio is an all-in-one business management platform that bundles projects, invoicing, proposals, contracts, scheduling, and forms — plus Super Work AI — into a single workspace.</p>
+          <p>Naxely takes a CSV or Google Sheet you already have and returns a branded PDF report in under a minute. There are no projects, invoices or workspace to set up. Plutio is an all-in-one business management platform that bundles projects, invoicing, proposals, contracts, scheduling, forms and its Super Work AI into a single workspace.</p>
 
           <p>The core difference: <strong>Naxely works from data you already have (CSV, Google Sheets) to produce a polished deliverable. Plutio runs the daily client operations that generate and manage that data in the first place.</strong> Choosing between them comes down to whether you need a report from existing data or a suite to run the client operation itself — many freelancers use both.</p>
 
