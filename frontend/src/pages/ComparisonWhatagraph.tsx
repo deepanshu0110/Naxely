@@ -20,7 +20,7 @@ export default function ComparisonWhatagraph() {
         <meta name="twitter:title" content="Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard" />
         <meta name="twitter:description" content="Compare Naxely and Whatagraph. Naxely turns CSVs into branded PDFs in under a minute. Whatagraph is a credit-based dashboard for multi-channel reporting." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Whatagraph?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Whatagraph starts at \u20AC699/month billed annually (Max plan). The tradeoff: Naxely works from uploaded data (CSV/Sheets), while Whatagraph connects to live ad platforms via a credit-based model. For file-based reporting workflows, Naxely is a substantially lower-cost option."}},
           {"@type":"Question","name":"Does Whatagraph include white-label reports?","acceptedAnswer":{"@type":"Answer","text":"Whatagraph includes custom branding on its Max plan (\u20AC699/month billed annually). Custom report domain is available as an add-on on Prime and not included on Max. Naxely includes white-label PDF output on its Agency tier at $79/month."}},
           {"@type":"Question","name":"What is Whatagraph's credit-based pricing model?","acceptedAnswer":{"@type":"Answer","text":"Whatagraph uses source credits instead of per-seat pricing. Each connected data account consumes one source credit. The Max plan includes from 50 credits; Prime is custom-quoted with no public credit number. Cost scales with the number of data sources, not users. Naxely uses per-seat and per-report pricing without source limitations."}},
@@ -32,7 +32,8 @@ export default function ComparisonWhatagraph() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Whatagraph: CSV-to-PDF Reports vs. Multi-Channel Dashboard</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Whatagraph is a credit-based marketing dashboard that pulls live data from connected ad accounts and analytics platforms, blends it across channels, and delivers reports through branded dashboards and automated PDFs.</p>

@@ -25,6 +25,7 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 - [Login](https://www.naxely.com/login): Sign in to your Naxely account.
 - [Sign Up](https://www.naxely.com/signup): Create a new Naxely account — no credit card required.
 - [Contact](https://www.naxely.com/contact): Get in touch with the Naxely team.
+- [About](https://www.naxely.com/about): Who builds Naxely — Deepanshu Garg, freelance data analyst in India — and how to reach the founder directly.
 - [Terms of Service](https://www.naxely.com/terms): Legal terms governing use of Naxely.
 - [Privacy Policy](https://www.naxely.com/privacy): How Naxely handles your data.
 - [Refund Policy](https://www.naxely.com/refund): Refund terms for paid plans.

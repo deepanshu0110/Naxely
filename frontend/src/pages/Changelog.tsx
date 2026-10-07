@@ -130,6 +130,17 @@ export default function Changelog() {
           <p className="text-xs text-gray-600">
             Made in India 🇮🇳 · Naxely &copy; 2026
           </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-gray-600">
+            <Link to="/about" className="hover:text-ink">About</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/contact" className="hover:text-ink">Contact</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/privacy" className="hover:text-ink">Privacy</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/terms" className="hover:text-ink">Terms</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/refund" className="hover:text-ink">Refund Policy</Link>
+          </div>
         </div>
       </footer>
     </div>

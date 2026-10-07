@@ -20,7 +20,7 @@ export default function ComparisonBonsai() {
         <meta name="twitter:title" content="Naxely vs Bonsai: PDF Reports vs. Business Suite" />
         <meta name="twitter:description" content="Naxely vs Bonsai: Naxely turns uploaded data into branded PDFs in under a minute. Bonsai manages proposals, contracts, and billing from $9/user/mo." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Bonsai?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Bonsai starts at $9/user/mo (Basic, billed annually; $15 billed monthly) and Premium is $29/user/mo (billed annually; $39 billed monthly) with a 7-day free trial and no permanent free tier."}},
           {"@type":"Question","name":"Can Naxely replace Bonsai?","acceptedAnswer":{"@type":"Answer","text":"They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Bonsai is a business management suite for proposals, contracts, time tracking, invoicing, and client billing. If you need client-ready reports from existing data, Naxely fits; if you need end-to-end client operations, Bonsai fits — many freelancers use both."}},
           {"@type":"Question","name":"Does Bonsai offer white-label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes — white-label (Remove Bonsai branding) is included in Bonsai's Premium tier at $29/user/mo billed annually ($39 billed monthly), not a separate add-on. Elite ($49/user/mo billed annually) also includes it. Naxely offers white-label PDF output at $79/month on its Agency tier."}}
@@ -30,7 +30,8 @@ export default function ComparisonBonsai() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs Bonsai: PDF Reports vs. Business Suite</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Bonsai: PDF Reports vs. Business Suite</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Bonsai is an all-in-one business management suite for freelancers and agencies — proposals, contracts, time tracking, invoicing, and client management in one place.</p>

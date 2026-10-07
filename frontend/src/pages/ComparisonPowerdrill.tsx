@@ -20,7 +20,7 @@ export default function ComparisonPowerdrill() {
         <meta name="twitter:title" content="Naxely vs Powerdrill: Purpose-Built Reports vs. AI Platform" />
         <meta name="twitter:description" content="Compare Naxely and Powerdrill. Naxely is a PDF generator for client deliverables. Powerdrill Bloom is a broader AI workspace with natural-language BI." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Which is more affordable, Naxely or Powerdrill?","acceptedAnswer":{"@type":"Answer","text":"Both offer free tiers. Naxely Free includes 3 reports/month with no credit card. Powerdrill Free gives 1,000 daily credits for exploration. For paid plans, Naxely Pro ($29/mo) covers 30 branded reports, while Powerdrill Pro ($16.58/mo) gives 5,000 monthly credits for analysis — but doesn't include white-label output, API access, or client delivery features."}},
           {"@type":"Question","name":"Can Powerdrill replace Naxely for client reporting?","acceptedAnswer":{"@type":"Answer","text":"Powerdrill can generate reports and presentations, but it doesn't offer white-label output, programmatic API access, or built-in send-to-client email delivery. Naxely is purpose-built for the agency workflow: upload data, get a branded PDF, send it to your client — end to end."}},
           {"@type":"Question","name":"Can Naxely replace Powerdrill for data analysis?","acceptedAnswer":{"@type":"Answer","text":"No — Naxely is a report generator, not a BI platform. It doesn't support live SQL database queries, multi-format data ingestion, open-data search, or interactive dashboards. For exploratory data analysis and internal BI, Powerdrill is the broader tool."}},
@@ -31,7 +31,8 @@ export default function ComparisonPowerdrill() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Powerdrill: Purpose-Built Client Reports vs. AI Data Analysis Platform</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>If you're comparing Naxely and Powerdrill Bloom, you're looking at two tools that solve related but fundamentally different problems. Naxely is an AI-powered CSV-to-PDF report generator built for one job: turning uploaded data into branded, client-ready PDF reports in under a minute. Powerdrill Bloom is a broad AI data analysis workspace — think natural-language business intelligence with agent teams, open-data search, charting, and presentation generation.</p>

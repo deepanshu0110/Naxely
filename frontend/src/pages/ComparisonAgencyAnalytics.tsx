@@ -20,7 +20,7 @@ export default function ComparisonAgencyAnalytics() {
         <meta name="twitter:title" content="AgencyAnalytics Alternative for Freelancers & Agencies | Naxely" />
         <meta name="twitter:description" content="Looking for an agency analytics alternative? Naxely is a free CSV-to-PDF report generator. AgencyAnalytics is a live marketing-dashboard with 85+ integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to AgencyAnalytics?","acceptedAnswer":{"@type":"Answer","text":"Yes — Naxely's free tier covers 3 reports/month with no credit card required, and Pro at $29/month is well under AgencyAnalytics' entry pricing. The tradeoff: Naxely works from uploaded data (CSV/Sheets), not live marketing connectors."}},
           {"@type":"Question","name":"Can Naxely replace AgencyAnalytics for live campaign reporting?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time multi-channel dashboards. AgencyAnalytics' 85+ integrations pulling live data from ad platforms and SEO tools is its core differentiator. Naxely is built for generating polished PDF reports from data you already have — they serve different workflows."}},
           {"@type":"Question","name":"Does Naxely support API connections to ad platforms?","acceptedAnswer":{"@type":"Answer","text":"No. Naxely is intentionally focused on CSV/Google Sheets input. If your workflow requires live API pulls from Google Ads, Facebook Ads, or similar, AgencyAnalytics' connector model is built for that. If you have CSV exports from those platforms, Naxely handles them in seconds."}},
@@ -31,7 +31,8 @@ export default function ComparisonAgencyAnalytics() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Looking for an Agency Analytics Alternative? Here's How Naxely Compares</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Looking for an Agency Analytics Alternative? Here's How Naxely Compares</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>If you're looking for an agency analytics alternative that doesn't require live marketing connectors, Naxely is worth a look. As an alternative to AgencyAnalytics, Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. AgencyAnalytics is a white-label marketing reporting platform built for agencies that need to pull live data from 85+ marketing integrations (Google Ads, Facebook Ads, SEO tools, analytics) and produce both dashboards and PDF reports.</p>

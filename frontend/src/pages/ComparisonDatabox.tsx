@@ -20,7 +20,7 @@ export default function ComparisonDatabox() {
         <meta name="twitter:title" content="Naxely vs Databox: Which Reporting Tool Fits Your Workflow?" />
         <meta name="twitter:description" content="Naxely vs Databox: Naxely turns uploaded data into branded PDFs in under a minute. Databox is a live KPI dashboard with 130+ integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. The key tradeoff is output format: Naxely generates a point-in-time PDF report, while Databox provides a live, continuously-updating dashboard."}},
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Databox?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished report from data you already have — it doesn't pull live data from connected platforms the way Databox does. If your workflow needs always-on visibility into KPIs, Databox's integration model fits that better."}},
           {"@type":"Question","name":"Does Naxely offer BYOK like Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on Pro and Agency, so there's no AI markup; Free includes AI with no key needed. Databox offers no BYOK API-key option (its LLM connectivity is via MCP, not user-supplied keys)."}} 
@@ -30,7 +30,8 @@ export default function ComparisonDatabox() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs Databox: Which Reporting Tool Fits Your Workflow?</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Databox: Which Reporting Tool Fits Your Workflow?</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Databox is a live business-metrics dashboard platform built for tracking KPIs across connected tools in real time.</p>

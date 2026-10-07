@@ -20,13 +20,14 @@ export default function BlogPostTwoWeeks() {
         <meta name="twitter:title" content="Two Weeks Building a Client-Reporting Tool | Naxely" />
         <meta name="twitter:description" content="The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"What Two Weeks of Building a Client-Reporting Tool Actually Looked Like","description":"The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats.","url":"https://www.naxely.com/blog/two-weeks-building-naxely","datePublished":"2026-07-17T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"What Two Weeks of Building a Client-Reporting Tool Actually Looked Like","description":"The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats.","url":"https://www.naxely.com/blog/two-weeks-building-naxely","datePublished":"2026-07-17T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">What Two Weeks of Building a Client-Reporting Tool Actually Looked Like</h1>
+        <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
         <p className="text-xs text-gray-400 mb-10">July 17, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">

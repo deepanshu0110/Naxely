@@ -20,7 +20,7 @@ export default function ComparisonDashThis() {
         <meta name="twitter:title" content="Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards" />
         <meta name="twitter:description" content="Compare Naxely and DashThis. Naxely turns uploaded CSVs into branded PDFs in under a minute. DashThis is a marketing dashboard with 30+ live integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to DashThis?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month — under DashThis's $54/month monthly price ($44/month billed yearly). The tradeoff: Naxely works from uploaded data (CSV/Sheets), while DashThis pulls live data from 30+ marketing connectors for ongoing campaign visibility."}},
           {"@type":"Question","name":"Does Naxely offer BYOK AI like DashThis includes AI Insights?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key across seven providers (OpenAI, Claude, Gemini, Groq, DeepSeek, Mistral, Together AI) on Pro and Agency — you pay the provider directly with zero markup; Free includes AI with no key needed. DashThis includes preset AI Insights on all plans, with a paid AI chat add-on. Naxely's BYOK model avoids per-report AI costs for high-volume users."}},
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like DashThis?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time campaign monitoring. Naxely is built for generating a polished PDF report from data you already have — it doesn't pull live data from connected platforms the way DashThis does. If your workflow needs always-on visibility into campaign KPIs across multiple channels, DashThis's dashboard model fits that better."}},
@@ -31,7 +31,8 @@ export default function ComparisonDashThis() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs DashThis: Simple Client Reports vs. Marketing Dashboards</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. DashThis is a marketing-dashboard platform that pulls live data from 30+ integrations and delivers it through pre-built templates designed for client reporting.</p>

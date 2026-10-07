@@ -50,6 +50,7 @@ const ComparisonBonsai = lazy(() => import('@/pages/ComparisonBonsai'))
 const ComparisonPlutio = lazy(() => import('@/pages/ComparisonPlutio'))
 const Faq = lazy(() => import('@/pages/Faq'))
 const Changelog = lazy(() => import('@/pages/Changelog'))
+const About = lazy(() => import('@/pages/About'))
 const Login = lazy(() => import('@/pages/Login'))
 const Signup = lazy(() => import('@/pages/Signup'))
 
@@ -135,6 +136,7 @@ export const routes: RouteRecord[] = [
       { path: '/compare/plutio', element: <ComparisonPlutio /> },
       { path: '/faq', element: <Faq /> },
       { path: '/changelog', element: <Changelog /> },
+      { path: '/about', element: <About /> },
       {
         element: <ProtectedRoute />,
         children: [

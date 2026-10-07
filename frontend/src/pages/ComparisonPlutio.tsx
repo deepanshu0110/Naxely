@@ -20,7 +20,7 @@ export default function ComparisonPlutio() {
         <meta name="twitter:title" content="Naxely vs Plutio: PDF Reports vs. All-in-One Platform" />
         <meta name="twitter:description" content="Naxely vs Plutio: Naxely turns uploaded data into branded PDFs in under a minute. Plutio is an all-in-one business suite with a paid white-label add-on." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Plutio?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core, billed monthly; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$159/mo billed annually) with a 7-day free trial."}},
           {"@type":"Question","name":"Can Naxely replace Plutio?","acceptedAnswer":{"@type":"Answer","text":"They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Plutio is an all-in-one business management platform for projects, invoicing, proposals, contracts, and scheduling. If you need client-ready reports from existing data, Naxely fits; if you need an all-in-one operations suite, Plutio fits — many freelancers use both."}},
           {"@type":"Question","name":"Does Plutio offer white-label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$159/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier."}}
@@ -30,7 +30,8 @@ export default function ComparisonPlutio() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs Plutio: PDF Reports vs. All-in-One Platform</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Plutio: PDF Reports vs. All-in-One Platform</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Plutio is an all-in-one business management platform that bundles projects, invoicing, proposals, contracts, scheduling, and forms — plus Super Work AI — into a single workspace.</p>

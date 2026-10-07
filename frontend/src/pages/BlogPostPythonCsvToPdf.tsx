@@ -20,13 +20,14 @@ export default function BlogPostPythonCsvToPdf() {
         <meta name="twitter:title" content="Python CSV to PDF Reports: DIY vs. Using a Tool" />
         <meta name="twitter:description" content="Practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending reports regularly." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool","description":"A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.","url":"https://www.naxely.com/blog/python-csv-to-pdf-reports","datePublished":"2026-07-14T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool","description":"A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.","url":"https://www.naxely.com/blog/python-csv-to-pdf-reports","datePublished":"2026-07-14T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool</h1>
+        <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
         <p className="text-xs text-gray-400 mb-10">July 14, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">

@@ -20,7 +20,7 @@ export default function BlogPostWhiteLabel() {
         <meta name="twitter:title" content="White-Label Client Reporting for Agencies | Naxely" />
         <meta name="twitter:description" content="Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"White-Label Client Reporting for Agencies","description":"Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead.","url":"https://www.naxely.com/blog/white-label-client-reporting-agencies","datePublished":"2026-07-05T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.linkedin.com/in/deepanshu-datascientist"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"White-Label Client Reporting for Agencies","description":"Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead.","url":"https://www.naxely.com/blog/white-label-client-reporting-agencies","datePublished":"2026-07-05T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is this the same as white label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes \u2014 white label reporting and white label client reporting are the same thing: reports delivered to clients with your agency\u2019s branding and no trace of the software vendor\u2019s."}}
         ]})}</script>
@@ -30,6 +30,7 @@ export default function BlogPostWhiteLabel() {
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">White Label Client Reporting for Agencies: Why &ldquo;Any-Data&rdquo; Beats Another Marketing Connector</h1>
+        <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
         <p className="text-xs text-gray-400 mb-10">July 5, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">

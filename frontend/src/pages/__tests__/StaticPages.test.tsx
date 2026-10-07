@@ -11,6 +11,7 @@ vi.mock('vite-react-ssg', () => ({
 vi.mock('@/components/layout/Navbar', () => ({ default: () => <div>Navbar</div> }))
 
 import NotFound from '../NotFound'
+import About from '../About'
 import Contact from '../Contact'
 import Terms from '../Terms'
 import Privacy from '../Privacy'
@@ -52,6 +53,20 @@ describe('NotFound', () => {
     expect(screen.getByText('Page not found')).toBeInTheDocument()
     expect(screen.getByText('Go back to dashboard')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /go back/i })).toHaveAttribute('href', '/dashboard')
+  })
+})
+
+describe('About', () => {
+  it('renders H1, the three paragraphs, and the LinkedIn link', () => {
+    renderWithRouter(About)
+    expect(screen.getByText('About Naxely')).toBeInTheDocument()
+    expect(screen.getByText(/built and run by one person, Deepanshu Garg/)).toBeInTheDocument()
+    expect(screen.getByText(/turning client spreadsheets into reports by hand/)).toBeInTheDocument()
+    expect(screen.getByText(/I read and answer every message myself/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Deepanshu Garg on LinkedIn/i })).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/deepanshu-datascientist',
+    )
   })
 })
 
@@ -136,6 +151,17 @@ describe('BlogPostHub', () => {
   it('renders blog post heading', () => {
     renderWithRouter(BlogPostHub)
     expect(screen.getByText('Automated Client Reporting: The Complete Guide for Freelancers and Agencies')).toBeInTheDocument()
+  })
+
+  it('renders the author byline linking to /about', () => {
+    renderWithRouter(BlogPostHub)
+    expect(screen.getByRole('link', { name: 'Deepanshu Garg' })).toHaveAttribute('href', '/about')
+  })
+
+  it('declares the same author in JSON-LD', () => {
+    renderWithRouter(BlogPostHub)
+    const heads = screen.getAllByTestId('ssg-head')
+    expect(heads.some((h) => (h.textContent || '').includes('"name":"Deepanshu Garg"'))).toBe(true)
   })
 })
 
@@ -278,6 +304,30 @@ describe.each(seoPages)('$name smoke + SEO', ({ Component, canonicalPath, headin
       const parsed = JSON.parse(script.textContent ?? '{}') as Record<string, unknown>
       expect(parsed['@context']).toBe('https://schema.org')
       expect(parsed['@type']).toBeTruthy()
+    }
+  })
+
+  it('renders the author byline linking to /about', () => {
+    renderWithRouter(Component)
+    expect(screen.getByRole('link', { name: 'Deepanshu Garg' })).toHaveAttribute('href', '/about')
+  })
+
+  it('declares the same author in JSON-LD', () => {
+    const { container } = renderWithRouter(Component)
+
+    const head = container.querySelector('[data-testid="ssg-head"]')
+    const scripts = head?.querySelectorAll('script[type="application/ld+json"]') ?? []
+    const authors: Array<Record<string, unknown>> = []
+    for (const script of scripts) {
+      const parsed = JSON.parse(script.textContent ?? '{}') as Record<string, unknown>
+      if (parsed['author'] && typeof parsed['author'] === 'object') {
+        authors.push(parsed['author'] as Record<string, unknown>)
+      }
+    }
+    expect(authors.length).toBeGreaterThan(0)
+    for (const author of authors) {
+      expect(author['name']).toBe('Deepanshu Garg')
+      expect(author['url']).toBe('https://www.naxely.com/about')
     }
   })
 })

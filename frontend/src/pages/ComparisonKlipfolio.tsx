@@ -20,7 +20,7 @@ export default function ComparisonKlipfolio() {
         <meta name="twitter:title" content="Naxely vs Klipfolio: PDF Reports vs. Live Dashboards" />
         <meta name="twitter:description" content="Naxely vs Klipfolio: Naxely turns uploaded data into branded PDFs in under a minute. Klipfolio is a live KPI dashboard with 130+ native integrations." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
           {"@type":"Question","name":"Is there a cheaper alternative to Klipfolio?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Klipfolio starts at $120/month (Base plan, billed annually) with no permanent free tier — only a 14-day free trial."}},
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Klipfolio?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished PDF report from data you already have. Klipfolio is designed for always-on KPI dashboards with 130+ live integrations pulling data continuously."}},
           {"@type":"Question","name":"Does Klipfolio have AI features?","acceptedAnswer":{"@type":"Answer","text":"Klipfolio's Klips product (the dashboard being compared here) does not offer AI-generated insights or commentary. Klipfolio's separate PowerMetrics product has some AI framing but is a distinct product line. Naxely includes AI-written executive summaries, anomaly detection, and recommendations on every tier — via BYOK on Pro and above, included with no key needed on Free."}}
@@ -30,7 +30,8 @@ export default function ComparisonKlipfolio() {
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
 
-        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-6">Naxely vs Klipfolio: PDF Reports vs. Live Dashboards</h1>
+        <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Klipfolio: PDF Reports vs. Live Dashboards</h1>
+        <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Naxely is an AI-powered CSV-to-PDF report generator that turns uploaded data into branded, client-ready reports in under a minute. Klipfolio is a live KPI dashboard platform built for monitoring metrics across 130+ connected tools in real time.</p>

@@ -19,6 +19,17 @@ export default function Footer() {
           <span className="text-gray-300">·</span>
           <Link to="/blog/two-weeks-building-naxely" className="hover:text-ink">Two Weeks Building Naxely</Link>
         </div>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-gray-600">
+          <Link to="/about" className="hover:text-ink">About</Link>
+          <span className="text-gray-300">·</span>
+          <Link to="/contact" className="hover:text-ink">Contact</Link>
+          <span className="text-gray-300">·</span>
+          <Link to="/privacy" className="hover:text-ink">Privacy</Link>
+          <span className="text-gray-300">·</span>
+          <Link to="/terms" className="hover:text-ink">Terms</Link>
+          <span className="text-gray-300">·</span>
+          <Link to="/refund" className="hover:text-ink">Refund Policy</Link>
+        </div>
         <p className="mt-4 text-xs text-gray-600">Naxely © 2026</p>
         <div className="mt-4 flex justify-center gap-4">
           <a href="https://toolfio.com" target="_blank" rel="noopener"><img src="https://toolfio.com/toolfio-dark-badge.png" alt="Featured on Toolfio" width="200" height="54" /></a>
