@@ -90,13 +90,52 @@ describe('research pricing CSV', () => {
     expect(header).toBe(EXPECTED_HEADER)
   })
 
-  it('has data rows and no dropped columns', () => {
-    const abs = path.join(process.cwd(), CSV_REL)
-    const lines = fs.readFileSync(abs, 'utf-8').trim().split('\n')
-    expect(lines.length).toBeGreaterThan(50)
-    for (const line of lines.slice(1)) {
-      expect(line).not.toContain('no separate pricing page')
+describe('research pricing CSV row integrity', () => {
+    // Minimal quote-aware splitter: the published file quotes fields that contain commas.
+    function splitCsv(line: string): string[] {
+      const out: string[] = []
+      let cur = ''
+      let quoted = false
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i]
+        if (ch === '"') {
+          if (quoted && line[i + 1] === '"') {
+            cur += '"'
+            i++
+          } else {
+            quoted = !quoted
+          }
+        } else if (ch === ',' && !quoted) {
+          out.push(cur)
+          cur = ''
+        } else {
+          cur += ch
+        }
+      }
+      out.push(cur)
+      return out
     }
+
+    it('every row has 15 fields, a URL source, a UTC stamp, and no internal tokens', () => {
+      const abs = path.join(process.cwd(), CSV_REL)
+      const lines = fs.readFileSync(abs, 'utf-8').replace(/\r/g, '').trim().split('\n')
+      const header = splitCsv(lines[0])
+      expect(header.length).toBe(15)
+      const urlIdx = header.indexOf('source_url')
+      const utcIdx = header.indexOf('captured_utc')
+      expect(urlIdx).toBeGreaterThan(-1)
+      expect(utcIdx).toBeGreaterThan(-1)
+      expect(lines.length).toBeGreaterThan(50)
+      for (const line of lines.slice(1)) {
+        const fields = splitCsv(line)
+        expect(fields.length).toBe(15)
+        expect(fields[urlIdx].startsWith('https://')).toBe(true)
+        expect(/^\d{8}T\d{4}Z$/.test(fields[utcIdx])).toBe(true)
+        expect(line).not.toContain('.png')
+        expect(line).not.toContain('EMPTY PRICE')
+        expect(line).not.toContain('RECAPTURE')
+      }
+    })
   })
 })
 
