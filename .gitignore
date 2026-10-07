@@ -34,6 +34,8 @@ stats.json
 *.csv
 # Test fixtures are CSVs but must be tracked (CI checkout needs them)
 !backend/tests/fixtures/*.csv
+# Published research datasets must be tracked (Vercel builds from git)
+!frontend/public/research/*.csv
 .vercel
 .env*
 

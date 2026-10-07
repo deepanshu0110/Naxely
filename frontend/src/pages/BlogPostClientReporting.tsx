@@ -274,7 +274,7 @@ export default function BlogPostClientReporting() {
             </table>
           </div>
           <p>Across twelve clients that's roughly 38 hours a month by hand versus 9 hours with a pipeline — about 29 hours recovered, or three and a half working days, every month. At whatever rate the analyst bills, that's the time that returns to client work instead of assembly.</p>
-          <p>The cost side, at twelve clients, using today's published prices:</p>
+          <p>The cost side, at twelve clients, using today's published prices (see <Link to="/research/client-reporting-tool-pricing-2026" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">what these tools cost for 5, 12 and 25 clients</Link>):</p>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>

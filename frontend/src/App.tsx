@@ -51,6 +51,7 @@ const ComparisonPlutio = lazy(() => import('@/pages/ComparisonPlutio'))
 const Faq = lazy(() => import('@/pages/Faq'))
 const Changelog = lazy(() => import('@/pages/Changelog'))
 const About = lazy(() => import('@/pages/About'))
+const ResearchPricing2026 = lazy(() => import('@/pages/ResearchPricing2026'))
 const Login = lazy(() => import('@/pages/Login'))
 const Signup = lazy(() => import('@/pages/Signup'))
 
@@ -137,6 +138,7 @@ export const routes: RouteRecord[] = [
       { path: '/faq', element: <Faq /> },
       { path: '/changelog', element: <Changelog /> },
       { path: '/about', element: <About /> },
+      { path: '/research/client-reporting-tool-pricing-2026', element: <ResearchPricing2026 /> },
       {
         element: <ProtectedRoute />,
         children: [

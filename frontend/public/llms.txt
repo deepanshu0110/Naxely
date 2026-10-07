@@ -47,6 +47,10 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 - [White-Label Client Reporting for Agencies](https://www.naxely.com/blog/white-label-client-reporting-agencies): Why existing agency reporting tools built for marketing connectors don't fit any-data workflows, and what white-label BYOK pricing looks like instead.
 - [What Should a Client Report Include? (Checklist)](https://www.naxely.com/blog/what-should-client-report-include-checklist): A practical checklist of what belongs in a client-facing report — from executive summary to next steps — and what to leave out.
 
+## Research
+
+- [Client Reporting Tool Pricing (October 2026)](https://www.naxely.com/research/client-reporting-tool-pricing-2026): What 6 client reporting tools cost for agencies with 5, 12 and 25 clients, priced from each vendor's own pricing page, with downloadable CSV.
+
 ## Pricing
 
 All prices in USD. No credit card required for the Free plan.
