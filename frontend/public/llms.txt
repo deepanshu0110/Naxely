@@ -22,9 +22,10 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 
 - [Home](https://www.naxely.com/): Naxely homepage — AI-powered PDF report generator for freelance analysts and small agencies.
 - [Pricing](https://www.naxely.com/pricing): Three tiers — Free ($0/mo), Pro ($29/mo), Agency ($79/mo).
-- [Login](https://www.naxely.com/login): Sign in to your Naxely account.
-- [Sign Up](https://www.naxely.com/signup): Create a new Naxely account — no credit card required.
 - [Contact](https://www.naxely.com/contact): Get in touch with the Naxely team.
+- [FAQ](https://www.naxely.com/faq): Answers about AI report generation, the free tier and BYOK.
+- [Changelog](https://www.naxely.com/changelog): New features and product updates.
+- [Cookie Policy](https://www.naxely.com/cookie-policy): Cookie categories and consent controls.
 - [About](https://www.naxely.com/about): Who builds Naxely — Deepanshu Garg, freelance data analyst in India — and how to reach the founder directly.
 - [Terms of Service](https://www.naxely.com/terms): Legal terms governing use of Naxely.
 - [Privacy Policy](https://www.naxely.com/privacy): How Naxely handles your data.
@@ -37,6 +38,9 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 - [Naxely vs AgencyAnalytics](https://www.naxely.com/compare/agencyanalytics): Compare Naxely with AgencyAnalytics for agency reporting.
 - [Naxely vs Databox](https://www.naxely.com/compare/databox): Compare Naxely with Databox for business dashboards and reports.
 - [Naxely vs Powerdrill](https://www.naxely.com/compare/powerdrill): Compare Naxely with Powerdrill for AI-driven data analysis.
+- [Naxely vs Klipfolio](https://www.naxely.com/compare/klipfolio): Compare Naxely with Klipfolio for live KPI dashboards.
+- [Naxely vs Bonsai](https://www.naxely.com/compare/bonsai): Compare Naxely with Bonsai for freelancer business management.
+- [Naxely vs Plutio](https://www.naxely.com/compare/plutio): Compare Naxely with Plutio for all-in-one client operations.
 
 ## Guides
 
@@ -46,6 +50,12 @@ Naxely is a SaaS platform that lets you upload a CSV file or connect a Google Sh
 - [BYOK AI Reporting Tool: Bring Your Own Key Explained](https://www.naxely.com/blog/byok-ai-reporting-tool): How BYOK (bring-your-own-key) AI reporting eliminates hidden AI markup, and why it matters for frequent report generation.
 - [White-Label Client Reporting for Agencies](https://www.naxely.com/blog/white-label-client-reporting-agencies): Why existing agency reporting tools built for marketing connectors don't fit any-data workflows, and what white-label BYOK pricing looks like instead.
 - [What Should a Client Report Include? (Checklist)](https://www.naxely.com/blog/what-should-client-report-include-checklist): A practical checklist of what belongs in a client-facing report — from executive summary to next steps — and what to leave out.
+- [Anomaly Detection in Client Reports](https://www.naxely.com/blog/anomaly-detection-in-client-reports): How anomaly detection flags outliers in client data — and what it misses.
+- [CSV to PDF Report Generator](https://www.naxely.com/blog/csv-to-pdf-report-generator): Turn spreadsheet data into client-ready PDF reports.
+- [Excel to PDF Report Generator](https://www.naxely.com/blog/excel-to-pdf-report-generator): From Excel workbook to client-ready PDF report.
+- [Google Sheets Client Reports](https://www.naxely.com/blog/google-sheets-client-reports): Keep recurring client reports current from a connected Google Sheet.
+- [Python CSV to PDF Reports](https://www.naxely.com/blog/python-csv-to-pdf-reports): Building CSV-to-PDF reports in Python vs. using a tool.
+- [Two Weeks Building Naxely](https://www.naxely.com/blog/two-weeks-building-naxely): Two weeks of building a client-reporting tool — bugs, decisions and real numbers.
 
 ## Research
 

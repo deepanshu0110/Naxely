@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer'
 const CANONICAL = 'https://www.naxely.com/research/client-reporting-tool-pricing-2026'
 const TITLE = 'Client Reporting Tool Pricing: 5, 12, 25 Clients (Oct 2026)'
 const DESCRIPTION =
-  "We priced 6 client reporting tools for agencies with 5, 12 and 25 clients, using each vendor's own pricing page on 7 October 2026. Three can't be priced at 25 clients without a sales call."
+  "We priced 6 client reporting tools for 5, 12 and 25 clients from each vendor's own pricing page. Three can't be priced at 25 clients without a sales call."
 const H1 = 'What client reporting tools cost for 5, 12 and 25 clients'
 
 export default function ResearchPricing2026() {

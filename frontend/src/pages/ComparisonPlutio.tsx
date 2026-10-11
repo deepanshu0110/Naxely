@@ -119,7 +119,7 @@ export default function ComparisonPlutio() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a cheaper alternative to Plutio?</h3>
-          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$166/mo billed annually) with a 7-day free trial.</p>
+          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Plutio starts at $19/mo (Core; ~$15/mo billed annually) and Max is $199/mo (billed monthly; ~$166/mo billed annually) with a 7-day free trial (see <Link to="/research/client-reporting-tool-pricing-2026" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">what these tools cost for 5, 12 and 25 clients</Link>).</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Naxely replace Plutio?</h3>
           <p>They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Plutio is an all-in-one business management platform for projects, invoicing, proposals, contracts, and scheduling. If you need client-ready reports from existing data, Naxely fits; if you need an all-in-one operations suite, Plutio fits — many freelancers use both.</p>

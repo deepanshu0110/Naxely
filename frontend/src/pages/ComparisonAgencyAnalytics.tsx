@@ -150,7 +150,7 @@ export default function ComparisonAgencyAnalytics() {
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a cheaper alternative to AgencyAnalytics?</h3>
-          <p>Yes — Naxely's free tier covers 3 reports/month with no credit card required, and Pro at $29/month is well under AgencyAnalytics' entry pricing. The tradeoff: Naxely works from uploaded data (CSV/Sheets), not live marketing connectors.</p>
+          <p>Yes — Naxely's free tier covers 3 reports/month with no credit card required, and Pro at $29/month is well under AgencyAnalytics' entry pricing (see <Link to="/research/client-reporting-tool-pricing-2026" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">what these tools cost for 5, 12 and 25 clients</Link>). The tradeoff: Naxely works from uploaded data (CSV/Sheets), not live marketing connectors.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Naxely replace AgencyAnalytics for live campaign reporting?</h3>
           <p>Not for real-time multi-channel dashboards. AgencyAnalytics' 85+ integrations pulling live data from ad platforms and SEO tools is its core differentiator. Naxely is built for generating polished PDF reports from data you already have — they serve different workflows.</p>

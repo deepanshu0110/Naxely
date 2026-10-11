@@ -111,7 +111,7 @@ export default function ComparisonDatabox() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a cheaper alternative to Databox?</h3>
-          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. The key tradeoff is output format: Naxely generates a point-in-time PDF report, while Databox provides a live, continuously-updating dashboard.</p>
+          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month (see <Link to="/research/client-reporting-tool-pricing-2026" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">what these tools cost for 5, 12 and 25 clients</Link>). The key tradeoff is output format: Naxely generates a point-in-time PDF report, while Databox provides a live, continuously-updating dashboard.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Naxely replace a live dashboard tool like Databox?</h3>
           <p>Not for real-time monitoring. Naxely is built for generating a polished report from data you already have — it doesn't pull live data from connected platforms the way Databox does. If your workflow needs always-on visibility into KPIs, Databox's integration model fits that better.</p>

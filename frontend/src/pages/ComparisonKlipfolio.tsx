@@ -116,7 +116,7 @@ export default function ComparisonKlipfolio() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a cheaper alternative to Klipfolio?</h3>
-          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Klipfolio starts at $120/month (Base plan, billed annually) with no permanent free tier — only a 14-day free trial.</p>
+          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Klipfolio starts at $120/month (Base plan, billed annually) with no permanent free tier — only a 14-day free trial (see <Link to="/research/client-reporting-tool-pricing-2026" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-amber-500/30">what these tools cost for 5, 12 and 25 clients</Link>).</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Can Naxely replace a live dashboard tool like Klipfolio?</h3>
           <p>Not for real-time monitoring. Naxely is built for generating a polished PDF report from data you already have. Klipfolio is designed for always-on KPI dashboards with 130+ live integrations pulling data continuously.</p>
