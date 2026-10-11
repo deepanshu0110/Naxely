@@ -27,7 +27,7 @@ export default function ResearchPricing2026() {
         <meta name="twitter:description" content={DESCRIPTION} />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.naxely.com/"},{"@type":"ListItem","position":2,"name":"Client Reporting Tool Pricing (October 2026)","item":CANONICAL}]})}</script>
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":H1,"datePublished":"2026-10-07","dateModified":"2026-10-07","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"}})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":H1,"datePublished":"2026-10-07","dateModified":"2026-10-11","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"}})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
@@ -35,6 +35,7 @@ export default function ResearchPricing2026() {
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">{H1}</h1>
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link>. Prices checked on each vendor's own pricing page on 7 October 2026.</p>
+        <p className="text-xs text-gray-500 mb-6">Updated 11 October 2026: Whatagraph price.</p>
 
         <div className="text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
           <p>Pricing pages show a starting price. Agencies need a different number: what the tool costs for the clients they actually have. We priced 6 client reporting tools for three agency sizes, using only what each vendor publishes.</p>
@@ -43,7 +44,7 @@ export default function ResearchPricing2026() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Key findings</h2>
           <ul className="list-disc pl-5 space-y-2">
-            <li><strong>At 12 clients, the effective monthly cost on annual billing runs from $240 to $310</strong> for the three tools priced in dollars that we could compute (AgencyAnalytics, DashThis and Klipfolio). Swydo comes in at €179. Whatagraph starts at $812.</li>
+            <li><strong>At 12 clients, the effective monthly cost on annual billing runs from $240 to $310</strong> for the three tools priced in dollars that we could compute (AgencyAnalytics, DashThis and Klipfolio). Swydo comes in at €179. Whatagraph starts at $1,118.</li>
             <li><strong>At 25 clients, 3 of the 6 tools cannot be priced from their public pricing page.</strong> AgencyAnalytics moves to volume pricing, Whatagraph's included credits run out, and Databox needs a custom quote.</li>
             <li><strong>The pricing model matters more than the starting price.</strong> Per-client pricing grows in a straight line. Per-dashboard pricing jumps in steps. Per-source pricing depends on how many platforms each client uses.</li>
             <li><strong>Annual billing saves 10% to 20%</strong> across the tools that offer both.</li>
@@ -110,8 +111,8 @@ export default function ResearchPricing2026() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Whatagraph</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Source credits</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">From $812</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">From $812</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">From $1,118</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">From $1,118</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Not public above 50 credits</td>
                 </tr>
               </tbody>
@@ -177,7 +178,7 @@ export default function ResearchPricing2026() {
             <li><strong>Klipfolio:</strong> 5 clients need Grow (10 dashboards), 12 need Team (20), 25 need Team+ (40). Users are unlimited on every plan.</li>
             <li><strong>Swydo:</strong> €69 a month (€62 billed annually) includes 10 data sources. Each extra source costs €4.50. 5 clients use 15 sources, so 5 extra. We assumed the same €4.50 rate under annual billing, because the page does not split it. Swydo prices in EUR for EU countries and USD elsewhere, so you may see the same numbers in dollars.</li>
             <li><strong>Databox:</strong> 15 data sources exceed Team Core (10), so 5 clients need Team Scale (30 sources, $319 billed annually). 36 sources exceed Team Scale, and the next step is a custom quote. Databox also has an Agency plan from $79 a month plus $20 per client pack. It may cost less, but the page does not say how many clients the base plan covers, so we did not price it.</li>
-            <li><strong>Whatagraph:</strong> the Max plan starts at $812 a month (€699), billed annually, with 50 source credits. One credit covers one connected source. 5 and 12 clients fit inside 50 credits. 25 clients need 75, and the price of extra credits is not public.</li>
+            <li><strong>Whatagraph:</strong> the Max plan starts at $1,118 a month (€999), billed annually, with 50 source credits. One credit covers one connected source. 5 and 12 clients fit inside 50 credits. 25 clients need 75, and the price of extra credits is not public. Whatagraph raised its Max price between 7 and 8 October 2026. Earlier captures showed from $812 (€699).</li>
           </ul>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Where Naxely fits</h2>

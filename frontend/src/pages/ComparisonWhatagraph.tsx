@@ -21,8 +21,8 @@ export default function ComparisonWhatagraph() {
         <meta name="twitter:description" content="Compare Naxely and Whatagraph. Naxely turns CSVs into branded PDFs in under a minute. Whatagraph is a credit-based dashboard for multi-channel reporting." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"mainEntity":[
-          {"@type":"Question","name":"Is there a cheaper alternative to Whatagraph?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Whatagraph's Max plan starts at $812/month (\u20AC699), billed annually. The tradeoff: Naxely works from uploaded data (CSV/Sheets), while Whatagraph connects to live ad platforms via a credit-based model. For file-based reporting workflows, Naxely is a substantially lower-cost option."}},
-          {"@type":"Question","name":"Does Whatagraph include white-label reports?","acceptedAnswer":{"@type":"Answer","text":"Whatagraph includes custom branding on its Max plan (from $812/month (\u20AC699), billed annually). Custom report domain is available as an add-on on Prime and not included on Max. Naxely includes white-label PDF output on its Agency tier at $79/month."}},
+          {"@type":"Question","name":"Is there a cheaper alternative to Whatagraph?","acceptedAnswer":{"@type":"Answer","text":"Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Whatagraph's Max plan starts at $1,118/month (\u20AC999), billed annually. The tradeoff: Naxely works from uploaded data (CSV/Sheets), while Whatagraph connects to live ad platforms via a credit-based model. For file-based reporting workflows, Naxely is a substantially lower-cost option."}},
+          {"@type":"Question","name":"Does Whatagraph include white-label reports?","acceptedAnswer":{"@type":"Answer","text":"Whatagraph includes custom branding on its Max plan (from $1,118/month (\u20AC999), billed annually). Custom report domain is available as an add-on on Prime and not included on Max. Naxely includes white-label PDF output on its Agency tier at $79/month."}},
           {"@type":"Question","name":"What is Whatagraph's credit-based pricing model?","acceptedAnswer":{"@type":"Answer","text":"Whatagraph uses source credits instead of per-seat pricing. Each connected data account consumes one source credit. The Max plan includes from 50 credits; Prime is custom-quoted with no public credit number. Cost scales with the number of data sources, not users. Naxely uses per-seat and per-report pricing without source limitations."}},
           {"@type":"Question","name":"Can Naxely replace Whatagraph for live campaign reporting?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time dashboarding. Naxely generates PDF reports from uploaded data and doesn\u2019t pull live data. Whatagraph\u2019s core value is live connectors, data blending, and branded client dashboards. Each tool fits a different workflow."}},
           {"@type":"Question","name":"Does Naxely offer a free trial like Whatagraph?","acceptedAnswer":{"@type":"Answer","text":"Naxely\u2019s free tier is a permanent plan (3 reports/month) with no credit card required. Whatagraph's pricing page invites you to book a demo. For low-volume users, Naxely\u2019s free tier is a no-expiration trial."}}
@@ -60,7 +60,7 @@ export default function ComparisonWhatagraph() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Starting price</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free (3 reports/month)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">from $812/month (€699), billed annually (Max plan); custom pricing for Prime</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">from $1,118/month (€999), billed annually (Max plan); custom pricing for Prime</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">Output format</td>
@@ -80,7 +80,7 @@ export default function ComparisonWhatagraph() {
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">White-label</td>
                   <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$79/month (Agency tier)</td>
-                  <td className="py-2 text-ink/55 dark:text-paper/45">Custom branding included on Max plan (from $812/month (€699), billed annually); custom report domain available as add-on on Prime</td>
+                  <td className="py-2 text-ink/55 dark:text-paper/45">Custom branding included on Max plan (from $1,118/month (€999), billed annually); custom report domain available as add-on on Prime</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80 font-medium">User limit</td>
@@ -116,10 +116,10 @@ export default function ComparisonWhatagraph() {
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Is there a cheaper alternative to Whatagraph?</h3>
-          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Whatagraph's Max plan starts at $812/month (€699), billed annually. The tradeoff: Naxely works from uploaded data (CSV/Sheets), while Whatagraph connects to live ad platforms and analytics tools through a credit-based model. For agencies that need live, multi-channel dashboards, Whatagraph is purpose-built; for file-based reporting workflows, Naxely is a substantially lower-cost option.</p>
+          <p>Naxely's free tier includes 3 reports/month with no credit card required, and Pro is $29/month. Whatagraph's Max plan starts at $1,118/month (€999), billed annually. The tradeoff: Naxely works from uploaded data (CSV/Sheets), while Whatagraph connects to live ad platforms and analytics tools through a credit-based model. For agencies that need live, multi-channel dashboards, Whatagraph is purpose-built; for file-based reporting workflows, Naxely is a substantially lower-cost option.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">Does Whatagraph include white-label reports?</h3>
-          <p>Whatagraph includes custom branding (white-label customization) on its Max plan (from $812/month (€699), billed annually). Custom report domain is available as an add-on on Prime. Naxely includes white-label PDF output on its Agency tier at $79/month — a substantial difference in entry price for agencies that primarily need branded PDF reports rather than live dashboards.</p>
+          <p>Whatagraph includes custom branding (white-label customization) on its Max plan (from $1,118/month (€999), billed annually). Custom report domain is available as an add-on on Prime. Naxely includes white-label PDF output on its Agency tier at $79/month — a substantial difference in entry price for agencies that primarily need branded PDF reports rather than live dashboards.</p>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">What is Whatagraph's credit-based pricing model?</h3>
           <p>Whatagraph uses source credits instead of per-seat pricing. Each connected data account (one Facebook Ads account, one Google Ads account, one GA4 property) consumes one source credit. The Max plan includes from 50 credits; Prime is custom-quoted with no public credit number. This means your cost scales with the number of data sources you connect, not the number of users. For agencies managing many small accounts, this can add up differently than Naxely's per-seat or per-report model.</p>

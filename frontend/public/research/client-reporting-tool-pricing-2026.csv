@@ -1,8 +1,8 @@
 vendor,product,plan,billing,price,currency,price_unit,included_units,extra_unit_price,free_plan,free_trial_days,white_label,pdf_export,source_url,captured_utc
 AgencyAnalytics,,Core plan,annual,20,USD,per client per month,"1 client default in calculator; unlimited data sources, reports, dashboards, staff accounts; 85+ integrations",,no,14,"Included (branded logo, color scheme, client branding, custom domain, custom email)",Yes,https://agencyanalytics.com/pricing,20261007T1003Z
 AgencyAnalytics,,Core plan,monthly,25,USD,per client per month,same inclusions as annual,,no,14,Included (same as annual),Yes,https://agencyanalytics.com/pricing,20261007T1009Z
-Whatagraph,,Max,annual,812,USD,per month flat (from-price) billed annually,from 50 source credits; unlimited users; unlimited reports,extra credits purchasable until next plan threshold (unit price not shown),no,none,White-label reports included; custom report domain is a Prime add-on,Yes (automated emails with PDF),https://whatagraph.com/pricing,20261007T1003Z
-Whatagraph,,Max,monthly,,USD,,,,no,none,,,https://whatagraph.com/pricing,20261007T1003Z
+Whatagraph,,Max,annual,1118,USD,per month flat (from-price) billed annually,from 50 source credits; unlimited users; unlimited reports,extra credits purchasable until next plan threshold (unit price not shown),no,none,White-label reports included; custom report domain is a Prime add-on,Yes (automated emails with PDF),https://whatagraph.com/pricing,20261011T1646Z
+Whatagraph,,Max,monthly,,USD,,,,no,none,,,https://whatagraph.com/pricing,20261011T1646Z
 Whatagraph,,Prime,annual,Custom,,,,,no,none,Custom branding; custom report domain as add-on; transfer to BigQuery/Looker; public API as add-on,Yes (automated emails with PDF),https://whatagraph.com/pricing,20261007T1003Z
 Whatagraph,,Prime,monthly,,USD,,,,no,none,,,https://whatagraph.com/pricing,20261007T1003Z
 Databox,,Free,annual,0,USD,per month flat,1 user; 3 data sources; 50 AI credits/mo; 1 dashboard; 10 custom metrics; daily sync,,yes,14,Not included (branding removal is a paid add-on),CSV export not included; dashboards shareable per plan limits,https://databox.com/pricing,20261007T1004Z

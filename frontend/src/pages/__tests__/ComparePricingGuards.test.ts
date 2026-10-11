@@ -7,6 +7,7 @@ import Klipfolio from '../ComparisonKlipfolio.tsx?raw'
 import Plutio from '../ComparisonPlutio.tsx?raw'
 import Powerdrill from '../ComparisonPowerdrill.tsx?raw'
 import Whatagraph from '../ComparisonWhatagraph.tsx?raw'
+import Research from '../ResearchPricing2026.tsx?raw'
 
 const PAGES: string[] = [
   AgencyAnalytics,
@@ -32,5 +33,17 @@ describe('compare pricing guards', () => {
       (src) => !src.includes("Prices checked on the vendor's own pricing page on 7 October 2026."),
     ).length
     expect(missing).toBe(0)
+  })
+
+  it('no current $812/€699 figure next to Whatagraph (history sentence exempt)', () => {
+    const HISTORICAL = 'Earlier captures showed from $812 (€699).'
+    expect(Research.includes(HISTORICAL)).toBe(true)
+    for (const src of [Whatagraph, Research]) {
+      const stripped = src.split(HISTORICAL).join('')
+      const bad = stripped
+        .split('\n')
+        .filter((line) => /812|€699|u20AC699/.test(line) && /whatagraph/i.test(line))
+      expect(bad).toEqual([])
+    }
   })
 })

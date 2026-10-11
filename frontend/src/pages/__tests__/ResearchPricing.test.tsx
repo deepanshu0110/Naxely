@@ -78,7 +78,7 @@ describe('ResearchPricing2026', () => {
       .filter((p) => p['@type'] === 'Article')
     expect(articles.length).toBe(1)
     expect(articles[0]['datePublished']).toBe('2026-10-07')
-    expect(articles[0]['dateModified']).toBe('2026-10-07')
+    expect(articles[0]['dateModified']).toBe('2026-10-11')
   })
 })
 
