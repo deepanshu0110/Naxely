@@ -40,11 +40,12 @@ export default function BlogPostBestFreelanceReporting() {
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Best Client Reporting Software for Freelancers (2026)</h1>
         <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
-        <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026 &middot; Updated August 11, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
 
           <p>If you pull reports from live ad accounts, DashThis at $44/mo is your best bet. If you work from CSV exports or spreadsheets, Naxely's Free tier gives you a branded PDF with AI insights at zero cost. For a no-cost DIY option, Looker Studio works — but expect to invest time in building templates from scratch. Bonsai and Plutio include reporting as a secondary feature within broader business management platforms, best when you need proposals and invoicing alongside basic performance stats rather than dedicated client-facing reports.</p>
+
+        <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026 &middot; Updated August 11, 2026</p>
 
           <p>The freelancer reporting tool landscape is fragmented because data sources are fragmented. Some freelancers manage client ad accounts directly (Google Ads, Meta, LinkedIn) and need a tool that connects to those platforms live. Others receive data as CSV exports, spreadsheets clipped from internal dashboards, or reports their clients forwarded from enterprise BI tools. No single tool serves both workflows well, which is why the right choice is less about the tool itself and more about how data reaches it.</p>
 

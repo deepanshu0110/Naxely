@@ -21,10 +21,12 @@ export default function BlogPostCsvToPdf() {
         <meta name="twitter:description" content="Convert CSV files into branded PDF reports with AI-written insights and charts — not just a format converter. See how Naxely compares to basic CSV-to-PDF tools." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"CSV to PDF Report Generator with AI Insights","description":"Convert CSV files into branded, professional PDF reports with AI-written insights and charts — not just a format converter. See how Naxely compares to basic CSV-to-PDF tools.","url":"https://www.naxely.com/blog/csv-to-pdf-report-generator","datePublished":"2026-07-04T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.naxely.com/blog"}, {"@type": "ListItem", "position": 3, "name": "CSV to PDF Report Generator with AI Insights", "item": "https://www.naxely.com/blog/csv-to-pdf-report-generator"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <Link to="/blog" className="text-amber-600 hover:text-amber-700 underline">Blog</Link> › <span>CSV to PDF Report Generator with AI Insights</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">CSV to PDF Report Generator: Turn Spreadsheet Data Into Client-Ready Reports</h1>
         <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>

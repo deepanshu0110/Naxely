@@ -31,10 +31,12 @@ export default function BlogPostHub() {
           {"@type":"Question","name":"How much time does automated client reporting save?","acceptedAnswer":{"@type":"Answer","text":"For example, if you run 12 client accounts at 90 minutes per report by hand, that's about 18 hours a month. With an automated pipeline, agencies typically get that down to under 2 hours of review-and-send time. Naxely generates each report in under a minute, so the bottleneck becomes review, not building."}},
           {"@type":"Question","name":"Does automated client reporting still need a human review?","acceptedAnswer":{"@type":"Answer","text":"Yes, and that's by design. Naxely drafts the report automatically, but you review and adjust before exporting. The AI handles the mechanical work; your judgment about the client's business — what to flag, what to say, what to recommend — stays with you."}}
         ]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.naxely.com/blog"}, {"@type": "ListItem", "position": 3, "name": "Automated Client Reporting: The Complete Guide for Freelancers and Agencies", "item": "https://www.naxely.com/blog/automating-client-reports"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <Link to="/blog" className="text-amber-600 hover:text-amber-700 underline">Blog</Link> › <span>Automated Client Reporting: The Complete Guide for Freelancers and Agencies</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Automated Client Reporting: The Complete Guide for Freelancers and Agencies</h1>
         <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>

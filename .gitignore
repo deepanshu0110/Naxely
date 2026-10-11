@@ -36,6 +36,7 @@ stats.json
 !backend/tests/fixtures/*.csv
 # Published research datasets must be tracked (Vercel builds from git)
 !frontend/public/research/*.csv
+!frontend/public/research/*.png
 .vercel
 .env*
 

@@ -25,10 +25,12 @@ export default function ComparisonDatabox() {
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Databox?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished report from data you already have — it doesn't pull live data from connected platforms the way Databox does. If your workflow needs always-on visibility into KPIs, Databox's integration model fits that better."}},
           {"@type":"Question","name":"Does Naxely offer BYOK like Databox?","acceptedAnswer":{"@type":"Answer","text":"Naxely supports bring-your-own-key AI across seven providers (Gemini, Groq, DeepSeek, OpenAI, Claude, Mistral, Together AI) on Pro and Agency, so there's no AI markup; Free includes AI with no key needed. Databox offers no BYOK API-key option (its LLM connectivity is via MCP, not user-supplied keys)."}} 
         ]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Databox", "item": "https://www.naxely.com/compare/databox"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <span>Compare</span> › <span>Databox</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Databox: Which Reporting Tool Fits Your Workflow?</h1>
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>

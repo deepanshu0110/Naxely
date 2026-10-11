@@ -165,3 +165,26 @@ describe('research page SEO', () => {
     }
   })
 })
+
+describe('research cost chart', () => {
+  it('renders the inline SVG with title and labelled values', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <ResearchPricing2026 />
+      </MemoryRouter>,
+    )
+    const svg = container.querySelector('svg')
+    expect(svg).not.toBeNull()
+    expect(svg?.querySelector('title')?.textContent).toContain('12 clients')
+    expect(svg?.querySelector('desc')?.textContent).toContain('Whatagraph')
+    for (const label of ['$240', '$279', '$310', 'from $1,118']) {
+      expect(svg?.textContent).toContain(label)
+    }
+  })
+
+  it('ships the downloadable PNG under public/', () => {
+    expect(
+      fs.existsSync(path.join(process.cwd(), 'public/research/client-reporting-cost-12-clients.png')),
+    ).toBe(true)
+  })
+})

@@ -8,6 +8,16 @@ import Plutio from '../ComparisonPlutio.tsx?raw'
 import Powerdrill from '../ComparisonPowerdrill.tsx?raw'
 import Whatagraph from '../ComparisonWhatagraph.tsx?raw'
 import Research from '../ResearchPricing2026.tsx?raw'
+import DataboxPage from '../ComparisonDatabox.tsx?raw'
+import AnomalyPost from '../BlogPostAnomalyDetection.tsx?raw'
+import HubPost from '../BlogPostHub.tsx?raw'
+import ByokPost from '../BlogPostByok.tsx?raw'
+import CsvPost from '../BlogPostCsvToPdf.tsx?raw'
+import ExcelPost from '../BlogPostExcelToPdf.tsx?raw'
+import SheetsPost from '../BlogPostGoogleSheets.tsx?raw'
+import PythonPost from '../BlogPostPythonCsvToPdf.tsx?raw'
+import TwoWeeksPost from '../BlogPostTwoWeeks.tsx?raw'
+import WhiteLabelPost from '../BlogPostWhiteLabel.tsx?raw'
 
 const PAGES: string[] = [
   AgencyAnalytics,
@@ -44,6 +54,41 @@ describe('compare pricing guards', () => {
         .split('\n')
         .filter((line) => /812|€699|u20AC699/.test(line) && /whatagraph/i.test(line))
       expect(bad).toEqual([])
+    }
+  })
+})
+
+describe('breadcrumb schema', () => {
+  function breadcrumbOf(src: string): Record<string, unknown> {
+    const blocks = [...src.matchAll(/\{JSON\.stringify\((\{.*?\})\)\}<\/script>/gs)]
+      .map((m) => m[1])
+      .filter((s) => s.includes('BreadcrumbList'))
+    expect(blocks.length).toBe(1)
+    return JSON.parse(blocks[0]) as Record<string, unknown>
+  }
+
+  it('BreadcrumbList is present and valid on every compare page', () => {
+    for (const src of PAGES) {
+      const bc = breadcrumbOf(src)
+      const items = bc['itemListElement'] as Array<Record<string, string>>
+      expect(items[0]).toMatchObject({ name: 'Home', item: 'https://www.naxely.com/' })
+      expect(items[items.length - 1]['item']).toMatch(/^https:\/\/www\.naxely\.com\//)
+    }
+  })
+
+  it('BreadcrumbList is present and valid on the 9 posts', () => {
+    const posts = [AnomalyPost, HubPost, ByokPost, CsvPost, ExcelPost, SheetsPost, PythonPost, TwoWeeksPost, WhiteLabelPost]
+    for (const src of [DataboxPage, ...posts]) {
+      const bc = breadcrumbOf(src)
+      const items = bc['itemListElement'] as Array<Record<string, string>>
+      expect(items[0]).toMatchObject({ name: 'Home', item: 'https://www.naxely.com/' })
+    }
+  })
+
+  it('compare crumbs exclude the /compare index (it 404s)', () => {
+    for (const src of PAGES) {
+      const bc = breadcrumbOf(src)
+      expect(JSON.stringify(bc)).not.toContain('naxely.com/compare"')
     }
   })
 })

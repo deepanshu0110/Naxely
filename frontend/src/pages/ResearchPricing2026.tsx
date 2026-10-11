@@ -119,6 +119,26 @@ export default function ResearchPricing2026() {
             </table>
           </div>
 
+          <svg viewBox="0 0 560 300" width="100%" role="img" aria-labelledby="cost12-title cost12-desc" className="mt-6">
+            <title id="cost12-title">Effective monthly cost for 12 clients, billed annually</title>
+            <desc id="cost12-desc">Horizontal bar chart comparing four tools in US dollars: AgencyAnalytics $240, DashThis $279, Klipfolio $310, Whatagraph from $1,118.</desc>
+            <text x="140" y="52" textAnchor="end" fontSize="14" fill="currentColor">AgencyAnalytics</text>
+            <rect x="150" y="30" width="86" height="34" fill="#f59e0b" />
+            <text x="244" y="52" fontSize="13" fontWeight="bold" fill="currentColor">$240</text>
+            <text x="140" y="112" textAnchor="end" fontSize="14" fill="currentColor">DashThis</text>
+            <rect x="150" y="90" width="100" height="34" fill="#f59e0b" />
+            <text x="258" y="112" fontSize="13" fontWeight="bold" fill="currentColor">$279</text>
+            <text x="140" y="172" textAnchor="end" fontSize="14" fill="currentColor">Klipfolio</text>
+            <rect x="150" y="150" width="111" height="34" fill="#f59e0b" />
+            <text x="269" y="172" fontSize="13" fontWeight="bold" fill="currentColor">$310</text>
+            <text x="140" y="232" textAnchor="end" fontSize="14" fill="currentColor">Whatagraph</text>
+            <rect x="150" y="210" width="400" height="34" fill="#f59e0b" />
+            <text x="486" y="232" fontSize="13" fontWeight="bold" fill="currentColor">from $1,118</text>
+            <text x="150" y="278" fontSize="12" fill="currentColor">Effective monthly cost, billed annually (USD)</text>
+          </svg>
+          <p className="text-xs text-gray-500 mt-2">Effective monthly cost for 12 clients, billed annually. Swydo (priced in EUR) and tools without a public price at this size are not shown.</p>
+          <p className="text-xs mt-1"><a href="/research/client-reporting-cost-12-clients.png" className="text-amber-600 hover:text-amber-700 underline">Download this chart (PNG)</a></p>
+
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Cost per month, billed monthly</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">

@@ -26,10 +26,12 @@ export default function ComparisonAgencyAnalytics() {
           {"@type":"Question","name":"Does Naxely support API connections to ad platforms?","acceptedAnswer":{"@type":"Answer","text":"No. Naxely is intentionally focused on CSV/Google Sheets input. If your workflow requires live API pulls from Google Ads, Facebook Ads, or similar, AgencyAnalytics' connector model is built for that. If you have CSV exports from those platforms, Naxely handles them in seconds."}},
           {"@type":"Question","name":"How does AgencyAnalytics compare to competitors like Whatagraph, DashThis, Databox, or Powerdrill?","acceptedAnswer":{"@type":"Answer","text":"AgencyAnalytics competes with Whatagraph (multi-channel dashboards), DashThis (simpler automated reporting), Databox (live KPI dashboards), Powerdrill (AI data analysis), and Klipfolio (custom KPI dashboards) for agency reporting and analysis. Naxely occupies a different niche — CSV/Sheets report generation — so it is less a direct competitor and more a complementary tool depending on your data source."}}
         ]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "AgencyAnalytics", "item": "https://www.naxely.com/compare/agencyanalytics"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <span>Compare</span> › <span>AgencyAnalytics</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Looking for an Agency Analytics Alternative? Here's How Naxely Compares</h1>
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>

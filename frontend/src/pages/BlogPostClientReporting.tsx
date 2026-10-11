@@ -43,11 +43,12 @@ export default function BlogPostClientReporting() {
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">How to Choose Client Reporting Software (and Tools)</h1>
         <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
-        <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026 &middot; Updated August 11, 2026</p>
 
         <div className="mx-auto max-w-xl text-ink/55 dark:text-paper/45 text-sm leading-relaxed space-y-5">
 
           <p>Whether you call them client reporting tools or client reporting software, choosing the right solution comes down to four questions: where your data lives, how much automation and AI you actually need, how you want to deliver reports, and whether white-labeling matters to your business. Most tools are built for one specific workflow — live ad-platform dashboards or file-based PDF generation — so matching the reporting system to how your data reaches it matters more than any feature list.</p>
+
+        <p className="text-xs text-gray-400 mb-10">Guide &middot; July 20, 2026 &middot; Updated August 11, 2026</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Map Your Data Sources</h2>
           <p>The first question is not which tool has the most features, but where your client data actually lives day to day. Reporting tools generally fall into two categories based on how they ingest data, and picking the wrong one means fighting the tool from day one.</p>

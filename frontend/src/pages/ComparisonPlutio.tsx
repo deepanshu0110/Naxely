@@ -25,10 +25,12 @@ export default function ComparisonPlutio() {
           {"@type":"Question","name":"Can Naxely replace Plutio?","acceptedAnswer":{"@type":"Answer","text":"They solve different problems. Naxely generates branded PDF reports from data you already have (CSV, Google Sheets) with AI insights in under a minute. Plutio is an all-in-one business management platform for projects, invoicing, proposals, contracts, and scheduling. If you need client-ready reports from existing data, Naxely fits; if you need an all-in-one operations suite, Plutio fits — many freelancers use both."}},
           {"@type":"Question","name":"Does Plutio offer white-label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes — white-label is a paid add-on on Plutio's Core ($19/mo) and Pro ($49/mo) plans, and is included free on Max ($199/mo billed monthly; ~$166/mo billed annually). Naxely offers white-label PDF output at $79/month on its Agency tier."}}
         ]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Plutio", "item": "https://www.naxely.com/compare/plutio"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <span>Compare</span> › <span>Plutio</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Plutio: PDF Reports vs. All-in-One Platform</h1>
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>

@@ -25,10 +25,12 @@ export default function ComparisonKlipfolio() {
           {"@type":"Question","name":"Can Naxely replace a live dashboard tool like Klipfolio?","acceptedAnswer":{"@type":"Answer","text":"Not for real-time monitoring. Naxely is built for generating a polished PDF report from data you already have. Klipfolio is designed for always-on KPI dashboards with 130+ live integrations pulling data continuously."}},
           {"@type":"Question","name":"Does Klipfolio have AI features?","acceptedAnswer":{"@type":"Answer","text":"Klipfolio's Klips product (the dashboard being compared here) does not offer AI-generated insights or commentary. Klipfolio's separate PowerMetrics product has some AI framing but is a distinct product line. Naxely includes AI-written executive summaries, anomaly detection, and recommendations on every tier — via BYOK on Pro and above, included with no key needed on Free."}}
         ]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Klipfolio", "item": "https://www.naxely.com/compare/klipfolio"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <span>Compare</span> › <span>Klipfolio</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Naxely vs Klipfolio: PDF Reports vs. Live Dashboards</h1>
         <p className="text-xs text-gray-500 mb-6">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>

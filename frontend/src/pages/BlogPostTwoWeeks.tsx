@@ -21,10 +21,12 @@ export default function BlogPostTwoWeeks() {
         <meta name="twitter:description" content="The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"What Two Weeks of Building a Client-Reporting Tool Actually Looked Like","description":"The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats.","url":"https://www.naxely.com/blog/two-weeks-building-naxely","datePublished":"2026-07-17T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.naxely.com/blog"}, {"@type": "ListItem", "position": 3, "name": "What Two Weeks of Building a Client-Reporting Tool Actually Looked Like", "item": "https://www.naxely.com/blog/two-weeks-building-naxely"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <Link to="/blog" className="text-amber-600 hover:text-amber-700 underline">Blog</Link> › <span>What Two Weeks of Building a Client-Reporting Tool Actually Looked Like</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">What Two Weeks of Building a Client-Reporting Tool Actually Looked Like</h1>
         <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>

@@ -150,7 +150,7 @@ describe('BlogPostCsvToPdf', () => {
 describe('BlogPostHub', () => {
   it('renders blog post heading', () => {
     renderWithRouter(BlogPostHub)
-    expect(screen.getByText('Automated Client Reporting: The Complete Guide for Freelancers and Agencies')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Automated Client Reporting: The Complete Guide for Freelancers and Agencies')
   })
 
   it('renders the author byline linking to /about', () => {

@@ -26,10 +26,12 @@ export default function BlogPostExcelToPdf() {
           {"@type":"Question","name":"What happens to multiple sheets in an Excel workbook?","acceptedAnswer":{"@type":"Answer","text":"Naxely reads only the first sheet in the workbook — that's the default behavior of the underlying Excel parser. If your report data is on a tab further back, move the sheet you want reported on to the first position before uploading. When you upload a workbook with multiple sheets, Naxely now shows a warning: This file has N sheets — only [SheetName] was used — so you know immediately if the wrong tab was picked."}},
           {"@type":"Question","name":"Should I use Excel or CSV for Naxely reports?","acceptedAnswer":{"@type":"Answer","text":"Both work the same way — Naxely handles .xlsx and .csv through the same pipeline. Use Excel if your data already lives in workbooks; use CSV if you're exporting from another tool. For workbooks with multiple sheets, make sure the data you want is on the first tab."}}
         ]})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.naxely.com/blog"}, {"@type": "ListItem", "position": 3, "name": "Excel to PDF Report Generator with AI Insights", "item": "https://www.naxely.com/blog/excel-to-pdf-report-generator"}]})}</script>
       </Head>
       <Navbar />
       <article className="mx-auto max-w-2xl px-6 py-24">
         <Link to="/blog" className="text-sm text-amber-600 hover:text-amber-700 mb-8 inline-block">&larr; Back to Blog</Link>
+        <p className="text-xs text-gray-500 mt-2 mb-6"><Link to="/" className="text-amber-600 hover:text-amber-700 underline">Home</Link> › <Link to="/blog" className="text-amber-600 hover:text-amber-700 underline">Blog</Link> › <span>Excel to PDF Report Generator with AI Insights</span></p>
 
         <h1 className="font-display text-3xl font-bold text-ink dark:text-paper mb-2">Excel to PDF Report Generator: From Workbook to Client-Ready Report</h1>
         <p className="text-xs text-gray-500 mb-2">By <Link to="/about" className="text-amber-600 hover:text-amber-700 underline">Deepanshu Garg</Link></p>
