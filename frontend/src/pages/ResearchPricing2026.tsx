@@ -201,6 +201,9 @@ export default function ResearchPricing2026() {
             <li><strong>Whatagraph:</strong> the Max plan starts at $1,118 a month (€999), billed annually, with 50 source credits. One credit covers one connected source. 5 and 12 clients fit inside 50 credits. 25 clients need 75, and the price of extra credits is not public. Whatagraph raised its Max price between 7 and 8 October 2026. Earlier captures showed from $812 (€699).</li>
           </ul>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What about more than 25 clients?</h2>
+          <p>Above 25 clients, only Swydo's formula still computes publicly: the first 10 sources are included, then €4.50, €3.00 and €2.00 per source in higher tiers. AgencyAnalytics goes volume-quoted, Whatagraph extra-credit pricing is unpublished, Databox goes Custom-quoted, and DashThis's slider steps above 50 dashboards have no public per-step price.</p>
+
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Where Naxely fits</h2>
           <p>Naxely costs $29 a month on Pro, with unlimited reports. That number is not comparable to the table, for three reasons:</p>
           <ol className="list-decimal pl-5 space-y-2">

@@ -398,6 +398,9 @@ export default function BlogPostClientReporting() {
             </ul>
           </div>
 
+          <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Switching tools: what actually moves with you</h2>
+          <p>Before trialing anything, audit what you actually use inside your current tool: the data sources connected, the dashboards your clients see, and the scheduled reports going out. CSV exports move between tools; templates, client logins and custom domains do not, so budget time to rebuild those. Trial windows from vendor pricing pages: 14 days for AgencyAnalytics, DashThis, Databox and Klipfolio; 7 days for Bonsai and Plutio. Re-check the white-label tier on the new tool before committing. Run one real client through the trial before cancelling.</p>
+
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">Frequently Asked Questions</h2>
 
           <h3 className="font-semibold text-ink dark:text-paper text-sm mt-6">How do I choose client reporting software for my agency?</h3>
