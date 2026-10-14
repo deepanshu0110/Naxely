@@ -1107,6 +1107,9 @@ export default function Landing() {
             <img src="https://codehype.ai/badges/naxely.svg?variant=find-us&v=20" alt="Featured on CodeHype" width="180" height="65" loading="lazy" decoding="async" style={{ display: 'inline-block', border: 0, width: '100%', maxWidth: '180px', height: 'auto', maxHeight: '65px' }} />
           </a>
           </div>
+          <a href="https://tools.launchllama.co/products/naxely?utm_source=badge&utm_medium=referral" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://tools.launchllama.co/featured-badge-white.jpg?v=5" alt="Featured on Launch Llama" width="200" height="52" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
           </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-600">
