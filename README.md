@@ -7,7 +7,7 @@ Turn raw data into client-ready PDF reports in 2 minutes. AI-powered insights, a
 ## Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS + shadcn/ui
 - **Backend**: FastAPI + Python 3.11 + SQLAlchemy + Supabase PostgreSQL
-- **AI**: OpenAI, Google Gemini, Groq, DeepSeek or Mistral (user's own API key)
+- **AI**: Google Gemini, OpenAI, Anthropic Claude, Groq, DeepSeek, Mistral or Together AI (user's own API key)
 - **Charts**: Matplotlib (PDF) + Recharts (browser)
 - **PDF**: ReportLab
 - **Hosting**: Vercel (frontend) + Render.com (backend)
