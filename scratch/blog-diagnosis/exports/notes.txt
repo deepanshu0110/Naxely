@@ -1,0 +1,53 @@
+# Blog diagnosis exports — status
+# Checked by OpenCode on 2026-10-17. Nothing was exported to scratch/blog-diagnosis/exports/
+# except this notes.txt file. scratch/ had been deleted on Deepanshu's instruction
+# before this prompt ran, and scratch/seo-tracking/ai_prompts.md no longer exists.
+
+MISSING — Google Search Console
+- gsc_blog_6m.zip                MISSING
+- gsc_blog_28d_compare.zip       MISSING
+- gsc_all_6m.zip                 MISSING
+- gsc_blog_16m.zip               MISSING
+- gsc_indexing.zip               MISSING
+- gsc_cwv.zip                    MISSING
+- gsc_links.zip                  MISSING
+- gsc_crawl_stats.png            MISSING
+- gsc_query_page_pairs.csv       MISSING (Search Analytics for Sheets add-on)
+
+MISSING — GA4 (last 90 days)
+- ga4_blog_landing.csv           MISSING
+- ga4_blog_sources.csv           MISSING
+- ga4_blog_paths.png             MISSING
+- signup marked as key event?    UNKNOWN — no export, cannot confirm
+
+MISSING — Microsoft Clarity (last 30 days)
+- clarity_blog.png               MISSING
+- 3 blog recordings, 1 line each MISSING
+
+MISSING — Backlinks
+- ahrefs_backlinks.csv           MISSING
+- ahrefs_top_pages.csv           MISSING
+
+MISSING — Bing Webmaster Tools
+- bing_performance.csv           MISSING
+- indexed yes/no for 3 posts     MISSING
+- bing_ai.csv                    MISSING (may not exist in the account)
+- Bing not set up?               UNKNOWN
+
+MISSING — Cloudflare
+- cloudflare_ai_crawlers.png     MISSING
+
+MISSING — AI answers
+- ai_answers.csv                 MISSING
+- ai_prompts.md                  MISSING — the file scratch/seo-tracking/ai_prompts.md
+                                 was deleted with scratch/ before this prompt ran.
+                                 See report.md Part 7 step 23 for 10 replacement prompts.
+
+MISSING — Google results by hand
+- serp_notes.csv                 MISSING (expected: it is produced after Part 4 step 5 names
+                                 the top 5 striking-distance queries; see report.md)
+
+## What OpenCode could still do without the exports
+Parts 1, 2, 3, 6 (internal only), 7 (access, extractability, entity) and the CSV/baseline
+were produced from the production site (curl of prerendered HTML) and the repo source.
+Parts 4, 5, external backlinks, Bing, Cloudflare and AI answers were skipped.

@@ -1,0 +1,204 @@
+{
+  "footer_set": [
+    "/blog/client-reporting-software-guide",
+    "/blog/best-client-reporting-software-freelancers",
+    "/blog/automating-client-reports",
+    "/blog/what-should-client-report-include-checklist",
+    "/blog/excel-to-pdf-report-generator",
+    "/blog/two-weeks-building-naxely",
+    "#features",
+    "#pricing",
+    "/privacy",
+    "/cookie-policy",
+    "/terms",
+    "/contact",
+    "/refund",
+    "/faq",
+    "/blog",
+    "/changelog",
+    "https://fazier.com/launches/naxely",
+    "https://www.producthunt.com/products/naxely?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-naxely",
+    "https://turbo0.com/item/naxely",
+    "https://saashunt.best/projects/naxely",
+    "https://auraplusplus.com/projects/naxely-automated-client-report-generator",
+    "https://open-launch.com/projects/naxely",
+    "https://sourceforge.net/software/product/Naxely/",
+    "https://saashive.com/products/naxely",
+    "https://smollaunch.com",
+    "https://launchbuff.com",
+    "https://launchboard.dev",
+    "https://saasbrowser.com/en/saas/1570008/naxely",
+    "https://startupfa.me/s/naxely?utm_source=naxely.com",
+    "https://findly.tools/naxely?utm_source=naxely",
+    "https://twelve.tools",
+    "https://www.saashub.com/naxely?utm_source=badge&amp;utm_campaign=badge&amp;utm_content=naxely&amp;badge_variant=color&amp;badge_kind=approved",
+    "https://wired.business",
+    "https://startupbase.io/products/naxely?utm_source=startupbase&amp;utm_medium=badge&amp;utm_campaign=launch-badge-light",
+    "https://frogdr.com/naxely.com?utm_source=naxely.com",
+    "https://showmebest.ai",
+    "https://submitaitools.org",
+    "https://toolfame.com/item/naxely",
+    "https://startupfa.st/projects/naxely",
+    "https://dofollow.tools",
+    "https://saasfame.com/item/naxely",
+    "https://uno.directory",
+    "https://makerhunt.io/project/naxely",
+    "https://www.aidirectori.es",
+    "https://www.toolpilot.ai",
+    "https://thesaasdir.com/product/naxely?ref=badge",
+    "https://www.foundrlist.com/product/naxely?utm_source=badge&amp;utm_medium=embed",
+    "https://www.verifiedtools.info/tools/naxely",
+    "https://toolfio.com",
+    "https://ideakiln.com/ideas/naxely",
+    "https://nicklaunches.com/products/naxely/?utm_source=naxely.com&amp;utm_medium=badge&amp;utm_campaign=featured",
+    "https://openhunts.com",
+    "https://codehype.ai/product/naxely?utm_source=codehype_badge",
+    "https://tools.launchllama.co/products/naxely?utm_source=badge&amp;utm_medium=referral",
+    "/about"
+  ],
+  "pages": {
+    "/": {
+      "in_content_blog": {
+        "automating-client-reports": 1
+      },
+      "in_content_research_links": 0,
+      "total_blog_anchors": 16
+    },
+    "/pricing": {
+      "in_content_blog": {},
+      "in_content_research_links": 0,
+      "total_blog_anchors": 7
+    },
+    "/faq": {
+      "in_content_blog": {},
+      "in_content_research_links": 0,
+      "total_blog_anchors": 7
+    },
+    "/about": {
+      "in_content_blog": {},
+      "in_content_research_links": 0,
+      "total_blog_anchors": 0
+    },
+    "/contact": {
+      "in_content_blog": {},
+      "in_content_research_links": 0,
+      "total_blog_anchors": 0
+    },
+    "/changelog": {
+      "in_content_blog": {},
+      "in_content_research_links": 0,
+      "total_blog_anchors": 7
+    },
+    "/blog": {
+      "in_content_blog": {
+        "csv-to-pdf-report-generator": 1,
+        "google-sheets-client-reports": 1,
+        "white-label-client-reporting-agencies": 1,
+        "anomaly-detection-in-client-reports": 1,
+        "byok-ai-reporting-tool": 1
+      },
+      "in_content_research_links": 0,
+      "total_blog_anchors": 19
+    },
+    "/templates": {
+      "in_content_blog": {},
+      "in_content_research_links": 0,
+      "total_blog_anchors": 0
+    },
+    "/research/client-reporting-tool-pricing-2026": {
+      "in_content_blog": {},
+      "in_content_research_links": 2,
+      "total_blog_anchors": 14
+    },
+    "/compare/agencyanalytics": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 16
+    },
+    "/compare/databox": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 14
+    },
+    "/compare/dashthis": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 14
+    },
+    "/compare/whatagraph": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 14
+    },
+    "/compare/klipfolio": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 14
+    },
+    "/compare/bonsai": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 14
+    },
+    "/compare/plutio": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 14
+    },
+    "/compare/powerdrill": {
+      "in_content_blog": {},
+      "in_content_research_links": 1,
+      "total_blog_anchors": 14
+    }
+  },
+  "posts": {
+    "byok-ai-reporting-tool": {
+      "first_para": "If you've shopped for an AI-powered reporting tool recently, you've probably run into the same wall: a $29 or $49/month subscription that bundles in \"AI credits\" you can't fully see, control, or predict. Hit your limit mid-report, and you're stuck waiting for next month's reset.",
+      "first_para_words": 45
+    },
+    "csv-to-pdf-report-generator": {
+      "first_para": "If you've searched \"CSV to PDF,\" you've probably landed on a converter ÔÇö a tool that takes your spreadsheet and turns it into a PDF with the same rows and columns, just in a different file format. That's useful if all you need is a static copy of your data. It's not useful if you need to actually show that data to a client.",
+      "first_para_words": 64
+    },
+    "white-label-client-reporting-agencies": {
+      "first_para": "You built the report. The client renamed three columns in their spreadsheet last week and didn't mention it. Now you're rebuilding the chart mappings at 11pm before tomorrow's call, because the automated pull broke on a header it didn't recognize.",
+      "first_para_words": 40
+    },
+    "automating-client-reports": {
+      "first_para": "If you send the same client a report every week or month, you already know the drill: pull the data, rebuild the same charts, write commentary, export, send. Multiply that across five or ten clients and \"reporting\" quietly becomes one of the biggest recurring time costs in the business ÔÇö one that clients never see and rarely pay for directly.",
+      "first_para_words": 60
+    },
+    "client-reporting-software-guide": {
+      "first_para": "Whether you call them client reporting tools or client reporting software, choosing the right solution comes down to four questions: where your data lives, how much automation and AI you actually need, how you want to deliver reports, and whether white-labeling matters to your business. Most tools are built for one specific workflow ÔÇö live ad-platform dashboards or file-based PDF generation ÔÇö so matching the reporting system to how your data reaches it matters more than any feature list.",
+      "first_para_words": 79
+    },
+    "best-client-reporting-software-freelancers": {
+      "first_para": "If you pull reports from live ad accounts, DashThis at $44/mo is your best bet. If you work from CSV exports or spreadsheets, Naxely's Free tier gives you a branded PDF with AI insights at zero cost. For a no-cost DIY option, Looker Studio works ÔÇö but expect to invest time in building templates from scratch. Bonsai and Plutio include reporting as a secondary feature within broader business management platforms, best when you need proposals and invoicing alongside basic performance stats rather than dedicated client-facing reports.",
+      "first_para_words": 86
+    },
+    "python-csv-to-pdf-reports": {
+      "first_para": "If you've ever typed \"python csv to pdf report\" into Google, you already know the drill. You've got a CSV full of client data, and you need it to look like something you can actually send someone ÔÇö not a wall of comma-separated numbers.",
+      "first_para_words": 44
+    },
+    "two-weeks-building-naxely": {
+      "first_para": "Most \"we launched!\" posts skip the part where things break. Here's the actual record: bugs found, decisions made, and the real numbers from the first two weeks after Naxely went live.",
+      "first_para_words": 31
+    },
+    "what-should-client-report-include-checklist": {
+      "first_para": "A good client report includes five things: an executive summary, 3ÔÇô5 key metrics (not everything you tracked), at least one chart showing a trend, context on what changed and why, and a clear recommendation or next step. Everything else is optional. The most common mistake is including too much data and too little interpretation.",
+      "first_para_words": 54
+    },
+    "anomaly-detection-in-client-reports": {
+      "first_para": "If you've ever sent a client report and gotten a reply asking \"wait, why did this number spike?\" ÔÇö you already know the problem this solves. A 40-row report has outliers buried in it that you won't catch skimming the PDF before you hit send, but your client's reader might.",
+      "first_para_words": 50
+    },
+    "google-sheets-client-reports": {
+      "first_para": "If you're running recurring client reports off a Google Sheet ÔÇö a shared tracker your team updates weekly, a live dashboard export, anything that changes between report runs ÔÇö the question that actually matters isn't \"can I connect a Google Sheet.\" It's \"does the report pull fresh data every time, or does it quietly keep showing me whatever was in the sheet the day I first connected it.\"",
+      "first_para_words": 68
+    },
+    "excel-to-pdf-report-generator": {
+      "first_para": "Most Excel files sent to clients were never meant to be the deliverable ÔÇö they're the raw material. An .xlsx workbook with filters, hidden columns, and three tabs of working data doesn't read as a report. Naxely turns it into one: a branded PDF with charts, KPIs, and written insights, generated in under a minute from a single file upload.",
+      "first_para_words": 60
+    }
+  }
+}

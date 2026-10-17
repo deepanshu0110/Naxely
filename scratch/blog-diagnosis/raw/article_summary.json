@@ -1,0 +1,526 @@
+[
+  {
+    "slug": "byok-ai-reporting-tool",
+    "article_words": 813,
+    "paragraphs": 14,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 1,
+    "ol": 1,
+    "tables": 1,
+    "h2": [
+      "What does BYOK actually mean?",
+      "Why does BYOK matter for client reporting?",
+      "How much does BYOK actually save?",
+      "How long does it take to set up an AI key?",
+      "Is BYOK right for everyone?",
+      "How do I try BYOK with Naxely?"
+    ],
+    "h3": [],
+    "cta_count": 1,
+    "ctas": [
+      {
+        "href": "/signup",
+        "text": "Start free ÔåÆ"
+      }
+    ],
+    "internal_links": [
+      "/about",
+      "/blog/automating-client-reports",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/white-label-client-reporting-agencies",
+      "/blog/client-reporting-software-guide"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "csv-to-pdf-report-generator",
+    "article_words": 838,
+    "paragraphs": 16,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 2,
+    "ol": 1,
+    "tables": 1,
+    "h2": [
+      "What's the difference between a CSV-to-PDF converter and a report generator?",
+      "How does Naxely turn a CSV into a client-ready PDF report?",
+      "What does a real CSV-to-PDF report look like?",
+      "Who needs a CSV to PDF report generator?",
+      "How long does it take to set up?",
+      "Can I see a real sample before trying it?",
+      "How do I get started?"
+    ],
+    "h3": [],
+    "cta_count": 1,
+    "ctas": [
+      {
+        "href": "/signup",
+        "text": "Generate your first report ÔÇö free ÔåÆ"
+      }
+    ],
+    "internal_links": [
+      "/about",
+      "/blog/automating-client-reports",
+      "/blog/python-csv-to-pdf-reports",
+      "/blog/byok-ai-reporting-tool",
+      "/blog/google-sheets-client-reports",
+      "/blog/anomaly-detection-in-client-reports",
+      "/blog/byok-ai-reporting-tool",
+      "/blog/white-label-client-reporting-agencies",
+      "/blog/client-reporting-software-guide"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "white-label-client-reporting-agencies",
+    "article_words": 1144,
+    "paragraphs": 26,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 0,
+    "ol": 0,
+    "tables": 1,
+    "h2": [
+      "What is the hidden cost of manual agency reporting?",
+      "Why don't existing agency reporting tools fit?",
+      "What does \"any-data\" reporting actually mean?",
+      "What is BYOK and why does it matter for agencies?",
+      "How much does white-label client reporting cost?",
+      "What should I do next?",
+      "Frequently Asked Questions"
+    ],
+    "h3": [
+      "Is this the same as white label reporting?"
+    ],
+    "cta_count": 1,
+    "ctas": [
+      {
+        "href": "/signup",
+        "text": "try it free"
+      }
+    ],
+    "internal_links": [
+      "/about",
+      "/compare/agencyanalytics",
+      "/blog/automating-client-reports",
+      "/blog/byok-ai-reporting-tool",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/client-reporting-software-guide"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "automating-client-reports",
+    "article_words": 2632,
+    "paragraphs": 44,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 5,
+    "ol": 1,
+    "tables": 3,
+    "h2": [
+      "What does \"automating client reports\" actually mean?",
+      "What are the three inputs agencies actually work with?",
+      "How automated client reporting works end to end",
+      "Where the time actually goes in manual client reporting",
+      "Why agencies that auto-generate client reports win back hours",
+      "What does a good automated report actually need?",
+      "What to automate vs. what still needs a human review step",
+      "How does cost structure work: subscription vs AI markup vs BYOK?",
+      "Still comparing client reporting software?",
+      "How do I get started with automated client reporting?",
+      "What automated reporting for clients actually replaces",
+      "Frequently Asked Questions"
+    ],
+    "h3": [
+      "What is automated client reporting?",
+      "How does automated client report generation work?",
+      "What tools can automate client reports?",
+      "Can automated reporting for clients include written analysis?",
+      "What is a canned report?",
+      "Is automated client reporting suitable for marketing agencies?",
+      "How much time does automated client reporting save?",
+      "Does automated client reporting still need a human review?"
+    ],
+    "cta_count": 1,
+    "ctas": [
+      {
+        "href": "/signup",
+        "text": "try it free"
+      }
+    ],
+    "internal_links": [
+      "/about",
+      "/compare/agencyanalytics",
+      "/blog/google-sheets-client-reports",
+      "/blog/anomaly-detection-in-client-reports",
+      "/blog/byok-ai-reporting-tool",
+      "/blog/client-reporting-software-guide",
+      "/blog/google-sheets-client-reports",
+      "/blog/anomaly-detection-in-client-reports",
+      "/blog/byok-ai-reporting-tool",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/white-label-client-reporting-agencies",
+      "/blog/client-reporting-software-guide",
+      "/blog/what-should-client-report-include-checklist"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "client-reporting-software-guide",
+    "article_words": 5407,
+    "paragraphs": 69,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 2,
+    "ol": 0,
+    "tables": 5,
+    "h2": [
+      "Map Your Data Sources",
+      "Standalone vs. Connector-Based Reporting Tools",
+      "Evaluate Automation and AI Features",
+      "Determine Your Delivery Method",
+      "Check White-Labeling and Customization",
+      "Evaluate Goal Tracking and Alerts",
+      "Assess Ease of Use and Setup Time",
+      "Check Support and Training Options",
+      "The category at a glance: six tools compared",
+      "Self-place in the decision matrix",
+      "A worked example: twelve clients, one monthly cycle",
+      "Your 30-day evaluation checklist",
+      "Common traps when choosing client reporting software",
+      "Switching tools: what actually moves with you",
+      "Frequently Asked Questions"
+    ],
+    "h3": [
+      "Key Takeaways",
+      "How do I choose client reporting software for my agency?",
+      "Can client reporting software automate AI insights?",
+      "What is the difference between client reporting software and a business intelligence tool?",
+      "Is there a free alternative to paid client reporting tools?",
+      "Does white-label reporting cost extra?",
+      "Can client reporting software track goals and send alerts?",
+      "How long does it take to set up client reporting software?",
+      "What support options do client reporting tools offer?",
+      "What does a typical client reporting process look like?",
+      "What are canned reports?",
+      "What is the best client reporting software?",
+      "How much does client reporting software cost?"
+    ],
+    "cta_count": 1,
+    "ctas": [
+      {
+        "href": "/signup",
+        "text": "Try Naxely free ÔåÆ"
+      }
+    ],
+    "internal_links": [
+      "/about",
+      "/blog/automating-client-reports#why-agencies-that-auto-generate-client-reports-win-back-hours",
+      "/blog/best-client-reporting-software-freelancers",
+      "/blog/automating-client-reports",
+      "/compare/agencyanalytics",
+      "/compare/dashthis",
+      "/compare/whatagraph",
+      "/compare/databox",
+      "/blog/best-client-reporting-software-freelancers",
+      "/blog/automating-client-reports",
+      "/blog/byok-ai-reporting-tool",
+      "/compare/agencyanalytics",
+      "/compare/databox",
+      "/compare/dashthis",
+      "/compare/powerdrill",
+      "/blog/best-client-reporting-software-freelancers",
+      "/blog/automating-client-reports",
+      "/blog/automating-client-reports",
+      "/blog/white-label-client-reporting-agencies",
+      "/blog/byok-ai-reporting-tool",
+      "/compare/dashthis",
+      "/compare/agencyanalytics",
+      "/compare/databox",
+      "/compare/powerdrill",
+      "/blog/best-client-reporting-software-freelancers"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "best-client-reporting-software-freelancers",
+    "article_words": 3287,
+    "paragraphs": 62,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 5,
+    "ol": 0,
+    "tables": 0,
+    "h2": [
+      "1. Looker Studio ÔÇö Best Free DIY Option",
+      "2. DashThis ÔÇö Best for Live Ad-Platform Data",
+      "3. Bonsai ÔÇö Best Freelancer Business Platform (with Basic Reporting)",
+      "4. Plutio ÔÇö Best All-in-One Platform (with Optional Reporting)",
+      "5. Naxely ÔÇö Best for CSV and Spreadsheet-Based Reporting",
+      "Which One Is Right for You?",
+      "Flat-Rate vs Per-Client Pricing for Freelancer Reporting",
+      "Not Just Marketers: Analysts and Consultants Working From Files",
+      "Working From a Freelance Platform: Upwork and Freelancer.com Gigs",
+      "Frequently Asked Questions"
+    ],
+    "h3": [
+      "Decision Framework",
+      "What is the best free client reporting tool for freelancers?",
+      "What is the best client reporting tool for freelancers who manage ad accounts?",
+      "Can Bonsai generate client reports?",
+      "What is the best client reporting tool for freelancers using CSV and spreadsheet data?",
+      "Is Plutio good for client reporting?",
+      "Which client reporting tool is most affordable for freelancers?",
+      "Is client reporting software only for marketing agencies?",
+      "Is there a free client reporting tool for one-off freelancing gigs?",
+      "Is flat pricing always cheaper?"
+    ],
+    "cta_count": 8,
+    "ctas": [
+      {
+        "href": "https://www.dashthis.com/pricing",
+        "text": "dashthis.com/pricing"
+      },
+      {
+        "href": "https://www.dashthis.com/pricing",
+        "text": "dashthis.com/pricing"
+      },
+      {
+        "href": "https://www.hellobonsai.com/pricing",
+        "text": "hellobonsai.com/pricing"
+      },
+      {
+        "href": "https://www.hellobonsai.com/pricing",
+        "text": "hellobonsai.com/pricing"
+      },
+      {
+        "href": "https://plutio.com/pricing",
+        "text": "plutio.com/pricing"
+      },
+      {
+        "href": "https://plutio.com/pricing",
+        "text": "plutio.com/pricing"
+      },
+      {
+        "href": "https://www.naxely.com/pricing",
+        "text": "naxely.com/pricing"
+      },
+      {
+        "href": "/signup",
+        "text": "Try Naxely free ÔåÆ"
+      }
+    ],
+    "internal_links": [
+      "/about",
+      "/compare/agencyanalytics",
+      "/blog/automating-client-reports",
+      "/blog/client-reporting-software-guide",
+      "/blog/client-reporting-software-guide",
+      "/blog/white-label-client-reporting-agencies",
+      "/compare/dashthis",
+      "/blog/what-should-client-report-include-checklist"
+    ],
+    "external_links": [
+      "https://lookerstudio.google.com/",
+      "https://www.dashthis.com/pricing",
+      "https://www.dashthis.com/pricing",
+      "https://www.hellobonsai.com/pricing",
+      "https://www.hellobonsai.com/pricing",
+      "https://plutio.com/pricing",
+      "https://plutio.com/pricing"
+    ]
+  },
+  {
+    "slug": "python-csv-to-pdf-reports",
+    "article_words": 725,
+    "paragraphs": 18,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 3,
+    "ol": 0,
+    "tables": 0,
+    "h2": [
+      "The DIY route",
+      "The tool route",
+      "Who should actually write the Python script",
+      "Where a tool like Naxely fits"
+    ],
+    "h3": [],
+    "cta_count": 0,
+    "ctas": [],
+    "internal_links": [
+      "/about",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/white-label-client-reporting-agencies",
+      "/blog/automating-client-reports"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "two-weeks-building-naxely",
+    "article_words": 714,
+    "paragraphs": 18,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 1,
+    "ol": 0,
+    "tables": 0,
+    "h2": [
+      "The launch numbers, unfiltered",
+      "The bugs that shipped anyway",
+      "The GA4 incident nobody saw",
+      "The pricing decision I'm not walking back",
+      "Why bother writing this down"
+    ],
+    "h3": [],
+    "cta_count": 0,
+    "ctas": [],
+    "internal_links": [
+      "/about",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/automating-client-reports",
+      "/blog/byok-ai-reporting-tool"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "what-should-client-report-include-checklist",
+    "article_words": 645,
+    "paragraphs": 16,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 0,
+    "ol": 0,
+    "tables": 0,
+    "h2": [
+      "Start with the executive summary",
+      "Pick 3ÔÇô5 metrics, not everything you have",
+      "Show at least one trend, not just a snapshot",
+      "Explain what changed and why",
+      "End with a recommendation or next step",
+      "What to leave out",
+      "Turning this into a repeatable process",
+      "Frequently Asked Questions"
+    ],
+    "h3": [
+      "How many metrics should a client report include?",
+      "Should a client report include raw data?",
+      "WhatÔÇÖs the difference between a metric and an insight?",
+      "How long should a client report be?"
+    ],
+    "cta_count": 1,
+    "ctas": [
+      {
+        "href": "/signup",
+        "text": "Try Naxely free ÔåÆ"
+      }
+    ],
+    "internal_links": [
+      "/about",
+      "/blog/client-reporting-software-guide",
+      "/blog/client-reporting-software-guide",
+      "/blog/automating-client-reports"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "anomaly-detection-in-client-reports",
+    "article_words": 795,
+    "paragraphs": 20,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 2,
+    "ol": 0,
+    "tables": 0,
+    "h2": [
+      "What gets flagged",
+      "Why 2 standard deviations, specifically",
+      "What it doesn't do yet",
+      "What to actually do when your report flags something"
+    ],
+    "h3": [],
+    "cta_count": 0,
+    "ctas": [],
+    "internal_links": [
+      "/about",
+      "/blog/automating-client-reports",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/google-sheets-client-reports",
+      "/blog/python-csv-to-pdf-reports"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "google-sheets-client-reports",
+    "article_words": 668,
+    "paragraphs": 12,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 1,
+    "ol": 1,
+    "tables": 0,
+    "h2": [
+      "How it actually works",
+      "The gap we found and fixed",
+      "Connecting a sheet",
+      "If your data isn't updating the way you expect"
+    ],
+    "h3": [],
+    "cta_count": 0,
+    "ctas": [],
+    "internal_links": [
+      "/about",
+      "/blog/automating-client-reports",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/anomaly-detection-in-client-reports",
+      "/blog/python-csv-to-pdf-reports"
+    ],
+    "external_links": []
+  },
+  {
+    "slug": "excel-to-pdf-report-generator",
+    "article_words": 1086,
+    "paragraphs": 17,
+    "avg_para_words": 0.0,
+    "paras_over_120": 0,
+    "over120_detail": null,
+    "ul": 1,
+    "ol": 0,
+    "tables": 1,
+    "h2": [
+      "Why Excel's built-in PDF export isn't a report",
+      "What Naxely does with an Excel file specifically",
+      "Multiple sheets ÔÇö what happens to them",
+      "Excel to PDF vs. CSV to PDF",
+      "Frequently Asked Questions"
+    ],
+    "h3": [
+      "Can Naxely convert Excel to PDF with charts and insights?",
+      "What happens to multiple sheets in an Excel workbook?",
+      "Should I use Excel or CSV for Naxely reports?"
+    ],
+    "cta_count": 0,
+    "ctas": [],
+    "internal_links": [
+      "/about",
+      "/blog/csv-to-pdf-report-generator",
+      "/blog/google-sheets-client-reports",
+      "/blog/byok-ai-reporting-tool",
+      "/blog/white-label-client-reporting-agencies"
+    ],
+    "external_links": []
+  }
+]

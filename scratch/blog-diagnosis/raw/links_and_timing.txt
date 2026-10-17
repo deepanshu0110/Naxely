@@ -1,0 +1,49 @@
+===== OG fields per post =====
+byok-ai-reporting-tool: og_title='BYOK AI Reporting Tool: Bring Your Own Key Explained' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+csv-to-pdf-report-generator: og_title='CSV to PDF Report Generator with AI Insights | Naxely' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+white-label-client-reporting-agencies: og_title='White-Label Client Reporting for Agencies | Naxely' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+automating-client-reports: og_title='Automated Client Reporting for Freelancers | CSV to PDF in 60s' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+client-reporting-software-guide: og_title='Best Client Reporting Software: Compare 6 Tools for Agencies' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+best-client-reporting-software-freelancers: og_title='Best Client Reporting Software for Upwork Freelancers (2026)' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+python-csv-to-pdf-reports: og_title='Python CSV to PDF Reports: DIY vs. Using a Tool' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+two-weeks-building-naxely: og_title='Two Weeks Building a Client-Reporting Tool | Naxely' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+what-should-client-report-include-checklist: og_title='What Should a Client Report Include? (Checklist) ÔÇö Naxely' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+anomaly-detection-in-client-reports: og_title='What Naxely's Anomaly Detection Catches (And What Doesn't)' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+google-sheets-client-reports: og_title='How Naxely Keeps Google Sheets Reports Current' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+excel-to-pdf-report-generator: og_title='Excel to PDF Report Generator with AI Insights | Naxely' og_image=https://www.naxely.com/og-image.png tw_card=summary_large_image -> ok=True
+
+===== link status check =====
+200  https://www.naxely.com/about
+200  https://www.naxely.com/blog/anomaly-detection-in-client-reports
+200  https://www.naxely.com/blog/automating-client-reports
+200  https://www.naxely.com/blog/automating-client-reports#why-agencies-that-auto-generate-client-reports-win-back-hours
+200  https://www.naxely.com/blog/best-client-reporting-software-freelancers
+200  https://www.naxely.com/blog/byok-ai-reporting-tool
+200  https://www.naxely.com/blog/client-reporting-software-guide
+200  https://www.naxely.com/blog/csv-to-pdf-report-generator
+200  https://www.naxely.com/blog/google-sheets-client-reports
+200  https://www.naxely.com/blog/python-csv-to-pdf-reports
+200  https://www.naxely.com/blog/what-should-client-report-include-checklist
+200  https://www.naxely.com/blog/white-label-client-reporting-agencies
+200  https://www.naxely.com/compare/agencyanalytics
+200  https://www.naxely.com/compare/dashthis
+200  https://www.naxely.com/compare/databox
+200  https://www.naxely.com/compare/powerdrill
+200  https://www.naxely.com/compare/whatagraph
+200  https://lookerstudio.google.com/
+200  https://plutio.com/pricing
+200  https://www.dashthis.com/pricing
+200  https://www.hellobonsai.com/pricing
+
+===== curl timing proxy (TTFB / total / bytes) =====
+https://www.naxely.com/blog -> ttfb=0.465350s total=0.479717s bytes=26612 http=200 proto=1.1
+https://www.naxely.com/blog/client-reporting-software-guide -> ttfb=0.338400s total=0.421517s bytes=77620 http=200 proto=1.1
+https://www.naxely.com/blog/best-client-reporting-software-freelancers -> ttfb=0.504215s total=0.529323s bytes=49474 http=200 proto=1.1
+https://www.naxely.com/blog/automating-client-reports -> ttfb=0.443972s total=0.469139s bytes=46436 http=200 proto=1.1
+https://www.naxely.com/blog/what-should-client-report-include-checklist -> ttfb=0.408028s total=0.420462s bytes=24849 http=200 proto=1.1
+-- second run --
+https://www.naxely.com/blog -> ttfb=0.339885s total=0.348932s bytes=26612
+https://www.naxely.com/blog/client-reporting-software-guide -> ttfb=0.455045s total=0.581244s bytes=77620
+https://www.naxely.com/blog/best-client-reporting-software-freelancers -> ttfb=0.404698s total=0.428468s bytes=49474
+https://www.naxely.com/blog/automating-client-reports -> ttfb=0.346256s total=0.363361s bytes=46436
+https://www.naxely.com/blog/what-should-client-report-include-checklist -> ttfb=0.424376s total=0.434798s bytes=24849

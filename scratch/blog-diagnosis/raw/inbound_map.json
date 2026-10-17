@@ -1,0 +1,285 @@
+{
+  "pages": {
+    "/": {
+      "status_len": 76130,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 3,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 3,
+        "python-csv-to-pdf-reports": 1,
+        "client-reporting-software-guide": 3
+      },
+      "research_links": 0,
+      "compare_links": 8
+    },
+    "/pricing": {
+      "status_len": 23300,
+      "blog": {
+        "what-should-client-report-include-checklist": 1,
+        "excel-to-pdf-report-generator": 1,
+        "best-client-reporting-software-freelancers": 1,
+        "two-weeks-building-naxely": 1,
+        "automating-client-reports": 1,
+        "python-csv-to-pdf-reports": 1,
+        "client-reporting-software-guide": 1
+      },
+      "research_links": 0,
+      "compare_links": 8
+    },
+    "/faq": {
+      "status_len": 23763,
+      "blog": {
+        "what-should-client-report-include-checklist": 1,
+        "excel-to-pdf-report-generator": 1,
+        "best-client-reporting-software-freelancers": 1,
+        "two-weeks-building-naxely": 1,
+        "automating-client-reports": 1,
+        "python-csv-to-pdf-reports": 1,
+        "client-reporting-software-guide": 1
+      },
+      "research_links": 0,
+      "compare_links": 8
+    },
+    "/about": {
+      "status_len": 9779,
+      "blog": {},
+      "research_links": 0,
+      "compare_links": 0
+    },
+    "/contact": {
+      "status_len": 7910,
+      "blog": {},
+      "research_links": 0,
+      "compare_links": 0
+    },
+    "/changelog": {
+      "status_len": 21173,
+      "blog": {
+        "what-should-client-report-include-checklist": 1,
+        "excel-to-pdf-report-generator": 1,
+        "best-client-reporting-software-freelancers": 1,
+        "two-weeks-building-naxely": 1,
+        "automating-client-reports": 1,
+        "python-csv-to-pdf-reports": 1,
+        "client-reporting-software-guide": 1
+      },
+      "research_links": 0,
+      "compare_links": 8
+    },
+    "/blog": {
+      "status_len": 26612,
+      "blog": {
+        "byok-ai-reporting-tool": 1,
+        "google-sheets-client-reports": 1,
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "csv-to-pdf-report-generator": 1,
+        "automating-client-reports": 2,
+        "two-weeks-building-naxely": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2,
+        "white-label-client-reporting-agencies": 1,
+        "anomaly-detection-in-client-reports": 1
+      },
+      "research_links": 0,
+      "compare_links": 16
+    },
+    "/templates": {
+      "status_len": 8454,
+      "blog": {},
+      "research_links": 0,
+      "compare_links": 0
+    },
+    "/research/client-reporting-tool-pricing-2026": {
+      "status_len": 32175,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 2,
+      "compare_links": 8
+    },
+    "/compare/agencyanalytics": {
+      "status_len": 32634,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 3,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 3
+      },
+      "research_links": 1,
+      "compare_links": 21
+    },
+    "/compare/databox": {
+      "status_len": 25818,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 1,
+      "compare_links": 11
+    },
+    "/compare/dashthis": {
+      "status_len": 27952,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 1,
+      "compare_links": 11
+    },
+    "/compare/whatagraph": {
+      "status_len": 29314,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 1,
+      "compare_links": 11
+    },
+    "/compare/klipfolio": {
+      "status_len": 25913,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 1,
+      "compare_links": 11
+    },
+    "/compare/bonsai": {
+      "status_len": 27163,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 1,
+      "compare_links": 11
+    },
+    "/compare/plutio": {
+      "status_len": 27084,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 1,
+      "compare_links": 11
+    },
+    "/compare/powerdrill": {
+      "status_len": 27753,
+      "blog": {
+        "what-should-client-report-include-checklist": 2,
+        "excel-to-pdf-report-generator": 2,
+        "best-client-reporting-software-freelancers": 2,
+        "two-weeks-building-naxely": 2,
+        "automating-client-reports": 2,
+        "python-csv-to-pdf-reports": 2,
+        "client-reporting-software-guide": 2
+      },
+      "research_links": 1,
+      "compare_links": 12
+    }
+  },
+  "posts": {
+    "byok-ai-reporting-tool": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg July 4, 2026 If you've shopped for an AI-powered reporting tool recently, you've probably run into the"
+    },
+    "csv-to-pdf-report-generator": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg July 4, 2026 If you've searched \"CSV to PDF,\" you've probably landed on a converter ÔÇö a tool that ta"
+    },
+    "white-label-client-reporting-agencies": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg July 5, 2026 You built the report. The client renamed three columns in their spreadsheet last week and"
+    },
+    "automating-client-reports": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg Guide ┬À July 5, 2026 If you send the same client a report every week or month, you already know the d"
+    },
+    "client-reporting-software-guide": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg Whether you call them client reporting tools or client reporting software, choosing the right solution"
+    },
+    "best-client-reporting-software-freelancers": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg If you pull reports from live ad accounts, DashThis at $44/mo is your best bet. If you work from CSV e"
+    },
+    "python-csv-to-pdf-reports": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg July 14, 2026 If you've ever typed \"python csv to pdf report\" into Google, you already know the drill."
+    },
+    "two-weeks-building-naxely": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg July 17, 2026 Most \"we launched!\" posts skip the part where things break. Here's the actual record: bu"
+    },
+    "what-should-client-report-include-checklist": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg Guide ┬À July 21, 2026 A good client report includes five things: an executive summary, 3ÔÇô5 key metr"
+    },
+    "anomaly-detection-in-client-reports": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg August 4, 2026 If you've ever sent a client report and gotten a reply asking \"wait, why did this numbe"
+    },
+    "google-sheets-client-reports": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg August 4, 2026 If you're running recurring client reports off a Google Sheet ÔÇö a shared tracker your"
+    },
+    "excel-to-pdf-report-generator": {
+      "first_para": "By Deepanshu Garg",
+      "first_para_words": 3,
+      "text_head": "By Deepanshu Garg August 23, 2026 Most Excel files sent to clients were never meant to be the deliverable ÔÇö they're th"
+    }
+  }
+}
