@@ -56,18 +56,18 @@ const POSTS: Array<{
   path: string
   dateModified: string
 }> = [
-  { Component: BlogPostByok, path: '/blog/byok-ai-reporting-tool', dateModified: '2026-09-25' },
-  { Component: BlogPostCsvToPdf, path: '/blog/csv-to-pdf-report-generator', dateModified: '2026-09-25' },
-  { Component: BlogPostWhiteLabel, path: '/blog/white-label-client-reporting-agencies', dateModified: '2026-09-25' },
+  { Component: BlogPostByok, path: '/blog/byok-ai-reporting-tool', dateModified: '2026-10-17' },
+  { Component: BlogPostCsvToPdf, path: '/blog/csv-to-pdf-report-generator', dateModified: '2026-10-17' },
+  { Component: BlogPostWhiteLabel, path: '/blog/white-label-client-reporting-agencies', dateModified: '2026-10-17' },
   { Component: BlogPostHub, path: '/blog/automating-client-reports', dateModified: '2026-09-25' },
-  { Component: BlogPostClientReporting, path: '/blog/client-reporting-software-guide', dateModified: '2026-10-12' },
-  { Component: BlogPostBestFreelanceReporting, path: '/blog/best-client-reporting-software-freelancers', dateModified: '2026-09-25' },
-  { Component: BlogPostPythonCsvToPdf, path: '/blog/python-csv-to-pdf-reports', dateModified: '2026-09-25' },
-  { Component: BlogPostTwoWeeks, path: '/blog/two-weeks-building-naxely', dateModified: '2026-09-25' },
+  { Component: BlogPostClientReporting, path: '/blog/client-reporting-software-guide', dateModified: '2026-10-17' },
+  { Component: BlogPostBestFreelanceReporting, path: '/blog/best-client-reporting-software-freelancers', dateModified: '2026-10-17' },
+  { Component: BlogPostPythonCsvToPdf, path: '/blog/python-csv-to-pdf-reports', dateModified: '2026-10-17' },
+  { Component: BlogPostTwoWeeks, path: '/blog/two-weeks-building-naxely', dateModified: '2026-10-17' },
   { Component: BlogPostClientReportChecklist, path: '/blog/what-should-client-report-include-checklist', dateModified: '2026-08-02' },
-  { Component: BlogPostAnomalyDetection, path: '/blog/anomaly-detection-in-client-reports', dateModified: '2026-08-04' },
-  { Component: BlogPostGoogleSheets, path: '/blog/google-sheets-client-reports', dateModified: '2026-08-04' },
-  { Component: BlogPostExcelToPdf, path: '/blog/excel-to-pdf-report-generator', dateModified: '2026-09-25' },
+  { Component: BlogPostAnomalyDetection, path: '/blog/anomaly-detection-in-client-reports', dateModified: '2026-10-17' },
+  { Component: BlogPostGoogleSheets, path: '/blog/google-sheets-client-reports', dateModified: '2026-10-17' },
+  { Component: BlogPostExcelToPdf, path: '/blog/excel-to-pdf-report-generator', dateModified: '2026-10-17' },
 ]
 
 describe.each(POSTS)('freshness: $path', ({ Component, path, dateModified }) => {

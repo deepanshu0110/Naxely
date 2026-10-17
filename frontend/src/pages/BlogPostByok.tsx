@@ -20,7 +20,7 @@ export default function BlogPostByok() {
         <meta name="twitter:title" content="BYOK AI Reporting Tool: Bring Your Own Key Explained" />
         <meta name="twitter:description" content="What BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"BYOK AI Reporting Tool: Bring Your Own Key Explained","description":"Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup.","url":"https://www.naxely.com/blog/byok-ai-reporting-tool","datePublished":"2026-07-04T00:00:00Z","dateModified":"2026-09-25T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"BYOK AI Reporting Tool: Bring Your Own Key Explained","description":"Learn what BYOK means for AI reporting tools, why it saves money, and how Naxely lets you connect Gemini, Groq, OpenAI, Claude, and more — at cost, with no markup.","url":"https://www.naxely.com/blog/byok-ai-reporting-tool","datePublished":"2026-07-04T00:00:00Z","dateModified":"2026-10-17T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.naxely.com/blog"}, {"@type": "ListItem", "position": 3, "name": "BYOK AI Reporting Tool: Bring Your Own Key Explained", "item": "https://www.naxely.com/blog/byok-ai-reporting-tool"}]})}</script>
       </Head>
       <Navbar />
@@ -122,6 +122,8 @@ export default function BlogPostByok() {
             <Link to="/blog/white-label-client-reporting-agencies" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">White Label Reporting for Agencies</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/client-reporting-software-guide" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">How to Choose Client Reporting Software</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/two-weeks-building-naxely" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">What Two Weeks of Building a Client-Reporting Tool Actually Looked Like</Link>
           </p>
         </div>
       </article>

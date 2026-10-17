@@ -20,7 +20,7 @@ export default function BlogPostTwoWeeks() {
         <meta name="twitter:title" content="Two Weeks Building a Client-Reporting Tool | Naxely" />
         <meta name="twitter:description" content="The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"What Two Weeks of Building a Client-Reporting Tool Actually Looked Like","description":"The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats.","url":"https://www.naxely.com/blog/two-weeks-building-naxely","datePublished":"2026-07-17T00:00:00Z","dateModified":"2026-09-25T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"What Two Weeks of Building a Client-Reporting Tool Actually Looked Like","description":"The real bugs, numbers, and decisions from the first two weeks after Naxely's Product Hunt launch — no polish, no inflated stats.","url":"https://www.naxely.com/blog/two-weeks-building-naxely","datePublished":"2026-07-17T00:00:00Z","dateModified":"2026-10-17T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.naxely.com/blog"}, {"@type": "ListItem", "position": 3, "name": "What Two Weeks of Building a Client-Reporting Tool Actually Looked Like", "item": "https://www.naxely.com/blog/two-weeks-building-naxely"}]})}</script>
       </Head>
       <Navbar />
@@ -75,6 +75,8 @@ export default function BlogPostTwoWeeks() {
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
           <p className="text-sm italic text-ink/45 dark:text-paper/45">Naxely turns CSV and Google Sheets data into branded, AI-narrated PDF client reports. Built by one person, in public, bugs included.</p>
+          <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">See what those two weeks built. Try Naxely free &rarr;</Link>
+          <p className="text-xs text-gray-400 mt-2">Free plan: 3 reports a month, no credit card required.</p>
 
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 

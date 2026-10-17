@@ -20,7 +20,7 @@ export default function BlogPostWhiteLabel() {
         <meta name="twitter:title" content="White-Label Client Reporting for Agencies | Naxely" />
         <meta name="twitter:description" content="Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"White-Label Client Reporting for Agencies","description":"Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead.","url":"https://www.naxely.com/blog/white-label-client-reporting-agencies","datePublished":"2026-07-05T00:00:00Z","dateModified":"2026-09-25T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"White-Label Client Reporting for Agencies","description":"Why agency reporting tools built for ad-platform connectors don't fit any-data client reporting — and what BYOK, white-label pricing looks like instead.","url":"https://www.naxely.com/blog/white-label-client-reporting-agencies","datePublished":"2026-07-05T00:00:00Z","dateModified":"2026-10-17T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
           {"@type":"Question","name":"Is this the same as white label reporting?","acceptedAnswer":{"@type":"Answer","text":"Yes \u2014 white label reporting and white label client reporting are the same thing: reports delivered to clients with your agency\u2019s branding and no trace of the software vendor\u2019s."}}
         ]})}</script>
@@ -75,17 +75,17 @@ export default function BlogPostWhiteLabel() {
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">DashThis</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$44–$429/month</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">$44–$429/month billed annually</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">Whatagraph</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">€699/month billed annually (Max)</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">€999/month billed annually (Max)</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform connectors only</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-2 pr-4 text-ink/80 dark:text-paper/80">Databox</td>
-                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free tier; paid from $64–$399/month</td>
+                  <td className="py-2 pr-4 text-ink/55 dark:text-paper/45">Free tier; paid $71–$319/month billed annually</td>
                   <td className="py-2 text-ink/55 dark:text-paper/45">Ad-platform + custom API</td>
                 </tr>
                 <tr className="border-b border-gray-100 dark:border-gray-800">
@@ -110,8 +110,8 @@ export default function BlogPostWhiteLabel() {
           <p>If you don't already have an API key, Groq's free tier is a genuine zero-cost way to start — no credit card required, generous enough limits for real agency use. (Free-tier users don't need any key at all: Naxely supplies AI generation for the 3 monthly reports.)</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">How much does white-label client reporting cost?</h2>
-          <p>Full white-label reporting (sometimes called private label reporting) — every trace of platform branding removed from client-facing output — is available on Naxely's Agency tier at $79/month, compared to the industry norm of $150+/month where most platforms gate white-labeling behind their highest pricing tier.</p>
-          <p>Most platforms in this space gate full white-labeling — removing their own branding entirely from your client-facing output — behind their highest pricing tier, often north of $150/month.</p>
+          <p>Full white-label reporting (sometimes called private label reporting) removes every trace of platform branding from the output your client sees. On Naxely it is part of the Agency tier at $79/month. Other tools price it very differently: DashThis includes white-label on every plan from $44/month billed yearly, while Databox and Klipfolio sell it as an add-on ($80/month and $299/month billed annually). See our <Link to="/research/client-reporting-tool-pricing-2026" className="text-amber-600 hover:text-amber-700 underline">client reporting tool pricing research</Link>.</p>
+          <p>Tools handle full white-labeling in different ways. Some include it on every plan, some sell it as a paid add-on, and per-client tools cost more as your client list grows.</p>
           <p>The Agency tier here is $79/month, and it removes every trace of platform branding from the output your client sees. It also includes PowerPoint export, programmatic API access for teams building their own pipeline on top, and direct priority support from the person actually building the product — not a support queue.</p>
 
           <h2 className="font-semibold text-ink dark:text-paper text-base mt-8">What should I do next?</h2>

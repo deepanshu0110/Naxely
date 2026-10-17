@@ -20,7 +20,7 @@ export default function BlogPostPythonCsvToPdf() {
         <meta name="twitter:title" content="Python CSV to PDF Reports: DIY vs. Using a Tool" />
         <meta name="twitter:description" content="Practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending reports regularly." />
         <meta name="twitter:image" content="https://www.naxely.com/og-image.png" />
-        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool","description":"A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.","url":"https://www.naxely.com/blog/python-csv-to-pdf-reports","datePublished":"2026-07-14T00:00:00Z","dateModified":"2026-09-25T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
+        <script type="application/ld+json">{JSON.stringify({"@context":"https://schema.org","@type":"BlogPosting","headline":"Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool","description":"A practical look at building CSV-to-PDF reports in Python vs. using a report generator tool — for freelance analysts and agencies sending client reports regularly.","url":"https://www.naxely.com/blog/python-csv-to-pdf-reports","datePublished":"2026-07-14T00:00:00Z","dateModified":"2026-10-17T00:00:00Z","author":{"@type":"Person","name":"Deepanshu Garg","url":"https://www.naxely.com/about"},"publisher":{"@type":"Organization","name":"Naxely","url":"https://www.naxely.com","sameAs":["https://www.linkedin.com/company/naxely-app","https://www.crunchbase.com/organization/naxely","https://www.producthunt.com/products/naxely"]},"image":"https://www.naxely.com/og-image.png"})}</script>
         <script type="application/ld+json">{JSON.stringify({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.naxely.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://www.naxely.com/blog"}, {"@type": "ListItem", "position": 3, "name": "Python CSV to PDF Reports: The DIY Script vs. Just Using a Tool", "item": "https://www.naxely.com/blog/python-csv-to-pdf-reports"}]})}</script>
       </Head>
       <Navbar />
@@ -83,6 +83,8 @@ export default function BlogPostPythonCsvToPdf() {
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
           <p className="text-sm italic text-ink/45 dark:text-paper/45">If you're the kind of person who's already got a working Python script for this and it does what you need — genuinely, don't switch it out for a tool just because a blog post told you to. But if you're the kind of person who Googled "python csv to pdf report" at 11pm looking for a faster way, that's who this was written for.</p>
+          <Link to="/signup" className="inline-block rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 transition-colors">Try it with your own CSV, free &rarr;</Link>
+          <p className="text-xs text-gray-400 mt-2">Free plan: 3 reports a month, no credit card required.</p>
 
           <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
@@ -93,6 +95,8 @@ export default function BlogPostPythonCsvToPdf() {
             <Link to="/blog/white-label-client-reporting-agencies" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">White-Label Client Reporting for Agencies</Link>
             <span className="text-gray-300">·</span>
             <Link to="/blog/automating-client-reports" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Automating Client Reports: The Complete Guide</Link>
+            <span className="text-gray-300">·</span>
+            <Link to="/blog/excel-to-pdf-report-generator" className="text-ink/55 dark:text-paper/45 hover:text-amber-600">Excel to PDF Report Generator: From Workbook to Client-Ready Report</Link>
           </p>
         </div>
       </article>
