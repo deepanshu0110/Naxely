@@ -1110,6 +1110,9 @@ export default function Landing() {
           <a href="https://tools.launchllama.co/products/naxely?utm_source=badge&utm_medium=referral" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
           <img src="https://tools.launchllama.co/featured-badge-white.jpg?v=5" alt="Featured on Launch Llama" width="200" height="52" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
           </a>
+          <a href="https://listmysaas.xyz" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://listmysaas.xyz/listmysaasbadgenormal.svg" alt="Featured on ListMySaaS" width="125" height="44" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
+          </a>
           </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-600">
