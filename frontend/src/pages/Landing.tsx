@@ -1113,6 +1113,9 @@ export default function Landing() {
           <a href="https://listmysaas.xyz" target="_blank" rel="noopener" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
           <img src="https://listmysaas.xyz/listmysaasbadgenormal.svg" alt="Featured on ListMySaaS" width="125" height="44" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" />
           </a>
+          <a href="https://domainrank.app" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-14 w-full opacity-60 hover:opacity-100 transition-opacity duration-200">
+          <img src="https://domainrank.app/api/badge/naxely.com?style=small" alt="naxely.com Domain Rating" width="249" height="40" className="max-h-10 w-auto max-w-full object-contain" loading="lazy" decoding="async" style={{ maxWidth: '100%', height: 'auto' }} />
+          </a>
           </div>
           </div>
           <p className="mt-4 text-center text-xs text-gray-600">
